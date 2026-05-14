@@ -1,0 +1,358 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Fred's Lab/Buzzzy!.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 31,
+    "cc_entries": 31,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Buzzzy!",
+    "vendor": "Fred's Lab",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/buzzzy",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/general/modwheel",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/level/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Level"
+      },
+      {
+        "osc": "/pan/pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Pan"
+      },
+      {
+        "osc": "/oscillator/coarse",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/oscillator/fine",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/arpeggiator/tempo",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator"
+      },
+      {
+        "osc": "/arpeggiator/division",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator"
+      },
+      {
+        "osc": "/arpeggiator/repeat",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator"
+      },
+      {
+        "osc": "/arpeggiator/gate",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator"
+      },
+      {
+        "osc": "/oscillator/wave",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/envelope/decay",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/attack",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/filter/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/oscillator/engine",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/filter/mod",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/space_mix",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/delay_mix",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/model/space_model",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Model"
+      },
+      {
+        "osc": "/model/delay_model",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Model"
+      },
+      {
+        "osc": "/filter/type",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/arpeggiator/arp_mode",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator"
+      },
+      {
+        "osc": "/envelope/env_mode",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/env_loop",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/filter/space_decay",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/space_diffuse",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/delay/feedback",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/length",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/general/all_sounds_off",
+        "cc": 120,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/reset_all_controllers",
+        "cc": 121,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

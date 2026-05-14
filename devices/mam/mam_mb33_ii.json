@@ -1,0 +1,113 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/nh5YejEaoej8Aoox86nB",
+      "preset_name": "MAM MB33 II",
+      "imported_at": "2026-04-13",
+      "preset_id": "nh5YejEaoej8Aoox86nB",
+      "revision": "5",
+      "author": "Alexander Willems"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 7,
+    "cc_entries": 7,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "MAM MB33 II",
+    "vendor": "MAM",
+    "revision": "per Electra preset",
+    "osc_prefix": "/mam_mb33_ii",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/cutoff",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/resonance",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_mod",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/autoslide",
+        "cc": 108,
+        "range": [
+          0,
+          1
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/accent",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/decay",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/distortion",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

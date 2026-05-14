@@ -1,0 +1,285 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/KORG/electribe 2 (EMX 2).csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 23,
+    "cc_entries": 23,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "electribe 2 (EMX 2)",
+    "vendor": "KORG",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/electribe_2_emx_2",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/amp/level",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Amp",
+        "_usage": "0~127: Left to right pan"
+      },
+      {
+        "osc": "/eg/attack",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG"
+      },
+      {
+        "osc": "/eg/decay_release",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG"
+      },
+      {
+        "osc": "/filter/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/eg_intensity",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter"
+      },
+      {
+        "osc": "/insert_fx/off_on",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Insert FX",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/insert_fx/edit",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Insert FX"
+      },
+      {
+        "osc": "/master_fx/x",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master FX"
+      },
+      {
+        "osc": "/master_fx/y",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master FX"
+      },
+      {
+        "osc": "/master_fx/send_on_off",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master FX",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/master_fx/on_off",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master FX",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/modulation/depth",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Modulation"
+      },
+      {
+        "osc": "/modulation/speed",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Modulation"
+      },
+      {
+        "osc": "/oscillators/oscillator_pitch",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/oscillator_glide",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/oscillator_edit",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/global/bank_select_msb",
+        "cc": 0,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/bank_select_lsb",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/all_sound_off",
+        "cc": 120,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: All sound off"
+      },
+      {
+        "osc": "/global/reset_all_controllers",
+        "cc": 121,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Reset all controllers"
+      },
+      {
+        "osc": "/global/all_note_off",
+        "cc": 123,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: All note off"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

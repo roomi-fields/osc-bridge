@@ -1,0 +1,803 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Moog/Sub Phatty.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 70,
+    "cc_entries": 70,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 27
+  },
+  "device": {
+    "name": "Sub Phatty",
+    "vendor": "Moog",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/sub_phatty",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/amplifier_eg/attack",
+        "cc": 28,
+        "cc_lsb": 60,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier EG"
+      },
+      {
+        "osc": "/amplifier_eg/decay",
+        "cc": 29,
+        "cc_lsb": 61,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier EG"
+      },
+      {
+        "osc": "/amplifier_eg/sustain",
+        "cc": 30,
+        "cc_lsb": 62,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier EG"
+      },
+      {
+        "osc": "/amplifier_eg/release",
+        "cc": 31,
+        "cc_lsb": 63,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier EG"
+      },
+      {
+        "osc": "/filter_eg/attack",
+        "cc": 23,
+        "cc_lsb": 55,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter EG"
+      },
+      {
+        "osc": "/filter_eg/decay",
+        "cc": 24,
+        "cc_lsb": 56,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter EG"
+      },
+      {
+        "osc": "/filter_eg/sustain",
+        "cc": 25,
+        "cc_lsb": 57,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter EG"
+      },
+      {
+        "osc": "/filter_eg/release",
+        "cc": 26,
+        "cc_lsb": 58,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter EG"
+      },
+      {
+        "osc": "/vcos/vco_1_level",
+        "cc": 15,
+        "cc_lsb": 47,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "VCOs"
+      },
+      {
+        "osc": "/vcos/vco_2_level",
+        "cc": 16,
+        "cc_lsb": 48,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "VCOs"
+      },
+      {
+        "osc": "/vcos/noise_level",
+        "cc": 8,
+        "cc_lsb": 40,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "VCOs"
+      },
+      {
+        "osc": "/vcos/vco_1_sub_level",
+        "cc": 17,
+        "cc_lsb": 49,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "VCOs"
+      },
+      {
+        "osc": "/vcos/vco_1_wave",
+        "cc": 9,
+        "cc_lsb": 41,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "VCOs"
+      },
+      {
+        "osc": "/vcos/vco_2_wave",
+        "cc": 14,
+        "cc_lsb": 46,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "VCOs"
+      },
+      {
+        "osc": "/vcos/vco_2_frequency",
+        "cc": 12,
+        "cc_lsb": 44,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "VCOs"
+      },
+      {
+        "osc": "/vcos/vco_2_beat_frequency",
+        "cc": 13,
+        "cc_lsb": 45,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "VCOs"
+      },
+      {
+        "osc": "/vcos/vco_2_hard_sync",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCOs",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/vcos/vco_gate_reset",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCOs",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/filter/cutoff_frequency",
+        "cc": 19,
+        "cc_lsb": 51,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 21,
+        "cc_lsb": 53,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/kb_tracking_amount",
+        "cc": 27,
+        "cc_lsb": 59,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/eg_amount",
+        "cc": 22,
+        "cc_lsb": 54,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/general/multidrive_amount",
+        "cc": 18,
+        "cc_lsb": 50,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/filter_eg/velocity_to_amplitude",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter EG"
+      },
+      {
+        "osc": "/amplifier_eg/velocity_to_amplitude",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier EG"
+      },
+      {
+        "osc": "/general/note_priority",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Global; 32: Low note; 64: High note; 96: Last note"
+      },
+      {
+        "osc": "/general/release_on_off",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/general/modulation_source",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Triangle LFO; 16: Square LFO; 32: Saw LFO; 48: Ramp LFO; 64: S&H; 80: Filter envelope"
+      },
+      {
+        "osc": "/lfo/rate",
+        "cc": 3,
+        "cc_lsb": 35,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/midi_sync",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/lfo/gate_reset",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/general/filter_mod_amount",
+        "cc": 2,
+        "cc_lsb": 34,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/pitch_mod_amount",
+        "cc": 4,
+        "cc_lsb": 36,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/wave_mod_amount",
+        "cc": 20,
+        "cc_lsb": 52,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/pitch_bend_up",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/pitch_bend_down",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/glide/on_off",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Glide",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/glide/legato",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Glide",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/glide/rate",
+        "cc": 5,
+        "cc_lsb": 37,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Glide"
+      },
+      {
+        "osc": "/glide/type",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Glide",
+        "_usage": "0: Linear constant rate; 43: Linear constant time; 85: Exponential"
+      },
+      {
+        "osc": "/lfo/kb_tracking_amount",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/amplifier_eg/reset",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier EG",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/filter_eg/reset",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter EG",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/general/output_level",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/keyboard_octave",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "General",
+        "_usage": "0: -2 oct; 16: -1 oct; 32: +0 oct; 48: +1 oct; 64: +2 oct"
+      },
+      {
+        "osc": "/general/external_input_level",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/amplifier_eg/delay",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier EG"
+      },
+      {
+        "osc": "/amplifier_eg/hold",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier EG"
+      },
+      {
+        "osc": "/filter_eg/delay",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter EG"
+      },
+      {
+        "osc": "/filter_eg/hold",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter EG"
+      },
+      {
+        "osc": "/vcos/pitch_mod_oscillator_2_only",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCOs",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/general/modulation_wheel",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/wave_mod_destination",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Osc 1 only; 42: Osc 2 only; 85: Both osc 1 and 2"
+      },
+      {
+        "osc": "/vcos/vco_1_octave",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCOs",
+        "_usage": "16: 1', 32: 8', 48: 4', 64: 2'"
+      },
+      {
+        "osc": "/vcos/vco_2_octave",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCOs",
+        "_usage": "16: 1', 32: 8', 48: 4', 64: 2'"
+      },
+      {
+        "osc": "/filter/poles",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: 1 pole; 32: 2 poles; 64: 3 poles; 94: 4 poles"
+      },
+      {
+        "osc": "/lfo/range",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Low (0.01Hz - 10Hz); 43: Mid (0.1Hz - 100Hz); 85: High (1Hz - 1kHz)"
+      },
+      {
+        "osc": "/general/legato",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/general/keyboard_transpose",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "General",
+        "_usage": "0~24: Transpose from -12 to +12 semitones"
+      },
+      {
+        "osc": "/glide/gated_glide",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Glide",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/filter_eg/repeat",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter EG",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/filter_eg/velocity_to_time",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter EG"
+      },
+      {
+        "osc": "/filter_eg/kb_amount",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter EG"
+      },
+      {
+        "osc": "/filter_eg/gate_source",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter EG",
+        "_usage": "0: Gate on; 32: Keys only; 64: Gate only; 96: Keys or gate input"
+      },
+      {
+        "osc": "/amplifier_eg/repeat",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier EG",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/amplifier_eg/velocity_to_time",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier EG"
+      },
+      {
+        "osc": "/amplifier_eg/kb_amount",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier EG"
+      },
+      {
+        "osc": "/general/volume_eg_gate_source",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Gate on; 32: Keys only; 64: Gate only; 96: Keys or gate input"
+      },
+      {
+        "osc": "/filter_eg/trigger_mode",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter EG",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/amplifier_eg/trigger_mode",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier EG",
+        "_usage": "0: Off; 64: On"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

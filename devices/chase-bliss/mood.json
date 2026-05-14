@@ -1,0 +1,173 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/MOOD.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 12,
+    "cc_entries": 12,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "MOOD",
+    "vendor": "Chase Bliss",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/mood",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/knobs/time",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/mix",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/length",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/wet_channel_modify",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/clock",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/micro_looper_modify",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/toggles/wet_channel_program_select",
+        "cc": 21,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Toggles",
+        "_usage": "1: Left; 2: Center; 3: Right"
+      },
+      {
+        "osc": "/toggles/routing_toggle",
+        "cc": 22,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Toggles",
+        "_usage": "1: Left; 2: Center; 3: Right"
+      },
+      {
+        "osc": "/toggles/micro_looper_program_select",
+        "cc": 23,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Toggles",
+        "_usage": "1: Left; 2: Center; 3: Right"
+      },
+      {
+        "osc": "/switches/bypass_reset",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Switches",
+        "_usage": "0: Bypass; 127: Engage last saved"
+      },
+      {
+        "osc": "/switches/bypass_mode",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Switches",
+        "_usage": "0: Bypass wet and micro-looper; 45: Engage micro-looper and bypass wet; 85: Engage wet and bypass micro-looper; 127: Engage wet and micro-looper"
+      },
+      {
+        "osc": "/other/expression",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

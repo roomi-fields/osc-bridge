@@ -1,0 +1,220 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/DPpeZrfoMUhqXeJSdRnX",
+      "preset_name": "101 Layered Shift",
+      "imported_at": "2026-04-13",
+      "preset_id": "DPpeZrfoMUhqXeJSdRnX",
+      "revision": "22",
+      "author": "DC"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 17,
+    "cc_entries": 17,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "101 Layered Shift",
+    "vendor": "Eventide",
+    "revision": "per Electra preset",
+    "osc_prefix": "/101_layered_shift",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 8,
+    "entries": [
+      {
+        "osc": "/left_delay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          1400
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/right_delay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          1400
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/left_shift",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 4,
+        "range": [
+          -2400,
+          1200
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/right_shift",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 6,
+        "range": [
+          -2400,
+          1200
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sustain",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/left_feedback",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/right_feedback",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dry_wet/left_mix",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          100
+        ],
+        "section": "DRY/WET"
+      },
+      {
+        "osc": "/dry_wet/right_mix",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          100
+        ],
+        "section": "DRY/WET"
+      },
+      {
+        "osc": "/quantize",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 35,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/poly_mono",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 10,
+        "range": [
+          5,
+          95
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/bank",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/left_in",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 36,
+        "range": [
+          -48,
+          48
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/right_in",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 37,
+        "range": [
+          -48,
+          48
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/left_out",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 38,
+        "range": [
+          -48,
+          48
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/right_out",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 39,
+        "range": [
+          -48,
+          48
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/bypass",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 8,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

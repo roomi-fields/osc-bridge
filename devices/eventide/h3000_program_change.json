@@ -1,0 +1,58 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/0aHzosCMGvLYBbsBhKBs",
+      "preset_name": "H3000 Program Change",
+      "imported_at": "2026-04-13",
+      "preset_id": "0aHzosCMGvLYBbsBhKBs"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 1,
+    "cc_entries": 1,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "H3000 Program Change",
+    "vendor": "Eventide",
+    "revision": "per Electra preset",
+    "osc_prefix": "/h3000_program_change",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 8,
+    "entries": [
+      {
+        "osc": "/1",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 8,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

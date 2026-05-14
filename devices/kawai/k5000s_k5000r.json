@@ -1,0 +1,390 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Kawai/K5000S & K5000R.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 33,
+    "cc_entries": 25,
+    "nrpn_entries": 8,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "K5000S & K5000R",
+    "vendor": "Kawai",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/k5000s_k5000r",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/common/modulation_depth",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Common"
+      },
+      {
+        "osc": "/common/portamento_time",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Common"
+      },
+      {
+        "osc": "/common/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Common"
+      },
+      {
+        "osc": "/common/pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Common",
+        "_usage": "0~63: Left; 64: Center; 65~127: Right"
+      },
+      {
+        "osc": "/common/expression",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Common"
+      },
+      {
+        "osc": "/macro/harm_lo",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro"
+      },
+      {
+        "osc": "/macro/harm_hi",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro"
+      },
+      {
+        "osc": "/macro/ff_bias",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro"
+      },
+      {
+        "osc": "/macro/ff_speed",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro"
+      },
+      {
+        "osc": "/common/hold_1",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Common",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/common/portamento",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Common",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/common/hold_2",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Common",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/macro/even_odd",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro"
+      },
+      {
+        "osc": "/macro/release",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro"
+      },
+      {
+        "osc": "/macro/attack",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro"
+      },
+      {
+        "osc": "/macro/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro"
+      },
+      {
+        "osc": "/macro/ff_depth",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro"
+      },
+      {
+        "osc": "/macro/velocity",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro"
+      },
+      {
+        "osc": "/macro/resonance",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro"
+      },
+      {
+        "osc": "/macro/decay",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro"
+      },
+      {
+        "osc": "/macro/user_1",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro"
+      },
+      {
+        "osc": "/macro/user_2",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro"
+      },
+      {
+        "osc": "/macro/user_3",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro"
+      },
+      {
+        "osc": "/macro/user_4",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro"
+      },
+      {
+        "osc": "/common/portamento_ctrl",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Common"
+      },
+      {
+        "osc": "/cutoff_offset",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 32,
+        "range": [
+          1792,
+          14719
+        ],
+        "orientation": "centered",
+        "_usage": "1792~8191: -; 8192-8319: 0; 8320~14719: +"
+      },
+      {
+        "osc": "/attack_offset",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 99,
+        "range": [
+          1792,
+          14719
+        ],
+        "orientation": "centered",
+        "_usage": "1792~8191: -; 8192-8319: 0; 8320~14719: +"
+      },
+      {
+        "osc": "/decay_offset",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 100,
+        "range": [
+          1792,
+          14719
+        ],
+        "orientation": "centered",
+        "_usage": "1792~8191: -; 8192-8319: 0; 8320~14719: +"
+      },
+      {
+        "osc": "/release_offset",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 101,
+        "range": [
+          1792,
+          14719
+        ],
+        "orientation": "centered",
+        "_usage": "1792~8191: -; 8192-8319: 0; 8320~14719: +"
+      },
+      {
+        "osc": "/switch_1",
+        "nrpn_msb": 32,
+        "nrpn_lsb": 64,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "_usage": "0-8191: Off; 8192-16383: On"
+      },
+      {
+        "osc": "/switch_2",
+        "nrpn_msb": 32,
+        "nrpn_lsb": 65,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "_usage": "0-8191: Off; 8192-16383: On"
+      },
+      {
+        "osc": "/foot_switch_1",
+        "nrpn_msb": 32,
+        "nrpn_lsb": 66,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "_usage": "0-8191: Off; 8192-16383: On"
+      },
+      {
+        "osc": "/foot_switch_2",
+        "nrpn_msb": 32,
+        "nrpn_lsb": 67,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "_usage": "0-8191: Off; 8192-16383: On"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

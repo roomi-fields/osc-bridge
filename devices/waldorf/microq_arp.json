@@ -1,0 +1,671 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/s6skagDHu97jt7fdEjWq",
+      "preset_name": "microQ Arp",
+      "imported_at": "2026-04-13",
+      "preset_id": "s6skagDHu97jt7fdEjWq",
+      "author": "Ryan Gilmore"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 31,
+    "cc_entries": 0,
+    "sysex_commands": 31
+  },
+  "device": {
+    "name": "microQ Arp",
+    "vendor": "Waldorf",
+    "revision": "per Electra preset",
+    "osc_prefix": "/microq_arp",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240,
+      62,
+      16,
+      0
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/arp_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        55,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pattern_length",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            16
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        67,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/octave_range",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            10
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        60,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/max_notes",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            16
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        57,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/shuffle",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        64,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/clock",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            3,
+            130
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        58,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pattern",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        56,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pattern_reset",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        66,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/sort_order",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        62,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/note_length",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            128
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        59,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/note_overlap",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        65,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/direction",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        61,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        71,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        72,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        73,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        74,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/5",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        75,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/6",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        76,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/7",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        77,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/8",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        77,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/9",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        79,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/10",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        80,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/11",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        81,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/12",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        82,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/13",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        83,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/14",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        84,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/15",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        85,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/16",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        86,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/velocity_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        63,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/tempo",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        2,
+        70,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/arp_send",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        36,
+        0,
+        15,
+        "{val}"
+      ]
+    }
+  ],
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

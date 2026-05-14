@@ -1,0 +1,359 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Behringer/JT-4000M MICRO.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 31,
+    "cc_entries": 31,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "JT-4000M MICRO",
+    "vendor": "Behringer",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/jt_4000m_micro",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/oscillators/osc1_wave",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc1_pwm_ss_fb",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc1_coarse_t",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc1_ftune",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc2_wave",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc2_pwm",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc2_coarse_t",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc2_ftune",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc_balance",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/vca_envelope/vca_eg_att",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCA envelope"
+      },
+      {
+        "osc": "/vca_envelope/vca_eg_dec",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCA envelope"
+      },
+      {
+        "osc": "/vca_envelope/vca_eg_sus",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCA envelope"
+      },
+      {
+        "osc": "/vca_envelope/vca_eg_rel",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCA envelope"
+      },
+      {
+        "osc": "/filter/vcf_res",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/vcf_cut",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/fenv_amount",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/vcf_eg_att",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/vcf_eg_dec",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/vcf_eg_sus",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/vcf_eg_rel",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/lfos/lfo1_dest",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo1_wave",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo1_amount",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo1_rate",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo2_wave",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo2_rate",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo2_amount",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/modulation/mod",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Modulation"
+      },
+      {
+        "osc": "/modulation/ring_mod_amount",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Modulation"
+      },
+      {
+        "osc": "/modulation/ring_mod_toggle",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Modulation",
+        "_usage": "0-64: Off; 65-127: On"
+      },
+      {
+        "osc": "/general/porta_time",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

@@ -1,0 +1,455 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Yamaha/SEQTRAK.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 40,
+    "cc_entries": 40,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "SEQTRAK",
+    "vendor": "Yamaha",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/seqtrak",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/sound_design/track_volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound design"
+      },
+      {
+        "osc": "/sound_design/track_pan",
+        "cc": 10,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound design"
+      },
+      {
+        "osc": "/sound_design/drum_pitch",
+        "cc": 25,
+        "range": [
+          40,
+          88
+        ],
+        "orientation": "centered",
+        "section": "Sound design"
+      },
+      {
+        "osc": "/sound_design/mono_poly_chord",
+        "cc": 26,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Sound design",
+        "_usage": "0: Mono; 1: Poly; 2: Chord"
+      },
+      {
+        "osc": "/sound_design/attack_time",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound design"
+      },
+      {
+        "osc": "/sound_design/decay_release_time",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound design"
+      },
+      {
+        "osc": "/sound_design/filter_cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound design"
+      },
+      {
+        "osc": "/sound_design/filter_resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound design"
+      },
+      {
+        "osc": "/sound_design/reverb_send",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound design"
+      },
+      {
+        "osc": "/sound_design/delay_send",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound design"
+      },
+      {
+        "osc": "/sound_design/eq_high_gain",
+        "cc": 20,
+        "range": [
+          40,
+          88
+        ],
+        "orientation": "centered",
+        "section": "Sound design"
+      },
+      {
+        "osc": "/sound_design/eq_low_gain",
+        "cc": 21,
+        "range": [
+          40,
+          88
+        ],
+        "orientation": "centered",
+        "section": "Sound design"
+      },
+      {
+        "osc": "/sound_design/portamento_time",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound design",
+        "_usage": "0: Off; 1~127: Portamento time"
+      },
+      {
+        "osc": "/sound_design/portamento_switch",
+        "cc": 65,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Sound design",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/sound_design/arp_type",
+        "cc": 27,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Sound design",
+        "_usage": "0: Off; 1~16: Arp type"
+      },
+      {
+        "osc": "/sound_design/arp_gate",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound design"
+      },
+      {
+        "osc": "/sound_design/arp_speed",
+        "cc": 29,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Sound design"
+      },
+      {
+        "osc": "/sound_design/fm_algorithm",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound design"
+      },
+      {
+        "osc": "/sound_design/fm_modulation_amount",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound design"
+      },
+      {
+        "osc": "/sound_design/fm_modulator_frequency",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound design"
+      },
+      {
+        "osc": "/sound_design/fm_modulator_feedback",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound design"
+      },
+      {
+        "osc": "/effects/master_effect_1_assigned_parameter_1",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/master_effect_1_assigned_parameter_2",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/master_effect_1_assigned_parameter_3",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/master_effect_2_assigned_parameter",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/master_effect_3_assigned_parameter",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/single_effect_assigned_parameter_1",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/single_effect_assigned_parameter_2",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/single_effect_assigned_parameter_3",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/send_reverb_assigned_parameter_1",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/send_reverb_assigned_parameter_2",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/send_reverb_assigned_parameter_3",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/send_delay_assigned_parameter_1",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/send_delay_assigned_parameter_2",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/send_delay_assigned_parameter_3",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/mute_solo/mute",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mute / solo",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/mute_solo/solo",
+        "cc": 24,
+        "range": [
+          0,
+          11
+        ],
+        "orientation": "0-based",
+        "section": "Mute / solo",
+        "_usage": "0: Off; 1~11: Track 1...Track 11"
+      },
+      {
+        "osc": "/other/damper_pedal",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/sostenuto",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/other/expression_control",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

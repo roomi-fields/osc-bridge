@@ -1,0 +1,674 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/OlWZeeKMjfZcLTkuRMpf",
+      "preset_name": "Roland JU-06",
+      "imported_at": "2026-04-13",
+      "preset_id": "OlWZeeKMjfZcLTkuRMpf",
+      "revision": "6",
+      "author": "OldManZero"
+    },
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Roland/JU-06.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 65,
+    "cc_entries": 65,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "JU-06",
+    "vendor": "Roland",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/ju_06",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/general/modulation",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/lfo/rate",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/general/portamento_time",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/lfo/delay_time",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/general/expression_pedal",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/digitally_controlled_oscillator/dco_range",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Digitally controlled oscillator"
+      },
+      {
+        "osc": "/digitally_controlled_oscillator/dco_lfo_depth",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Digitally controlled oscillator"
+      },
+      {
+        "osc": "/digitally_controlled_oscillator/dco_pwm_level",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Digitally controlled oscillator"
+      },
+      {
+        "osc": "/digitally_controlled_oscillator/dco_pwm_source",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Digitally controlled oscillator"
+      },
+      {
+        "osc": "/digitally_controlled_oscillator/dco_pwm_sw",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Digitally controlled oscillator"
+      },
+      {
+        "osc": "/digitally_controlled_oscillator/dco_saw_sw",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Digitally controlled oscillator"
+      },
+      {
+        "osc": "/digitally_controlled_oscillator/dco_sub_level",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Digitally controlled oscillator"
+      },
+      {
+        "osc": "/digitally_controlled_oscillator/dco_noise_level",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Digitally controlled oscillator"
+      },
+      {
+        "osc": "/envelope/attack",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/decay",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/release",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/sustain",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/filter/hpf_cutoff",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/vcf_envelope_polarity",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/vcf_envelope_depth",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/vcf_lfo_depth",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/vcf_key_follow",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/amplifier/vca_envelope_sw",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier"
+      },
+      {
+        "osc": "/amplifier/vca_level",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier"
+      },
+      {
+        "osc": "/general/hold",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/filter/vcf_resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/vcf_cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/delay/time",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/feedback",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/general/assign_mode",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/bend_range",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/delay/level",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/general/chorus_sw",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/lfo_rate",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_delay_time",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/voice_mode",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dual_mode",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/2nd_voice_sel",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/range",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pwm",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pwm_adjustment",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pw_wave",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/square_wave",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sub",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/noise",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hpf_frequency",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/portamento",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/port_time",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/frequency",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_polarity",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_mod",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_mod",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/key_follow",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vca_control",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vca_level",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attack",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/decay",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sustain",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/release",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/chorus_1",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay_on_off",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay_time",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay_feedback",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

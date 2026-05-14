@@ -1,0 +1,842 @@
+{
+  "_sources": [
+    {
+      "type": "vendor-doc",
+      "url": "https://docs.beetlecrab.audio/tempera/midi.html",
+      "notes": "Tempera Owner's Manual — MIDI input page (CC table, Note mappings, Program Change behavior).",
+      "firmware": "2.2",
+      "imported_at": "2026-04-22"
+    }
+  ],
+  "_limitations": "CC and Note/PC only, as documented by the vendor. The vendor doc does not expose NRPN or SysEx parameters; preset management and bulk dump are not covered. To extend, sniff the device or wait for an updated implementation chart.",
+  "_coverage": {
+    "entries_total": 104,
+    "cc_entries": 104,
+    "sysex_commands": 0,
+    "note_commands": 3,
+    "pc_commands": 1
+  },
+  "device": {
+    "name": "Tempera",
+    "vendor": "Beetlecrab.audio",
+    "revision": "firmware 2.2 (2026-01-14)",
+    "osc_prefix": "/tempera",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [
+    {
+      "osc": "/canvas/load",
+      "_notes": "Switch current canvas. Sends MIDI Program Change on the device channel. Tempera loads the canvas whose alphabetical index in the current folder matches `program`.",
+      "args": [
+        {
+          "name": "program",
+          "type": "u7",
+          "range": [0, 127]
+        }
+      ],
+      "frame": [192, "{program}"]
+    },
+    {
+      "osc": "/emitters/place_by_cell",
+      "_notes": "Place an emitter at a grid cell via Note-On (alternative to CC 11). Notes 0-91 map column-by-column across the grid (8 rows per column, octave-shifted).",
+      "args": [
+        {
+          "name": "note",
+          "type": "u7",
+          "range": [0, 91]
+        },
+        {
+          "name": "velocity",
+          "type": "u7",
+          "range": [1, 127]
+        }
+      ],
+      "frame": [144, "{note}", "{velocity}"]
+    },
+    {
+      "osc": "/emitters/select_active_by_note",
+      "_notes": "Select the active emitter via Note-On (alternative to CC 10). Note 96 = Emitter 1, 97 = Emitter 2, 98 = Emitter 3, 99 = Emitter 4.",
+      "args": [
+        {
+          "name": "note",
+          "type": "u7",
+          "range": [96, 99]
+        }
+      ],
+      "frame": [144, "{note}", 127]
+    },
+    {
+      "osc": "/tracks/arm",
+      "_notes": "Arm a track for recording via Note-On. Note 100 = Track 1 ... 107 = Track 8. No CC equivalent is documented; this is the only way to arm tracks over MIDI.",
+      "args": [
+        {
+          "name": "note",
+          "type": "u7",
+          "range": [100, 107]
+        }
+      ],
+      "frame": [144, "{note}", 127]
+    }
+  ],
+  "cc_params": {
+    "channel": 0,
+    "_source": "Vendor doc https://docs.beetlecrab.audio/tempera/midi.html (firmware 2.2). Every entry reflects the official implementation table verbatim; ranges default to 0-127 unless the doc restricts them.",
+    "entries": [
+      {
+        "osc": "/modwheel",
+        "cc": 1,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "Standard modwheel; can be routed as a modulator source on Tempera."
+      },
+      {
+        "osc": "/emitters/active",
+        "cc": 10,
+        "range": [0, 3],
+        "orientation": "0-based",
+        "section": "Emitters — Global",
+        "_usage": "0 = blue (Emitter 1), 1 = Emitter 2, 2 = Emitter 3, 3 = Emitter 4."
+      },
+      {
+        "osc": "/emitters/place",
+        "cc": 11,
+        "range": [0, 63],
+        "orientation": "0-based",
+        "section": "Emitters — Global",
+        "_usage": "Place the active emitter at grid cell 0-63."
+      },
+      {
+        "osc": "/emitters/remove",
+        "cc": 12,
+        "range": [0, 64],
+        "orientation": "0-based",
+        "section": "Emitters — Global",
+        "_usage": "0-63 remove emitter at cell; 64 clears all placed emitters."
+      },
+      {
+        "osc": "/adsr/attack",
+        "cc": 13,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "ADSR"
+      },
+      {
+        "osc": "/adsr/decay",
+        "cc": 14,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "ADSR"
+      },
+      {
+        "osc": "/adsr/sustain",
+        "cc": 15,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "ADSR"
+      },
+      {
+        "osc": "/adsr/release",
+        "cc": 16,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "ADSR"
+      },
+      {
+        "osc": "/reverb/size",
+        "cc": 17,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/color",
+        "cc": 18,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/mix",
+        "cc": 19,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/delay/feedback",
+        "cc": 20,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/time",
+        "cc": 21,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/color",
+        "cc": 22,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/mix",
+        "cc": 23,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/filter/cutoff",
+        "cc": 24,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 25,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/chorus/depth",
+        "cc": 26,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/chorus/speed",
+        "cc": 27,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/chorus/flange",
+        "cc": 28,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/chorus/mix",
+        "cc": 29,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/tracks/1/volume",
+        "cc": 30,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Tracks"
+      },
+      {
+        "osc": "/tracks/2/volume",
+        "cc": 31,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Tracks"
+      },
+      {
+        "osc": "/tracks/3/volume",
+        "cc": 33,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Tracks",
+        "_usage": "CC 32 is intentionally skipped by the vendor."
+      },
+      {
+        "osc": "/tracks/4/volume",
+        "cc": 34,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Tracks"
+      },
+      {
+        "osc": "/tracks/5/volume",
+        "cc": 35,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Tracks"
+      },
+      {
+        "osc": "/tracks/6/volume",
+        "cc": 36,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Tracks"
+      },
+      {
+        "osc": "/tracks/7/volume",
+        "cc": 37,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Tracks"
+      },
+      {
+        "osc": "/tracks/8/volume",
+        "cc": 39,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Tracks",
+        "_usage": "CC 38 is intentionally skipped by the vendor."
+      },
+      {
+        "osc": "/emitter_1/volume",
+        "cc": 40,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 1"
+      },
+      {
+        "osc": "/emitter_1/grain_length_cell",
+        "cc": 41,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 1"
+      },
+      {
+        "osc": "/emitter_1/grain_length_note",
+        "cc": 42,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 1"
+      },
+      {
+        "osc": "/emitter_1/grain_density",
+        "cc": 43,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 1"
+      },
+      {
+        "osc": "/emitter_1/grain_shape",
+        "cc": 44,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 1"
+      },
+      {
+        "osc": "/emitter_1/grain_shape_attack",
+        "cc": 45,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 1"
+      },
+      {
+        "osc": "/emitter_1/grain_pan",
+        "cc": 46,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Emitter 1"
+      },
+      {
+        "osc": "/emitter_1/grain_tune_spread",
+        "cc": 47,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 1"
+      },
+      {
+        "osc": "/emitter_1/octave",
+        "cc": 48,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 1"
+      },
+      {
+        "osc": "/emitter_1/relative_x",
+        "cc": 49,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Emitter 1"
+      },
+      {
+        "osc": "/emitter_1/relative_y",
+        "cc": 50,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Emitter 1"
+      },
+      {
+        "osc": "/emitter_1/spray_x",
+        "cc": 51,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 1"
+      },
+      {
+        "osc": "/emitter_1/spray_y",
+        "cc": 52,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 1"
+      },
+      {
+        "osc": "/emitter_1/tone_filter_width",
+        "cc": 53,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 1"
+      },
+      {
+        "osc": "/emitter_1/tone_filter_center",
+        "cc": 54,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Emitter 1"
+      },
+      {
+        "osc": "/emitter_1/effects_send",
+        "cc": 55,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 1"
+      },
+      {
+        "osc": "/emitter_2/volume",
+        "cc": 56,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 2"
+      },
+      {
+        "osc": "/emitter_2/grain_length_cell",
+        "cc": 57,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 2"
+      },
+      {
+        "osc": "/emitter_2/grain_length_note",
+        "cc": 58,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 2"
+      },
+      {
+        "osc": "/emitter_2/grain_density",
+        "cc": 59,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 2"
+      },
+      {
+        "osc": "/emitter_2/grain_shape",
+        "cc": 60,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 2"
+      },
+      {
+        "osc": "/emitter_2/grain_shape_attack",
+        "cc": 61,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 2"
+      },
+      {
+        "osc": "/emitter_2/grain_pan",
+        "cc": 62,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Emitter 2"
+      },
+      {
+        "osc": "/emitter_2/grain_tune_spread",
+        "cc": 63,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 2"
+      },
+      {
+        "osc": "/damper",
+        "cc": 64,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "Standard MIDI damper/sustain pedal. Values ≥ 64 engage the pedal."
+      },
+      {
+        "osc": "/emitter_2/octave",
+        "cc": 65,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 2",
+        "_usage": "CC 66 is intentionally skipped by the vendor."
+      },
+      {
+        "osc": "/emitter_2/relative_x",
+        "cc": 67,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Emitter 2"
+      },
+      {
+        "osc": "/emitter_2/relative_y",
+        "cc": 68,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Emitter 2"
+      },
+      {
+        "osc": "/emitter_2/spray_x",
+        "cc": 69,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 2"
+      },
+      {
+        "osc": "/emitter_2/spray_y",
+        "cc": 70,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 2",
+        "_usage": "CC 71 is intentionally skipped by the vendor."
+      },
+      {
+        "osc": "/emitter_2/tone_filter_width",
+        "cc": 72,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 2"
+      },
+      {
+        "osc": "/emitter_2/tone_filter_center",
+        "cc": 73,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Emitter 2",
+        "_usage": "CC 74 is intentionally skipped by the vendor."
+      },
+      {
+        "osc": "/emitter_2/effects_send",
+        "cc": 75,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 2"
+      },
+      {
+        "osc": "/emitter_3/volume",
+        "cc": 76,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 3"
+      },
+      {
+        "osc": "/emitter_3/grain_length_cell",
+        "cc": 77,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 3"
+      },
+      {
+        "osc": "/emitter_3/grain_length_note",
+        "cc": 78,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 3"
+      },
+      {
+        "osc": "/emitter_3/grain_density",
+        "cc": 79,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 3"
+      },
+      {
+        "osc": "/emitter_3/grain_shape",
+        "cc": 80,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 3"
+      },
+      {
+        "osc": "/emitter_3/grain_shape_attack",
+        "cc": 81,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 3"
+      },
+      {
+        "osc": "/emitter_3/grain_pan",
+        "cc": 82,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Emitter 3"
+      },
+      {
+        "osc": "/emitter_3/grain_tune_spread",
+        "cc": 83,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 3"
+      },
+      {
+        "osc": "/emitter_3/octave",
+        "cc": 84,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 3"
+      },
+      {
+        "osc": "/emitter_3/relative_x",
+        "cc": 85,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Emitter 3"
+      },
+      {
+        "osc": "/emitter_3/relative_y",
+        "cc": 86,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Emitter 3"
+      },
+      {
+        "osc": "/emitter_3/spray_x",
+        "cc": 87,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 3"
+      },
+      {
+        "osc": "/emitter_3/spray_y",
+        "cc": 88,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 3"
+      },
+      {
+        "osc": "/emitter_3/tone_filter_width",
+        "cc": 89,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 3"
+      },
+      {
+        "osc": "/emitter_3/tone_filter_center",
+        "cc": 90,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Emitter 3"
+      },
+      {
+        "osc": "/emitter_3/effects_send",
+        "cc": 91,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 3"
+      },
+      {
+        "osc": "/emitter_4/volume",
+        "cc": 92,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 4"
+      },
+      {
+        "osc": "/emitter_4/grain_length_cell",
+        "cc": 93,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 4"
+      },
+      {
+        "osc": "/emitter_4/grain_length_note",
+        "cc": 94,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 4"
+      },
+      {
+        "osc": "/emitter_4/grain_density",
+        "cc": 95,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 4"
+      },
+      {
+        "osc": "/emitter_4/grain_shape",
+        "cc": 96,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 4"
+      },
+      {
+        "osc": "/emitter_4/grain_shape_attack",
+        "cc": 97,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 4"
+      },
+      {
+        "osc": "/emitter_4/grain_pan",
+        "cc": 98,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Emitter 4"
+      },
+      {
+        "osc": "/emitter_4/grain_tune_spread",
+        "cc": 99,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 4"
+      },
+      {
+        "osc": "/emitter_4/octave",
+        "cc": 102,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 4",
+        "_usage": "CCs 100 and 101 are intentionally skipped by the vendor."
+      },
+      {
+        "osc": "/emitter_4/relative_x",
+        "cc": 103,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Emitter 4"
+      },
+      {
+        "osc": "/emitter_4/relative_y",
+        "cc": 104,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Emitter 4"
+      },
+      {
+        "osc": "/emitter_4/spray_x",
+        "cc": 105,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 4"
+      },
+      {
+        "osc": "/emitter_4/spray_y",
+        "cc": 106,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 4"
+      },
+      {
+        "osc": "/emitter_4/tone_filter_width",
+        "cc": 107,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 4"
+      },
+      {
+        "osc": "/emitter_4/tone_filter_center",
+        "cc": 108,
+        "range": [0, 127],
+        "orientation": "centered",
+        "section": "Emitter 4"
+      },
+      {
+        "osc": "/emitter_4/effects_send",
+        "cc": 109,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Emitter 4"
+      },
+      {
+        "osc": "/modulators/1/size",
+        "cc": 110,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Modulators"
+      },
+      {
+        "osc": "/modulators/2/size",
+        "cc": 111,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Modulators"
+      },
+      {
+        "osc": "/modulators/3/size",
+        "cc": 112,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Modulators"
+      },
+      {
+        "osc": "/modulators/4/size",
+        "cc": 113,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Modulators"
+      },
+      {
+        "osc": "/modulators/5/size",
+        "cc": 114,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Modulators"
+      },
+      {
+        "osc": "/modulators/6/size",
+        "cc": 115,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Modulators"
+      },
+      {
+        "osc": "/modulators/7/size",
+        "cc": 116,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Modulators"
+      },
+      {
+        "osc": "/modulators/8/size",
+        "cc": 117,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Modulators"
+      },
+      {
+        "osc": "/modulators/9/size",
+        "cc": 118,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Modulators"
+      },
+      {
+        "osc": "/modulators/10/size",
+        "cc": 119,
+        "range": [0, 127],
+        "orientation": "0-based",
+        "section": "Modulators"
+      }
+    ]
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}",
+    "program_change": "/program_change {program} {channel}"
+  },
+  "midi_out": {},
+  "replies": {}
+}

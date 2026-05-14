@@ -1,0 +1,1382 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Supercritical/Redshift 6.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 116,
+    "cc_entries": 19,
+    "nrpn_entries": 116,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Redshift 6",
+    "vendor": "Supercritical",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/redshift_6",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/part/drive",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 1,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/character",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/dco_osc_1_wave",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: Saw; 1: Pulse; 2: Saw R; 3: Pulse R; 4: None"
+      },
+      {
+        "osc": "/part/dco_osc_2_wave",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: Saw; 1: Pulse; 2: Saw R; 3: Pulse R; 4: None"
+      },
+      {
+        "osc": "/part/dco_osc_1_pw",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/dco_osc_2_pw",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/dco_osc_2_tune",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/dco_stack",
+        "cc": 75,
+        "range": [
+          1,
+          8
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/dco_detune",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/dco_balance",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/dco_noise_level",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/vcf_cutoff",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 0,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/vcf_resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 1,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/vcf_env_amount",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/vcf_filter_mode",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/vcf_key_follow",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/vcf_vel_vcf_env",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/vcf_filter_engine",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: CLASSIC; 1: MIRROR TWINS"
+      },
+      {
+        "osc": "/part/amp_gain",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/amp_pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 3,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/amp_vel_amp",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/perform_pitch",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/perform_glide",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/perform_glide_mode",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: Normal; 1: Legato"
+      },
+      {
+        "osc": "/part/parts_volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 6,
+        "nrpn_lsb": 0,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/parts_polyphony",
+        "nrpn_msb": 6,
+        "nrpn_lsb": 1,
+        "range": [
+          1,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/parts_unison",
+        "nrpn_msb": 6,
+        "nrpn_lsb": 2,
+        "range": [
+          1,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/parts_unison_pan_spread",
+        "nrpn_msb": 6,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/parts_paraphony",
+        "nrpn_msb": 6,
+        "nrpn_lsb": 4,
+        "range": [
+          1,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/parts_trigger_mode",
+        "nrpn_msb": 6,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: Legato; 1: Retrig"
+      },
+      {
+        "osc": "/part/parts_part_enabled",
+        "nrpn_msb": 6,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: False; 1: True"
+      },
+      {
+        "osc": "/part/parts_output",
+        "nrpn_msb": 6,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: Main; 1: Aux1; 2: Aux2"
+      },
+      {
+        "osc": "/part/parts_voices_mode",
+        "nrpn_msb": 6,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: Dynamic; 1: Reserve"
+      },
+      {
+        "osc": "/global/fx_enabled",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: False; 1: True"
+      },
+      {
+        "osc": "/global/fx_engine",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: STAGE REVERB; 1: X-DELAY; 2: VINTAGE CHORUS; 3: CHORUS+"
+      },
+      {
+        "osc": "/global/clock_bpm",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 0,
+        "range": [
+          100,
+          2500
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/part/key_dco_key_follow",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/key_lowest_key",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/key_highest_key",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/wheel_pitch_bend_up",
+        "nrpn_msb": 14,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          24
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/wheel_pitch_bend_down",
+        "nrpn_msb": 14,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          24
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/amp_attack",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 19,
+        "nrpn_lsb": 0,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/amp_decay",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 19,
+        "nrpn_lsb": 1,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/amp_sustain",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 19,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/amp_release",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 19,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/amp_reset",
+        "nrpn_msb": 19,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/part/vcf_attack",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 20,
+        "nrpn_lsb": 0,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/vcf_decay",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 20,
+        "nrpn_lsb": 1,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/vcf_sustain",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 20,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/vcf_release",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 20,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/vcf_reset",
+        "nrpn_msb": 20,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/part/dco_attack",
+        "nrpn_msb": 21,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/dco_decay",
+        "nrpn_msb": 21,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/dco_sustain",
+        "nrpn_msb": 21,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/dco_release",
+        "nrpn_msb": 21,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/dco_reset",
+        "nrpn_msb": 21,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/part/aux_attack",
+        "nrpn_msb": 22,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/aux_decay",
+        "nrpn_msb": 22,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/aux_sustain",
+        "nrpn_msb": 22,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/aux_release",
+        "nrpn_msb": 22,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/aux_reset",
+        "nrpn_msb": 22,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/part/lfo_1_rate",
+        "nrpn_msb": 23,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/lfo_1_clock_multiplier",
+        "nrpn_msb": 23,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          19
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: 8/1; 1: 4/1; 2: 2/1; 3: 1/1; 4: 1/2; 5: 1/4.; 6: 1/2t; 7: 1/4; 8: 1/8.; 9: 1/4t; 10: 1/8; 11: 1/16.; 12: 1/8t; 13: 1/16; 14: 1/32.; 15: 1/16t; 16: "
+      },
+      {
+        "osc": "/part/lfo_1_wave",
+        "nrpn_msb": 23,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: Tri; 1: Sqr; 2: Sin; 3: Saw; 4: RevSaw; 5: Exp; 6: RevExp; 7: Log; 8: RevLog; 9: S&H"
+      },
+      {
+        "osc": "/part/lfo_1_sync",
+        "nrpn_msb": 23,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: None; 1: NoteOn; 2: NoteOff; 3: Lfo1; 4: Lfo2; 5: Lfo3; 6: Lfo4; 7: Clock"
+      },
+      {
+        "osc": "/part/lfo_1_reset_phase",
+        "nrpn_msb": 23,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/lfo_2_rate",
+        "nrpn_msb": 24,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/lfo_2_clock_multiplier",
+        "nrpn_msb": 24,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          19
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: 8/1; 1: 4/1; 2: 2/1; 3: 1/1; 4: 1/2; 5: 1/4.; 6: 1/2t; 7: 1/4; 8: 1/8.; 9: 1/4t; 10: 1/8; 11: 1/16.; 12: 1/8t; 13: 1/16; 14: 1/32.; 15: 1/16t; 16: "
+      },
+      {
+        "osc": "/part/lfo_2_wave",
+        "nrpn_msb": 24,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: Tri; 1: Sqr; 2: Sin; 3: Saw; 4: RevSaw; 5: Exp; 6: RevExp; 7: Log; 8: RevLog; 9: S&H"
+      },
+      {
+        "osc": "/part/lfo_2_sync",
+        "nrpn_msb": 24,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: None; 1: NoteOn; 2: NoteOff; 3: Lfo1; 4: Lfo2; 5: Lfo3; 6: Lfo4; 7: Clock"
+      },
+      {
+        "osc": "/part/lfo_2_reset_phase",
+        "nrpn_msb": 24,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/lfo_3_rate",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/lfo_3_clock_multiplier",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          19
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: 8/1; 1: 4/1; 2: 2/1; 3: 1/1; 4: 1/2; 5: 1/4.; 6: 1/2t; 7: 1/4; 8: 1/8.; 9: 1/4t; 10: 1/8; 11: 1/16.; 12: 1/8t; 13: 1/16; 14: 1/32.; 15: 1/16t; 16: "
+      },
+      {
+        "osc": "/part/lfo_3_wave",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: Tri; 1: Sqr; 2: Sin; 3: Saw; 4: RevSaw; 5: Exp; 6: RevExp; 7: Log; 8: RevLog; 9: S&H"
+      },
+      {
+        "osc": "/part/lfo_3_sync",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: None; 1: NoteOn; 2: NoteOff; 3: Lfo1; 4: Lfo2; 5: Lfo3; 6: Lfo4; 7: Clock"
+      },
+      {
+        "osc": "/part/lfo_3_reset_phase",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/lfo_4_rate",
+        "nrpn_msb": 26,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/lfo_4_clock_multiplier",
+        "nrpn_msb": 26,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          19
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: 8/1; 1: 4/1; 2: 2/1; 3: 1/1; 4: 1/2; 5: 1/4.; 6: 1/2t; 7: 1/4; 8: 1/8.; 9: 1/4t; 10: 1/8; 11: 1/16.; 12: 1/8t; 13: 1/16; 14: 1/32.; 15: 1/16t; 16: "
+      },
+      {
+        "osc": "/part/lfo_4_wave",
+        "nrpn_msb": 26,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: Tri; 1: Sqr; 2: Sin; 3: Saw; 4: RevSaw; 5: Exp; 6: RevExp; 7: Log; 8: RevLog; 9: S&H"
+      },
+      {
+        "osc": "/part/lfo_4_sync",
+        "nrpn_msb": 26,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: None; 1: NoteOn; 2: NoteOff; 3: Lfo1; 4: Lfo2; 5: Lfo3; 6: Lfo4; 7: Clock"
+      },
+      {
+        "osc": "/part/lfo_4_reset_phase",
+        "nrpn_msb": 26,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/seq_enabled",
+        "nrpn_msb": 27,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: False; 1: True"
+      },
+      {
+        "osc": "/part/seq_engine",
+        "nrpn_msb": 27,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: ClassicArp"
+      },
+      {
+        "osc": "/part/arp_clock_multiplier",
+        "nrpn_msb": 28,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          19
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: 8/1; 1: 4/1; 2: 2/1; 3: 1/1; 4: 1/2; 5: 1/4.; 6: 1/2t; 7: 1/4; 8: 1/8.; 9: 1/4t; 10: 1/8; 11: 1/16.; 12: 1/8t; 13: 1/16; 14: 1/32.; 15: 1/16t; 16: "
+      },
+      {
+        "osc": "/part/arp_gate",
+        "nrpn_msb": 28,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/arp_mode",
+        "nrpn_msb": 28,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: Up; 1: Down; 2: UpDown; 3: UpDown2; 4: Played; 5: Random"
+      },
+      {
+        "osc": "/part/arp_octaves",
+        "nrpn_msb": 28,
+        "nrpn_lsb": 3,
+        "range": [
+          1,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/arp_sync",
+        "nrpn_msb": 28,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: False; 1: True"
+      },
+      {
+        "osc": "/part/vcf_mirror_twins_separation",
+        "nrpn_msb": 30,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/vcf_mirror_twins_depth",
+        "nrpn_msb": 30,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Part"
+      },
+      {
+        "osc": "/part/vcf_mirror_twins_twin",
+        "nrpn_msb": 30,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part",
+        "_usage": "0: False; 1: True"
+      },
+      {
+        "osc": "/global/fx_stage_reverb_decay",
+        "nrpn_msb": 31,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_stage_reverb_level",
+        "nrpn_msb": 31,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_stage_reverb_damping",
+        "nrpn_msb": 31,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_stage_reverb_hi_cut",
+        "nrpn_msb": 31,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_stage_reverb_lo_cut",
+        "nrpn_msb": 31,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_stage_reverb_predelay",
+        "nrpn_msb": 31,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_stage_reverb_stage",
+        "nrpn_msb": 31,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Shower; 1: Club; 2: Arena; 3: Canyon; 4: Cosmos"
+      },
+      {
+        "osc": "/global/fx_stage_reverb_chorus",
+        "nrpn_msb": 31,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Off; 1: I; 2: II; 3: I + II"
+      },
+      {
+        "osc": "/global/fx_vintage_chorus_mode",
+        "nrpn_msb": 32,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Off; 1: I; 2: II; 3: I + II"
+      },
+      {
+        "osc": "/global/fx_chorus_mix",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_chorus_delay",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_chorus_depth",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_chorus_rate",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_chorus_feedback",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_chorus_tone",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_chorus_mode",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: SqrWide; 1: SinWide; 2: Sqr; 3: Sin"
+      },
+      {
+        "osc": "/global/fx_x_delay_time",
+        "nrpn_msb": 34,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_x_delay_bpm_div",
+        "nrpn_msb": 34,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: 1/32; 1: 1/16t; 2: 1/32.; 3: 1/16; 4: 1/8t; 5: 1/16.; 6: 1/8; 7: 1/4t; 8: 1/8.; 9: 1/4; 10: 1/2t; 11: 1/4.; 12: 1/2"
+      },
+      {
+        "osc": "/global/fx_x_delay_level",
+        "nrpn_msb": 34,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_x_delay_feedback",
+        "nrpn_msb": 34,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_x_delay_sync",
+        "nrpn_msb": 34,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: False; 1: True"
+      },
+      {
+        "osc": "/global/fx_x_delay_x_pan",
+        "nrpn_msb": 34,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_x_delay_time_offset",
+        "nrpn_msb": 34,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_x_delay_damping",
+        "nrpn_msb": 34,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/fx_x_delay_chorus",
+        "nrpn_msb": 34,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Off; 1: I; 2: II; 3: I + II"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

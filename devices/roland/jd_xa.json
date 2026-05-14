@@ -1,0 +1,883 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Roland/JD-XA.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 91,
+    "cc_entries": 75,
+    "nrpn_entries": 16,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "JD-XA",
+    "vendor": "Roland",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/jd_xa",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/modulation",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc2_pwm",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc2_pw",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/portamento_time",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/panpot",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/expression",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/reverb_level",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/delay_level",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/tfx1_control",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/tfx2_control",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/lfo1_rate",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/lfo2_rate",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/lfo3_rate",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc1_pitch",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc2_pitch",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc3_pitch",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc1_fine",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc2_fine",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc3_fine",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc1_cross_mod",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc1_p_env_depth",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc2_p_env_depth",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc3_p_env_depth",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc1_level",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc2_level",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/aux_level",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/hold",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/portamento",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/atck_pitch_env",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/release_time",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/attack_time",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/decay_time",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/vibrato_rate",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/vibrato_depth",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/vibrato_delay",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/tfx1_select",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/tfx2_select",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/delay_time",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/mic_level",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/tfx_reverb_send_lev",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/lfo_pitch_depth",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/lfo_filter_depth",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/lfo_amp_depth",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/decay_pitch_env",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/nrpn_msb",
+        "cc": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/nrpn_lsb",
+        "cc": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/rpn_msb",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/rpn_lsb",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc1_cutoff",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/cutoff_fine_osc2_cutoff",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc3_cutoff",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc1_resonance",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc2_resonance",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc3_resonance",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc1_filt_env_depth",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc2_filt_env_depth",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc3_filt_env_depth",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc1_key_follow",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc2_key_follow_fine",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc3_key_follow",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc1_hpf_cutoff",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/drive_osc2_hpf_cutoff",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/osc3_hpf_cutoff",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/amp_level",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/all_sound_off",
+        "cc": 120,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/reset_all_controllers",
+        "cc": 121,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/local_on_off",
+        "cc": 122,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/omni_off",
+        "cc": 124,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/omni_on",
+        "cc": 125,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/mono",
+        "cc": 126,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/poly",
+        "cc": 127,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/p1_lfo_shape",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/p2_lfo_shape",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/p3_lfo_shape",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/p1_lfo_pitch_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/p2_lfo_pitch_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/p3_lfo_pitch_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/p1_lfo_filter_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/p2_lfo_filter_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 19,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/p3_lfo_filter_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/p1_lfo_amp_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 21,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/p2_lfo_amp_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 22,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/p3_lfo_amp_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 23,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/analog_pulse_width",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 37,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/p1_envelope",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 124,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/p2_envelope",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 125,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/p3_envelope",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 126,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

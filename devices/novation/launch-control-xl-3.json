@@ -1,0 +1,780 @@
+{
+  "_sources": [
+    {
+      "type": "vendor-doc",
+      "url": "https://userguides.novationmusic.com/hc/en-gb/sections/27840433446546-Launch-Control-XL-3-programmer-s-reference-guide",
+      "notes": "Novation Launch Control XL 3 Programmer's Reference Guide, firmware 1.x",
+      "imported_at": "2026-04-13"
+    }
+  ],
+  "device": {
+    "name": "Novation Launch Control XL 3",
+    "vendor": "Novation",
+    "revision": "firmware 1.x (2024-2026)",
+    "osc_prefix": "/lcxl3",
+    "manufacturer_id": [
+      0,
+      32,
+      41
+    ],
+    "device_id": [
+      2,
+      21
+    ],
+    "rate_limit_hz": 0
+  },
+  "sysex": {
+    "header": [
+      240,
+      0,
+      32,
+      41,
+      2,
+      21
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/daw_mode/enable",
+      "args": [],
+      "frame": [
+        2,
+        127
+      ]
+    },
+    {
+      "osc": "/daw_mode/disable",
+      "args": [],
+      "frame": [
+        2,
+        0
+      ]
+    },
+    {
+      "osc": "/led/rgb",
+      "args": [
+        {
+          "name": "control",
+          "type": "u7"
+        },
+        {
+          "name": "r",
+          "type": "u7"
+        },
+        {
+          "name": "g",
+          "type": "u7"
+        },
+        {
+          "name": "b",
+          "type": "u7"
+        }
+      ],
+      "frame": [
+        1,
+        83,
+        "{control}",
+        "{r}",
+        "{g}",
+        "{b}"
+      ]
+    },
+    {
+      "osc": "/display/configure",
+      "args": [
+        {
+          "name": "target",
+          "type": "u7"
+        },
+        {
+          "name": "config",
+          "type": "u7"
+        }
+      ],
+      "frame": [
+        4,
+        "{target}",
+        "{config}"
+      ]
+    },
+    {
+      "osc": "/display/text",
+      "args": [
+        {
+          "name": "target",
+          "type": "u7"
+        },
+        {
+          "name": "field",
+          "type": "u7"
+        },
+        {
+          "name": "text",
+          "type": "string"
+        }
+      ],
+      "frame": [
+        6,
+        "{target}",
+        "{field}",
+        "{text:ascii}"
+      ]
+    },
+    {
+      "osc": "/display/bitmap",
+      "_note": "bitmap_data must be exactly 1216 bytes (19 per row \u00d7 64 rows) supplied via {data:bytes}. Target 32 = stationary, 33 = global temporary.",
+      "args": [
+        {
+          "name": "target",
+          "type": "u7"
+        },
+        {
+          "name": "data",
+          "type": "string"
+        }
+      ],
+      "frame": [
+        9,
+        "{target}",
+        "{data:bytes}"
+      ]
+    }
+  ],
+  "cc_params": {
+    "_note": "Feature controls (sent to DAW-in port on channel 7 = channel index 6). Query a current value by sending the same CC on channel 8 (pass 7 as second OSC arg for a one-shot query). All entries marked _nonvolatile persist across power cycles.",
+    "channel": 6,
+    "entries": [
+      {
+        "osc": "/feature/surface_mode",
+        "cc": 30,
+        "range": [
+          1,
+          29
+        ],
+        "orientation": "0-based",
+        "_values": "1=DAW Mixer, 2=DAW Control, 6-9=Custom 1-4, 18-29=Custom 5-16"
+      },
+      {
+        "osc": "/feature/shift",
+        "cc": 63,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/feature/row1/relative",
+        "cc": 69,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/feature/row2/relative",
+        "cc": 72,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/feature/row3/relative",
+        "cc": 73,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/feature/fader_pickup",
+        "cc": 70,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/feature/touch_events",
+        "cc": 71,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/feature/led_brightness",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/feature/screen_brightness",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/feature/display_timeout",
+        "cc": 113,
+        "range": [
+          0,
+          99
+        ],
+        "_note": "1/10 sec units, minimum 1 sec at 0"
+      },
+      {
+        "osc": "/feature/out2_midi_thru",
+        "cc": 120,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/feature/global_midi_channel",
+        "cc": 100,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/led/palette/fader/1",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/fader/2",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/fader/3",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/fader/4",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/fader/5",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/fader/6",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/fader/7",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/fader/8",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row1/1",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row1/2",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row1/3",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row1/4",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row1/5",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row1/6",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row1/7",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row1/8",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row2/1",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row2/2",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row2/3",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row2/4",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row2/5",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row2/6",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row2/7",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row2/8",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row3/1",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row3/2",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row3/3",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row3/4",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row3/5",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row3/6",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row3/7",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/encoder/row3/8",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/solo_arm/1",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/solo_arm/2",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/solo_arm/3",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/solo_arm/4",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/solo_arm/5",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/solo_arm/6",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/solo_arm/7",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/solo_arm/8",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/mute_select/1",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/mute_select/2",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/mute_select/3",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/mute_select/4",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/mute_select/5",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/mute_select/6",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/mute_select/7",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/mute_select/8",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/solo_arm_toggle",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/mute_select_toggle",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/settings",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/track_prev",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/track_next",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/page_up",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/page_down",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/record",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      },
+      {
+        "osc": "/led/palette/play",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "channel": 0
+      }
+    ]
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": [
+    {
+      "match_frame": [
+        9,
+        127
+      ],
+      "emit_osc": "/display/bitmap/ack"
+    }
+  ]
+}

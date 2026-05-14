@@ -1,0 +1,192 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Novation/Bass Station Rack.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 16,
+    "cc_entries": 16,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Bass Station Rack",
+    "vendor": "Novation",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/bass_station_rack",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/mod_wheel",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/breath_control",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/filter_cutoff",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/filter_res",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/filter_mod_depth",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env1_attack",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env1_decay",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env1_sustain",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env1_release",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env1_velocity",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env2_attack",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env2_decay",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env2_sustain",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env2_release",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env2_velocity",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

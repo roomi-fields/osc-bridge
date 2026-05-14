@@ -1,0 +1,1255 @@
+{
+  "_sources": [
+    {
+      "type": "hardware-verified-partial",
+      "url": "https://github.com/roomi-fields/osc-bridge",
+      "notes": "RE session 2026-04-19 on fw 2.0.3.1411. Confirmed on device: SysEx framing 00 20 6B 06 01, opcode 0x19 (GetPreset) with 0x52/0x15/0x16/0x17 chunked reply (1600-byte preset body, round-trip 0 diffs validated), opcode 0x42/0x43 (global option set/get) per MCC traffic, template upload protocol (52 ACKs 0x18). See matrixbrute project docs for opcode map.",
+      "imported_at": "2026-04-19",
+      "firmware_version": "2.0.3.1411"
+    },
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/stLYyPgVmZQpY9tPh5U2",
+      "preset_name": "MatrixBrute",
+      "imported_at": "2026-04-13",
+      "notes": "Source of the 78 CC entries. Ranges and orientations reflect Electra user-supplied labels."
+    }
+  ],
+  "_coverage": {
+    "entries_total": 119,
+    "cc_entries": 78,
+    "sysex_commands": 2,
+    "sysex_params_global_options": 39,
+    "sysex_replies": 2
+  },
+  "device": {
+    "name": "MatrixBrute",
+    "vendor": "Arturia",
+    "revision": "fw 2.0.3.1411",
+    "osc_prefix": "/matrixbrute",
+    "manufacturer_id": [
+      0,
+      32,
+      107
+    ],
+    "device_id": [
+      6,
+      1
+    ],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240,
+      0,
+      32,
+      107,
+      6,
+      1
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/preset/metadata/get",
+      "args": [],
+      "frame": [
+        "{seq}",
+        3,
+        25,
+        0,
+        0,
+        0
+      ],
+      "notes": "BruteGetPreset 0x19 with bank=0 preset=0 variant=0. MB replies with a 45-byte frame op=0x52 msg_type=0x23 carrying the 16-byte ASCII name of the currently active preset (name at offset 21). Validated on fw 2.0.3."
+    },
+    {
+      "osc": "/preset/body/dump",
+      "args": [
+        {
+          "name": "bank",
+          "type": "u7"
+        },
+        {
+          "name": "preset",
+          "type": "u7"
+        }
+      ],
+      "frame": [
+        "{seq}",
+        3,
+        25,
+        "{bank}",
+        "{preset}",
+        1
+      ],
+      "notes": "BruteGetPreset 0x19 variant=1. MB replies with 0x52 metadata + 0x15 TemplateStart + 49×0x16 TemplateChunk (32 B payload each) + 1×0x17 TemplateLastChunk (32 B) = 1600 B preset body. Each chunk expects a host 0x18 ack; reassembly and ack handling are NOT done by the declarative engine — use the matrixbrute plugin or the reference script `scripts/capture_slot.sh` in the matrixbrute project. Round-trip validated 2026-04-19."
+    }
+  ],
+  "params": {
+    "get_frame": [
+      "{seq}",
+      1,
+      67,
+      "{id}"
+    ],
+    "set_frame": [
+      "{seq}",
+      2,
+      66,
+      "{id}",
+      "{value}"
+    ],
+    "value_type": "u7",
+    "_notes": "Global option read/write via 0x42 kSetGlobalOption / 0x43 kGetGlobalOption. Wire idx = option number directly (e.g. MCC uses idx=0x26 for kOptLocalControl = option 38). Firmware gates the post-write hook on idx >= 0x20, so options 0-31 may be writable in RAM but without full side effects. Options 32-65 are the user-settable range (all empirically safe to flip per MCC behaviour).",
+    "entries": [
+      {
+        "osc": "/option/x_sync_mode",
+        "id": 4,
+        "range": [
+          0,
+          3
+        ],
+        "section": "Internal",
+        "_name": "kOptXSyncMode"
+      },
+      {
+        "osc": "/option/ioc_replay_enable",
+        "id": 5,
+        "range": [
+          0,
+          1
+        ],
+        "section": "Internal",
+        "_name": "kOptIOCReplayEnable"
+      },
+      {
+        "osc": "/option/main_to_ioc_enable",
+        "id": 6,
+        "range": [
+          0,
+          1
+        ],
+        "section": "Internal",
+        "_name": "kOptMain2IOCEnable"
+      },
+      {
+        "osc": "/option/main_to_voice_enable",
+        "id": 7,
+        "range": [
+          0,
+          1
+        ],
+        "section": "Internal",
+        "_name": "kOptMain2VoiceEnable"
+      },
+      {
+        "osc": "/option/ioc_to_main_enable",
+        "id": 8,
+        "range": [
+          0,
+          1
+        ],
+        "section": "Internal",
+        "_name": "kOptIOC2MainEnable"
+      },
+      {
+        "osc": "/option/midi_channel_in",
+        "id": 32,
+        "range": [
+          0,
+          15
+        ],
+        "section": "MIDI",
+        "_name": "kOptMidiChannelIn"
+      },
+      {
+        "osc": "/option/midi_channel_out",
+        "id": 33,
+        "range": [
+          0,
+          15
+        ],
+        "section": "MIDI",
+        "_name": "kOptMidiChannelOut"
+      },
+      {
+        "osc": "/option/midi_automation_in",
+        "id": 34,
+        "range": [
+          0,
+          1
+        ],
+        "section": "MIDI",
+        "_name": "kOptMidiAutomationIn"
+      },
+      {
+        "osc": "/option/midi_automation_out",
+        "id": 35,
+        "range": [
+          0,
+          1
+        ],
+        "section": "MIDI",
+        "_name": "kOptMidiAutomationOut"
+      },
+      {
+        "osc": "/option/midi_ctrl_enable",
+        "id": 36,
+        "range": [
+          0,
+          1
+        ],
+        "section": "MIDI",
+        "_name": "kOptMidiCtrlEnable"
+      },
+      {
+        "osc": "/option/midi_out_select",
+        "id": 37,
+        "range": [
+          0,
+          2
+        ],
+        "section": "MIDI",
+        "_name": "kOptMidiOutSelect"
+      },
+      {
+        "osc": "/option/local_control",
+        "id": 38,
+        "range": [
+          0,
+          1
+        ],
+        "section": "MIDI",
+        "_name": "kOptLocalControl"
+      },
+      {
+        "osc": "/option/foot_switch_invert_polarity",
+        "id": 39,
+        "range": [
+          0,
+          1
+        ],
+        "section": "Pedals",
+        "_name": "kOptFootSwInvPol"
+      },
+      {
+        "osc": "/option/foot_switch_destination",
+        "id": 40,
+        "range": [
+          0,
+          7
+        ],
+        "section": "Pedals",
+        "_name": "kOptFootSwDest"
+      },
+      {
+        "osc": "/option/exp_pedal_1_invert_polarity",
+        "id": 41,
+        "range": [
+          0,
+          1
+        ],
+        "section": "Pedals",
+        "_name": "kOptXpPedal1InvPol"
+      },
+      {
+        "osc": "/option/exp_pedal_2_invert_polarity",
+        "id": 42,
+        "range": [
+          0,
+          1
+        ],
+        "section": "Pedals",
+        "_name": "kOptXpPedal2InvPol"
+      },
+      {
+        "osc": "/option/aftertouch_curve",
+        "id": 43,
+        "range": [
+          0,
+          3
+        ],
+        "section": "Keyboard",
+        "_name": "kOptCurveAftertouch"
+      },
+      {
+        "osc": "/option/velocity_curve",
+        "id": 44,
+        "range": [
+          0,
+          3
+        ],
+        "section": "Keyboard",
+        "_name": "kOptCurveVelocity"
+      },
+      {
+        "osc": "/option/pause_exit_mode",
+        "id": 45,
+        "range": [
+          0,
+          1
+        ],
+        "section": "Performance",
+        "_name": "kOptPauseExitMode"
+      },
+      {
+        "osc": "/option/program_change_enable",
+        "id": 46,
+        "range": [
+          0,
+          1
+        ],
+        "section": "MIDI",
+        "_name": "kOptXProgChgEnable"
+      },
+      {
+        "osc": "/option/seq_notes_out",
+        "id": 47,
+        "range": [
+          0,
+          1
+        ],
+        "section": "Sequencer",
+        "_name": "kOptSeqNotesOut"
+      },
+      {
+        "osc": "/option/arp_notes_out",
+        "id": 48,
+        "range": [
+          0,
+          1
+        ],
+        "section": "Arpeggiator",
+        "_name": "kOptArpNotesOut"
+      },
+      {
+        "osc": "/option/use_seq_tempo",
+        "id": 49,
+        "range": [
+          0,
+          1
+        ],
+        "section": "Sequencer",
+        "_name": "kOptUseSeqTempo"
+      },
+      {
+        "osc": "/option/preset_link",
+        "id": 50,
+        "range": [
+          0,
+          1
+        ],
+        "section": "Performance",
+        "_name": "kOptPresetLink"
+      },
+      {
+        "osc": "/option/pot_mode",
+        "id": 51,
+        "range": [
+          0,
+          2
+        ],
+        "section": "Performance",
+        "_name": "kOptPotMode"
+      },
+      {
+        "osc": "/option/sync_source",
+        "id": 52,
+        "range": [
+          0,
+          3
+        ],
+        "section": "Clock",
+        "_name": "kOptXSyncSrc"
+      },
+      {
+        "osc": "/option/device_id",
+        "id": 53,
+        "range": [
+          0,
+          127
+        ],
+        "section": "MIDI",
+        "_name": "kOptDeviceID"
+      },
+      {
+        "osc": "/option/enable_14bit_automation",
+        "id": 54,
+        "range": [
+          0,
+          1
+        ],
+        "section": "MIDI",
+        "_name": "kOptEnable14bitAutomation"
+      },
+      {
+        "osc": "/option/sync_port_timing",
+        "id": 55,
+        "range": [
+          0,
+          3
+        ],
+        "section": "Clock",
+        "_name": "kOptSyncPortTiming"
+      },
+      {
+        "osc": "/option/sync_port_start",
+        "id": 56,
+        "range": [
+          0,
+          1
+        ],
+        "section": "Clock",
+        "_name": "kOptSyncPortStart"
+      },
+      {
+        "osc": "/option/aftertouch_compression",
+        "id": 57,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Keyboard",
+        "_name": "kOptAftertouchComp"
+      },
+      {
+        "osc": "/option/aftertouch_offset",
+        "id": 58,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Keyboard",
+        "_name": "kOptAftertouchOffset"
+      },
+      {
+        "osc": "/option/midi_channel_in_lower",
+        "id": 59,
+        "range": [
+          0,
+          15
+        ],
+        "section": "MIDI",
+        "_name": "kOptMidiChannelInLower"
+      },
+      {
+        "osc": "/option/vco1_pitch_0v_midi_note",
+        "id": 60,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Calibration",
+        "_name": "kOptVCO1Pitch0vMidiNote"
+      },
+      {
+        "osc": "/option/vco2_pitch_0v_midi_note",
+        "id": 61,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Calibration",
+        "_name": "kOptVCO2Pitch0vMidiNote"
+      },
+      {
+        "osc": "/option/portamento_mode",
+        "id": 62,
+        "range": [
+          0,
+          2
+        ],
+        "section": "Performance",
+        "_name": "kOptPortamentoMode"
+      },
+      {
+        "osc": "/option/wait_to_load_pattern",
+        "id": 63,
+        "range": [
+          0,
+          1
+        ],
+        "section": "Sequencer",
+        "_name": "kOptWaitToLoadPattern"
+      },
+      {
+        "osc": "/option/pitch_wheel_dead_zone",
+        "id": 64,
+        "range": [
+          0,
+          15
+        ],
+        "section": "Keyboard",
+        "_name": "kOptPitchWDeadZone"
+      },
+      {
+        "osc": "/option/sleep_enable",
+        "id": 65,
+        "range": [
+          0,
+          1
+        ],
+        "section": "Power",
+        "_name": "kOptSleepEnable"
+      }
+    ]
+  },
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/vco1/fine",
+        "cc": 65,
+        "range": [
+          -12,
+          12
+        ],
+        "orientation": "centered",
+        "section": "VCO1"
+      },
+      {
+        "osc": "/vco1/course",
+        "cc": 66,
+        "range": [
+          -24,
+          24
+        ],
+        "orientation": "centered",
+        "section": "VCO1"
+      },
+      {
+        "osc": "/vco1/sub_shape",
+        "cc": 67,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCO1"
+      },
+      {
+        "osc": "/vco1/ultrasaw",
+        "cc": 68,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCO1"
+      },
+      {
+        "osc": "/vco1/pulse_width",
+        "cc": 69,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCO1"
+      },
+      {
+        "osc": "/vco1/metalizer",
+        "cc": 70,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCO1"
+      },
+      {
+        "osc": "/vco1/sub_vol",
+        "cc": 9,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCO1"
+      },
+      {
+        "osc": "/vco1/saw_vol",
+        "cc": 10,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCO1"
+      },
+      {
+        "osc": "/vco1/square_vol",
+        "cc": 12,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCO1"
+      },
+      {
+        "osc": "/vco1/triangle_vol",
+        "cc": 13,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCO1"
+      },
+      {
+        "osc": "/vco2/fine",
+        "cc": 71,
+        "range": [
+          -12,
+          12
+        ],
+        "orientation": "centered",
+        "section": "VCO2"
+      },
+      {
+        "osc": "/vco2/course",
+        "cc": 72,
+        "range": [
+          -24,
+          24
+        ],
+        "orientation": "centered",
+        "section": "VCO2"
+      },
+      {
+        "osc": "/vco2/sub_shape",
+        "cc": 73,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCO2"
+      },
+      {
+        "osc": "/vco2/ultrasaw",
+        "cc": 74,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCO2"
+      },
+      {
+        "osc": "/vco2/pulse_width",
+        "cc": 75,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCO2"
+      },
+      {
+        "osc": "/vco2/metalizer",
+        "cc": 76,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCO2"
+      },
+      {
+        "osc": "/vco2/sub_vol",
+        "cc": 14,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCO2"
+      },
+      {
+        "osc": "/vco2/saw_vol",
+        "cc": 15,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCO2"
+      },
+      {
+        "osc": "/vco2/square_vol",
+        "cc": 16,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCO2"
+      },
+      {
+        "osc": "/vco2/triangle_vol",
+        "cc": 17,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCO2"
+      },
+      {
+        "osc": "/vco3/course",
+        "cc": 22,
+        "range": [
+          -24,
+          24
+        ],
+        "orientation": "centered",
+        "section": "VCO3"
+      },
+      {
+        "osc": "/vco3/phase",
+        "cc": 90,
+        "range": [
+          -180,
+          180
+        ],
+        "orientation": "centered",
+        "section": "VCO3"
+      },
+      {
+        "osc": "/vco3/delay",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "section": "VCO3"
+      },
+      {
+        "osc": "/mixer/vco1_vol",
+        "cc": 18,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/vco2_vol",
+        "cc": 19,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/vco3_vol",
+        "cc": 20,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/noise_vol",
+        "cc": 21,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/external_vol",
+        "cc": 89,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Mixer"
+      },
+      {
+        "osc": "/filter/master_cutoff",
+        "cc": 27,
+        "range": [
+          -100,
+          100
+        ],
+        "orientation": "centered",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/routing/vco1_vco2",
+        "cc": 77,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Filter Routing"
+      },
+      {
+        "osc": "/filter/routing/vco1_vco3_vco2",
+        "cc": 78,
+        "range": [
+          -100,
+          100
+        ],
+        "orientation": "centered",
+        "section": "Filter Routing"
+      },
+      {
+        "osc": "/filter/routing/vco1_noise_vco2",
+        "cc": 80,
+        "range": [
+          -100,
+          100
+        ],
+        "orientation": "centered",
+        "section": "Filter Routing"
+      },
+      {
+        "osc": "/filter/routing/vcf1_osc3_vcf2",
+        "cc": 79,
+        "range": [
+          -100,
+          100
+        ],
+        "orientation": "centered",
+        "section": "Filter Routing"
+      },
+      {
+        "osc": "/vcf_steiner/cutoff",
+        "cc": 23,
+        "range": [
+          -100,
+          100
+        ],
+        "orientation": "centered",
+        "section": "Steiner Filter"
+      },
+      {
+        "osc": "/vcf_steiner/drive",
+        "cc": 81,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Steiner Filter"
+      },
+      {
+        "osc": "/vcf_steiner/resonance",
+        "cc": 83,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Steiner Filter"
+      },
+      {
+        "osc": "/vcf_steiner/brute_factor",
+        "cc": 82,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Steiner Filter"
+      },
+      {
+        "osc": "/vcf_steiner/env1_amount",
+        "cc": 24,
+        "range": [
+          -100,
+          100
+        ],
+        "orientation": "centered",
+        "section": "Steiner Filter"
+      },
+      {
+        "osc": "/vcf_steiner/output",
+        "cc": 7,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Steiner Filter"
+      },
+      {
+        "osc": "/vcf_ladder/cutoff",
+        "cc": 25,
+        "range": [
+          -100,
+          100
+        ],
+        "orientation": "centered",
+        "section": "Ladder Filter"
+      },
+      {
+        "osc": "/vcf_ladder/drive",
+        "cc": 85,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Ladder Filter"
+      },
+      {
+        "osc": "/vcf_ladder/resonance",
+        "cc": 87,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Ladder Filter"
+      },
+      {
+        "osc": "/vcf_ladder/brute_factor",
+        "cc": 86,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Ladder Filter"
+      },
+      {
+        "osc": "/vcf_ladder/env1_amount",
+        "cc": 26,
+        "range": [
+          -100,
+          100
+        ],
+        "orientation": "centered",
+        "section": "Ladder Filter"
+      },
+      {
+        "osc": "/vcf_ladder/output",
+        "cc": 8,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Ladder Filter"
+      },
+      {
+        "osc": "/vca/velocity_to_vcf",
+        "cc": 94,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCA"
+      },
+      {
+        "osc": "/vca/velocity_to_vca",
+        "cc": 95,
+        "range": [
+          0,
+          100
+        ],
+        "section": "VCA"
+      },
+      {
+        "osc": "/env1/attack",
+        "cc": 102,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Env1 (VCF)"
+      },
+      {
+        "osc": "/env1/decay",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Env1 (VCF)"
+      },
+      {
+        "osc": "/env1/sustain",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Env1 (VCF)"
+      },
+      {
+        "osc": "/env1/release",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Env1 (VCF)"
+      },
+      {
+        "osc": "/env2/attack",
+        "cc": 105,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Env2 (VCA)"
+      },
+      {
+        "osc": "/env2/decay",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Env2 (VCA)"
+      },
+      {
+        "osc": "/env2/sustain",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Env2 (VCA)"
+      },
+      {
+        "osc": "/env2/release",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Env2 (VCA)"
+      },
+      {
+        "osc": "/env3/delay",
+        "cc": 108,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Env3 (Mod)"
+      },
+      {
+        "osc": "/env3/attack",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Env3 (Mod)"
+      },
+      {
+        "osc": "/env3/decay",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Env3 (Mod)"
+      },
+      {
+        "osc": "/env3/sustain",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Env3 (Mod)"
+      },
+      {
+        "osc": "/env3/release",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Env3 (Mod)"
+      },
+      {
+        "osc": "/lfo1/rate",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "section": "LFO1"
+      },
+      {
+        "osc": "/lfo2/rate",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "section": "LFO2"
+      },
+      {
+        "osc": "/fx/dry_wet",
+        "cc": 31,
+        "range": [
+          0,
+          100
+        ],
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/delay_time",
+        "cc": 112,
+        "range": [
+          0,
+          100
+        ],
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/regeneration",
+        "cc": 113,
+        "range": [
+          0,
+          100
+        ],
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/tone_rate",
+        "cc": 114,
+        "range": [
+          0,
+          100
+        ],
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/width_depth",
+        "cc": 115,
+        "range": [
+          0,
+          100
+        ],
+        "section": "FX"
+      },
+      {
+        "osc": "/macro/1",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Macros"
+      },
+      {
+        "osc": "/macro/2",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Macros"
+      },
+      {
+        "osc": "/macro/3",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Macros"
+      },
+      {
+        "osc": "/macro/4",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Macros"
+      },
+      {
+        "osc": "/seq/rate",
+        "cc": 116,
+        "range": [
+          30,
+          259
+        ],
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/seq/swing",
+        "cc": 117,
+        "range": [
+          50,
+          75
+        ],
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/seq/gate",
+        "cc": 118,
+        "range": [
+          1,
+          99
+        ],
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/glide",
+        "cc": 5,
+        "range": [
+          0,
+          100
+        ],
+        "section": "Performance"
+      },
+      {
+        "osc": "/modulation",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Performance"
+      },
+      {
+        "osc": "/sustain",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Performance"
+      },
+      {
+        "osc": "/bend_range",
+        "cc": 119,
+        "range": [
+          0,
+          12
+        ],
+        "section": "Performance"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": [
+    {
+      "match_frame": [
+        "{seq}",
+        35,
+        82,
+        "{state:bytes}"
+      ],
+      "emit_osc": "/preset/state/received {seq} {state}",
+      "_notes": "Unsolicited/responded 0x52 msg_type=0x23 broadcast. 42-byte payload following opcode. State byte at payload offset 4, 16-byte ASCII name at offset 12."
+    },
+    {
+      "match_frame": [
+        "{seq}",
+        2,
+        66,
+        "{id}",
+        "{value}"
+      ],
+      "emit_osc": "/option/{id}/value {value}",
+      "_notes": "Reply to 0x43 GetGlobalOption — same framing as a SET."
+    }
+  ]
+}

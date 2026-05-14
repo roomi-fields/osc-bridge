@@ -1,0 +1,433 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/VONGON/replay.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 35,
+    "cc_entries": 35,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "replay",
+    "vendor": "VONGON",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/replay",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/amp/mode",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Amp mode"
+      },
+      {
+        "osc": "/amp/level",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Amp level"
+      },
+      {
+        "osc": "/arp/range",
+        "cc": 100,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Arp",
+        "_usage": "0: 1 octave; 1: 2 octaves; 2: 3 octaves"
+      },
+      {
+        "osc": "/arp/mode",
+        "cc": 101,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Arp",
+        "_usage": "0: Off; 1: Keyed; 2: latch"
+      },
+      {
+        "osc": "/arp/rate",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arp",
+        "_usage": "0~127: Arp rate"
+      },
+      {
+        "osc": "/arp/order",
+        "cc": 103,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Arp",
+        "_usage": "0: Up/down; 1: Order; 2: Random"
+      },
+      {
+        "osc": "/controls/octave_up_key",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "0-127: Octave up"
+      },
+      {
+        "osc": "/controls/octave_down_key",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "0-127: Octave down"
+      },
+      {
+        "osc": "/controls/save_button",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "0-127: Save"
+      },
+      {
+        "osc": "/controls/load_button",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "0-127: Load"
+      },
+      {
+        "osc": "/controls/alt_button",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "0-127: Alt"
+      },
+      {
+        "osc": "/envelope/attack",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope",
+        "_usage": "0~127: Attack"
+      },
+      {
+        "osc": "/envelope/decay",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope",
+        "_usage": "0~127: Decay"
+      },
+      {
+        "osc": "/envelope/sustain",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope",
+        "_usage": "0~127: Sustain"
+      },
+      {
+        "osc": "/envelope/release",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope",
+        "_usage": "0~127: Release"
+      },
+      {
+        "osc": "/filter/frequency",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~127: Filter frequency"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~127: Filter resonance"
+      },
+      {
+        "osc": "/filter/envelope",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~127: Filter envelope"
+      },
+      {
+        "osc": "/filter/lfo",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~127: Filter LFO"
+      },
+      {
+        "osc": "/filter/keyboard_tracking",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~127: Filter keyboard tracking"
+      },
+      {
+        "osc": "/filter/envelope_polarity",
+        "cc": 44,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Normal; 1: Inverted"
+      },
+      {
+        "osc": "/general/main_volume",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0~127: Main volume"
+      },
+      {
+        "osc": "/general/poly_mode",
+        "cc": 40,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Poly 1; 1: Poly 2; 2: Mono"
+      },
+      {
+        "osc": "/general/midi_clock_mode",
+        "cc": 56,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Enabled (MIDI clock affects arp rate); 1: Disabled (arp rate is normal)"
+      },
+      {
+        "osc": "/general/sustain_pedal",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/lfo/rate",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0~127: LFO rate"
+      },
+      {
+        "osc": "/lfo/delay",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0~127: LFO delay"
+      },
+      {
+        "osc": "/lfo/waveform",
+        "cc": 41,
+        "range": [
+          0,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Sine; 1: Tri; 2: Saw; 3: Ramp; 4: Square; 5: S&H; 6: Smooth S&H"
+      },
+      {
+        "osc": "/lfo/clock_mode",
+        "cc": 42,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Free running; 1: Sync to arp"
+      },
+      {
+        "osc": "/oscillator/waveform",
+        "cc": 83,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator",
+        "_usage": "0: Saw; 1: Off; 2: Square; 3: Tri; 4: Sine"
+      },
+      {
+        "osc": "/oscillator/noise",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator",
+        "_usage": "0~127: Oscillator noise"
+      },
+      {
+        "osc": "/oscillator/lfo",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator",
+        "_usage": "0~127: Oscillator LFO"
+      },
+      {
+        "osc": "/oscillator/pwm",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator",
+        "_usage": "0~127: Oscillator PWM"
+      },
+      {
+        "osc": "/oscillator/pwm_mode",
+        "cc": 43,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator",
+        "_usage": "0: Manual; 1: LFO"
+      },
+      {
+        "osc": "/oscillator/noise_mode",
+        "cc": 45,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator",
+        "_usage": "0: Noise knob controls white noise level; 1: Noise knob controls ext in level"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

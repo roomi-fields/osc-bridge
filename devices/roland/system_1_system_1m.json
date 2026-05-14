@@ -1,0 +1,628 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Roland/System-1 (System-1M).csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 56,
+    "cc_entries": 56,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "System-1 (System-1M)",
+    "vendor": "Roland",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/system_1_system_1m",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/general/mod",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Off; 127: On"
+      },
+      {
+        "osc": "/filter/lpf_cutoff",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/general/portamento",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/filter/reso",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/general/pedal_control",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/fx/amp_crusher",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/delay_time",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/mix/mixer_osc1",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/mix/mixer_osc2",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/mix/mixer_sub_osc",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/mix/mixer_noise",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/general/pitch_env",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/envelopes/pitch_attack",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelopes"
+      },
+      {
+        "osc": "/envelopes/pitch_decay",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelopes"
+      },
+      {
+        "osc": "/lfo/pitch",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/fade_time",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/filter",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/rate",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/amp",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/type",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Sin; 25: Tri; 51: Saw; 76: Squ; 102: S&H; 127: Digi"
+      },
+      {
+        "osc": "/oscillators/osc1_type",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0: Saw; 25: Squ; 51: Tri; 76: Saw2; 102: Squ2; 127: Tri2"
+      },
+      {
+        "osc": "/oscillators/osc1_range",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0: 64'; 25: 32'; 51: 16'; 76: 8'; 102: 4'; 127: 2'"
+      },
+      {
+        "osc": "/oscillators/osc1_color",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc1_cross_mod",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc2_color",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc2_tune",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc1_mod",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0: Man; 25: LFO; 51: P. Env; 76: F. Env; 102: A. Env; 127: S. Osc"
+      },
+      {
+        "osc": "/oscillators/osc2_type",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0: Saw; 25: Squ; 51: Tri; 76: Saw2; 102: Squ2; 127: Tri2"
+      },
+      {
+        "osc": "/oscillators/osc2_range",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0: 64'; 25: 32'; 51: 16'; 76: 8'; 102: 4'; 127: 2'"
+      },
+      {
+        "osc": "/oscillators/osc2_mod",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0: Man; 25: LFO; 51: P. Env; 76: F. Env; 102: A. Env; 127: S. Osc"
+      },
+      {
+        "osc": "/general/pedal_hold",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/general/amp_tone",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "General"
+      },
+      {
+        "osc": "/filter/hpf_cutoff",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/env",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/key",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter"
+      },
+      {
+        "osc": "/envelopes/filter_attack",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelopes"
+      },
+      {
+        "osc": "/envelopes/filter_decay",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelopes"
+      },
+      {
+        "osc": "/envelopes/filter_sustain",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelopes"
+      },
+      {
+        "osc": "/envelopes/filter_release",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelopes"
+      },
+      {
+        "osc": "/envelopes/amp_attack",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelopes"
+      },
+      {
+        "osc": "/envelopes/amp_decay",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelopes"
+      },
+      {
+        "osc": "/fx/reverb",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/delay",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/envelopes/amp_sustain",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelopes"
+      },
+      {
+        "osc": "/envelopes/amp_release",
+        "cc": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelopes"
+      },
+      {
+        "osc": "/oscillators/osc1_variant_toggle",
+        "cc": 105,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0: Std; 1: Akt"
+      },
+      {
+        "osc": "/oscillators/osc2_variant_toggle",
+        "cc": 106,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0: Std; 1: Alt"
+      },
+      {
+        "osc": "/oscillators/osc2_ring",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0: Off; 127: On"
+      },
+      {
+        "osc": "/oscillators/osc2_sync",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0: Off; 127: On"
+      },
+      {
+        "osc": "/general/mixer_osc_type",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: 2Oct; 127: 1Oct"
+      },
+      {
+        "osc": "/general/mixer_noise_type",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Pink; 127: White"
+      },
+      {
+        "osc": "/filter/type",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: 24db; 127: 12db"
+      },
+      {
+        "osc": "/general/legato",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Off; 127: On"
+      },
+      {
+        "osc": "/lfo/key_trigger",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Off; 127: On"
+      },
+      {
+        "osc": "/general/tempo_sync",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Off; 127: On"
+      },
+      {
+        "osc": "/general/mono",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Mono; 64: Uni; 127: Poly"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

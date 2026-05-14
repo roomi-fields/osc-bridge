@@ -1,0 +1,125 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Critter & Guitari/Organelle M.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 7,
+    "cc_entries": 7,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Organelle M",
+    "vendor": "Critter & Guitari",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/organelle_m",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/general/knob_1",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0~127: Knob position"
+      },
+      {
+        "osc": "/general/knob_2",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0~127: Knob position"
+      },
+      {
+        "osc": "/general/knob_3",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0~127: Knob position"
+      },
+      {
+        "osc": "/general/knob_4",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0~127: Knob position"
+      },
+      {
+        "osc": "/general/aux_button",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0-63: Aux button released; 64-127: Aux button pressed"
+      },
+      {
+        "osc": "/general/expression_pedal",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/general/sustain_pedal",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0~127: Amount"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

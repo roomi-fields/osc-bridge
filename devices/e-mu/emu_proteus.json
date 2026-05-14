@@ -1,0 +1,607 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/PQtLaPd8K8ECv3CXtHcu",
+      "preset_name": "EMU PROTEUS",
+      "imported_at": "2026-04-13",
+      "preset_id": "PQtLaPd8K8ECv3CXtHcu",
+      "revision": "207",
+      "author": "Dimitrios "
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 29,
+    "cc_entries": 0,
+    "sysex_commands": 29
+  },
+  "device": {
+    "name": "EMU PROTEUS",
+    "vendor": "E-MU",
+    "revision": "per Electra preset",
+    "osc_prefix": "/emu_proteus",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240,
+      24,
+      4,
+      0,
+      3
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/instrument",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        23,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/sample_start",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        24,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/coarse_tune",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -36,
+            36
+          ]
+        }
+      ],
+      "frame": [
+        25,
+        0,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fine_tune",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -63,
+            64
+          ]
+        }
+      ],
+      "frame": [
+        26,
+        0,
+        247,
+        "{val}",
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/chorus",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1
+          ]
+        }
+      ],
+      "frame": [
+        39,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/reverse_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1
+          ]
+        }
+      ],
+      "frame": [
+        40,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/reverse_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1
+          ]
+        }
+      ],
+      "frame": [
+        58,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/shape",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        100,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/rate",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/delay",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/variable",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/amount",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        68,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/submix",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            2
+          ]
+        }
+      ],
+      "frame": [
+        126,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/pri_volume",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        27,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/panning_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -7,
+            7
+          ]
+        }
+      ],
+      "frame": [
+        28,
+        0,
+        247,
+        "{val}",
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        89,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/balance",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        61,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/xfade_direct",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1
+          ]
+        }
+      ],
+      "frame": [
+        60,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/sec_volume",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        45,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/p_bend",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            13
+          ]
+        }
+      ],
+      "frame": [
+        123,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/pressure",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        122,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/vel_curve",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            5
+          ]
+        }
+      ],
+      "frame": [
+        124,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/tuning",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            5
+          ]
+        }
+      ],
+      "frame": [
+        127,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/attack",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/hold_d",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        33,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/decay",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        34,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/sustain",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        35,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/release",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        36,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/alt_env_pri",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1
+          ]
+        }
+      ],
+      "frame": [
+        37,
+        0,
+        "{val}",
+        0
+      ]
+    }
+  ],
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

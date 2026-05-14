@@ -1,0 +1,438 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Roland/TR-09.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 39,
+    "cc_entries": 39,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "TR-09",
+    "vendor": "Roland",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/tr_09",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/general/shuffle",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/total_accent",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/bass_drum/tune",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass drum"
+      },
+      {
+        "osc": "/bass_drum/attack",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass drum"
+      },
+      {
+        "osc": "/bass_drum/compression",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass drum"
+      },
+      {
+        "osc": "/bass_drum/decay",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass drum"
+      },
+      {
+        "osc": "/bass_drum/level",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass drum"
+      },
+      {
+        "osc": "/snare_drum/tune",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Snare drum"
+      },
+      {
+        "osc": "/snare_drum/snappy",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Snare drum"
+      },
+      {
+        "osc": "/snare_drum/compression",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Snare drum"
+      },
+      {
+        "osc": "/snare_drum/tone",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Snare drum"
+      },
+      {
+        "osc": "/snare_drum/level",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Snare drum"
+      },
+      {
+        "osc": "/low_tom/tune",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Low tom"
+      },
+      {
+        "osc": "/low_tom/decay",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Low tom"
+      },
+      {
+        "osc": "/low_tom/level",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Low tom"
+      },
+      {
+        "osc": "/mid_tom/tune",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mid tom"
+      },
+      {
+        "osc": "/mid_tom/decay",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mid tom"
+      },
+      {
+        "osc": "/mid_tom/level",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mid tom"
+      },
+      {
+        "osc": "/high_tom/tune",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "High tom"
+      },
+      {
+        "osc": "/high_tom/decay",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "High tom"
+      },
+      {
+        "osc": "/high_tom/level",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "High tom"
+      },
+      {
+        "osc": "/rim_shot/tune",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Rim shot"
+      },
+      {
+        "osc": "/rim_shot/decay",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Rim shot"
+      },
+      {
+        "osc": "/rim_shot/level",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Rim shot"
+      },
+      {
+        "osc": "/hand_clap/tune",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hand clap"
+      },
+      {
+        "osc": "/hand_clap/decay",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hand clap"
+      },
+      {
+        "osc": "/hand_clap/level",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hand clap"
+      },
+      {
+        "osc": "/closed_hi_hat/tune",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Closed hi hat"
+      },
+      {
+        "osc": "/closed_hi_hat/decay",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Closed hi hat"
+      },
+      {
+        "osc": "/closed_hi_hat/level",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Closed hi hat"
+      },
+      {
+        "osc": "/open_hi_hat/tune",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Open hi hat"
+      },
+      {
+        "osc": "/open_hi_hat/decay",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Open hi hat"
+      },
+      {
+        "osc": "/open_hi_hat/level",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Open hi hat"
+      },
+      {
+        "osc": "/crash_cymbal/tune",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Crash cymbal"
+      },
+      {
+        "osc": "/crash_cymbal/decay",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Crash cymbal"
+      },
+      {
+        "osc": "/crash_cymbal/level",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Crash cymbal"
+      },
+      {
+        "osc": "/ride_cymbal/tune",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Ride cymbal"
+      },
+      {
+        "osc": "/ride_cymbal/decay",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Ride cymbal"
+      },
+      {
+        "osc": "/ride_cymbal/level",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Ride cymbal"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

@@ -1,0 +1,30 @@
+{
+  "_sources": [
+    {
+      "type": "vendor-osc-api",
+      "name": "SuperCollider sclang OSC (OSCdef / OSCFunc)",
+      "url": "https://doc.sccode.org/Classes/OSCdef.html",
+      "version": "3.13",
+      "firmware": "SuperCollider 3.13 (sclang)"
+    }
+  ],
+  "_limitations": "Passthrough mode — targets sclang on port 57120 (default). Each OSC path you send under `/sclang/...` is forwarded to sclang verbatim (with `/sclang` stripped). You declare matching OSCdef inside SC. For direct scsynth control (port 57110), copy this driver and change `port` + `osc_prefix`.",
+  "_coverage": {
+    "mode": "passthrough",
+    "host_software": "SuperCollider 3.13 sclang"
+  },
+  "device": {
+    "name": "SuperCollider (sclang)",
+    "vendor": "SuperCollider",
+    "revision": "SC 3.13 sclang (passthrough)",
+    "osc_prefix": "/sclang",
+    "kind": "software",
+    "transport": {
+      "kind": "osc",
+      "host": "127.0.0.1",
+      "port": 57120,
+      "reply_port": 57130,
+      "passthrough_prefix": ""
+    }
+  }
+}

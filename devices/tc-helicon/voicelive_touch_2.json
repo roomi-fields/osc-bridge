@@ -1,0 +1,829 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/TC Helicon/VoiceLive Touch 2.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 71,
+    "cc_entries": 71,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "VoiceLive Touch 2",
+    "vendor": "TC Helicon",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/voicelive_touch_2",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/effect_block_on_off/harmony_on_off",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect Block On/Off",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/effect_block_on_off/double_on_off",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect Block On/Off",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/effect_block_on_off/reverb_on_off",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect Block On/Off",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/effect_block_on_off/micromod_on_off",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect Block On/Off",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/effect_block_on_off/delay_on_off",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect Block On/Off",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/effect_block_on_off/rhythm_on_off",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect Block On/Off",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/effect_block_on_off/transducer_on_off",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect Block On/Off",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/effect_block_on_off/choir_on_off",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect Block On/Off",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/effect_block_on_off/hardtune_on_off",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect Block On/Off",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/block_edits/mod_style",
+        "cc": 50,
+        "range": [
+          0,
+          23
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~23: Mod style"
+      },
+      {
+        "osc": "/block_edits/mod_level",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Level"
+      },
+      {
+        "osc": "/block_edits/mod_speed",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Speed"
+      },
+      {
+        "osc": "/block_edits/mod_depth",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Depth"
+      },
+      {
+        "osc": "/block_edits/delay_style",
+        "cc": 51,
+        "range": [
+          0,
+          18
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~18: Delay style"
+      },
+      {
+        "osc": "/block_edits/delay_level",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Level"
+      },
+      {
+        "osc": "/block_edits/delay_feedback",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Feedback"
+      },
+      {
+        "osc": "/block_edits/delay_filter",
+        "cc": 28,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~12: Filter"
+      },
+      {
+        "osc": "/block_edits/reverb_style",
+        "cc": 52,
+        "range": [
+          0,
+          27
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~27: Reverb style"
+      },
+      {
+        "osc": "/block_edits/reverb_level",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Level"
+      },
+      {
+        "osc": "/block_edits/reverb_decay",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Decay"
+      },
+      {
+        "osc": "/block_edits/doubling_style",
+        "cc": 53,
+        "range": [
+          0,
+          11
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~11: Doubling style"
+      },
+      {
+        "osc": "/block_edits/doubling_level",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Level"
+      },
+      {
+        "osc": "/block_edits/transducer_style",
+        "cc": 55,
+        "range": [
+          0,
+          8
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~8: Transducer style"
+      },
+      {
+        "osc": "/block_edits/transducer_gain",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Gain"
+      },
+      {
+        "osc": "/block_edits/transducer_low_cut",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Low cut"
+      },
+      {
+        "osc": "/block_edits/transducer_high_cut",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: High cut"
+      },
+      {
+        "osc": "/block_edits/choir_style",
+        "cc": 118,
+        "range": [
+          0,
+          14
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~14: Choir style"
+      },
+      {
+        "osc": "/block_edits/choir_level",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Level"
+      },
+      {
+        "osc": "/block_edits/hardtune_style",
+        "cc": 24,
+        "range": [
+          0,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~6: Style"
+      },
+      {
+        "osc": "/block_edits/hardtune_shift",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Shift"
+      },
+      {
+        "osc": "/block_edits/rhythm_style",
+        "cc": 115,
+        "range": [
+          0,
+          14
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~14: Rhythm style"
+      },
+      {
+        "osc": "/block_edits/rhythm_division",
+        "cc": 83,
+        "range": [
+          0,
+          19
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~19: Division"
+      },
+      {
+        "osc": "/block_edits/rhythm_depth",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Depth"
+      },
+      {
+        "osc": "/block_edits/rhythm_type",
+        "cc": 104,
+        "range": [
+          0,
+          22
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~22: Type"
+      },
+      {
+        "osc": "/block_edits/rhythm_stutter_division",
+        "cc": 26,
+        "range": [
+          0,
+          19
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~19: Division"
+      },
+      {
+        "osc": "/block_edits/harmony_style",
+        "cc": 56,
+        "range": [
+          0,
+          19
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~19: Harmony style"
+      },
+      {
+        "osc": "/block_edits/harmony_level",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Level"
+      },
+      {
+        "osc": "/block_edits/harmony_key",
+        "cc": 30,
+        "range": [
+          0,
+          11
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0: C; 1: C#; 2: D; 3: Eb; 4: E; 5: F; 6: F#; 7: G; 8: G#; 9: A; 10: Bb; 11: B"
+      },
+      {
+        "osc": "/block_edits/harmony_scale",
+        "cc": 31,
+        "range": [
+          0,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0: Maj1; 1: Maj2; 2: Maj3; 3: Min1; 4: Min2; 5: Min3"
+      },
+      {
+        "osc": "/block_edits/voice_1_level",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Level"
+      },
+      {
+        "osc": "/block_edits/voice_2_level",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Level"
+      },
+      {
+        "osc": "/block_edits/voice_3_level",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Level"
+      },
+      {
+        "osc": "/block_edits/voice_4_level",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Level"
+      },
+      {
+        "osc": "/block_edits/harmony_master_level",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Level"
+      },
+      {
+        "osc": "/block_edits/voice_1_gender",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Gender"
+      },
+      {
+        "osc": "/block_edits/voice_2_gender",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Gender"
+      },
+      {
+        "osc": "/block_edits/voice_3_gender",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Gender"
+      },
+      {
+        "osc": "/block_edits/voice_4_gender",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~127: Gender"
+      },
+      {
+        "osc": "/block_edits/voice_1_voicing",
+        "cc": 89,
+        "range": [
+          0,
+          48
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~48: Voicing"
+      },
+      {
+        "osc": "/block_edits/voice_2_voicing",
+        "cc": 61,
+        "range": [
+          0,
+          48
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~48: Voicing"
+      },
+      {
+        "osc": "/block_edits/voice_3_voicing",
+        "cc": 88,
+        "range": [
+          0,
+          48
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~48: Voicing"
+      },
+      {
+        "osc": "/block_edits/voice_4_voicing",
+        "cc": 3,
+        "range": [
+          0,
+          48
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0~48: Voicing"
+      },
+      {
+        "osc": "/block_edits/harmony_hold",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Block Edits",
+        "_usage": "0-64: Off; 65-127: On"
+      },
+      {
+        "osc": "/block_edits/harmony_master_pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Block Edits",
+        "_usage": "0~127: Pan"
+      },
+      {
+        "osc": "/looping/master_loop_control",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looping",
+        "_usage": "0: Play; 1: Record; 2: Stop; 3: Undo; 6: 2X; 10: Clear; 26: Erase; 27: Reverse"
+      },
+      {
+        "osc": "/looping/loop_play",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looping",
+        "_usage": "0-63: Stop; 64-127: Play (toggles state)"
+      },
+      {
+        "osc": "/looping/loop_stop",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looping",
+        "_usage": "0-127: Stop"
+      },
+      {
+        "osc": "/looping/loop_record",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looping",
+        "_usage": "0-63: Off; 64-127: On (toggles state)"
+      },
+      {
+        "osc": "/looping/loop_play_retrigger",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looping",
+        "_usage": "0-127: Retrigger"
+      },
+      {
+        "osc": "/looping/overdub",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looping",
+        "_usage": "0-64: Off; 65-127: On"
+      },
+      {
+        "osc": "/setup/tone_style",
+        "cc": 106,
+        "range": [
+          0,
+          8
+        ],
+        "orientation": "0-based",
+        "section": "Setup",
+        "_usage": "0~8: Tone style"
+      },
+      {
+        "osc": "/setup/guitar_gain",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Setup",
+        "_usage": "0~127: Gain"
+      },
+      {
+        "osc": "/setup/pitch_correct_on_off",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Setup",
+        "_usage": "0-64: Off; 65-127: On"
+      },
+      {
+        "osc": "/setup/lead_mute",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Setup",
+        "_usage": "0-64: Off; 65-127: On"
+      },
+      {
+        "osc": "/setup/talk_mode",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Setup",
+        "_usage": "0-64: Off; 65-127: On"
+      },
+      {
+        "osc": "/setup/analog_out_level",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Setup",
+        "_usage": "0~127: Level"
+      },
+      {
+        "osc": "/setup/aux_level",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Setup",
+        "_usage": "0~127: Level"
+      },
+      {
+        "osc": "/setup/harmony_level_global",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Setup",
+        "_usage": "0~127: Level"
+      },
+      {
+        "osc": "/setup/delay_reverb_level_global",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Setup",
+        "_usage": "0~127: Level"
+      },
+      {
+        "osc": "/setup/talk_mode_tuner",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Setup",
+        "_usage": "0-64: Off; 65-127: On"
+      },
+      {
+        "osc": "/setup/hit_on_off",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Setup",
+        "_usage": "0-64: Off; 65-127: On"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

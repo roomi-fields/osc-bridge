@@ -1,0 +1,186 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/MbJKGPMWX0repgyfjZXP",
+      "preset_name": "Chorus2",
+      "imported_at": "2026-04-13",
+      "preset_id": "MbJKGPMWX0repgyfjZXP",
+      "revision": "12",
+      "author": "Jaap-Henk Hoepman"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 14,
+    "cc_entries": 14,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "Chorus2",
+    "vendor": "Ableton",
+    "revision": "per Electra preset",
+    "osc_prefix": "/chorus2",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 10,
+    "entries": [
+      {
+        "osc": "/hpf_enabled",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mode",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/width",
+        "cc": 9,
+        "cc_lsb": 41,
+        "range": [
+          0,
+          2000
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/output",
+        "cc": 3,
+        "cc_lsb": 35,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/warmth",
+        "cc": 8,
+        "cc_lsb": 40,
+        "range": [
+          0,
+          1000
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hpf_freq",
+        "cc": 4,
+        "cc_lsb": 36,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/rate",
+        "cc": 6,
+        "cc_lsb": 38,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/amount",
+        "cc": 0,
+        "cc_lsb": 32,
+        "range": [
+          0,
+          1000
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/feedback",
+        "cc": 2,
+        "cc_lsb": 34,
+        "range": [
+          0,
+          990
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fb_inv",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dry_wet",
+        "cc": 1,
+        "cc_lsb": 33,
+        "range": [
+          0,
+          1000
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/offset",
+        "cc": 5,
+        "cc_lsb": 37,
+        "range": [
+          0,
+          180
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/shaping",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          1000
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/device_on",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 10,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

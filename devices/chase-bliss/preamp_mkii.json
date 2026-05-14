@@ -1,0 +1,195 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Preamp MKII.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 14,
+    "cc_entries": 14,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Preamp MKII",
+    "vendor": "Chase Bliss",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/preamp_mkii",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/faders/volume",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Faders"
+      },
+      {
+        "osc": "/faders/treble",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Faders"
+      },
+      {
+        "osc": "/faders/mids",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Faders"
+      },
+      {
+        "osc": "/faders/frequency",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Faders"
+      },
+      {
+        "osc": "/faders/bass",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Faders"
+      },
+      {
+        "osc": "/faders/gain",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Faders"
+      },
+      {
+        "osc": "/arcade_buttons/jump",
+        "cc": 22,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Arcade buttons",
+        "_usage": "1: Off; 2: 0; 3: 5"
+      },
+      {
+        "osc": "/arcade_buttons/mids",
+        "cc": 23,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Arcade buttons",
+        "_usage": "1: Off; 2: Pre; 3: Post"
+      },
+      {
+        "osc": "/arcade_buttons/q",
+        "cc": 24,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Arcade buttons",
+        "_usage": "1: Low; 2: Mid; 3: High"
+      },
+      {
+        "osc": "/arcade_buttons/diode",
+        "cc": 25,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Arcade buttons",
+        "_usage": "1: Off; 2: Sil; 3: Germ"
+      },
+      {
+        "osc": "/arcade_buttons/fuzz",
+        "cc": 26,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Arcade buttons",
+        "_usage": "1: Off; 2: Open; 3: Gated"
+      },
+      {
+        "osc": "/other/preset_saving",
+        "cc": 27,
+        "range": [
+          0,
+          29
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0~29: Preset slot"
+      },
+      {
+        "osc": "/other/expression",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/bypass_pedal",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Bypass; 1-127: Engage"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

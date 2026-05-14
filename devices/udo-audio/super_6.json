@@ -1,0 +1,939 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/UDO Audio/Super 6.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 89,
+    "cc_entries": 89,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Super 6",
+    "vendor": "UDO Audio",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/super_6",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/general/bank_select",
+        "cc": 0,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Bank 1; 1: Bank 2; 2: Bank 3"
+      },
+      {
+        "osc": "/general/modulation_lever",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/tempo",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/foot_controller",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/portamento_time",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/data_entry_msb",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/vca/env_level",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCA"
+      },
+      {
+        "osc": "/delay/time",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/feedback",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/chorus/i_on",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/chorus/ii_on",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/lfo/1_waveform_hf_mode",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/1_rate",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/1_delay",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/1_l_r_phase",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/1_mode",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/dds/lfo_1_amount",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DDS"
+      },
+      {
+        "osc": "/dds/env_1_amount",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DDS"
+      },
+      {
+        "osc": "/dds/modulator_destination",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DDS"
+      },
+      {
+        "osc": "/sound/super_mode",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/pw_detune",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/pwm_swm",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/pwm_swm_src",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/cross_mod",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/dds/1_waveform",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DDS"
+      },
+      {
+        "osc": "/dds/1_range",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DDS"
+      },
+      {
+        "osc": "/dds/2_waveform",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DDS"
+      },
+      {
+        "osc": "/dds/2_range",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DDS"
+      },
+      {
+        "osc": "/dds/2_tune",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DDS"
+      },
+      {
+        "osc": "/dds/2_mode",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DDS"
+      },
+      {
+        "osc": "/sound/ocsillator_mix_split_point",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/general/lsb_for_control_6_data_entry",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/vcf/hpf_mode",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/vcf/drive",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/vcf/keytrack",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/vcf/env_src",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/vcf/env_amt",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/vcf/lfo_1_amt",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/vcf/lfo_2_amt",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/vca/dynamics",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCA"
+      },
+      {
+        "osc": "/vca/env_mode",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCA"
+      },
+      {
+        "osc": "/env/1_mode",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Env"
+      },
+      {
+        "osc": "/env/1_keytrack",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Env"
+      },
+      {
+        "osc": "/env/1_hold",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Env"
+      },
+      {
+        "osc": "/env/1_attack",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Env"
+      },
+      {
+        "osc": "/env/1_decay",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Env"
+      },
+      {
+        "osc": "/env/1_sustain",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Env"
+      },
+      {
+        "osc": "/env/1_release",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Env"
+      },
+      {
+        "osc": "/env/2_decay",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Env"
+      },
+      {
+        "osc": "/env/2_sustain",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Env"
+      },
+      {
+        "osc": "/general/manual",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/lfo/2_trigger_src",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/general/performance_control_dest",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/lfo/2_rate",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/2_delay",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/general/sustain_pedal",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/dds/lfo_2_amt",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DDS"
+      },
+      {
+        "osc": "/vcf/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/env/2_release",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Env"
+      },
+      {
+        "osc": "/env/2_attack",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Env"
+      },
+      {
+        "osc": "/vcf/cutoff_frequency",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/dds/pitch_bend_amt",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DDS"
+      },
+      {
+        "osc": "/vcf/pitch_bend_amt",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/sound/voice_assign_mode",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/union_size",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/binaural_mode_on",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/sync",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/arp_and_seq/arp_range",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arp and seq"
+      },
+      {
+        "osc": "/arp_and_seq/arp_or_seq_swing",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arp and seq"
+      },
+      {
+        "osc": "/arp_and_seq/arp_or_seq_mode",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arp and seq"
+      },
+      {
+        "osc": "/arp_and_seq/arp_or_seq_on",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arp and seq"
+      },
+      {
+        "osc": "/arp_and_seq/hold",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arp and seq"
+      },
+      {
+        "osc": "/arp_and_seq/seq_rec_mode",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arp and seq"
+      },
+      {
+        "osc": "/arp_and_seq/seq_length",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arp and seq"
+      },
+      {
+        "osc": "/delay/level",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/general/data_increment",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/data_decrement",
+        "cc": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/nrpn_lsb",
+        "cc": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/nrpn_msb",
+        "cc": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/rpn_lsb",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/rpn_msb",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/all_sound_off",
+        "cc": 120,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/reset_all_controllers",
+        "cc": 121,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/local_control_on_off",
+        "cc": 122,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/omni_mode_off",
+        "cc": 124,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/omni_mode_on",
+        "cc": 125,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/mono_mode_on",
+        "cc": 126,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/poly_mode_on",
+        "cc": 127,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

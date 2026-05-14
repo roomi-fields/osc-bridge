@@ -1,0 +1,138 @@
+{
+  "_sources": [
+    {
+      "type": "third-party-osc",
+      "name": "AbletonOSC by ideoforms",
+      "url": "https://github.com/ideoforms/AbletonOSC",
+      "version": "0ca6821",
+      "firmware": "Ableton Live 12.2.7"
+    },
+    {
+      "type": "software-verified",
+      "tested_on": "2026-05-13",
+      "tested_against": "Ableton Live 12.2.7 + AbletonOSC 0ca6821 (Windows)",
+      "tests": [
+        "/ableton/transport/play and /transport/stop control Live transport (1.3.1 -> 2.2.1)",
+        "/ableton/transport/tempo 124.5 sets Live tempo to 124.50 and re-emits via subscription",
+        "Tempo drag in Live UI (130 -> 140) re-emits as /ableton/transport/tempo on the configured osc-client"
+      ]
+    }
+  ],
+  "_limitations": "v1 covers transport (play / stop / tempo), per-track volume + arm with their subscribe/listen counterparts, and scene firing. Clip slot control, device parameters, browser navigation, undo and many other AbletonOSC endpoints are intentionally out of scope until a real user need surfaces. AbletonOSC is a community Remote Script — its stability and version compatibility with Live track its own GitHub releases, not Ableton's. Verified against Live 12.2.7 specifically; earlier 12.x minor versions are unconfirmed.",
+  "_coverage": {
+    "host_software": "Ableton Live 12.2.7",
+    "shim_version": "AbletonOSC 0ca6821",
+    "commands": 8,
+    "subscriptions": 1,
+    "replies": 3
+  },
+  "device": {
+    "name": "Ableton Live",
+    "vendor": "Ableton",
+    "revision": "Ableton Live 12.2.7 + AbletonOSC 0ca6821",
+    "osc_prefix": "/ableton",
+    "kind": "software",
+    "transport": {
+      "kind": "osc",
+      "host": "127.0.0.1",
+      "port": 11000,
+      "reply_port": 11001
+    }
+  },
+  "commands": [
+    {
+      "osc": "/transport/play",
+      "forward": { "path": "/live/song/start_playing", "args": [] }
+    },
+    {
+      "osc": "/transport/stop",
+      "forward": { "path": "/live/song/stop_playing", "args": [] }
+    },
+    {
+      "osc": "/transport/tempo",
+      "args": [
+        { "name": "bpm", "type": "float", "range": [20, 999] }
+      ],
+      "forward": {
+        "path": "/live/song/set/tempo",
+        "args": ["{bpm}"]
+      }
+    },
+    {
+      "osc": "/track/{n}/volume",
+      "args": [
+        { "name": "n", "type": "int" },
+        { "name": "v", "type": "float", "range": [0, 1] }
+      ],
+      "forward": {
+        "path": "/live/track/set/volume",
+        "args": ["{n}", "{v}"]
+      }
+    },
+    {
+      "osc": "/track/{n}/arm",
+      "args": [
+        { "name": "n", "type": "int" },
+        { "name": "on", "type": "bool" }
+      ],
+      "forward": {
+        "path": "/live/track/set/arm",
+        "args": ["{n}", "{on}"]
+      }
+    },
+    {
+      "osc": "/track/{n}/listen/volume",
+      "args": [{ "name": "n", "type": "int" }],
+      "forward": {
+        "path": "/live/track/start_listen/volume",
+        "args": ["{n}"]
+      }
+    },
+    {
+      "osc": "/scene/{n}/fire",
+      "args": [{ "name": "n", "type": "int" }],
+      "forward": {
+        "path": "/live/scene/fire",
+        "args": ["{n}"]
+      }
+    },
+    {
+      "osc": "/scene/fire_selected",
+      "forward": { "path": "/live/scene/fire_selected", "args": [] }
+    }
+  ],
+  "subscriptions": [
+    {
+      "on": "startup",
+      "forward": {
+        "path": "/live/song/start_listen/tempo",
+        "args": []
+      }
+    }
+  ],
+  "replies": [
+    {
+      "match_osc": "/live/song/get/tempo",
+      "match_args": [
+        { "name": "bpm", "type": "float" }
+      ],
+      "emit_osc": "/transport/tempo {bpm}"
+    },
+    {
+      "match_osc": "/live/track/get/volume",
+      "match_args": [
+        { "name": "n", "type": "int" },
+        { "name": "v", "type": "float" }
+      ],
+      "emit_osc": "/track/{n}/volume {v}"
+    },
+    {
+      "match_osc": "/live/track/get/arm",
+      "match_args": [
+        { "name": "n", "type": "int" },
+        { "name": "on", "type": "bool" }
+      ],
+      "emit_osc": "/track/{n}/arm {on}"
+    }
+  ]
+}

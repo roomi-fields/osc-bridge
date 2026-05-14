@@ -1,0 +1,265 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/M4kb3oRjBGV7DSZswYkO",
+      "preset_name": "Kemper",
+      "imported_at": "2026-04-13",
+      "preset_id": "M4kb3oRjBGV7DSZswYkO",
+      "revision": "285"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 23,
+    "cc_entries": 23,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "Kemper",
+    "vendor": "Kemper",
+    "revision": "per Electra preset",
+    "osc_prefix": "/kemper",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/gain_vl_rg_lup",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/gain_vl_rg_lup",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/gain_vl_rg_lup",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/gain_vl_rg_lup",
+        "nrpn_msb": 127,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/eq_bmtp",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/eq_bmtp",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/eq_bmtp",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/eq_bmtp",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/reverb",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/reverb",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/reverb",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/reverb",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/advanced_ii",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/advanced_ii",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/advanced_ii",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/advanced_ii",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/slot",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dial",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dial",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dial",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dial",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dial",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/slot_a",
+        "nrpn_msb": 50,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

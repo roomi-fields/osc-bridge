@@ -1,0 +1,483 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/JtHVHcl0Hx1kpbC2OGFn",
+      "preset_name": "KORG MONOLOGUE",
+      "imported_at": "2026-04-13",
+      "preset_id": "JtHVHcl0Hx1kpbC2OGFn",
+      "revision": "3",
+      "author": "Richard Courtel"
+    },
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/KORG/monologue.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 45,
+    "cc_entries": 45,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "monologue",
+    "vendor": "KORG",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/monologue",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/envelope_generator/envelope_attack",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope generator"
+      },
+      {
+        "osc": "/envelope_generator/envelope_decay",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope generator"
+      },
+      {
+        "osc": "/envelope_generator/envelope_intensity",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope generator"
+      },
+      {
+        "osc": "/lfo/rate",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/depth",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/general/drive",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/vco_2/pitch",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 2"
+      },
+      {
+        "osc": "/vco_1/shape",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 1"
+      },
+      {
+        "osc": "/vco_2/shape",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 2"
+      },
+      {
+        "osc": "/vco_1/level",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 1"
+      },
+      {
+        "osc": "/vco_2/level",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 2"
+      },
+      {
+        "osc": "/filter/cutoff",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/vco_2/octave",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 2"
+      },
+      {
+        "osc": "/vco_1/wave",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 1"
+      },
+      {
+        "osc": "/vco_2/wave",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 2"
+      },
+      {
+        "osc": "/lfo/target",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/wave",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/mode",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/general/sync_ring",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/envelope_generator/type",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope generator"
+      },
+      {
+        "osc": "/envelope_generator/target",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope generator"
+      },
+      {
+        "osc": "/cutoff",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/wave",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/wave",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/shape",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sync_ring",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/drive",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/resonance",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/shape",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/octave",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pitch",
+        "cc": 35,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vco_1",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vco_2",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attack",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/decay",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/int",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attack_decay",
+        "cc": 18,
+        "range": [
+          0,
+          0
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/eg_type",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/eg_target",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/wave",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mode",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/rate",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "cc": 26,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/target",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

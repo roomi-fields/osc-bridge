@@ -1,0 +1,533 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/FOMHfpNzOXqpq44BqLaQ",
+      "preset_name": "JUNO 106 2.32",
+      "imported_at": "2026-04-13",
+      "preset_id": "FOMHfpNzOXqpq44BqLaQ",
+      "revision": "33",
+      "author": "MRavitz"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 23,
+    "cc_entries": 0,
+    "sysex_commands": 23
+  },
+  "device": {
+    "name": "JUNO 106 2.32",
+    "vendor": "Roland",
+    "revision": "per Electra preset",
+    "osc_prefix": "/juno_106_2_32",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/dco/range",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        16,
+        "{val}"
+      ],
+      "section": "DCO"
+    },
+    {
+      "osc": "/dco/lfo",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        2,
+        "{val}"
+      ],
+      "section": "DCO"
+    },
+    {
+      "osc": "/dco/pwm",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        3,
+        "{val}"
+      ],
+      "section": "DCO"
+    },
+    {
+      "osc": "/dco/pwm_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        17,
+        "{val}"
+      ],
+      "section": "DCO"
+    },
+    {
+      "osc": "/dco/wave",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        16,
+        "{val}"
+      ],
+      "section": "DCO"
+    },
+    {
+      "osc": "/dco/sub",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        15,
+        "{val}"
+      ],
+      "section": "DCO"
+    },
+    {
+      "osc": "/dco/noise",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        4,
+        "{val}"
+      ],
+      "section": "DCO"
+    },
+    {
+      "osc": "/hpf/freq",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        17,
+        "{val}"
+      ],
+      "section": "HPF"
+    },
+    {
+      "osc": "/lfo/rate",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        0,
+        "{val}"
+      ],
+      "section": "LFO"
+    },
+    {
+      "osc": "/lfo/delay_time",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        1,
+        "{val}"
+      ],
+      "section": "LFO"
+    },
+    {
+      "osc": "/chorus/chorus_type",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        16,
+        "{val}"
+      ],
+      "section": "CHORUS"
+    },
+    {
+      "osc": "/vcf/freq",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        5,
+        "{val}"
+      ],
+      "section": "VCF"
+    },
+    {
+      "osc": "/vcf/res",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        6,
+        "{val}"
+      ],
+      "section": "VCF"
+    },
+    {
+      "osc": "/vcf/env_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        17,
+        "{val}"
+      ],
+      "section": "VCF"
+    },
+    {
+      "osc": "/vcf/env",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        7,
+        "{val}"
+      ],
+      "section": "VCF"
+    },
+    {
+      "osc": "/vcf/lfo",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        8,
+        "{val}"
+      ],
+      "section": "VCF"
+    },
+    {
+      "osc": "/vcf/kybd",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        9,
+        "{val}"
+      ],
+      "section": "VCF"
+    },
+    {
+      "osc": "/env/attack",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        11,
+        "{val}"
+      ],
+      "section": "ENV"
+    },
+    {
+      "osc": "/env/decay",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        11,
+        "{val}"
+      ],
+      "section": "ENV"
+    },
+    {
+      "osc": "/env/sustain",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        11,
+        "{val}"
+      ],
+      "section": "ENV"
+    },
+    {
+      "osc": "/env/release",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        11,
+        "{val}"
+      ],
+      "section": "ENV"
+    },
+    {
+      "osc": "/vca/vca_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        17,
+        "{val}"
+      ],
+      "section": "VCA"
+    },
+    {
+      "osc": "/vca/level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -63,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        50,
+        "{function}",
+        10,
+        "{val}"
+      ],
+      "section": "VCA"
+    }
+  ],
+  "midi_out": {
+    "default_channel": 8,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

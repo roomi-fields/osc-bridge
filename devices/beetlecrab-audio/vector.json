@@ -1,0 +1,590 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Beetlecrab.audio/Vector.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 54,
+    "cc_entries": 54,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Vector",
+    "vendor": "Beetlecrab.audio",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/vector",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/orbiter/center_position_x",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Orbiter"
+      },
+      {
+        "osc": "/orbiter/center_position_y",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Orbiter"
+      },
+      {
+        "osc": "/orbiter/width",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Orbiter"
+      },
+      {
+        "osc": "/orbiter/height",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Orbiter"
+      },
+      {
+        "osc": "/orbiter/lissajous_warp_x",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Orbiter"
+      },
+      {
+        "osc": "/orbiter/lissajous_warp_y",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Orbiter"
+      },
+      {
+        "osc": "/orbiter/suborbit_size",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Orbiter"
+      },
+      {
+        "osc": "/orbiter/suborbit_speed",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Orbiter"
+      },
+      {
+        "osc": "/orbiter/orbit_attack",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Orbiter"
+      },
+      {
+        "osc": "/orbiter/orbit_decay",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Orbiter"
+      },
+      {
+        "osc": "/orbiter/orbit_release",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Orbiter"
+      },
+      {
+        "osc": "/envelope/attack",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/decay",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/sustain",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/release",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/filter/global_resonance",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/drive/amount",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drive"
+      },
+      {
+        "osc": "/drive/colour",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drive"
+      },
+      {
+        "osc": "/reverb/amount",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/size",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/colour",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/chorus/mix",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/chorus/speed",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/chorus/depth",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/chorus/colour",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/delay/mix",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/time",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/feedback",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/modulation/vibrato_depth",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Modulation"
+      },
+      {
+        "osc": "/modulation/vibrato_speed",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Modulation"
+      },
+      {
+        "osc": "/modulation/tremolo_speed",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Modulation"
+      },
+      {
+        "osc": "/modulation/tremolo_depth",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Modulation"
+      },
+      {
+        "osc": "/arpeggiator/note_length",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator"
+      },
+      {
+        "osc": "/arpeggiator/humanize",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator"
+      },
+      {
+        "osc": "/mono/stack_volume",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mono"
+      },
+      {
+        "osc": "/mono/detune_stack",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mono"
+      },
+      {
+        "osc": "/mono/glide",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mono"
+      },
+      {
+        "osc": "/mono/voices",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mono"
+      },
+      {
+        "osc": "/dual/follower_volume",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dual"
+      },
+      {
+        "osc": "/dual/suborbit_offset",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dual"
+      },
+      {
+        "osc": "/dual/stereo_bias",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Dual"
+      },
+      {
+        "osc": "/dual/detune_follower",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Dual"
+      },
+      {
+        "osc": "/poly/detune_drift",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Poly"
+      },
+      {
+        "osc": "/poly/stereo_scatter",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Poly"
+      },
+      {
+        "osc": "/routing/routable_parameter",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Routing"
+      },
+      {
+        "osc": "/system/bank_select_msb",
+        "cc": 0,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/bank_select_lsb",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/data_entry_msb",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/data_entry_lsb",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/volume",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/damper_sustain_pedal",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "System",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/system/sostenuto_pedal",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "System",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/system/registered_parameter_number_lsb",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/registered_parameter_number_msb",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

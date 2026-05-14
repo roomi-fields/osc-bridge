@@ -1,0 +1,180 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/HNPdv6p1KUUZPWqupMml",
+      "preset_name": "Clone of OB Matrix-1000/6 v3",
+      "imported_at": "2026-04-13",
+      "preset_id": "HNPdv6p1KUUZPWqupMml"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 12,
+    "cc_entries": 10,
+    "sysex_commands": 2
+  },
+  "device": {
+    "name": "Clone of OB Matrix-1000/6 v3",
+    "vendor": "Oberheim",
+    "revision": "per Electra preset",
+    "osc_prefix": "/clone_of_ob_matrix_1000_6_v3",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/matrix_6_edit",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        16,
+        6,
+        5
+      ]
+    },
+    {
+      "osc": "/global_request",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        16,
+        6,
+        4,
+        3
+      ]
+    }
+  ],
+  "cc_params": {
+    "channel": 8,
+    "entries": [
+      {
+        "osc": "/unison_detune",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/all_sounds_off",
+        "cc": 124,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mono_mode_on",
+        "cc": 126,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mono_mode_off",
+        "cc": 127,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mod_wheel_1",
+        "cc": 1,
+        "range": [
+          0,
+          31
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/breath_ctrl_2",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pedal_ctrl_4",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sustain_64",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/volume_7",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 8,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

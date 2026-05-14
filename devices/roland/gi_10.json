@@ -1,0 +1,326 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/G9o5gGDxYVQZM9Zm77N0",
+      "preset_name": "Roland GI-10",
+      "imported_at": "2026-04-13",
+      "preset_id": "G9o5gGDxYVQZM9Zm77N0",
+      "revision": "18",
+      "author": "Ralph Mertingk"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 15,
+    "cc_entries": 0,
+    "sysex_commands": 15
+  },
+  "device": {
+    "name": "GI-10",
+    "vendor": "Roland",
+    "revision": "per Electra preset",
+    "osc_prefix": "/gi_10",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240,
+      65,
+      16,
+      112,
+      18,
+      0,
+      0
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/midi_channel",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            16
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/poly_mono",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        2,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/bend_range",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        1,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/bend_data_thin",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        4,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/octave_shift",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        3,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/master_tune",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        14,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/touch_sense",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        7,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/attack_n_flt",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        5,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/pedal_assign",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        6,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/6_e",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            8
+          ]
+        }
+      ],
+      "frame": [
+        13,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/5_a",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            8
+          ]
+        }
+      ],
+      "frame": [
+        12,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/4_d",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            8
+          ]
+        }
+      ],
+      "frame": [
+        11,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/3_g",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            8
+          ]
+        }
+      ],
+      "frame": [
+        10,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/2_b",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            8
+          ]
+        }
+      ],
+      "frame": [
+        9,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/1_e",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            8
+          ]
+        }
+      ],
+      "frame": [
+        8,
+        "{val}",
+        "{checksum}"
+      ]
+    }
+  ],
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

@@ -1,0 +1,30 @@
+{
+  "_sources": [
+    {
+      "type": "vendor-osc-api",
+      "name": "Pure Data netreceive / oscparse / oscformat",
+      "url": "https://puredata.info/docs/manuals/pd/x2.htm",
+      "version": "0.55",
+      "firmware": "Pure Data 0.55-x"
+    }
+  ],
+  "_limitations": "Passthrough mode — Pure Data does not impose any OSC path layout. The bridge forwards under `/pd/...` to a [netreceive] object listening on UDP 9000 (configurable). You build the OSC parsing inside your patch via [oscparse] and route messages via [route]. Replies sent back via [netsend] / [oscformat] reach the bridge's reply_port and re-emit as `/pd/...` to clients.",
+  "_coverage": {
+    "mode": "passthrough",
+    "host_software": "Pure Data 0.55-x"
+  },
+  "device": {
+    "name": "Pure Data",
+    "vendor": "Pure Data",
+    "revision": "Pd 0.55-x (passthrough)",
+    "osc_prefix": "/pd",
+    "kind": "software",
+    "transport": {
+      "kind": "osc",
+      "host": "127.0.0.1",
+      "port": 9000,
+      "reply_port": 9001,
+      "passthrough_prefix": ""
+    }
+  }
+}

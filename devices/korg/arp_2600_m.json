@@ -1,0 +1,103 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/KORG/ARP 2600 M.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 5,
+    "cc_entries": 5,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "ARP 2600 M",
+    "vendor": "KORG",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/arp_2600_m",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/general/portamento_time",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0~127: Portamento time"
+      },
+      {
+        "osc": "/general/portamento",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/general/hold_2",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/general/all_sound_off",
+        "cc": 120,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/general/reset_all_controllers",
+        "cc": 121,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Off; 1-127: On"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

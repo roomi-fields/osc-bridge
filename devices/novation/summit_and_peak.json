@@ -1,0 +1,2383 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Novation/Summit and Peak.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 219,
+    "cc_entries": 74,
+    "nrpn_entries": 145,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Summit and Peak",
+    "vendor": "Novation",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/summit_and_peak",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/amp/filter",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/attack",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/decay",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/sustain",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/release",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/velocity",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 55,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/trigger",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 56,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/animate/1_hold",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Animate"
+      },
+      {
+        "osc": "/animate/2_hold",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Animate"
+      },
+      {
+        "osc": "/animate/1_attack",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 34,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Animate"
+      },
+      {
+        "osc": "/animate/1_release",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 35,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Animate"
+      },
+      {
+        "osc": "/animate/2_attack",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 36,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Animate"
+      },
+      {
+        "osc": "/animate/2_release",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 37,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Animate"
+      },
+      {
+        "osc": "/arp/clock_gate",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arp"
+      },
+      {
+        "osc": "/arp/chance",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Arp"
+      },
+      {
+        "osc": "/chorus/level",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/chorus/rate",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/chorus/feedback",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/chorus/type",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 111,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/chorus/mod_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 112,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/chorus/lpf",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 113,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/chorus/hpf",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 114,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/chorus/fl_ph",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 115,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/delay/level",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/time",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/feedback",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/ratio",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 91,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/width",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 92,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 93,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/sync_time",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 94,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/lp_damp",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 95,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/hp_damp",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 96,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/slew",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 97,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/type",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 44,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/output",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/envelope_1/loop",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 27,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 1"
+      },
+      {
+        "osc": "/envelope_1/reps",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 58,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 1"
+      },
+      {
+        "osc": "/envelope_1/delay",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 30,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 1"
+      },
+      {
+        "osc": "/envelope_2/loop",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 28,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 2"
+      },
+      {
+        "osc": "/envelope_2/reps",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 63,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 2"
+      },
+      {
+        "osc": "/envelope_2/delay",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 31,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 2"
+      },
+      {
+        "osc": "/envelope_3/loop",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 29,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 3"
+      },
+      {
+        "osc": "/envelope_3/envelope_2_reps",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 67,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 3"
+      },
+      {
+        "osc": "/envelope_3/delay",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 32,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 3"
+      },
+      {
+        "osc": "/filter/overdrive",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/post_drive",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/track",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/cutoff",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/slope",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/type",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 46,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/envelope_select",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/diverge",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/fx/distortion_level",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/bypass",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 88,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/routing",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 89,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx_matrix/fx_mx1_depth",
+        "nrpn_msb": 17,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "FX matrix"
+      },
+      {
+        "osc": "/fx_matrix/fx_mx2_depth",
+        "nrpn_msb": 18,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "FX matrix"
+      },
+      {
+        "osc": "/fx_matrix/fx_mx3_depth",
+        "nrpn_msb": 19,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "FX matrix"
+      },
+      {
+        "osc": "/fx_matrix/fx_mx4_depth",
+        "nrpn_msb": 20,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "FX matrix"
+      },
+      {
+        "osc": "/fx_matrix/fx_mx5_depth",
+        "nrpn_msb": 21,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "FX matrix"
+      },
+      {
+        "osc": "/fx_matrix/fx_mx6_depth",
+        "nrpn_msb": 22,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "FX matrix"
+      },
+      {
+        "osc": "/fx_matrix/fx_mx7_depth",
+        "nrpn_msb": 23,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "FX matrix"
+      },
+      {
+        "osc": "/fx_matrix/fx_mx8_depth",
+        "nrpn_msb": 24,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "FX matrix"
+      },
+      {
+        "osc": "/glide/time",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Glide"
+      },
+      {
+        "osc": "/glide/on",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Glide"
+      },
+      {
+        "osc": "/glide/pre_glide",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Glide"
+      },
+      {
+        "osc": "/levels/patch_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 41,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Levels"
+      },
+      {
+        "osc": "/levels/vca_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Levels"
+      },
+      {
+        "osc": "/levels/dry_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 43,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Levels"
+      },
+      {
+        "osc": "/levels/wet_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 44,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Levels"
+      },
+      {
+        "osc": "/lfo_1/filter",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1"
+      },
+      {
+        "osc": "/lfo_1/rate",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1"
+      },
+      {
+        "osc": "/lfo_1/sync_rate",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1"
+      },
+      {
+        "osc": "/lfo_1/fade",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1"
+      },
+      {
+        "osc": "/lfo_1/range",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 68,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1"
+      },
+      {
+        "osc": "/lfo_1/wave",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 69,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1"
+      },
+      {
+        "osc": "/lfo_1/phase",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 70,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1"
+      },
+      {
+        "osc": "/lfo_1/slew",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1"
+      },
+      {
+        "osc": "/lfo_1/fade_in_out",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1"
+      },
+      {
+        "osc": "/lfo_1/oneshot",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 75,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1"
+      },
+      {
+        "osc": "/lfo_1/common",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 76,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1"
+      },
+      {
+        "osc": "/lfo_2/range",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2"
+      },
+      {
+        "osc": "/lfo_2/rate",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2"
+      },
+      {
+        "osc": "/lfo_2/sync_rate",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2"
+      },
+      {
+        "osc": "/lfo_2/fade",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2"
+      },
+      {
+        "osc": "/lfo_2/wave",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 78,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2"
+      },
+      {
+        "osc": "/lfo_2/phase",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 79,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2"
+      },
+      {
+        "osc": "/lfo_2/slew",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 80,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2"
+      },
+      {
+        "osc": "/lfo_2/fade_in_out",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 81,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2"
+      },
+      {
+        "osc": "/lfo_2/oneshot",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 84,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2"
+      },
+      {
+        "osc": "/lfo_2/common",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 85,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2"
+      },
+      {
+        "osc": "/lfo_3/wave",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 3"
+      },
+      {
+        "osc": "/lfo_3/rate",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 3"
+      },
+      {
+        "osc": "/lfo_3/sync",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 3"
+      },
+      {
+        "osc": "/lfo_3/phase",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 38,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 3"
+      },
+      {
+        "osc": "/lfo_3/slew",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 3"
+      },
+      {
+        "osc": "/lfo_3/fade",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 3"
+      },
+      {
+        "osc": "/lfo_4/wave",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 4"
+      },
+      {
+        "osc": "/lfo_4/rate",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 4"
+      },
+      {
+        "osc": "/lfo_4/sync",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 26,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 4"
+      },
+      {
+        "osc": "/lfo_4/phase",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 41,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 4"
+      },
+      {
+        "osc": "/lfo_4/slew",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 4"
+      },
+      {
+        "osc": "/lfo_4/fade",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 43,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 4"
+      },
+      {
+        "osc": "/mix/osc_1_mix",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/mix/osc_2_mix",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/mix/osc_3_mix",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/mix/ring_mod_mix",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/mix/noise_mix",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/mix/external_audio_in",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/mod_1/filter",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod 1"
+      },
+      {
+        "osc": "/mod_1/attack",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod 1"
+      },
+      {
+        "osc": "/mod_1/decay",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod 1"
+      },
+      {
+        "osc": "/mod_1/sustain",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod 1"
+      },
+      {
+        "osc": "/mod_1/release",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod 1"
+      },
+      {
+        "osc": "/mod_1/velocity",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 60,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod 1"
+      },
+      {
+        "osc": "/mod_1/trigger",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 61,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod 1"
+      },
+      {
+        "osc": "/mod_2/attack",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod 2"
+      },
+      {
+        "osc": "/mod_2/decay",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod 2"
+      },
+      {
+        "osc": "/mod_2/sustain",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod 2"
+      },
+      {
+        "osc": "/mod_2/release",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod 2"
+      },
+      {
+        "osc": "/mod_2/velocity",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 64,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod 2"
+      },
+      {
+        "osc": "/mod_2/trigger",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 65,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod 2"
+      },
+      {
+        "osc": "/mod_matrix/mod_mx1_depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod matrix"
+      },
+      {
+        "osc": "/mod_matrix/mod_mx2_depth",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod matrix"
+      },
+      {
+        "osc": "/mod_matrix/mod_mx3_depth",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod matrix"
+      },
+      {
+        "osc": "/mod_matrix/mod_mx4_depth",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod matrix"
+      },
+      {
+        "osc": "/mod_matrix/mod_mx5_depth",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod matrix"
+      },
+      {
+        "osc": "/mod_matrix/mod_mx6_depth",
+        "nrpn_msb": 6,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod matrix"
+      },
+      {
+        "osc": "/mod_matrix/mod_mx7_depth",
+        "nrpn_msb": 7,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod matrix"
+      },
+      {
+        "osc": "/mod_matrix/mod_mx8_depth",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod matrix"
+      },
+      {
+        "osc": "/mod_matrix/mod_mx9_depth",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod matrix"
+      },
+      {
+        "osc": "/mod_matrix/mod_mx10_depth",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod matrix"
+      },
+      {
+        "osc": "/mod_matrix/mod_mx11_depth",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod matrix"
+      },
+      {
+        "osc": "/mod_matrix/mod_mx12_depth",
+        "nrpn_msb": 12,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod matrix"
+      },
+      {
+        "osc": "/mod_matrix/mod_mx13_depth",
+        "nrpn_msb": 13,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod matrix"
+      },
+      {
+        "osc": "/mod_matrix/mod_mx14_depth",
+        "nrpn_msb": 14,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod matrix"
+      },
+      {
+        "osc": "/mod_matrix/mod_mx15_depth",
+        "nrpn_msb": 15,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod matrix"
+      },
+      {
+        "osc": "/mod_matrix/mod_mx16_depth",
+        "nrpn_msb": 16,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mod matrix"
+      },
+      {
+        "osc": "/noise/lpf",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Noise"
+      },
+      {
+        "osc": "/noise/hpf",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 12,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Noise"
+      },
+      {
+        "osc": "/oscillator_1/osc_1_range",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/osc_1_coarse",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/osc_1_fine",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/osc_1_mod_2_pitch",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/osc_1_lfo_2_pitch",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/osc_1_shape",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/osc_1_mod_1_shape",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/osc_1_lfo_1_shape",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/osc_1_vsync",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/osc_1_wave",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/osc_1_wave_more",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/osc_1_saw_dense",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/osc_1_saw_detune",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/osc_1_fixed_note",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 19,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/osc_1_bend_range",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_2/osc_2_range",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/osc_2_coarse",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/osc_2_fine",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/osc_2_mod_2_pitch",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/osc_2_lfo_2_pitch",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/osc_2_shape",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/osc_2_mod_1_shape",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/osc_2_lfo_1_shape",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/osc_2_vsync",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/osc_2_wave",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 23,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/osc_2_wave_more",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 24,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/osc_2_saw_dense",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 26,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/osc_2_saw_detune",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 27,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/osc_2_fixed_note",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 28,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/osc_2_bend_range",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 29,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_3/osc_3_range",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 3"
+      },
+      {
+        "osc": "/oscillator_3/osc_3_coarse",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 3"
+      },
+      {
+        "osc": "/oscillator_3/osc_3_fine",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 3"
+      },
+      {
+        "osc": "/oscillator_3/osc_3_mod_2_pitch",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 3"
+      },
+      {
+        "osc": "/oscillator_3/osc_3_lfo_2_pitch",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 3"
+      },
+      {
+        "osc": "/oscillator_3/osc_3_shape",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 3"
+      },
+      {
+        "osc": "/oscillator_3/osc_3_mod_1_pitch",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 3"
+      },
+      {
+        "osc": "/oscillator_3/osc_3_lfo_1_shape",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 3"
+      },
+      {
+        "osc": "/oscillator_3/osc_3_vsync",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 3"
+      },
+      {
+        "osc": "/oscillator_3/osc_3_filter",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 3"
+      },
+      {
+        "osc": "/oscillator_3/osc_3_wave",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 32,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 3"
+      },
+      {
+        "osc": "/oscillator_3/osc_3_wave_more",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 3"
+      },
+      {
+        "osc": "/oscillator_3/osc_3_saw_dense",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 35,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 3"
+      },
+      {
+        "osc": "/oscillator_3/osc_3_saw_detune",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 36,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 3"
+      },
+      {
+        "osc": "/oscillator_3/osc_3_fixed_note",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 37,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 3"
+      },
+      {
+        "osc": "/oscillator_3/osc_3_bend_range",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 38,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 3"
+      },
+      {
+        "osc": "/other/tuning_table",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/filter_shape",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/filter_separate",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/fm_osc31",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/env2_osc31",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/lfo2_osc31",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/fm_osc12",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/env2_osc12",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/lfo2_osc21",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 19,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/fm_osc23",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 21,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/env2_osc23",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 22,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/lfo2_osc23",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 23,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/lfo3_sync",
+        "nrpn_msb": 25,
+        "nrpn_lsb": 25,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/reverb/level",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/time",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/type",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 101,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/lp_damp",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 102,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/hp_damp",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 103,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/size",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 104,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/mod",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 105,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/mod_rate",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 106,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/lpf",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 107,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/hpf",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 108,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/predelay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 109,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/voicing/voice_mode",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Voicing"
+      },
+      {
+        "osc": "/voicing/unison",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Voicing"
+      },
+      {
+        "osc": "/voicing/unison_detune",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Voicing"
+      },
+      {
+        "osc": "/voicing/spread",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Voicing"
+      },
+      {
+        "osc": "/voicing/pan_position",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 51,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Voicing"
+      },
+      {
+        "osc": "/voicing/spread_mode",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Voicing"
+      },
+      {
+        "osc": "/voicing/diverge",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Voicing"
+      },
+      {
+        "osc": "/voicing/drift",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Voicing"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

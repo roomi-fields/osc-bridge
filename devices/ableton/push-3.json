@@ -1,0 +1,183 @@
+{
+  "_sources": [
+    {
+      "type": "community-re",
+      "url": "https://github.com/git-moss/DrivenByMoss",
+      "notes": "DrivenByMoss (Jürgen Moßgraber) — Bitwig/Reaper extension supporting Push 1/2/3 natively. Java, LGPL-3.0. Source of truth for MIDI map, SysEx opcodes, palette, ribbon, pad sensitivity, MPE, preamps, pedals. Fichiers clefs: PushControlSurface.java (opcodes 0x03/0x04/0x05/0x06/0x08/0x17/0x1E/0x20/0x26/0x37/0x43), ColorPaletteEntry.java, Push3ControllerDefinition.java.",
+      "imported_at": "2026-04-20"
+    },
+    {
+      "type": "community-re",
+      "url": "https://github.com/danielknng/push3-protocol-docs",
+      "notes": "Reverse-engineering natif Push 3 (framebuffer USB, velocity curves, audio interface, palette indices observés). Seule RE publique Push 3-spécifique identifiée au 2026-04-20.",
+      "imported_at": "2026-04-20"
+    },
+    {
+      "type": "vendor-doc",
+      "url": "https://help.ableton.com/hc/en-us/articles/209071249-Push-User-Mode-for-custom-MIDI-mappings",
+      "notes": "Ableton User Mode — concept général valable Push 1/2/3. Aucun programmer's reference Push 3 publié au 2026-04-20 (contrairement au repo github.com/Ableton/push-interface qui couvre Push 2).",
+      "imported_at": "2026-04-20"
+    },
+    {
+      "type": "hardware-observed",
+      "url": "local-sniff-2026-04-20",
+      "notes": "Sniff firmware 12.x en Standalone mode : 3 heartbeats SysEx observés sur le port MIDI principal — 0x38 0x18 (~3 Hz, 15 bytes payload), 0x38 0x0D (~3 Hz, payload avec compteur 0x3A 0x3B 0x3C), 0x3A 0x21 0xXX (~1.6 Hz, valeur alternant 0x59/0x5A). Ces opcodes n'apparaissent pas dans DrivenByMoss, probablement status firmware interne — exposés ici via /sysex/raw en fallback, non parsés."
+    },
+    {
+      "type": "hardware-verified",
+      "url": "local-test-2026-04-20",
+      "notes": "End-to-end validation on firmware 12.x, Control Mode via USB-C. Scope tested: pad LED output (/note/on → pad lights in palette colour), button LED output (/cc/<N> → button lights), encoder rotation input (CC 71..78), encoder touch input (note 0..7), button press input (CC 20, 27, 102), pad MPE input (notes on channels 1..15 with CC 74 slide + aftertouch), User Mode toggle SysEx 0x0A 0x01/0x00 (both directions verified by observing behavioural change). Scope NOT tested on hardware: palette entry write/commit (0x03/0x04/0x05), LED/display brightness (0x06/0x08), ribbon mode switch (0x17), pressure mode switch (0x1E), MPE fine-tuning (0x26 sub-opcodes), preamps type/gain (0x37 0x1A/0x1B/0x02/0x03), pedal config (0x37 0x26), audio output routing (0x37 0x11), device inquiry reply (the inquiry was sent, no identity reply observed — Push 3 in Standalone may not answer). Byte layout for untested commands comes verbatim from DrivenByMoss source."
+    }
+  ],
+  "device": {
+    "name": "Ableton Push 3",
+    "vendor": "Ableton",
+    "revision": "firmware 12.x (Live 12-era, 2024-2026) — Control Mode via USB-C",
+    "osc_prefix": "/push3",
+    "manufacturer_id": [0, 33, 29],
+    "device_id": [1, 1],
+    "rate_limit_hz": 0
+  },
+  "sysex": {
+    "header": [240, 0, 33, 29, 1, 1],
+    "footer": [247]
+  },
+  "commands": [
+    {
+      "osc": "/palette/entry/set",
+      "_notes": "Write one palette entry (RGB + white). Index 0..127. Each channel is 14-bit split into 7-bit LSB+MSB. After writing, call /palette/commit to apply. Source: DrivenByMoss ColorPaletteEntry.java:161-175.",
+      "args": [
+        { "name": "index", "type": "u7" },
+        { "name": "r_lsb", "type": "u7" }, { "name": "r_msb", "type": "u7" },
+        { "name": "g_lsb", "type": "u7" }, { "name": "g_msb", "type": "u7" },
+        { "name": "b_lsb", "type": "u7" }, { "name": "b_msb", "type": "u7" },
+        { "name": "w_lsb", "type": "u7" }, { "name": "w_msb", "type": "u7" }
+      ],
+      "frame": [3, "{index}", "{r_lsb}", "{r_msb}", "{g_lsb}", "{g_msb}", "{b_lsb}", "{b_msb}", "{w_lsb}", "{w_msb}"]
+    },
+    {
+      "osc": "/palette/entry/get",
+      "_notes": "Request one palette entry. Device replies with the 10-byte palette frame on same opcode.",
+      "args": [{ "name": "index", "type": "u7" }],
+      "frame": [4, "{index}"]
+    },
+    {
+      "osc": "/palette/commit",
+      "_notes": "Flush pending palette writes into active pad LED rendering. Source: DrivenByMoss ColorPalette.java:48.",
+      "args": [],
+      "frame": [5]
+    },
+    {
+      "osc": "/led/brightness",
+      "_notes": "Global LED brightness 0..127. Source: DrivenByMoss PushControlSurface.java:930-938 (opcode 0x06).",
+      "args": [{ "name": "value", "type": "u7" }],
+      "frame": [6, "{value}"]
+    },
+    {
+      "osc": "/display/brightness",
+      "_notes": "Display brightness 0..255 split into LSB (low 7 bits) + top bit (bit 7). Source: DrivenByMoss PushControlSurface.java:915-924 (opcode 0x08).",
+      "args": [
+        { "name": "lsb", "type": "u7" },
+        { "name": "top_bit", "type": "u7" }
+      ],
+      "frame": [8, "{lsb}", "{top_bit}"]
+    },
+    {
+      "osc": "/ribbon/mode",
+      "_notes": "Set touch-strip behaviour. status: 1=volume-fader, 9=discrete, 17=pan, 122=pitch-bend (default). Source: DrivenByMoss PushControlSurface.java:706-737 (opcode 0x17).",
+      "args": [{ "name": "status", "type": "u7" }],
+      "frame": [23, "{status}"]
+    },
+    {
+      "osc": "/user_mode",
+      "_notes": "Enter/exit User Mode. enable=1 activates User Mode (pads forward their MIDI events to the host, host is responsible for LED feedback). enable=0 exits User Mode (Push 3 handles pad LEDs automatically in response to presses). Opcode 0x0A 0x01 source: danielknng/push3-protocol-docs. Opcode 0x0A 0x00 confirmed via hardware sniff 2026-04-20.",
+      "args": [{ "name": "enable", "type": "u7" }],
+      "frame": [10, "{enable}"]
+    },
+    {
+      "osc": "/pressure/mode",
+      "_notes": "Set pad pressure mode. 0=channel pressure, 1=poly aftertouch, 2=MPE. Source: DrivenByMoss PushControlSurface.java:869-875 (opcode 0x1E, Push 3-era).",
+      "args": [{ "name": "mode", "type": "u7" }],
+      "frame": [30, "{mode}"]
+    },
+    {
+      "osc": "/pad/per_pad_pitchbend",
+      "_notes": "Per-pad (MPE) pitchbend on/off. enable=0x02 to turn on, 0x00 to turn off. Source: DrivenByMoss PushControlSurface.java:958-961 (0x26 0x07 0x08).",
+      "args": [{ "name": "enable", "type": "u7" }],
+      "frame": [38, 7, 8, "{enable}", 0]
+    },
+    {
+      "osc": "/pad/in_tune_location",
+      "_notes": "MPE in-tune reference point. 0=Pad centre, 1=Finger position. Source: DrivenByMoss PushControlSurface.java:969-972 (0x26 0x07 0x0E).",
+      "args": [{ "name": "location", "type": "u7" }],
+      "frame": [38, 7, 14, "{location}", 0]
+    },
+    {
+      "osc": "/pad/in_tune_width",
+      "_notes": "MPE in-tune width (pitch-bend deadzone in mm, spec-controlled). Source: DrivenByMoss PushControlSurface.java:980-983 (0x26 0x07 0x14).",
+      "args": [{ "name": "value", "type": "u7" }],
+      "frame": [38, 7, 20, "{value}", 0]
+    },
+    {
+      "osc": "/pad/slide_height",
+      "_notes": "MPE slide height (Y-axis deadzone in mm). Source: DrivenByMoss PushControlSurface.java:991-994 (0x26 0x07 0x24).",
+      "args": [{ "name": "value", "type": "u7" }],
+      "frame": [38, 7, 36, "{value}", 0]
+    },
+    {
+      "osc": "/pedals/config",
+      "_notes": "Pedal output configuration. value: 0x50=pedal1 footsw + pedal2 footsw (default), 0x43=pedal1 CV + pedal2 footsw, 0x1C=pedal1 footsw + pedal2 CV, 0x0F=both CV. Source: DrivenByMoss PushControlSurface.java:1001-1011 (0x37 0x26 + zero padding).",
+      "args": [{ "name": "value", "type": "u7" }],
+      "frame": [55, 38, "{value}", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "osc": "/preamp/1/type",
+      "_notes": "Preamp 1 input type. 0=Line, 1=Instrument, 2=High. Source: DrivenByMoss PushControlSurface.java:1017-1022 (0x37 0x1A + zero padding).",
+      "args": [{ "name": "type", "type": "u7" }],
+      "frame": [55, 26, "{type}", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "osc": "/preamp/2/type",
+      "_notes": "Preamp 2 input type. 0=Line, 1=Instrument, 2=High. Source: DrivenByMoss PushControlSurface.java:1028-1033 (0x37 0x1B + zero padding).",
+      "args": [{ "name": "type", "type": "u7" }],
+      "frame": [55, 27, "{type}", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "osc": "/preamp/1/gain",
+      "_notes": "Preamp 1 digital gain. Range 0x00 (+20 dB) to 0x28 (no gain), step 2 per dB. Source: DrivenByMoss PushControlSurface.java:1039-1044 (0x37 0x02 + zero padding).",
+      "args": [{ "name": "gain", "type": "u7" }],
+      "frame": [55, 2, "{gain}", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "osc": "/preamp/2/gain",
+      "_notes": "Preamp 2 digital gain. Range 0x00 (+20 dB) to 0x28 (no gain), step 2 per dB. Source: DrivenByMoss PushControlSurface.java:1050-1055 (0x37 0x03 + zero padding).",
+      "args": [{ "name": "gain", "type": "u7" }],
+      "frame": [55, 3, "{gain}", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "osc": "/audio/output_config",
+      "_notes": "Output routing. 0=Headphones 1/2 + Speaker 1/2, 2=Headphones 3/4 + Speaker 1/2, 3=Headphones 1/2 + Speaker 3/4. Source: DrivenByMoss PushControlSurface.java:1061-1068 (0x37 0x11 + zero padding).",
+      "args": [{ "name": "value", "type": "u7" }],
+      "frame": [55, 17, "{value}", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    }
+  ],
+  "replies": [
+    {
+      "match_frame": [2, "{major}", "{minor}", "{build_lsb}", "{build_msb}", "{serial0}", "{serial1}", "{serial2}", "{serial3}", "{serial4}", "{board_rev}"],
+      "emit_osc": "/identity {major} {minor} {build_lsb} {build_msb} {serial0} {serial1} {serial2} {serial3} {serial4} {board_rev}",
+      "_notes": "Device identity reply, triggered by Universal Device Inquiry F0 7E 7F 06 01 F7. Source: DrivenByMoss PushControlSurface.java:1267-1292."
+    }
+  ],
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "poly_aftertouch": "/poly_aftertouch {note} {value} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  }
+}

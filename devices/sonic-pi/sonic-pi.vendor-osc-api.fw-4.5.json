@@ -1,0 +1,30 @@
+{
+  "_sources": [
+    {
+      "type": "vendor-osc-api",
+      "name": "Sonic Pi OSC input",
+      "url": "https://sonic-pi.net/tutorial.html#section-12-2",
+      "version": "4.5",
+      "firmware": "Sonic Pi 4.5"
+    }
+  ],
+  "_limitations": "Passthrough mode — the bridge does not interpret Sonic Pi paths. Whatever you send under `/sonicpi/...` is forwarded verbatim (with `/sonicpi` stripped) to Sonic Pi. Your Sonic Pi code matches the resulting path via `sync :osc:/...` or `live_loop` patterns. Replies (any OSC reaching the bridge's reply_port) are re-emitted with `/sonicpi/` prefix to the bridge's clients.",
+  "_coverage": {
+    "mode": "passthrough",
+    "host_software": "Sonic Pi 4.5"
+  },
+  "device": {
+    "name": "Sonic Pi",
+    "vendor": "Sonic Pi",
+    "revision": "Sonic Pi 4.5 (passthrough)",
+    "osc_prefix": "/sonicpi",
+    "kind": "software",
+    "transport": {
+      "kind": "osc",
+      "host": "127.0.0.1",
+      "port": 4560,
+      "reply_port": 4570,
+      "passthrough_prefix": ""
+    }
+  }
+}

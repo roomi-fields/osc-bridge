@@ -1,0 +1,508 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/KORG/MS2000.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 45,
+    "cc_entries": 45,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "MS2000",
+    "vendor": "KORG",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/ms2000",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/pitch/portamento",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pitch"
+      },
+      {
+        "osc": "/osc_1/wave",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC 1",
+        "_usage": "0-15: Saw; 16-31: Pulse; 32-47: Tri; 48-63: Sin; 64-79: Vox wave; 80-95: DWGS; 96-111: Noise; 112-127: Audio in"
+      },
+      {
+        "osc": "/osc_1/control_1",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC 1"
+      },
+      {
+        "osc": "/osc_1/control_2",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC 1"
+      },
+      {
+        "osc": "/osc_2_audio_in_2/osc_2_wave",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC 2 / Audio In 2",
+        "_usage": "0-42: Saw; 43-85: Squ; 86-127: Tri"
+      },
+      {
+        "osc": "/osc_2_audio_in_2/osc_2_modulation",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC 2 / Audio In 2",
+        "_usage": "0-31: Off; 32-63: Ring; 64-95: Sync; 96-127: Ring sync"
+      },
+      {
+        "osc": "/osc_2_audio_in_2/osc_2_semitone",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC 2 / Audio In 2"
+      },
+      {
+        "osc": "/osc_2_audio_in_2/osc_2_tune",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "OSC 2 / Audio In 2"
+      },
+      {
+        "osc": "/mixer/osc_1_level",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/osc_2_level",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/noise_level",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/filter/type",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0-31: 24LPF; 32-63: 12LPF; 64-95: 12BPF; 96-127: 12HPF"
+      },
+      {
+        "osc": "/filter/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/eg_1_intensity",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/kbd_track",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter"
+      },
+      {
+        "osc": "/amp/level",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/panpot",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/eg2_gate",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0-63: EG2; 64-127: Gate"
+      },
+      {
+        "osc": "/amp/distortion",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/eg_1/attack",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG 1"
+      },
+      {
+        "osc": "/eg_1/decay",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG 1"
+      },
+      {
+        "osc": "/eg_1/sustain",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG 1"
+      },
+      {
+        "osc": "/eg_1/release",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG 1"
+      },
+      {
+        "osc": "/eg_2/attack",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG 2"
+      },
+      {
+        "osc": "/eg_2/decay",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG 2"
+      },
+      {
+        "osc": "/eg_2/sustain",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG 2"
+      },
+      {
+        "osc": "/eg_2/release",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG 2"
+      },
+      {
+        "osc": "/lfo_1/wave",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1",
+        "_usage": "0-31: Saw; 32-63: Square; 64-95: Tri; 96-127: S/H"
+      },
+      {
+        "osc": "/lfo_1/frequency",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1"
+      },
+      {
+        "osc": "/lfo_2/wave",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2",
+        "_usage": "0-31: Saw; 32-63: Square(+); 64-95: Tri; 96-127: S/H"
+      },
+      {
+        "osc": "/lfo_2/frequency",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2"
+      },
+      {
+        "osc": "/patches/patch_1_intensity",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Patches"
+      },
+      {
+        "osc": "/patches/patch_2_intensity",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Patches"
+      },
+      {
+        "osc": "/patches/patch_3_intensity",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Patches"
+      },
+      {
+        "osc": "/patches/patch_4_intensity",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Patches"
+      },
+      {
+        "osc": "/sequencer/on_off",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/mod_fx/lfo_speed",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod FX"
+      },
+      {
+        "osc": "/mod_fx/depth",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod FX"
+      },
+      {
+        "osc": "/delay_fx/delay_time",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay FX"
+      },
+      {
+        "osc": "/delay_fx/delay_depth",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay FX"
+      },
+      {
+        "osc": "/vocoder_specific/audio_in_2_hpf_level",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder-specific"
+      },
+      {
+        "osc": "/vocoder_specific/audio_in_2_threshold",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder-specific"
+      },
+      {
+        "osc": "/vocoder_specific/formant_shift",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder-specific",
+        "_usage": "0-25: 0; 26-51: +1; 52-76: +2; 77-102: -1; 103-127: -2"
+      },
+      {
+        "osc": "/vocoder_specific/filter_modulation_intensity",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vocoder-specific"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

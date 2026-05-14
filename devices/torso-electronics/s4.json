@@ -1,0 +1,1328 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Torso Electronics/S4.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 128,
+    "cc_entries": 128,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "S4",
+    "vendor": "Torso Electronics",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/s4",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/disc/speed",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "DISC"
+      },
+      {
+        "osc": "/disc/tempo",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DISC"
+      },
+      {
+        "osc": "/disc/start",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DISC"
+      },
+      {
+        "osc": "/disc/length",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DISC"
+      },
+      {
+        "osc": "/disc/offset",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DISC"
+      },
+      {
+        "osc": "/disc/xfade",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DISC"
+      },
+      {
+        "osc": "/disc/glide",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DISC"
+      },
+      {
+        "osc": "/disc/level",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "DISC"
+      },
+      {
+        "osc": "/disc/sos",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DISC"
+      },
+      {
+        "osc": "/disc/density",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DISC"
+      },
+      {
+        "osc": "/tape/speed",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "TAPE"
+      },
+      {
+        "osc": "/tape/rotate",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "TAPE"
+      },
+      {
+        "osc": "/tape/length",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "TAPE"
+      },
+      {
+        "osc": "/tape/level",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "TAPE"
+      },
+      {
+        "osc": "/tape/sos",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "TAPE"
+      },
+      {
+        "osc": "/poly/pitch",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "POLY"
+      },
+      {
+        "osc": "/poly/start",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "POLY"
+      },
+      {
+        "osc": "/poly/length",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "POLY"
+      },
+      {
+        "osc": "/poly/level",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "POLY"
+      },
+      {
+        "osc": "/poly/loop",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "POLY"
+      },
+      {
+        "osc": "/poly/xfade",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "POLY"
+      },
+      {
+        "osc": "/poly/attack",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "POLY"
+      },
+      {
+        "osc": "/poly/decay",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "POLY"
+      },
+      {
+        "osc": "/poly/sustain",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "POLY"
+      },
+      {
+        "osc": "/poly/curve",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "POLY"
+      },
+      {
+        "osc": "/poly/velocity",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "POLY"
+      },
+      {
+        "osc": "/poly/fltr_amount",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "POLY"
+      },
+      {
+        "osc": "/poly/fltr_shape",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "POLY"
+      },
+      {
+        "osc": "/mosaic/pitch",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "MOSAIC"
+      },
+      {
+        "osc": "/mosaic/rate",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MOSAIC"
+      },
+      {
+        "osc": "/mosaic/size",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MOSAIC"
+      },
+      {
+        "osc": "/mosaic/contour",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "MOSAIC"
+      },
+      {
+        "osc": "/mosaic/warp",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MOSAIC"
+      },
+      {
+        "osc": "/mosaic/spray",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MOSAIC"
+      },
+      {
+        "osc": "/mosaic/pattern",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MOSAIC"
+      },
+      {
+        "osc": "/mosaic/wet",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MOSAIC"
+      },
+      {
+        "osc": "/mosaic/detune",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MOSAIC"
+      },
+      {
+        "osc": "/mosaic/rand_rate",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MOSAIC"
+      },
+      {
+        "osc": "/mosaic/rand_size",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MOSAIC"
+      },
+      {
+        "osc": "/mosaic/sos",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MOSAIC"
+      },
+      {
+        "osc": "/ring/cutoff",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "RING"
+      },
+      {
+        "osc": "/ring/resonance",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "RING"
+      },
+      {
+        "osc": "/ring/decay",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "RING"
+      },
+      {
+        "osc": "/ring/pitch",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "RING"
+      },
+      {
+        "osc": "/ring/slope",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "RING"
+      },
+      {
+        "osc": "/ring/tone",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "RING"
+      },
+      {
+        "osc": "/ring/scale",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "RING"
+      },
+      {
+        "osc": "/ring/wet",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "RING"
+      },
+      {
+        "osc": "/ring/waves",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "RING"
+      },
+      {
+        "osc": "/ring/noise",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "RING"
+      },
+      {
+        "osc": "/ring/tilt",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "RING"
+      },
+      {
+        "osc": "/ring/detune",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "RING"
+      },
+      {
+        "osc": "/ring/waves_r",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "RING"
+      },
+      {
+        "osc": "/ring/noise_r",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "RING"
+      },
+      {
+        "osc": "/deform/drive",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DEFORM"
+      },
+      {
+        "osc": "/deform/compress",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DEFORM"
+      },
+      {
+        "osc": "/deform/crush",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DEFORM"
+      },
+      {
+        "osc": "/deform/tilt",
+        "cc": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "DEFORM"
+      },
+      {
+        "osc": "/deform/noise",
+        "cc": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DEFORM"
+      },
+      {
+        "osc": "/deform/noise_decay",
+        "cc": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DEFORM"
+      },
+      {
+        "osc": "/deform/noise_tone",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DEFORM"
+      },
+      {
+        "osc": "/deform/wet",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DEFORM"
+      },
+      {
+        "osc": "/vast/delay",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAST"
+      },
+      {
+        "osc": "/vast/time",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAST"
+      },
+      {
+        "osc": "/vast/reverb",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAST"
+      },
+      {
+        "osc": "/vast/size",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAST"
+      },
+      {
+        "osc": "/vast/feedback",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAST"
+      },
+      {
+        "osc": "/vast/spread",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAST"
+      },
+      {
+        "osc": "/vast/tone",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "VAST"
+      },
+      {
+        "osc": "/vast/decay",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAST"
+      },
+      {
+        "osc": "/wave/rate",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVE"
+      },
+      {
+        "osc": "/wave/amount",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVE"
+      },
+      {
+        "osc": "/wave/phase",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVE"
+      },
+      {
+        "osc": "/wave/offset",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "WAVE"
+      },
+      {
+        "osc": "/wave/skew",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "WAVE"
+      },
+      {
+        "osc": "/wave/fold",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVE"
+      },
+      {
+        "osc": "/wave/curve",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "WAVE"
+      },
+      {
+        "osc": "/wave/spread",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "WAVE"
+      },
+      {
+        "osc": "/random/rate",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "RANDOM"
+      },
+      {
+        "osc": "/random/amount",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "RANDOM"
+      },
+      {
+        "osc": "/random/phase",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "RANDOM"
+      },
+      {
+        "osc": "/random/offset",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "RANDOM"
+      },
+      {
+        "osc": "/random/length",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "RANDOM"
+      },
+      {
+        "osc": "/random/variation",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "RANDOM"
+      },
+      {
+        "osc": "/random/smooth",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "RANDOM"
+      },
+      {
+        "osc": "/random/spread",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "RANDOM"
+      },
+      {
+        "osc": "/adsr/attack",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ADSR"
+      },
+      {
+        "osc": "/adsr/decay",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ADSR"
+      },
+      {
+        "osc": "/adsr/sustain",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ADSR"
+      },
+      {
+        "osc": "/adsr/release",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ADSR"
+      },
+      {
+        "osc": "/adsr/att_curve",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "ADSR"
+      },
+      {
+        "osc": "/adsr/dec_curve",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "ADSR"
+      },
+      {
+        "osc": "/adsr/rel_curve",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "ADSR"
+      },
+      {
+        "osc": "/adsr/spread",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "ADSR"
+      },
+      {
+        "osc": "/follow/rate",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FOLLOW"
+      },
+      {
+        "osc": "/follow/amount",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FOLLOW"
+      },
+      {
+        "osc": "/follow/phase",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FOLLOW"
+      },
+      {
+        "osc": "/follow/offset",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FOLLOW"
+      },
+      {
+        "osc": "/follow/skew",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FOLLOW"
+      },
+      {
+        "osc": "/follow/fold",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FOLLOW"
+      },
+      {
+        "osc": "/follow/curve",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FOLLOW"
+      },
+      {
+        "osc": "/follow/spread",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FOLLOW"
+      },
+      {
+        "osc": "/track/send_1",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "TRACK"
+      },
+      {
+        "osc": "/track/send_2",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "TRACK"
+      },
+      {
+        "osc": "/track/send_3",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "TRACK"
+      },
+      {
+        "osc": "/track/send_4",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "TRACK"
+      },
+      {
+        "osc": "/mix/track_1_level",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIX"
+      },
+      {
+        "osc": "/mix/track_2_level",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIX"
+      },
+      {
+        "osc": "/mix/track_3_level",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIX"
+      },
+      {
+        "osc": "/mix/track_4_level",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIX"
+      },
+      {
+        "osc": "/mix/track_1_filter",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "MIX"
+      },
+      {
+        "osc": "/mix/track_2_filter",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "MIX"
+      },
+      {
+        "osc": "/mix/track_3_filter",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "MIX"
+      },
+      {
+        "osc": "/mix/track_4_filter",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "MIX"
+      },
+      {
+        "osc": "/mix/track_1_pan",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "MIX"
+      },
+      {
+        "osc": "/mix/track_2_pan",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "MIX"
+      },
+      {
+        "osc": "/mix/track_3_pan",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "MIX"
+      },
+      {
+        "osc": "/mix/track_4_pan",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "MIX"
+      },
+      {
+        "osc": "/mix/compress",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIX"
+      },
+      {
+        "osc": "/mix/main_level",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIX"
+      },
+      {
+        "osc": "/perform/macro_1",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PERFORM"
+      },
+      {
+        "osc": "/perform/macro_2",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PERFORM"
+      },
+      {
+        "osc": "/perform/macro_3",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PERFORM"
+      },
+      {
+        "osc": "/perform/macro_4",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PERFORM"
+      },
+      {
+        "osc": "/perform/macro_5",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PERFORM"
+      },
+      {
+        "osc": "/perform/macro_6",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PERFORM"
+      },
+      {
+        "osc": "/perform/macro_7",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PERFORM"
+      },
+      {
+        "osc": "/perform/macro_8",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PERFORM"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

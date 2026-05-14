@@ -1,0 +1,191 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Knobula/Pianophonic.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 13,
+    "cc_entries": 13,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Pianophonic",
+    "vendor": "Knobula",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/pianophonic",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/system/all_sounds_off",
+        "cc": 120,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "System",
+        "_usage": "0: All sounds off"
+      },
+      {
+        "osc": "/system/main_volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "System",
+        "_usage": "0~127: Mute to +9dB"
+      },
+      {
+        "osc": "/voice/chord_select",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice",
+        "_usage": "0~127: Select chord slot 0-8"
+      },
+      {
+        "osc": "/envelope/attack_offset",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Envelope",
+        "_usage": "0~127: Bipolar offset"
+      },
+      {
+        "osc": "/envelope/decay_offset",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Envelope",
+        "_usage": "0~127: Bipolar offset"
+      },
+      {
+        "osc": "/envelope/release_offset",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Envelope",
+        "_usage": "0~127: Bipolar offset"
+      },
+      {
+        "osc": "/filter/offset",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter",
+        "_usage": "0~127: Bipolar offset"
+      },
+      {
+        "osc": "/oscillator/detune_offset",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator",
+        "_usage": "0~127: Bipolar offset"
+      },
+      {
+        "osc": "/oscillator/start_position_offset",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator",
+        "_usage": "0~127: Bipolar offset"
+      },
+      {
+        "osc": "/oscillator/morph_speed_offset",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator",
+        "_usage": "0~127: Bipolar offset"
+      },
+      {
+        "osc": "/effects/reverb_send_scaling",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0~127: Mute to +9dB"
+      },
+      {
+        "osc": "/calibration/v_oct_slope",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Calibration",
+        "_usage": "0~127: 1.10V/Oct to 0.91V/Oct"
+      },
+      {
+        "osc": "/calibration/v_oct_offset",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Calibration",
+        "_usage": "0~127: -100 cents to : +100 cents"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

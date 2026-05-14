@@ -1,0 +1,773 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/IK Multimedia/Uno Drum.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 70,
+    "cc_entries": 70,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "UNO Drum",
+    "vendor": "IK Multimedia",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/uno_drum",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/general/output_level",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/sequencer/swing_amount",
+        "cc": 9,
+        "range": [
+          50,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "50: No swing"
+      },
+      {
+        "osc": "/sequencer/division",
+        "cc": 12,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "0: 8th note triplet; 1: 16th note triplet; 2: 16th note; 3: 32nd note"
+      },
+      {
+        "osc": "/sequencer/pattern_length",
+        "cc": 13,
+        "range": [
+          0,
+          63
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "0~63: Length up to 64 notes"
+      },
+      {
+        "osc": "/fx/compressor_amount",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/drive_amount",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/sound/kick_1_level",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/kick_1_tune",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/kick_1_snap",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/kick_1_decay",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/kick_1_fm_tune",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/kick_1_fm_amount",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/kick_1_sweep_time",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/kick_2_level",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/kick_2_tune",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/kick_2_snap",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/kick_2_decay",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/snare_level",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/snare_tune",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/snare_snap",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/snare_decay",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/snare_lpf",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/clap_level",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/clap_tune",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/clap_decay",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0-15: Clap decay 1; 16-31: Clap decay 2; 32-47: Clap decay 3; 48-63: Clap decay 4; 64-79: Clap decay 5; 80-95: Clay decay 6; 96-111: Clap decay 7; 112"
+      },
+      {
+        "osc": "/sound/closed_hat_level",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/closed_hat_tune",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0-31: Closed hat tune 1; 32-63: Closed hat tune 2; 64-95: Closed hat tune 3; 96-127: Closed hat tune 4"
+      },
+      {
+        "osc": "/sound/closed_hat_decay",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/open_hat_level",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/open_hat_tune",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0-31: Open hat tune 1; 32-63: Open hat tune 2; 64-95: Open hat tune 3; 96-127: Open hat tune 4"
+      },
+      {
+        "osc": "/sound/open_hat_decay",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/rim_level",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/rim_tune",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/rim_decay",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/tom_1_level",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/tom_1_tune",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/tom_1_decay",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/tom_2_level",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/tom_2_tune",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/tom_2_decay",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/cowbell_level",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/cowbell_tune",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/cowbell_decay",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/ride_level",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/ride_tune",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/ride_decay",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/cymbal_level",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/cymbal_tune",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sound/cymbal_decay",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound"
+      },
+      {
+        "osc": "/sequencer/stutter_type",
+        "cc": 70,
+        "range": [
+          0,
+          10
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "0: Off; 1: Loop 8; 2: Loop 4; 3: Loop triplets 1; 4: Loop triplets 2; 5: Fill style 1; 6: Fill style 2; 7: Tune up; 8: Tune down; 9: Madness 1; 10: Ma"
+      },
+      {
+        "osc": "/sequencer/stutter_amount",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "0~127: 13 stutter types"
+      },
+      {
+        "osc": "/sequencer/stutter_enable",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/sequencer/roll_type",
+        "cc": 73,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "0: 8th note triplet; 1: 16th note triplet; 2: 16th note; 3: 32nd note; 4~7: Fill"
+      },
+      {
+        "osc": "/sequencer/roll_enable",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/sequencer/pad_double_velocity_enable",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/general/metronome_enable",
+        "cc": 76,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Off; 1: On during rec; 2: Always on"
+      },
+      {
+        "osc": "/sequencer/pad_note_length",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sound/kick_1_sound",
+        "cc": 80,
+        "range": [
+          1,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "1: Analog; 2~5: Select sample slot"
+      },
+      {
+        "osc": "/sound/kick_2_sounds",
+        "cc": 81,
+        "range": [
+          1,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "1: Analog; 2~5: Select sample slot"
+      },
+      {
+        "osc": "/sound/snare_sound",
+        "cc": 82,
+        "range": [
+          1,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "1: Analog; 2~5: Select sample slot"
+      },
+      {
+        "osc": "/sound/clap_sound",
+        "cc": 83,
+        "range": [
+          1,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "1: Analog; 2~5: Select sample slot"
+      },
+      {
+        "osc": "/sound/closed_hat_sound",
+        "cc": 84,
+        "range": [
+          1,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "1: Analog; 2~5: Select sample slot"
+      },
+      {
+        "osc": "/sound/open_hat_sound",
+        "cc": 85,
+        "range": [
+          1,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "1: Analog; 2~5: Select sample slot"
+      },
+      {
+        "osc": "/sound/rim_sound",
+        "cc": 86,
+        "range": [
+          1,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "1~5: Select sample slot"
+      },
+      {
+        "osc": "/sound/tom_1_sound",
+        "cc": 87,
+        "range": [
+          1,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "1~5: Select sample slot"
+      },
+      {
+        "osc": "/sound/tom_2_sound",
+        "cc": 88,
+        "range": [
+          1,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "1~5: Select sample slot"
+      },
+      {
+        "osc": "/sound/cowbell_sound",
+        "cc": 89,
+        "range": [
+          1,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "1~5: Select sample slot"
+      },
+      {
+        "osc": "/sound/ride_sound",
+        "cc": 90,
+        "range": [
+          1,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "1~5: Select sample slot"
+      },
+      {
+        "osc": "/sound/cymbal_sound",
+        "cc": 91,
+        "range": [
+          1,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "1~5: Select sample slot"
+      },
+      {
+        "osc": "/general/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

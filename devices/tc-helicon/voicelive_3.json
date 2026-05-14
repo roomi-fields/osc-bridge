@@ -1,0 +1,344 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/TC Helicon/VoiceLive 3.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 27,
+    "cc_entries": 27,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "VoiceLive 3",
+    "vendor": "TC Helicon",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/voicelive_3",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/vocal_harmony/harmony_vibrato_boost",
+        "cc": 1,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocal Harmony",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/guitar/rhythmic",
+        "cc": 16,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Guitar",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/guitar/delay",
+        "cc": 17,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Guitar",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/guitar/compressor",
+        "cc": 19,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Guitar",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/guitar/umod",
+        "cc": 21,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Guitar",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/guitar/octaver",
+        "cc": 23,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Guitar",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/guitar/amp",
+        "cc": 25,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Guitar",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/guitar/wah",
+        "cc": 27,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Guitar",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/guitar/boost",
+        "cc": 29,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Guitar",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/guitar/reverb",
+        "cc": 46,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Guitar",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/guitar/hit",
+        "cc": 47,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Guitar",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/vocal_harmony/key",
+        "cc": 30,
+        "range": [
+          0,
+          11
+        ],
+        "orientation": "0-based",
+        "section": "Vocal Harmony",
+        "_usage": "0: C; 1: C#; 2: D; 3: D#; 4: E; 5: F; 6: F#; 7: G; 8: G#; 9: A; 10: A#; 11: B"
+      },
+      {
+        "osc": "/vocal_harmony/scale",
+        "cc": 31,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Vocal Harmony",
+        "_usage": "0: MAJ1; 1: MAJ2; 2: MAJ3; 3: MIN1; 4: MIN2; 5: MIN3; 6: CUST"
+      },
+      {
+        "osc": "/vocal/vocoder_synth",
+        "cc": 50,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocal",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/vocal/rhythmic",
+        "cc": 51,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocal",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/vocal/hit",
+        "cc": 56,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocal",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/vocal/choir",
+        "cc": 104,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocal",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/vocal/harmony",
+        "cc": 110,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocal",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/vocal/double",
+        "cc": 111,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocal",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/vocal/reverb",
+        "cc": 112,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocal",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/vocal/hardtune",
+        "cc": 113,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocal",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/vocal/umod",
+        "cc": 116,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocal",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/vocal/delay",
+        "cc": 117,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocal",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/vocal/transducer",
+        "cc": 118,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocal",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/performance/step",
+        "cc": 115,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "1~127: Step number"
+      },
+      {
+        "osc": "/vocal_harmony/harmony_hold",
+        "cc": 119,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocal Harmony",
+        "_usage": "1-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/general/all_notes_off",
+        "cc": 123,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

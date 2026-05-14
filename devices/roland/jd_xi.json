@@ -1,0 +1,2999 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Roland/JD-Xi.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 268,
+    "cc_entries": 36,
+    "nrpn_entries": 244,
+    "fourteen_bit_cc_pairs": 2
+  },
+  "device": {
+    "name": "JD-Xi",
+    "vendor": "Roland",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/jd_xi",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/general/bank_select",
+        "cc": 0,
+        "cc_lsb": 32,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/modulation",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/portamento_time",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/data_entry",
+        "cc": 6,
+        "cc_lsb": 38,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "General"
+      },
+      {
+        "osc": "/general/expression",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/hold",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/general/portamento_switch",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/tone/unison",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Tone",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/tone/wave_shape",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tone"
+      },
+      {
+        "osc": "/tone/ring_modulation",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 34,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Tone",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/vibrato/rate",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vibrato"
+      },
+      {
+        "osc": "/vibrato/depth",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vibrato"
+      },
+      {
+        "osc": "/vibrato/delay",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vibrato"
+      },
+      {
+        "osc": "/filter/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter"
+      },
+      {
+        "osc": "/envelope/attack_time",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/decay_time",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/release_time",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/effects/reverb_level",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/delay_level",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/effect_1_level",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/effect_2_level",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/vocoder_level",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/reverb_send_level",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/delay_send_level",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/partial_1_lfo/shape",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: LFO",
+        "_usage": "0: Triangle; 1: Sine; 2: Sawtooth; 3: Square; 4: Sample and hold; 5: Random"
+      },
+      {
+        "osc": "/partial_1_lfo/rate",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Partial 1: LFO"
+      },
+      {
+        "osc": "/partial_1_lfo/tempo_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: LFO",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/partial_1_lfo/fade_time",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: LFO"
+      },
+      {
+        "osc": "/partial_1_lfo/pitch_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 1: LFO"
+      },
+      {
+        "osc": "/partial_1_lfo/filter_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 1: LFO"
+      },
+      {
+        "osc": "/partial_1_lfo/amplifier_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 1: LFO"
+      },
+      {
+        "osc": "/partial_1_oscillator/waveform",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 24,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: Oscillator",
+        "_usage": "0: Sawtooth; 1: Square; 2: Pulse width square; 3: Triangle; 4: Sine; 5: Noise; 6: Super saw; 7: PCM"
+      },
+      {
+        "osc": "/partial_1_oscillator/pitch",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 1: Oscillator"
+      },
+      {
+        "osc": "/partial_1_oscillator/detune",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 1: Oscillator"
+      },
+      {
+        "osc": "/partial_1_oscillator/pulse_width",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: Oscillator"
+      },
+      {
+        "osc": "/partial_1_oscillator/pulse_width_modulation_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: Oscillator"
+      },
+      {
+        "osc": "/partial_1_oscillator/pitch_envelope_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 1: Oscillator"
+      },
+      {
+        "osc": "/partial_1_oscillator/pitch_envelope_attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: Oscillator"
+      },
+      {
+        "osc": "/partial_1_oscillator/pitch_envelope_decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: Oscillator"
+      },
+      {
+        "osc": "/partial_1_filter/type",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 56,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: Filter"
+      },
+      {
+        "osc": "/partial_1_filter/cutoff",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 59,
+        "orientation": "0-based",
+        "section": "Partial 1: Filter"
+      },
+      {
+        "osc": "/partial_1_filter/resonance",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 62,
+        "orientation": "0-based",
+        "section": "Partial 1: Filter"
+      },
+      {
+        "osc": "/partial_1_filter/envelope_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 1: Filter"
+      },
+      {
+        "osc": "/partial_1_filter/cutoff_key_follow",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 1: Filter"
+      },
+      {
+        "osc": "/partial_1_filter/high_pass_filter_cutoff",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: Filter"
+      },
+      {
+        "osc": "/partial_1_filter_envelope/attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: Filter envelope"
+      },
+      {
+        "osc": "/partial_1_filter_envelope/decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: Filter envelope"
+      },
+      {
+        "osc": "/partial_1_filter_envelope/sustain",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: Filter envelope"
+      },
+      {
+        "osc": "/partial_1_filter_envelope/release",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: Filter envelope"
+      },
+      {
+        "osc": "/partial_1_amplifier/level",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 86,
+        "orientation": "0-based",
+        "section": "Partial 1: Amplifier"
+      },
+      {
+        "osc": "/partial_1_amplifier_envelope/attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: Amplifier envelope"
+      },
+      {
+        "osc": "/partial_1_amplifier_envelope/decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: Amplifier envelope"
+      },
+      {
+        "osc": "/partial_1_amplifier_envelope/sustain",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: Amplifier envelope"
+      },
+      {
+        "osc": "/partial_1_amplifier_envelope/release",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: Amplifier envelope"
+      },
+      {
+        "osc": "/partial_1_amplifier_envelope/envelope",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 124,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 1: Amplifier envelope"
+      },
+      {
+        "osc": "/partial_2_lfo/shape",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: LFO",
+        "_usage": "0: Triangle; 1: Sine; 2: Sawtooth; 3: Square; 4: Sample and hold; 5: Random"
+      },
+      {
+        "osc": "/partial_2_lfo/rate",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Partial 2: LFO"
+      },
+      {
+        "osc": "/partial_2_lfo/tempo_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: LFO"
+      },
+      {
+        "osc": "/partial_2_lfo/fade_time",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: LFO"
+      },
+      {
+        "osc": "/partial_2_lfo/pitch_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 2: LFO"
+      },
+      {
+        "osc": "/partial_2_lfo/filter_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 2: LFO"
+      },
+      {
+        "osc": "/partial_2_lfo/amplifier_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 2: LFO"
+      },
+      {
+        "osc": "/partial_2_oscillator/waveform",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 25,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: Oscillator",
+        "_usage": "0: Sawtooth; 1: Square; 2: Pulse width square; 3: Triangle; 4: Sine; 5: Noise; 6: Super saw; 7: PCM"
+      },
+      {
+        "osc": "/partial_2_oscillator/pitch",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 2: Oscillator"
+      },
+      {
+        "osc": "/partial_2_oscillator/detune",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 2: Oscillator"
+      },
+      {
+        "osc": "/partial_2_oscillator/pulse_width",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: Oscillator"
+      },
+      {
+        "osc": "/partial_2_oscillator/pulse_width_modulation_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: Oscillator"
+      },
+      {
+        "osc": "/partial_2_oscillator/pitch_envelope_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 2: Oscillator"
+      },
+      {
+        "osc": "/partial_2_oscillator/pitch_envelope_attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: Oscillator"
+      },
+      {
+        "osc": "/partial_2_oscillator/pitch_envelope_decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: Oscillator"
+      },
+      {
+        "osc": "/partial_2_filter/type",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 57,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: Filter"
+      },
+      {
+        "osc": "/partial_2_filter/cutoff",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 60,
+        "orientation": "0-based",
+        "section": "Partial 2: Filter"
+      },
+      {
+        "osc": "/partial_2_filter/resonance",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 63,
+        "orientation": "0-based",
+        "section": "Partial 2: Filter"
+      },
+      {
+        "osc": "/partial_2_filter/envelope_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 2: Filter"
+      },
+      {
+        "osc": "/partial_2_filter/cutoff_key_follow",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 2: Filter"
+      },
+      {
+        "osc": "/partial_2_filter/high_pass_filter_cutoff",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: Filter"
+      },
+      {
+        "osc": "/partial_2_filter_envelope/attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: Filter envelope"
+      },
+      {
+        "osc": "/partial_2_filter_envelope/decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: Filter envelope"
+      },
+      {
+        "osc": "/partial_2_filter_envelope/sustain",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: Filter envelope"
+      },
+      {
+        "osc": "/partial_2_filter_envelope/release",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: Filter envelope"
+      },
+      {
+        "osc": "/partial_2_amplifier/level",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 87,
+        "orientation": "0-based",
+        "section": "Partial 2: Amplifier"
+      },
+      {
+        "osc": "/partial_2_amplifier_envelope/attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: Amplifier envelope"
+      },
+      {
+        "osc": "/partial_2_amplifier_envelope/decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: Amplifier envelope"
+      },
+      {
+        "osc": "/partial_2_amplifier_envelope/sustain",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: Amplifier envelope"
+      },
+      {
+        "osc": "/partial_2_amplifier_envelope/release",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: Amplifier envelope"
+      },
+      {
+        "osc": "/partial_2_amplifier_envelope/envelope",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 125,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 2: Amplifier envelope"
+      },
+      {
+        "osc": "/partial_3_lfo/shape",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: LFO",
+        "_usage": "0: Triangle; 1: Sine; 2: Sawtooth; 3: Square; 4: Sample and hold; 5: Random"
+      },
+      {
+        "osc": "/partial_3_lfo/rate",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Partial 3: LFO"
+      },
+      {
+        "osc": "/partial_3_lfo/tempo_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: LFO",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/partial_3_lfo/fade_time",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: LFO",
+        "_usage": "0~127: Fade time"
+      },
+      {
+        "osc": "/partial_3_lfo/pitch_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 3: LFO"
+      },
+      {
+        "osc": "/partial_3_lfo/filter_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 3: LFO"
+      },
+      {
+        "osc": "/partial_3_lfo/amplifier_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 3: LFO"
+      },
+      {
+        "osc": "/partial_3_oscillator/waveform",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 26,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: Oscillator",
+        "_usage": "0: Sawtooth; 1: Square; 2: Pulse width square; 3: Triangle; 4: Sine; 5: Noise; 6: Super saw; 7: PCM"
+      },
+      {
+        "osc": "/partial_3_oscillator/pitch",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 3: Oscillator"
+      },
+      {
+        "osc": "/partial_3_oscillator/detune",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 3: Oscillator"
+      },
+      {
+        "osc": "/partial_3_oscillator/pulse_width",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: Oscillator"
+      },
+      {
+        "osc": "/partial_3_oscillator/pulse_width_modulation_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: Oscillator"
+      },
+      {
+        "osc": "/partial_3_oscillator/pitch_envelope_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 3: Oscillator"
+      },
+      {
+        "osc": "/partial_3_oscillator/pitch_envelope_attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: Oscillator"
+      },
+      {
+        "osc": "/partial_3_oscillator/pitch_envelope_decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: Oscillator"
+      },
+      {
+        "osc": "/partial_3_filter/type",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 58,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: Filter"
+      },
+      {
+        "osc": "/partial_3_filter/cutoff",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 61,
+        "orientation": "0-based",
+        "section": "Partial 3: Filter"
+      },
+      {
+        "osc": "/partial_3_filter/resonance",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 64,
+        "orientation": "0-based",
+        "section": "Partial 3: Filter"
+      },
+      {
+        "osc": "/partial_3_filter/envelope_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 3: Filter"
+      },
+      {
+        "osc": "/partial_3_filter/cutoff_key_follow",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Partial 3: Filter"
+      },
+      {
+        "osc": "/partial_3_filter/high_pass_filter_cutoff",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: Filter"
+      },
+      {
+        "osc": "/partial_3_filter_envelope/attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: Filter envelope"
+      },
+      {
+        "osc": "/partial_3_filter_envelope/decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: Filter envelope"
+      },
+      {
+        "osc": "/partial_3_filter_envelope/sustain",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: Filter envelope"
+      },
+      {
+        "osc": "/partial_3_filter_envelope/release",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: Filter envelope"
+      },
+      {
+        "osc": "/partial_3_amplifier/level",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 88,
+        "orientation": "0-based",
+        "section": "Partial 3: Amplifier"
+      },
+      {
+        "osc": "/partial_3_amplifier_envelope/attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: Amplifier envelope"
+      },
+      {
+        "osc": "/partial_3_amplifier_envelope/decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: Amplifier envelope"
+      },
+      {
+        "osc": "/partial_3_amplifier_envelope/sustain",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: Amplifier envelope"
+      },
+      {
+        "osc": "/partial_3_amplifier_envelope/release",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: Amplifier envelope"
+      },
+      {
+        "osc": "/partial_3_amplifier_envelope/envelope",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 126,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Partial 3: Amplifier envelope"
+      },
+      {
+        "osc": "/drums/note_36_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_36_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_36_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_36_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_37_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_37_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_37_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_37_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_38_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_38_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_38_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_38_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_39_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_39_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_39_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_39_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_40_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_40_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_40_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_40_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_41_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_41_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_41_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_41_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_42_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_42_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_42_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_42_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_43_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_43_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_43_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_43_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_44_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_44_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_44_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_44_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_45_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_45_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_45_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_45_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_46_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_46_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_46_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_46_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_47_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_47_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_47_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_47_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_48_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_48_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_48_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_48_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_49_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_49_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_49_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_49_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_50_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_50_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_50_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_50_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_51_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_51_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_51_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_51_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_52_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_52_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_52_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_52_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_53_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_53_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_53_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_53_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_54_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_54_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_54_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_54_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_55_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_55_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_55_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_55_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_56_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_56_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_56_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_56_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_57_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_57_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_57_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_57_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_58_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_58_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_58_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_58_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_59_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_59_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_59_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_59_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_60_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_60_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_60_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_60_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_61_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_61_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_61_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_61_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_62_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_62_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_62_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_62_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_63_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_63_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_63_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_63_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_64_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_64_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_64_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_64_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_65_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_65_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_65_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_65_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_66_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_66_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_66_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_66_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_67_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_67_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_67_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_67_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_68_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_68_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_68_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_68_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_69_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_69_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_69_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_69_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_70_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_70_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_70_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_70_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_71_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_71_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_71_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_71_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_72_level",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_72_cutoff",
+        "nrpn_msb": 89,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_72_resonance",
+        "nrpn_msb": 92,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/note_72_envelope",
+        "nrpn_msb": 119,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

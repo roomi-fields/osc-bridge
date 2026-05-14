@@ -1,0 +1,177 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/IhQSbtukv6teagil0tHq",
+      "preset_name": "Arturia Reverb Plate-140 v2",
+      "imported_at": "2026-04-13",
+      "preset_id": "IhQSbtukv6teagil0tHq",
+      "revision": "11",
+      "author": "NewIgnis"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 14,
+    "cc_entries": 14,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "Reverb Plate-140 v2",
+    "vendor": "Arturia",
+    "revision": "per Electra preset",
+    "osc_prefix": "/reverb_plate_140_v2",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/db",
+        "cc": 102,
+        "range": [
+          -60,
+          6
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/model",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/min_max",
+        "cc": 18,
+        "range": [
+          1,
+          17
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dry_wet",
+        "cc": 87,
+        "range": [
+          -50,
+          50
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/unnamed",
+        "cc": 88,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/ms",
+        "cc": 89,
+        "range": [
+          0,
+          250
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/20hz_700hz",
+        "cc": 90,
+        "range": [
+          2,
+          70
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pre_post",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/amount",
+        "cc": 93,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lo_shelf_gain",
+        "cc": 94,
+        "range": [
+          -24,
+          24
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lo_shelf_freq",
+        "cc": 104,
+        "range": [
+          2,
+          200
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/active",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hi_shelf_freq",
+        "cc": 105,
+        "cc_lsb": 9,
+        "range": [
+          2,
+          200
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hi_shelf_gain",
+        "cc": 98,
+        "range": [
+          -24,
+          24
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

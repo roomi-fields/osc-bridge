@@ -1,0 +1,468 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Analog Heat.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 42,
+    "cc_entries": 0,
+    "nrpn_entries": 42,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Analog Heat",
+    "vendor": "Elektron",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/analog_heat",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/circuit_select",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 70,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/drive",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 12,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/wet_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/dry_wet_mix",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/preset_volume",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/eq_low",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/eq_high",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/vcf_mode",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 80,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/vcf_frequency",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 74,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/vcf_frequency_pan",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 79,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/vcf_resonance",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/vcf_dirt",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env_to_filter",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/lfo_to_filter",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env_threshold",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env_attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 73,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env_release",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env_base",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env_width",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env_mode",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 19,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env_destination",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 75,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env_desination2",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 76,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/env_depth2",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 21,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/lfo_waveform",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 83,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/lfo_speed",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 22,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/lfo_multiplier",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 23,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/lfo_fade",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 24,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/lfo_mode",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 25,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/lfo_start_phase",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 26,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/lfo_destination",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 77,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/lfo_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 27,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/lfo_destination2",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 78,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/lfo_depth2",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 28,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/cv_a_destination",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 85,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/cv_a_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 86,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/expr_a_destination",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 87,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/expr_a_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 88,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/cv_b_destination",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 89,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/cv_b_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 90,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/expr_b_destination",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 91,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      },
+      {
+        "osc": "/expr_b_depth",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 92,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

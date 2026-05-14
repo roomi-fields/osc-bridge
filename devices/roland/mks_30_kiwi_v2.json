@@ -1,0 +1,934 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/pxhkDBupZXK0JBFQzDjL",
+      "preset_name": "MKS-30 KIWI V2",
+      "imported_at": "2026-04-13",
+      "preset_id": "pxhkDBupZXK0JBFQzDjL",
+      "revision": "107"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 94,
+    "cc_entries": 91,
+    "sysex_commands": 3
+  },
+  "device": {
+    "name": "MKS-30 KIWI V2",
+    "vendor": "Roland",
+    "revision": "per Electra preset",
+    "osc_prefix": "/mks_30_kiwi_v2",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240,
+      0,
+      33,
+      22,
+      96,
+      7,
+      14
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/source",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        49,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/destination",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        51,
+        0,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/sync",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        94,
+        0,
+        "{val}"
+      ]
+    }
+  ],
+  "cc_params": {
+    "channel": 12,
+    "entries": [
+      {
+        "osc": "/range",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/wave",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/coarse_tune",
+        "cc": 8,
+        "range": [
+          -12,
+          12
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/cross_mod",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dco_mix",
+        "cc": 22,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_src",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 10,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_1",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_1",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_1",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_1",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/range",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/coarse_tune",
+        "cc": 14,
+        "range": [
+          -12,
+          12
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fine_tune",
+        "cc": 15,
+        "range": [
+          -50,
+          50
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_2",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_2",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_2",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_2",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vca_mode",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_src",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 17,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_3",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_3",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_3",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_3",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/cutoff",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/resonance",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/key_track_lvl",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/cutoff",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 30,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_src",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/wave",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/rate",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/wave",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/rate",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/wave",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/rate",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "cc": 103,
+        "range": [
+          -63,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "cc": 82,
+        "range": [
+          -63,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/wave",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/chorus",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 108,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 109,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 111,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 113,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 115,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 117,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 116,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 114,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 112,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 110,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/time",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dco_detune",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/analogue_feel",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mode",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mix_env",
+        "cc": 23,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mix_dyn",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pw",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pwm",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pwm_source",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dco2_pw",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dco2_pwm",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pwm_source",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mix_env",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/steal",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/voice_mode",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/list",
+        "cc": 125,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/clock_source",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/arp_mode",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/arp_range",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/clock_divide",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/arp_seq_start",
+        "cc": 122,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/arp_seq_stop",
+        "cc": 124,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/arp_seq_cont",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/bend_range",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/patch_tempo",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/clock_divide",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vca_dyn",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vcf_dyn",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 12,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

@@ -1,0 +1,118 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/s9SmHtUwd5LK5HV8fide",
+      "preset_name": "ChannelEq",
+      "imported_at": "2026-04-13",
+      "preset_id": "s9SmHtUwd5LK5HV8fide",
+      "revision": "4",
+      "author": "Jaap-Henk Hoepman"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 7,
+    "cc_entries": 7,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "ChannelEq",
+    "vendor": "Ableton",
+    "revision": "per Electra preset",
+    "osc_prefix": "/channeleq",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 10,
+    "entries": [
+      {
+        "osc": "/rumble_80hz",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mid_freq",
+        "cc": 3,
+        "cc_lsb": 35,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/low_gain",
+        "cc": 2,
+        "cc_lsb": 34,
+        "range": [
+          -150,
+          150
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mid_gain",
+        "cc": 4,
+        "cc_lsb": 36,
+        "range": [
+          -120,
+          120
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/high_gain",
+        "cc": 1,
+        "cc_lsb": 33,
+        "range": [
+          -150,
+          150
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/gain",
+        "cc": 0,
+        "cc_lsb": 32,
+        "range": [
+          -120,
+          120
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/device_on",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 10,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

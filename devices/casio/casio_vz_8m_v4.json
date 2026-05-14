@@ -1,0 +1,115 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/lR8oqPFHRHoflcKuHo63",
+      "preset_name": "Casio VZ-8M V4",
+      "imported_at": "2026-04-13",
+      "preset_id": "lR8oqPFHRHoflcKuHo63",
+      "revision": "1",
+      "author": "NewIgnis"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 4,
+    "cc_entries": 2,
+    "sysex_commands": 2
+  },
+  "device": {
+    "name": "Casio VZ-8M V4",
+    "vendor": "Casio",
+    "revision": "per Electra preset",
+    "osc_prefix": "/casio_vz_8m_v4",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/performance",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        68,
+        3,
+        2,
+        "{function}",
+        80,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/bend",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            24
+          ]
+        }
+      ],
+      "frame": [
+        68,
+        0,
+        0,
+        "{function}",
+        64,
+        "{val}"
+      ]
+    }
+  ],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/overall_volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/adsr_mode",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

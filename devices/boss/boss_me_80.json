@@ -1,0 +1,1575 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/vENZZMeZJDUwroLlCRcJ",
+      "preset_name": "Boss ME-80",
+      "imported_at": "2026-04-13",
+      "preset_id": "vENZZMeZJDUwroLlCRcJ",
+      "revision": "55"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 53,
+    "cc_entries": 0,
+    "sysex_commands": 53
+  },
+  "device": {
+    "name": "Boss ME-80",
+    "vendor": "BOSS",
+    "revision": "per Electra preset",
+    "osc_prefix": "/boss_me_80",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/pedal/pedal_fx",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        23,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "PEDAL"
+    },
+    {
+      "osc": "/pedal/mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        30,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "PEDAL"
+    },
+    {
+      "osc": "/od_ds",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        17,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "OD/DS"
+    },
+    {
+      "osc": "/od_ds/mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        25,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "OD/DS"
+    },
+    {
+      "osc": "/od_ds/drive",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        35,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "OD/DS"
+    },
+    {
+      "osc": "/od_ds/tone",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        36,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "OD/DS"
+    },
+    {
+      "osc": "/od_ds/level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        37,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "OD/DS"
+    },
+    {
+      "osc": "/comp_fx/comp_fx1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        16,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "COMP/FX"
+    },
+    {
+      "osc": "/comp_fx/mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        24,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "COMP/FX"
+    },
+    {
+      "osc": "/comp_fx/freq_low",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        35,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "COMP/FX"
+    },
+    {
+      "osc": "/comp_fx/d_level_high",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        36,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "COMP/FX"
+    },
+    {
+      "osc": "/comp_fx/e_level_level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        34,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "COMP/FX"
+    },
+    {
+      "osc": "/preamp",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        20,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "PREAMP"
+    },
+    {
+      "osc": "/preamp/mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        28,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "PREAMP"
+    },
+    {
+      "osc": "/preamp/gain",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        44,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "PREAMP"
+    },
+    {
+      "osc": "/preamp/bass",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        45,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "PREAMP"
+    },
+    {
+      "osc": "/preamp/middle",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        46,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "PREAMP"
+    },
+    {
+      "osc": "/preamp/treble",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        47,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "PREAMP"
+    },
+    {
+      "osc": "/preamp/level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        48,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "PREAMP"
+    },
+    {
+      "osc": "/ctl/pedal_fx",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        32,
+        0,
+        0,
+        53,
+        0,
+        "{val}"
+      ],
+      "section": "CTL"
+    },
+    {
+      "osc": "/ctl/mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        56,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "CTL"
+    },
+    {
+      "osc": "/ctl_knob",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        55,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/settings/knob_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        16,
+        0,
+        0,
+        0,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "SETTINGS"
+    },
+    {
+      "osc": "/settings/bank_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        16,
+        0,
+        0,
+        3,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "SETTINGS"
+    },
+    {
+      "osc": "/settings/manual_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        16,
+        0,
+        0,
+        4,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "SETTINGS"
+    },
+    {
+      "osc": "/hz",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            435,
+            445
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        16,
+        0,
+        0,
+        9,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/settings/tuning_sound",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        16,
+        0,
+        0,
+        2,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "SETTINGS"
+    },
+    {
+      "osc": "/settings/usb_level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            9
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        16,
+        0,
+        0,
+        5,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "SETTINGS"
+    },
+    {
+      "osc": "/settings/usb_loopback",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        16,
+        0,
+        0,
+        6,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "SETTINGS"
+    },
+    {
+      "osc": "/settings/usb_dry_rec",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        16,
+        0,
+        0,
+        7,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "SETTINGS"
+    },
+    {
+      "osc": "/settings/auto_off",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        16,
+        0,
+        0,
+        1,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "SETTINGS"
+    },
+    {
+      "osc": "/settings/midi_channel",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            16
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        16,
+        0,
+        0,
+        8,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "SETTINGS"
+    },
+    {
+      "osc": "/mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        18,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "MOD"
+    },
+    {
+      "osc": "/mod/mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        26,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "MOD"
+    },
+    {
+      "osc": "/mod/rate_key_upper",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        38,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "MOD"
+    },
+    {
+      "osc": "/mod/depth_harm_low",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        39,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "MOD"
+    },
+    {
+      "osc": "/mod/level_reson",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        40,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "MOD"
+    },
+    {
+      "osc": "/eq_fx/eq_fx2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        21,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "EQ/FX"
+    },
+    {
+      "osc": "/eq_fx/mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        29,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "EQ/FX"
+    },
+    {
+      "osc": "/eq_fx/bass",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        49,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "EQ/FX"
+    },
+    {
+      "osc": "/eq_fx/mid_rate_time",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        50,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "EQ/FX"
+    },
+    {
+      "osc": "/eq_fx/treb_depth_fb",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        51,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "EQ/FX"
+    },
+    {
+      "osc": "/eq_fx/level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        52,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "EQ/FX"
+    },
+    {
+      "osc": "/delay",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        27,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "DELAY"
+    },
+    {
+      "osc": "/delay/mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        27,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "DELAY"
+    },
+    {
+      "osc": "/reverb",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        22,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "REVERB"
+    },
+    {
+      "osc": "/reverb/mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        31,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "REVERB"
+    },
+    {
+      "osc": "/delay/time",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        41,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "DELAY"
+    },
+    {
+      "osc": "/delay/feedback",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        42,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "DELAY"
+    },
+    {
+      "osc": "/delay/e_level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        43,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "DELAY"
+    },
+    {
+      "osc": "/reverb/level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            31
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        58,
+        "{val}",
+        "{checksum}"
+      ],
+      "section": "REVERB"
+    },
+    {
+      "osc": "/level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            32
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        32,
+        0,
+        0,
+        57,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/patch",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        16,
+        0,
+        0,
+        0,
+        1,
+        18,
+        0,
+        0,
+        0,
+        0,
+        "{val}",
+        "{checksum}"
+      ]
+    }
+  ],
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

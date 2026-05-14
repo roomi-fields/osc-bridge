@@ -1,0 +1,865 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/7Avv4Exptz48YaOrRKiv",
+      "preset_name": "Korg DVP-1",
+      "imported_at": "2026-04-13",
+      "preset_id": "7Avv4Exptz48YaOrRKiv",
+      "revision": "249",
+      "author": "Tomas Peterka"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 39,
+    "cc_entries": 0,
+    "sysex_commands": 39
+  },
+  "device": {
+    "name": "DVP-1",
+    "vendor": "KORG",
+    "revision": "per Electra preset",
+    "osc_prefix": "/dvp_1",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/shift_timbre",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -16,
+            15
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        0,
+        "{function}"
+      ]
+    },
+    {
+      "osc": "/keyboard_track",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/vowel_clarity",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            8
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        1,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/bend_formant",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        11,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        23,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pitch_attack",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            15
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        2,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pitch_decay",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            15
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        3,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/polarity",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        4,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/eg_intensity",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            15
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        4,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/dca_attack",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            15
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        5,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/dca_release",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            15
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        6,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/mg_frequency",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            15
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        7,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/mg_delay",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            15
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        8,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/vibrato_depth",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            15
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        9,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/tremolo_depth",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            15
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        10,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/bypass_level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            12
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        2,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/level_threshld",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            2
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        3,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pitch_threshld",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            2
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        3,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pb_range",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            12
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        11,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/unisono_detune",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            3
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        13,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/unison_on_off",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        23,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/time",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            15
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        12,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/hold",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        12,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/ch_speed",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            4
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        15,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/ch_intensity",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            4
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        15,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/effect_volume",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            3
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        15,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/chorus_on_off",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        23,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/program",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        192,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/waveform",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        1,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/key_note",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            24,
+            84
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        17,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/key_change",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        16,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/chord_memory",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        16,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/note_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            31,
+            64
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        18,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/note_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            31,
+            64
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        19,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/note_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            31,
+            64
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        20,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/note_4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            31,
+            64
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        21,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/note_5",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            31,
+            64
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        22,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/coarse",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -12,
+            12
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        13,
+        "{function}"
+      ]
+    },
+    {
+      "osc": "/fine_tune",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        48,
+        9,
+        65,
+        14,
+        "{val}"
+      ]
+    }
+  ],
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

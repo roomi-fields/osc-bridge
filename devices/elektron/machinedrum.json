@@ -1,0 +1,4224 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/MachineDrum.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 416,
+    "cc_entries": 416,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "MachineDrum",
+    "vendor": "Elektron",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/machinedrum",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/ch_0_track_01_bd/bd_level",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_level",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_level",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_level",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_mute",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD",
+        "_usage": "0: Unmute track; 1-127: Mute track"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_mute",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD",
+        "_usage": "0: Unmute track; 1-127: Mute track"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_mute",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT",
+        "_usage": "0: Unmute track; 1-127: Mute track"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_mute",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT",
+        "_usage": "0: Unmute track; 1-127: Mute track"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_parameter_01",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_parameter_02",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_parameter_03",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_parameter_04",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_parameter_05",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_parameter_06",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_parameter_07",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_parameter_08",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_am_depth",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_am_rate",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_eq_frequency",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_eq_gain",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_frequency",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_width",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_q",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_sample_rate",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_distortion",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_volume",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_pan",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_delay_send",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_reverb_send",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_speed",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_amount",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_01_bd/bd_shape",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 01, BD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_parameter_01",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_parameter_02",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_parameter_03",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_parameter_04",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_parameter_05",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_parameter_06",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_parameter_07",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_parameter_08",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_am_depth",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_am_rate",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_eq_frequency",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_eq_gain",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_frequency",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_width",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_q",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_sample_rate",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_distortion",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_volume",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_pan",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_delay_send",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_reverb_send",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_speed",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_amount",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_02_sd/sd_shape",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 02, SD"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_parameter_01",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_parameter_02",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_parameter_03",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_parameter_04",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_parameter_05",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_parameter_06",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_parameter_07",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_parameter_08",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_am_depth",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_am_rate",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_eq_frequency",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_eq_gain",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_frequency",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_width",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_q",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_sample_rate",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_distortion",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_volume",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_pan",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_delay_sent",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_reverb_send",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_speed",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_amount",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_03_ht/ht_shape",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 03, HT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_parameter_01",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_parameter_02",
+        "cc": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_parameter_03",
+        "cc": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_parameter_04",
+        "cc": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_parameter_05",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_parameter_06",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_parameter_07",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_parameter_08",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_am_depth",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_am_rate",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_eq_frequency",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_eq_gain",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_frequency",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_width",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_q",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_sample_rate",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_distortion",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_volume",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_pan",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_delay_send",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_reverb_send",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_speed",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_amount",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_0_track_04_mt/mt_shape",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+0: Track 04, MT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_level",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_level",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_level",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_level",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_mute",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT",
+        "_usage": "0: Unmute track; 1-127: Mute track"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_mute",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP",
+        "_usage": "0: Unmute track; 1-127: Mute track"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_mute",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS",
+        "_usage": "0: Unmute track; 1-127: Mute track"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_mute",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB",
+        "_usage": "0: Unmute track; 1-127: Mute track"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_01",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_02",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_03",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_04",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_05",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_06",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_07",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_08",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_09",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_10",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_11",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_12",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_13",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_14",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_15",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_16",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_17",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_18",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_19",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_20",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_21",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_22",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_23",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_05_lt/lt_parameter_24",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 05, LT"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_01",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_02",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_03",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_04",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_05",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_06",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_07",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_08",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_09",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_10",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_11",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_12",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_13",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_14",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_15",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_16",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_17",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_18",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_19",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_20",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_21",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_22",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_23",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_06_cp/cp_parameter_24",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 06, CP"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_01",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_02",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_03",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_04",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_05",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_06",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_07",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_08",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_09",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_10",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_11",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_12",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_13",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_14",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_15",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_16",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_17",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_18",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_19",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_20",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_21",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_22",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_23",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_07_rs/rs_parameter_24",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 07, RS"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_01",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_02",
+        "cc": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_03",
+        "cc": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_04",
+        "cc": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_05",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_06",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_07",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_08",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_09",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_10",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_11",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_12",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_13",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_14",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_15",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_16",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_17",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_18",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_19",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_20",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_21",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_22",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_23",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_1_track_08_cb/cb_parameter_24",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+1: Track 08, CB"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_level",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_level",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_level",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_level",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_mute",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH",
+        "_usage": "0: Unmute track; 1-127: Mute track"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_mute",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH",
+        "_usage": "0: Unmute track; 1-127: Mute track"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_mute",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC",
+        "_usage": "0: Unmute track; 1-127: Mute track"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_mute",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC",
+        "_usage": "0: Unmute track; 1-127: Mute track"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_01",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_02",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_03",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_04",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_05",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_06",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_07",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_08",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_09",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_10",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_11",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_12",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_13",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_14",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_15",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_16",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_17",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_18",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_19",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_20",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_21",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_22",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_23",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_09_ch/ch_parameter_24",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 09, CH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_01",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_02",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_03",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_04",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_05",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_06",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_07",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_08",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_09",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_10",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_11",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_12",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_13",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_14",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_15",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_16",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_17",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_18",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_19",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_20",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_21",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_22",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_23",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_10_oh/oh_parameter_24",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 10, OH"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_01",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_02",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_03",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_04",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_05",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_06",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_07",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_08",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_09",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_10",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_11",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_12",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_13",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_14",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_15",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_16",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_17",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_18",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_19",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_20",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_21",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_22",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_23",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_11_rc/rc_parameter_24",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 11, RC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_01",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_02",
+        "cc": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_03",
+        "cc": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_04",
+        "cc": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_05",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_06",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_07",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_08",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_09",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_10",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_11",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_12",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_13",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_14",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_15",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_16",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_17",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_18",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_19",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_20",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_21",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_22",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_23",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_2_track_12_cc/cc_parameter_24",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+2: Track 12, CC"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_level",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_level",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_level",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_level",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_mute",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1",
+        "_usage": "0: Unmute track; 1-127: Mute track"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_mute",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2",
+        "_usage": "0: Unmute track; 1-127: Mute track"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_mute",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3",
+        "_usage": "0: Unmute track; 1-127: Mute track"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_mute",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4",
+        "_usage": "0: Unmute track; 1-127: Mute track"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_01",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_02",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_03",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_04",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_05",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_06",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_07",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_08",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_09",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_10",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_11",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_12",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_13",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_14",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_15",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_16",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_17",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_18",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_19",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_20",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_21",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_22",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_23",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_13_m1/m1_parameter_24",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 13, M1"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_01",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_02",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_03",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_04",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_05",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_06",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_07",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_08",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_09",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_10",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_11",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_12",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_13",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_14",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_15",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_16",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_17",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_18",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_19",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_20",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_21",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_22",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_23",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_14_m2/m2_parameter_24",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 14, M2"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_01",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_02",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_03",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_04",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_05",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_06",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_07",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_08",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_09",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_10",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_11",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_12",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_13",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_14",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_15",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_16",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_17",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_18",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_19",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_20",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_21",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_22",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_23",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_15_m3/m3_parameter_24",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 15, M3"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_01",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_02",
+        "cc": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_03",
+        "cc": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_04",
+        "cc": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_05",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_06",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_07",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_08",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_09",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_10",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_11",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_12",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_13",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_14",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_15",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_16",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_17",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_18",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_19",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_20",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_21",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_22",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_23",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      },
+      {
+        "osc": "/ch_3_track_16_m4/m4_parameter_24",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CH+3: Track 16, M4"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

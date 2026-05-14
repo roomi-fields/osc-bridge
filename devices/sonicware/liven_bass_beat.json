@@ -1,0 +1,518 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Sonicware/LIVEN BASS&BEAT.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 47,
+    "cc_entries": 47,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "LIVEN BASS&BEAT",
+    "vendor": "Sonicware",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/liven_bass_beat",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/pattern/velocity",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pattern"
+      },
+      {
+        "osc": "/pattern/effect_on_off",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pattern"
+      },
+      {
+        "osc": "/pattern/effect_type",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pattern"
+      },
+      {
+        "osc": "/pattern/effect_amount",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pattern"
+      },
+      {
+        "osc": "/pattern/level",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pattern"
+      },
+      {
+        "osc": "/pattern/ducking",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pattern"
+      },
+      {
+        "osc": "/pattern/sequencer_mode",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pattern"
+      },
+      {
+        "osc": "/pattern/line_in_to_effect",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pattern"
+      },
+      {
+        "osc": "/bass/memory",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass"
+      },
+      {
+        "osc": "/bass/assign_1",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass"
+      },
+      {
+        "osc": "/bass/assign_2",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass"
+      },
+      {
+        "osc": "/bass/dimension",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass"
+      },
+      {
+        "osc": "/bass/pitch_rate",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass"
+      },
+      {
+        "osc": "/bass/pitch_depth",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass"
+      },
+      {
+        "osc": "/bass/release_and_gate",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass"
+      },
+      {
+        "osc": "/bass/m_gun",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass"
+      },
+      {
+        "osc": "/bass/bank",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass"
+      },
+      {
+        "osc": "/bass/sweep_speed",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass"
+      },
+      {
+        "osc": "/bass/sweep_range",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass"
+      },
+      {
+        "osc": "/bass/dice",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass"
+      },
+      {
+        "osc": "/bass/octave",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass"
+      },
+      {
+        "osc": "/bass/voice_mode",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass"
+      },
+      {
+        "osc": "/bass/glide",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass"
+      },
+      {
+        "osc": "/bass/sweep",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass"
+      },
+      {
+        "osc": "/bass/transpose",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bass"
+      },
+      {
+        "osc": "/drums/level_kick",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/level_snare",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/level_hat",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/level_others",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/time_kick_1",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/time_snare_1",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/time_hat_1",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/time_ex_1",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/tune_kick_1",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/tune_snare_1",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/tune_hat_1",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/tune_hat_2",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/tune_ex_1",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/tune_ex_2",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/tune_ex_3",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/tune_ex_4",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/drums/kit",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drums"
+      },
+      {
+        "osc": "/track/swing",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track"
+      },
+      {
+        "osc": "/track/random_step",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track"
+      },
+      {
+        "osc": "/track/parameter_lock",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track"
+      },
+      {
+        "osc": "/track/level",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track"
+      },
+      {
+        "osc": "/track/effect_send",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

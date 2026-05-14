@@ -1,0 +1,67 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/QgZgjF6THHOSAfYdnDFX",
+      "preset_name": "K4R V7 P2C11",
+      "imported_at": "2026-04-13",
+      "preset_id": "QgZgjF6THHOSAfYdnDFX",
+      "revision": "1"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 2,
+    "cc_entries": 2,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "K4R V7 P2C11",
+    "vendor": "Kawai",
+    "revision": "per Electra preset",
+    "osc_prefix": "/k4r_v7_p2c11",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 10,
+    "entries": [
+      {
+        "osc": "/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/modwheel",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 10,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

@@ -1,0 +1,1473 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/0E0ikEtUzTgWYnRyes4j",
+      "preset_name": "Boss RV-70",
+      "imported_at": "2026-04-13",
+      "preset_id": "0E0ikEtUzTgWYnRyes4j",
+      "revision": "11",
+      "author": "Michael"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 51,
+    "cc_entries": 0,
+    "sysex_commands": 51
+  },
+  "device": {
+    "name": "Boss RV-70",
+    "vendor": "BOSS",
+    "revision": "per Electra preset",
+    "osc_prefix": "/boss_rv_70",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240,
+      65,
+      105,
+      18,
+      32
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/algorithm",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        3,
+        0,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/load_program",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        16,
+        0,
+        "{function}",
+        "{function}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/high_cut_fq",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1000
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        2,
+        0,
+        "{function}",
+        "{function}",
+        "{function}",
+        "{function}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/output_level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        11,
+        0,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/room_size",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            56,
+            326
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        0,
+        0,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/reverb_time",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            6,
+            3200
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        3,
+        0,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/pre_delay",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            400
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        1,
+        0,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/hf_damp_gain",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -36,
+            0
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        5,
+        0,
+        "{function}",
+        "{function}",
+        "{function}",
+        "{function}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/hf_damp_fq",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1000
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        4,
+        0,
+        "{function}",
+        "{function}",
+        "{function}",
+        "{function}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/early_density",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        8,
+        0,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/early_ref_lvl",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        9,
+        0,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/rel_density",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        10,
+        0,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/lf_damp_gain",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -36,
+            0
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        7,
+        0,
+        "{function}",
+        "{function}",
+        "{function}",
+        "{function}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/lf_damp_fq",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            50,
+            4000
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        6,
+        0,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/high_gain",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -12,
+            12
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        3,
+        1,
+        "{function}",
+        "{function}",
+        "{function}",
+        "{function}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/high_frequency",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1000
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        2,
+        1,
+        "{function}",
+        "{function}",
+        "{function}",
+        "{function}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/high_q",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            2,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        4,
+        1,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/mid_gain",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -12,
+            12
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        0,
+        1,
+        "{function}",
+        "{function}",
+        "{function}",
+        "{function}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/mid_frequency",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            200,
+            8000
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        15,
+        0,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/mid_q",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            3,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        1,
+        1,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/low_gain",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -12,
+            12
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        13,
+        0,
+        "{function}",
+        "{function}",
+        "{function}",
+        "{function}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/low_frequency",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            200,
+            2000
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        12,
+        0,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/low_q",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            2,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        14,
+        0,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_env_time_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1000
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        6,
+        1,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_env_time_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1000
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        7,
+        1,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_env_time_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1000
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        8,
+        1,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_env_time_4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1000
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        9,
+        1,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/time_scale",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            10,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        13,
+        1,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/feedback_lvl",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        5,
+        2,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_env_lvl_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        10,
+        1,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_env_lvl_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        11,
+        1,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_env_lvl_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        12,
+        1,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_bpf_input",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        14,
+        1,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_filter_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            24,
+            120
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        6,
+        2,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_filter_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            24,
+            120
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        8,
+        2,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_filter_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            24,
+            120
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        10,
+        2,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_filter_4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            24,
+            120
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        12,
+        2,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_filter_5",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            24,
+            120
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        14,
+        2,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        5,
+        1,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_q1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            10
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        7,
+        2,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_q2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            10
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        9,
+        2,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_q3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            10
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        11,
+        2,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_q4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            10
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        13,
+        2,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/nlr_q5",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            10
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        15,
+        2,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/reverb_level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        0,
+        3,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/delay_time_l",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            500
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        15,
+        1,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/delay_level_l",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        0,
+        2,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/delay_time_c",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            500
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        3,
+        2,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/delay_level_c",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        4,
+        2,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/delay_time_r",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            500
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        1,
+        2,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/delay_level_r",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        105,
+        18,
+        32,
+        2,
+        0,
+        2,
+        2,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{checksum}"
+      ]
+    }
+  ],
+  "midi_out": {
+    "default_channel": 3,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

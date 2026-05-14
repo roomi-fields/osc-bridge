@@ -1,0 +1,554 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Modal Electronics/Craft.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 49,
+    "cc_entries": 49,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Craft",
+    "vendor": "Modal Electronics",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/craft",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/general/modulation_wheel",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/glide",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0~127: 0 to 2.5 seconds"
+      },
+      {
+        "osc": "/general/headphone_volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/expression_pedal",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/morph",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: LP; 64: BP; 127: HP"
+      },
+      {
+        "osc": "/general/octave",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/osc_mod_mode",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/delay_midi_sync",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/general/arp_status",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/general/sustain_pedal",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/vco/osc1_wave",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO"
+      },
+      {
+        "osc": "/vco/osc2_wave",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO"
+      },
+      {
+        "osc": "/vco/osc_mix",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "VCO"
+      },
+      {
+        "osc": "/vco/osc_mod_amount",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO"
+      },
+      {
+        "osc": "/vco/spread",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO",
+        "_usage": "0-63: Unison; 64-70: Major; 71-77: Minor; 78-84: Major 6th; 85-91: Sus 4th; 92-98: 5ths; 99-105: 5th + Oct; 106-112: Oct + 1 + 2; 113-119: Oct + 1 - 1"
+      },
+      {
+        "osc": "/vco/osc2_coarse_detune",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO"
+      },
+      {
+        "osc": "/vco/osc2_fine_detune",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO"
+      },
+      {
+        "osc": "/vca/aeg_attack",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCA"
+      },
+      {
+        "osc": "/vca/aeg_decay",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCA"
+      },
+      {
+        "osc": "/vca/aeg_sustain",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCA"
+      },
+      {
+        "osc": "/vca/aeg_release",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCA"
+      },
+      {
+        "osc": "/vca/aeg_amount",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "VCA"
+      },
+      {
+        "osc": "/vcf/cutoff",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/vcf/resonance",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/vcf/feg_attack",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/vcf/feg_decay",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/vcf/feg_sustain",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/vcf/feg_release",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/vcf/feg_amount",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "VCF"
+      },
+      {
+        "osc": "/fx/distortion",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/delay",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/delay_time",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/delay_feedback",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/lfo/lfo1_unsynced_rate",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0~127: 0.02Hz to 32Hz"
+      },
+      {
+        "osc": "/lfo/lfo1_synced_rate",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0-7: 1/16; 8-15: 1/8; 16-23: 3/16; 24-31: 1/4; 32-39: 3/8; 40-47: 1/2; 48-55: 3/4; 56-63: 1; 64-71: 3/2; 72-79: 2; 80-87: 3; 88-95: 4; 96-103: 6 /104-"
+      },
+      {
+        "osc": "/lfo/lfo1_depth",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo1_shape",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0~32: Sine to Triangle; 33~64: Triangle to Sawtooth; 65~96: Sawtooth to Square; 97~127: Square to Sample and Hold"
+      },
+      {
+        "osc": "/lfo/lfo2_unsynced_rate",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0-63:  0-32Hz Free; 64-71: Root/8; 72-79: Root/4; 80-87: Root/2; 88-95: Root; 96-103: Root*1.5; 104-111: Root*2; 112-119: Root*2.5; 120-127: Root*3"
+      },
+      {
+        "osc": "/lfo/lfo2_synced_rate",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0-7: 1/16; 8-15: 1/8; 16-23: 1/4; 24-31: 1/2; 32-39: 1; 40-47: 5/4; 48-55: 2; 56-63: 4"
+      },
+      {
+        "osc": "/lfo/lfo2_depth",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo2_shape",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0~32: Sine to Triangle; 33~64: Triangle to Sawtooth; 65~96: Sawtooth to Square; 97~127: Square to Sample and Hold"
+      },
+      {
+        "osc": "/lfo/lfo1_midi_sync",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/lfo/lfo2_midi_sync",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/lfo/lfo1_mode",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0-41: Retrig; 42-83: Free; 84-127: Single"
+      },
+      {
+        "osc": "/lfo/lfo2_mode",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0-41: Retrig; 42-83: Free; 84-127: Single"
+      },
+      {
+        "osc": "/mod/meg_attack",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod"
+      },
+      {
+        "osc": "/mod/meg_decay",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod"
+      },
+      {
+        "osc": "/mod/meg_sustain",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod"
+      },
+      {
+        "osc": "/mod/meg_release",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

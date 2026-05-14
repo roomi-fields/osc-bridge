@@ -1,0 +1,568 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/KORG/Wavestate SE.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 52,
+    "cc_entries": 52,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Wavestate SE",
+    "vendor": "KORG",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/wavestate_se",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/general/modulation",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "General"
+      },
+      {
+        "osc": "/general/expression",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/vector/joystick_x",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vector"
+      },
+      {
+        "osc": "/vector/joystick_y",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vector"
+      },
+      {
+        "osc": "/pedals/damper",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pedals"
+      },
+      {
+        "osc": "/pedals/sostenuto",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pedals"
+      },
+      {
+        "osc": "/pedals/soft",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pedals"
+      },
+      {
+        "osc": "/general/all_sounds_off",
+        "cc": 120,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/reset_all_controllers",
+        "cc": 121,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/scale_select",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/performance_mod_knobs/performance_mod_knob_1",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance mod knobs"
+      },
+      {
+        "osc": "/performance_mod_knobs/performance_mod_knob_2",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance mod knobs"
+      },
+      {
+        "osc": "/performance_mod_knobs/performance_mod_knob_3",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance mod knobs"
+      },
+      {
+        "osc": "/performance_mod_knobs/performance_mod_knob_4",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance mod knobs"
+      },
+      {
+        "osc": "/performance_mod_knobs/performance_mod_knob_5",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance mod knobs"
+      },
+      {
+        "osc": "/performance_mod_knobs/performance_mod_knob_6",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance mod knobs"
+      },
+      {
+        "osc": "/performance_mod_knobs/performance_mod_knob_7",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance mod knobs"
+      },
+      {
+        "osc": "/performance_mod_knobs/performance_mod_knob_8",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance mod knobs"
+      },
+      {
+        "osc": "/layer_a_mod_knobs/layer_a_mod_knob_1",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer A mod knobs"
+      },
+      {
+        "osc": "/layer_a_mod_knobs/layer_a_mod_knob_2",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer A mod knobs"
+      },
+      {
+        "osc": "/layer_a_mod_knobs/layer_a_mod_knob_3",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer A mod knobs"
+      },
+      {
+        "osc": "/layer_a_mod_knobs/layer_a_mod_knob_4",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer A mod knobs"
+      },
+      {
+        "osc": "/layer_a_mod_knobs/layer_a_mod_knob_5",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer A mod knobs"
+      },
+      {
+        "osc": "/layer_a_mod_knobs/layer_a_mod_knob_6",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer A mod knobs"
+      },
+      {
+        "osc": "/layer_a_mod_knobs/layer_a_mod_knob_7",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer A mod knobs"
+      },
+      {
+        "osc": "/layer_a_mod_knobs/layer_a_mod_knob_8",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer A mod knobs"
+      },
+      {
+        "osc": "/layer_b_mod_knobs/layer_b_mod_knob_1",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer B mod knobs"
+      },
+      {
+        "osc": "/layer_b_mod_knobs/layer_b_mod_knob_2",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer B mod knobs"
+      },
+      {
+        "osc": "/layer_b_mod_knobs/layer_b_mod_knob_3",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer B mod knobs"
+      },
+      {
+        "osc": "/layer_b_mod_knobs/layer_b_mod_knob_4",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer B mod knobs"
+      },
+      {
+        "osc": "/layer_b_mod_knobs/layer_b_mod_knob_5",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer B mod knobs"
+      },
+      {
+        "osc": "/layer_b_mod_knobs/layer_b_mod_knob_6",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer B mod knobs"
+      },
+      {
+        "osc": "/layer_b_mod_knobs/layer_b_mod_knob_7",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer B mod knobs"
+      },
+      {
+        "osc": "/layer_b_mod_knobs/layer_b_mod_knob_8",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer B mod knobs"
+      },
+      {
+        "osc": "/layer_c_mod_knobs/layer_c_mod_knob_1",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer C mod knobs"
+      },
+      {
+        "osc": "/layer_c_mod_knobs/layer_c_mod_knob_2",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer C mod knobs"
+      },
+      {
+        "osc": "/layer_c_mod_knobs/layer_c_mod_knob_3",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer C mod knobs"
+      },
+      {
+        "osc": "/layer_c_mod_knobs/layer_c_mod_knob_4",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer C mod knobs"
+      },
+      {
+        "osc": "/layer_c_mod_knobs/layer_c_mod_knob_5",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer C mod knobs"
+      },
+      {
+        "osc": "/layer_c_mod_knobs/layer_c_mod_knob_6",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer C mod knobs"
+      },
+      {
+        "osc": "/layer_c_mod_knobs/layer_c_mod_knob_7",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer C mod knobs"
+      },
+      {
+        "osc": "/layer_c_mod_knobs/layer_c_mod_knob_8",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer C mod knobs"
+      },
+      {
+        "osc": "/layer_d_mod_knobs/layer_d_mod_knob_1",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer D mod knobs"
+      },
+      {
+        "osc": "/layer_d_mod_knobs/layer_d_mod_knob_2",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer D mod knobs"
+      },
+      {
+        "osc": "/layer_d_mod_knobs/layer_d_mod_knob_3",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer D mod knobs"
+      },
+      {
+        "osc": "/layer_d_mod_knobs/layer_d_mod_knob_4",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer D mod knobs"
+      },
+      {
+        "osc": "/layer_d_mod_knobs/layer_d_mod_knob_5",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer D mod knobs"
+      },
+      {
+        "osc": "/layer_d_mod_knobs/layer_d_mod_knob_6",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer D mod knobs"
+      },
+      {
+        "osc": "/layer_d_mod_knobs/layer_d_mod_knob_7",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer D mod knobs"
+      },
+      {
+        "osc": "/layer_d_mod_knobs/layer_d_mod_knob_8",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer D mod knobs"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

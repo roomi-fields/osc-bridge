@@ -1,0 +1,173 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Brothers.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 12,
+    "cc_entries": 12,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Brothers",
+    "vendor": "Chase Bliss",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/brothers",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/sound_control/gain_a",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound control"
+      },
+      {
+        "osc": "/sound_control/master",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound control"
+      },
+      {
+        "osc": "/sound_control/gain_b",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound control"
+      },
+      {
+        "osc": "/sound_control/tone_a",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound control"
+      },
+      {
+        "osc": "/sound_control/mix_stack",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound control"
+      },
+      {
+        "osc": "/sound_control/tone_b",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound control"
+      },
+      {
+        "osc": "/effect_selection/channel_a_effect",
+        "cc": 21,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Effect selection",
+        "_usage": "1: Boost; 2: Drive; 3: Fuzz"
+      },
+      {
+        "osc": "/effect_selection/channel_b_effect",
+        "cc": 23,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Effect selection",
+        "_usage": "1: Fuzz; 2: Drive; 3: Boost"
+      },
+      {
+        "osc": "/routing/routing",
+        "cc": 22,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Routing",
+        "_usage": "1: PARA; 2: A >> B; 3: B >> A"
+      },
+      {
+        "osc": "/routing/engage_last_saved_channels",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Routing",
+        "_usage": "0: Bypass both; 127: Engage last saved channels"
+      },
+      {
+        "osc": "/routing/bypass_engagement",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Routing",
+        "_usage": "0: Bypass both; 45: Engage B and bypass A; 85: Engage A and bypass B; 127: Engage both"
+      },
+      {
+        "osc": "/other/expression",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

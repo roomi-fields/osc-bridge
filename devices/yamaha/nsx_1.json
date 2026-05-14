@@ -1,0 +1,429 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Yamaha/NSX-1.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 38,
+    "cc_entries": 38,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 1
+  },
+  "device": {
+    "name": "NSX-1",
+    "vendor": "Yamaha",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/nsx_1",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/voice_control/bank_select",
+        "cc": 0,
+        "cc_lsb": 32,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Voice control"
+      },
+      {
+        "osc": "/voice_control/modulation",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice control"
+      },
+      {
+        "osc": "/voice_control/portamento_time",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice control"
+      },
+      {
+        "osc": "/voice_control/data_entry_msb",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice control"
+      },
+      {
+        "osc": "/voice_control/main_volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice control"
+      },
+      {
+        "osc": "/voice_control/panpot",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Voice control"
+      },
+      {
+        "osc": "/voice_control/expression",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice control"
+      },
+      {
+        "osc": "/voice_control/bank_select_lsb",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice control"
+      },
+      {
+        "osc": "/voice_control/sustain",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice control"
+      },
+      {
+        "osc": "/voice_control/portamento",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice control"
+      },
+      {
+        "osc": "/voice_control/sostenuto",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice control"
+      },
+      {
+        "osc": "/voice_control/soft_pedal",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice control"
+      },
+      {
+        "osc": "/sound_parameters/harmonic_content",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Sound parameters"
+      },
+      {
+        "osc": "/sound_parameters/release_time",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Sound parameters"
+      },
+      {
+        "osc": "/sound_parameters/attack_time",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Sound parameters"
+      },
+      {
+        "osc": "/sound_parameters/brightness",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Sound parameters"
+      },
+      {
+        "osc": "/sound_parameters/decay_time",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Sound parameters"
+      },
+      {
+        "osc": "/sound_parameters/vibrato_rate",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Sound parameters"
+      },
+      {
+        "osc": "/sound_parameters/vibrato_depth",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Sound parameters"
+      },
+      {
+        "osc": "/sound_parameters/vibrato_delay",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Sound parameters"
+      },
+      {
+        "osc": "/sound_parameters/articulation_1",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound parameters"
+      },
+      {
+        "osc": "/sound_parameters/articulation_2",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound parameters"
+      },
+      {
+        "osc": "/effects/reverb_send_level",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/chorus_send_level",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/variation_send_level",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/control/rpn_increment",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control"
+      },
+      {
+        "osc": "/control/rpn_decrement",
+        "cc": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control"
+      },
+      {
+        "osc": "/control/nrpn_lsb",
+        "cc": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control"
+      },
+      {
+        "osc": "/control/nrpn_msb",
+        "cc": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control"
+      },
+      {
+        "osc": "/control/rpn_lsb",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control"
+      },
+      {
+        "osc": "/control/rpn_msb",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control"
+      },
+      {
+        "osc": "/system/all_sound_off",
+        "cc": 120,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/reset_controllers",
+        "cc": 121,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/omni_off",
+        "cc": 124,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/omni_on",
+        "cc": 125,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/mono",
+        "cc": 126,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/poly",
+        "cc": 127,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

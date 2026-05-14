@@ -1,0 +1,606 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Onward.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 52,
+    "cc_entries": 52,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Onward",
+    "vendor": "Chase Bliss",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/onward",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/knobs/size",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knob/mix",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knob"
+      },
+      {
+        "osc": "/knobs/octave",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/error",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/sustain",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/texture",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/ramp_speed",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/toggles/error_type",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Toggles",
+        "_usage": "0-1: Timing; 2: Condition; 3-127: Playback"
+      },
+      {
+        "osc": "/toggles/fade",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Toggles",
+        "_usage": "0-1: Long; 2: User; 3-127: Short"
+      },
+      {
+        "osc": "/toggles/animate",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Toggles",
+        "_usage": "0-1: Vibrato; 2: Off; 3-127: Chorus"
+      },
+      {
+        "osc": "/foot_switches/freeze_bypass",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Foot switches",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/foot_switches/glitch_bypass",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Foot switches",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/foot_switches/alt_menu",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Foot switches",
+        "_usage": "0: Exit; 1-127: Enter"
+      },
+      {
+        "osc": "/foot_switches/glitch_hold",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Foot switches",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/foot_switches/freeze_hold",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Foot switches",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/foot_switches/retrigger_glitch",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Foot switches",
+        "_usage": "0-127: Trigger"
+      },
+      {
+        "osc": "/foot_switches/retrigger_freeze",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Foot switches",
+        "_usage": "0-127: Trigger"
+      },
+      {
+        "osc": "/dip_switches_left_bank/size",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/error",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/sustain",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/texture",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/octave",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/bounce",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/sweep",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: B; 1-127: T"
+      },
+      {
+        "osc": "/dip_switches_left_bank/polarity",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: F; 1-127: R"
+      },
+      {
+        "osc": "/dip_switches_right_bank/miso",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/spread",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/latch",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/sidechain",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/duck",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/reverse",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/1_2_speed",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/manual",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/hidden_options/sensitivity",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options"
+      },
+      {
+        "osc": "/hidden_options/balance",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options"
+      },
+      {
+        "osc": "/hidden_options/duck_depth",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options"
+      },
+      {
+        "osc": "/hidden_options/error_blend",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options"
+      },
+      {
+        "osc": "/hidden_options/user_fade",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options"
+      },
+      {
+        "osc": "/hidden_options/filter",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options"
+      },
+      {
+        "osc": "/hidden_options/error_routing",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options",
+        "_usage": "0-1: Glitch; 2: Both; 3-127: Freeze"
+      },
+      {
+        "osc": "/hidden_options/sustain_routing",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options",
+        "_usage": "0-1: Glitch; 2: Both; 3-127: Freeze"
+      },
+      {
+        "osc": "/hidden_options/effects_routing",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options",
+        "_usage": "0-1: Glitch; 2: Both; 3-127: Freeze"
+      },
+      {
+        "osc": "/other/tap_tempo",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0-127: Tap tempo"
+      },
+      {
+        "osc": "/other/midi_clock_ignore",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Ignore; 1-127: Follow"
+      },
+      {
+        "osc": "/other/ramping",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/other/tap_tempo_legacy",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0-127: Tap tempo"
+      },
+      {
+        "osc": "/other/expression",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/preset_save",
+        "cc": 111,
+        "range": [
+          0,
+          122
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0~122: Preset slot"
+      },
+      {
+        "osc": "/other/midi_sync_subdivision",
+        "cc": 53,
+        "range": [
+          0,
+          8
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Whole; 1: Dotted half; 2: Half; 3: Dotted quarter; 4: Quarter; 5: Dotted 8th; 6: 8th; 7: 8th note triplet; 8: Sixteenth"
+      },
+      {
+        "osc": "/other/factory_reset",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0-127: Factory reset"
+      },
+      {
+        "osc": "/other/dry_kill",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/other/trails",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Off; 1-127: On"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

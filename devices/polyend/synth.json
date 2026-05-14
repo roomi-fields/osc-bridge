@@ -1,0 +1,2011 @@
+{
+  "_sources": [
+    {
+      "type": "vendor-doc",
+      "url": "https://polyend.com/downloads/synth/",
+      "notes": "Polyend Synth Manual v1.2.0 \u00a78.8 \u2014 MIDI CC Mapping",
+      "imported_at": "2026-04-13"
+    }
+  ],
+  "device": {
+    "name": "Polyend Synth",
+    "vendor": "Polyend",
+    "revision": "fw as of 2025",
+    "osc_prefix": "/polysynth",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 0
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [
+    {
+      "osc": "/program_change",
+      "args": [
+        {
+          "name": "program",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "_notes": "Program Change on MIDI channel 1. Synth remaps up to 8 PC values per scene (manual 8.6).",
+      "frame": [
+        192,
+        "{program}"
+      ]
+    }
+  ],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/acd/engine/saw_mix",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Engine"
+      },
+      {
+        "osc": "/fat/engine/fatness",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / Engine"
+      },
+      {
+        "osc": "/wavs/engine_p1/position_1",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Engine P1"
+      },
+      {
+        "osc": "/acd/engine/square_mix",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Engine"
+      },
+      {
+        "osc": "/fat/engine/brightness",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / Engine"
+      },
+      {
+        "osc": "/wavs/engine_p1/position_2",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Engine P1"
+      },
+      {
+        "osc": "/acd/engine/sub_mix",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Engine"
+      },
+      {
+        "osc": "/fat/engine/timbre",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / Engine"
+      },
+      {
+        "osc": "/wavs/engine_p1/mix",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Engine P1"
+      },
+      {
+        "osc": "/acd/engine/noise",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Engine"
+      },
+      {
+        "osc": "/fat/engine/fatness_lfo",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / Engine"
+      },
+      {
+        "osc": "/wavs/engine_p1/warp_1",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Engine P1"
+      },
+      {
+        "osc": "/acd/engine/pw",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Engine"
+      },
+      {
+        "osc": "/fat/engine/noise",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / Engine"
+      },
+      {
+        "osc": "/wavs/engine_p1/warp_2",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Engine P1"
+      },
+      {
+        "osc": "/acd/engine/pitch_lfo",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Engine"
+      },
+      {
+        "osc": "/wavs/engine_p1/noise",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Engine P1"
+      },
+      {
+        "osc": "/acd/engine/pw_env",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Engine"
+      },
+      {
+        "osc": "/wavs/engine_p2/tune_1",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Engine P2"
+      },
+      {
+        "osc": "/fat/filter/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / Filter"
+      },
+      {
+        "osc": "/acd/engine/pw_lfo",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Engine"
+      },
+      {
+        "osc": "/wavs/engine_p2/tune_2",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Engine P2"
+      },
+      {
+        "osc": "/fat/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / Filter"
+      },
+      {
+        "osc": "/wavs/engine_p2/detune",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Engine P2"
+      },
+      {
+        "osc": "/fat/filter/env_amount",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / Filter"
+      },
+      {
+        "osc": "/wavs/engine_p3/finetune",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Engine P3"
+      },
+      {
+        "osc": "/acd/filter/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Filter"
+      },
+      {
+        "osc": "/fat/filter/filter_lfo",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / Filter"
+      },
+      {
+        "osc": "/acd/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Filter"
+      },
+      {
+        "osc": "/acd/filter/env_amount",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Filter"
+      },
+      {
+        "osc": "/wavs/filter/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Filter"
+      },
+      {
+        "osc": "/fat/env_amp/attack",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / Env Amp"
+      },
+      {
+        "osc": "/acd/filter/filter_lfo",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Filter"
+      },
+      {
+        "osc": "/wavs/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Filter"
+      },
+      {
+        "osc": "/fat/env_amp/decay",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / Env Amp"
+      },
+      {
+        "osc": "/wavs/filter/env_amount",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Filter"
+      },
+      {
+        "osc": "/fat/env_amp/sustain",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / Env Amp"
+      },
+      {
+        "osc": "/acd/env_amp/attack",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Env Amp"
+      },
+      {
+        "osc": "/fat/env_amp/release",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / Env Amp"
+      },
+      {
+        "osc": "/acd/env_amp/decay",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Env Amp"
+      },
+      {
+        "osc": "/wavs/env_amp/attack",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Env Amp"
+      },
+      {
+        "osc": "/acd/env_amp/sustain",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Env Amp"
+      },
+      {
+        "osc": "/wavs/env_amp/decay",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Env Amp"
+      },
+      {
+        "osc": "/fat/env_filter/attack",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / Env Filter"
+      },
+      {
+        "osc": "/acd/env_amp/release",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Env Amp"
+      },
+      {
+        "osc": "/wavs/env_amp/sustain",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Env Amp"
+      },
+      {
+        "osc": "/fat/env_filter/decay",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / Env Filter"
+      },
+      {
+        "osc": "/wavs/env_amp/release",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Env Amp"
+      },
+      {
+        "osc": "/fat/env_filter/sustain",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / Env Filter"
+      },
+      {
+        "osc": "/acd/env_filter/attack",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Env Filter"
+      },
+      {
+        "osc": "/fat/env_filter/release",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / Env Filter"
+      },
+      {
+        "osc": "/acd/env_filter/decay",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Env Filter"
+      },
+      {
+        "osc": "/wavs/env_filter/attack",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Env Filter"
+      },
+      {
+        "osc": "/acd/env_filter/sustain",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Env Filter"
+      },
+      {
+        "osc": "/wavs/env_filter/decay",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Env Filter"
+      },
+      {
+        "osc": "/acd/env_filter/release",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / Env Filter"
+      },
+      {
+        "osc": "/wavs/env_filter/sustain",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Env Filter"
+      },
+      {
+        "osc": "/wavs/env_filter/release",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Env Filter"
+      },
+      {
+        "osc": "/acd/lfo/frequency",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / LFO"
+      },
+      {
+        "osc": "/wavs/env_aux/attack",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Env Aux"
+      },
+      {
+        "osc": "/wavs/env_aux/decay",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Env Aux"
+      },
+      {
+        "osc": "/acd/mod/pitch_lfo",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / MOD"
+      },
+      {
+        "osc": "/fat/lfo/frequency",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / LFO"
+      },
+      {
+        "osc": "/wavs/env_aux/sustain",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Env Aux"
+      },
+      {
+        "osc": "/acd/mod/pw_envelope",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / MOD"
+      },
+      {
+        "osc": "/wavs/env_aux/release",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS / Env Aux"
+      },
+      {
+        "osc": "/acd/mod/pw_lfo",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / MOD"
+      },
+      {
+        "osc": "/fat/mod/fatness_lfo",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / MOD"
+      },
+      {
+        "osc": "/acd/mod/filter_lfo",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD / MOD"
+      },
+      {
+        "osc": "/fat/mod/filter_lfo",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT / MOD"
+      },
+      {
+        "osc": "/vap/engine_p1/shape_1",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Engine P1"
+      },
+      {
+        "osc": "/wtfm/engine_p1/ratio_1",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Engine P1"
+      },
+      {
+        "osc": "/pmd/exciter/bow_level",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Exciter"
+      },
+      {
+        "osc": "/vap/engine_p1/shape_2",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Engine P1"
+      },
+      {
+        "osc": "/wtfm/engine_p1/ratio_2",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Engine P1"
+      },
+      {
+        "osc": "/pmd/exciter/air_level",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Exciter"
+      },
+      {
+        "osc": "/vap/engine_p1/mix",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Engine P1"
+      },
+      {
+        "osc": "/wtfm/engine_p1/fm",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Engine P1"
+      },
+      {
+        "osc": "/pmd/exciter/strike_level",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Exciter"
+      },
+      {
+        "osc": "/vap/engine_p1/pw_1",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Engine P1"
+      },
+      {
+        "osc": "/wtfm/engine_p1/shape_1",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Engine P1"
+      },
+      {
+        "osc": "/pmd/exciter/bow_timbre",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Exciter"
+      },
+      {
+        "osc": "/vap/engine_p1/pw_2",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Engine P1"
+      },
+      {
+        "osc": "/wtfm/engine_p1/shape_2",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Engine P1"
+      },
+      {
+        "osc": "/pmd/exciter/air_timbre",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Exciter"
+      },
+      {
+        "osc": "/vap/engine_p1/tune_1",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Engine P1"
+      },
+      {
+        "osc": "/wtfm/engine_p1/feedback_1",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Engine P1"
+      },
+      {
+        "osc": "/pmd/exciter/strike_timbre",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Exciter"
+      },
+      {
+        "osc": "/vap/engine_p1/tune_2",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Engine P1"
+      },
+      {
+        "osc": "/wtfm/engine_p1/feedback_2",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Engine P1"
+      },
+      {
+        "osc": "/pmd/exciter/air_flow",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Exciter"
+      },
+      {
+        "osc": "/vap/engine_p1/detune",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Engine P1"
+      },
+      {
+        "osc": "/wtfm/engine_p1/feedback_2_1",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Engine P1"
+      },
+      {
+        "osc": "/pmd/exciter/strike_mallet",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Exciter"
+      },
+      {
+        "osc": "/vap/engine_p2/noise",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Engine P2"
+      },
+      {
+        "osc": "/wtfm/engine_p2/finetune_1",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Engine P2"
+      },
+      {
+        "osc": "/vap/engine_p2/finetune",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Engine P2"
+      },
+      {
+        "osc": "/wtfm/engine_p2/finetune_2",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Engine P2"
+      },
+      {
+        "osc": "/pmd/resonator/form",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Resonator"
+      },
+      {
+        "osc": "/pmd/resonator/position",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Resonator"
+      },
+      {
+        "osc": "/vap/filter/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Filter"
+      },
+      {
+        "osc": "/wtfm/filter/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Filter"
+      },
+      {
+        "osc": "/pmd/resonator/space",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Resonator"
+      },
+      {
+        "osc": "/vap/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Filter"
+      },
+      {
+        "osc": "/wtfm/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Filter"
+      },
+      {
+        "osc": "/pmd/resonator/brightness",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Resonator"
+      },
+      {
+        "osc": "/vap/filter/env_amount",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Filter"
+      },
+      {
+        "osc": "/wtfm/filter/env_amount",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Filter"
+      },
+      {
+        "osc": "/pmd/resonator/damping",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Resonator"
+      },
+      {
+        "osc": "/vap/env_amp/attack",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Env Amp"
+      },
+      {
+        "osc": "/wtfm/env_amp/attack",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Env Amp"
+      },
+      {
+        "osc": "/pmd/env_exciter/attack",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Env Exciter"
+      },
+      {
+        "osc": "/vap/env_amp/decay",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Env Amp"
+      },
+      {
+        "osc": "/wtfm/env_amp/decay",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Env Amp"
+      },
+      {
+        "osc": "/pmd/env_exciter/decay",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Env Exciter"
+      },
+      {
+        "osc": "/vap/env_amp/sustain",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Env Amp"
+      },
+      {
+        "osc": "/wtfm/env_amp/sustain",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Env Amp"
+      },
+      {
+        "osc": "/pmd/env_exciter/sustain",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Env Exciter"
+      },
+      {
+        "osc": "/vap/env_amp/release",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Env Amp"
+      },
+      {
+        "osc": "/wtfm/env_amp/release",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Env Amp"
+      },
+      {
+        "osc": "/pmd/env_exciter/release",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Env Exciter"
+      },
+      {
+        "osc": "/vap/env_filter/attack",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Env Filter"
+      },
+      {
+        "osc": "/wtfm/env_filter/attack",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Env Filter"
+      },
+      {
+        "osc": "/pmd/env_aux/attack",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Env Aux"
+      },
+      {
+        "osc": "/vap/env_filter/decay",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Env Filter"
+      },
+      {
+        "osc": "/wtfm/env_filter/decay",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Env Filter"
+      },
+      {
+        "osc": "/pmd/env_aux/decay",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Env Aux"
+      },
+      {
+        "osc": "/vap/env_filter/sustain",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Env Filter"
+      },
+      {
+        "osc": "/wtfm/env_filter/sustain",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Env Filter"
+      },
+      {
+        "osc": "/pmd/env_aux/sustain",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Env Aux"
+      },
+      {
+        "osc": "/vap/env_filter/release",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Env Filter"
+      },
+      {
+        "osc": "/wtfm/env_filter/release",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Env Filter"
+      },
+      {
+        "osc": "/pmd/env_aux/release",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD / Env Aux"
+      },
+      {
+        "osc": "/vap/env_aux/attack",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Env Aux"
+      },
+      {
+        "osc": "/wtfm/env_aux/attack",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Env Aux"
+      },
+      {
+        "osc": "/vap/env_aux/decay",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Env Aux"
+      },
+      {
+        "osc": "/wtfm/env_aux/decay",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Env Aux"
+      },
+      {
+        "osc": "/vap/env_aux/sustain",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Env Aux"
+      },
+      {
+        "osc": "/wtfm/env_aux/sustain",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Env Aux"
+      },
+      {
+        "osc": "/vap/env_aux/release",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP / Env Aux"
+      },
+      {
+        "osc": "/wtfm/env_aux/release",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM / Env Aux"
+      },
+      {
+        "osc": "/phz/engine_p1/shape_1",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Engine P1"
+      },
+      {
+        "osc": "/grain/engine_p1/position",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Engine P1"
+      },
+      {
+        "osc": "/phz/engine_p1/shape_2",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Engine P1"
+      },
+      {
+        "osc": "/grain/engine_p1/position_spread",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Engine P1"
+      },
+      {
+        "osc": "/phz/engine_p1/mix",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Engine P1"
+      },
+      {
+        "osc": "/grain/engine_p1/grain_size",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Engine P1"
+      },
+      {
+        "osc": "/phz/engine_p1/osc1_xmod",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Engine P1"
+      },
+      {
+        "osc": "/grain/engine_p1/density",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Engine P1"
+      },
+      {
+        "osc": "/phz/engine_p1/osc2_xmod",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Engine P1"
+      },
+      {
+        "osc": "/grain/engine_p1/time_spread",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Engine P1"
+      },
+      {
+        "osc": "/phz/engine_p1/osc1_ymod",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Engine P1"
+      },
+      {
+        "osc": "/grain/engine_p1/grain_shape",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Engine P1"
+      },
+      {
+        "osc": "/phz/engine_p1/osc2_ymod",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Engine P1"
+      },
+      {
+        "osc": "/grain/engine_p1/pan_spread",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Engine P1"
+      },
+      {
+        "osc": "/phz/engine_p2/detune",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Engine P2"
+      },
+      {
+        "osc": "/grain/engine_p2/tune",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Engine P2"
+      },
+      {
+        "osc": "/phz/engine_p2/tune_1",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Engine P2"
+      },
+      {
+        "osc": "/grain/engine_p2/detune_spread",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Engine P2"
+      },
+      {
+        "osc": "/phz/engine_p2/tune_2",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Engine P2"
+      },
+      {
+        "osc": "/grain/engine_p2/finetune",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Engine P2"
+      },
+      {
+        "osc": "/phz/engine_p2/finetune",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Engine P2"
+      },
+      {
+        "osc": "/grain/engine_p2/size_spread",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Engine P2"
+      },
+      {
+        "osc": "/grain/engine_p2/direction",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Engine P2"
+      },
+      {
+        "osc": "/grain/engine_p2/space",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Engine P2"
+      },
+      {
+        "osc": "/phz/filter/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Filter"
+      },
+      {
+        "osc": "/phz/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Filter"
+      },
+      {
+        "osc": "/phz/filter/env_amount",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Filter"
+      },
+      {
+        "osc": "/grain/filter/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Filter"
+      },
+      {
+        "osc": "/grain/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Filter"
+      },
+      {
+        "osc": "/grain/filter/env_amount",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Filter"
+      },
+      {
+        "osc": "/phz/env_amp/attack",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Env Amp"
+      },
+      {
+        "osc": "/phz/env_amp/decay",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Env Amp"
+      },
+      {
+        "osc": "/phz/env_amp/sustain",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Env Amp"
+      },
+      {
+        "osc": "/grain/env_amp/attack",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Env Amp"
+      },
+      {
+        "osc": "/phz/env_amp/release",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Env Amp"
+      },
+      {
+        "osc": "/grain/env_amp/decay",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Env Amp"
+      },
+      {
+        "osc": "/grain/env_amp/sustain",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Env Amp"
+      },
+      {
+        "osc": "/grain/env_amp/release",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Env Amp"
+      },
+      {
+        "osc": "/phz/env_filter/attack",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Env Filter"
+      },
+      {
+        "osc": "/phz/env_filter/decay",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Env Filter"
+      },
+      {
+        "osc": "/phz/env_filter/sustain",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Env Filter"
+      },
+      {
+        "osc": "/grain/env_filter/attack",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Env Filter"
+      },
+      {
+        "osc": "/phz/env_filter/release",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Env Filter"
+      },
+      {
+        "osc": "/grain/env_filter/decay",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Env Filter"
+      },
+      {
+        "osc": "/grain/env_filter/sustain",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Env Filter"
+      },
+      {
+        "osc": "/grain/env_filter/release",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Env Filter"
+      },
+      {
+        "osc": "/phz/env_aux/attack",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Env Aux"
+      },
+      {
+        "osc": "/phz/env_aux/decay",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Env Aux"
+      },
+      {
+        "osc": "/phz/env_aux/sustain",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Env Aux"
+      },
+      {
+        "osc": "/grain/env_aux/attack",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Env Aux"
+      },
+      {
+        "osc": "/phz/env_aux/release",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ / Env Aux"
+      },
+      {
+        "osc": "/grain/env_aux/decay",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Env Aux"
+      },
+      {
+        "osc": "/grain/env_aux/sustain",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Env Aux"
+      },
+      {
+        "osc": "/grain/env_aux/release",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN / Env Aux"
+      }
+    ],
+    "_source": "Polyend Synth Manual v1.2.0 section 8.8 (MIDI CC Mapping). Parsed from official PDF \u2014 NOT verified on hardware."
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

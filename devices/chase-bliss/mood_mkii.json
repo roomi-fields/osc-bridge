@@ -1,0 +1,599 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/MOOD MKII.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 51,
+    "cc_entries": 51,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "MOOD MKII",
+    "vendor": "Chase Bliss",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/mood_mkii",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/footswitches_aux/micro_looper_bypass",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches/aux",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/footswitches_aux/wet_channel_bypass",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches/aux",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/footswitches_aux/hidden_menu",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches/aux",
+        "_usage": "0: Exit; 1-127: Enter"
+      },
+      {
+        "osc": "/footswitches_aux/wet_channel_freeze",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches/aux",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/footswitches_aux/micro_looper_freeze",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches/aux",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/footswitches_aux/tap_tempo",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches/aux",
+        "_usage": "0-127: Tap tempo"
+      },
+      {
+        "osc": "/footswitches_aux/tap_tempo_legacy",
+        "cc": 93,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches/aux",
+        "_usage": "1-127: Tap tempo"
+      },
+      {
+        "osc": "/toggles/wet_channel_mode",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Toggles",
+        "_usage": "0-1: Reverb; 2: Delay; 3-127: Slip"
+      },
+      {
+        "osc": "/toggles/routing",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Toggles",
+        "_usage": "0-1: In; 2: Micro-looper + In; 3-127: Micro-looper"
+      },
+      {
+        "osc": "/toggles/micro_looper_mode",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Toggles",
+        "_usage": "0-1: Env; 2: Tape; 3-127: Stretch"
+      },
+      {
+        "osc": "/knobs/time",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs",
+        "_usage": "0-12: Thirty secont note; 13-36: Sixteenth note; 37-61: Eighth note triplet; 62-84: Eighth note; 85-110: Dotted eighth note; 111-127: Quarter note"
+      },
+      {
+        "osc": "/knobs/mix",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/length",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs",
+        "_usage": "0-12: x/32; 13-36: x/16; 37-61: x/8; 62-84: x/4; 85-110: x/2; 111-127: x/1"
+      },
+      {
+        "osc": "/knobs/wet_channel_modify",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/clock",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs",
+        "_usage": "0-4: 2k; 5-16: 3k; 16-28: 4k; 29-40: 6k; 41-53: 8k; 54-69: 12k; 70-83: 16k; 84-95: 24k; 96-109: 32k; 110-121: 48k; 122-127: 64k"
+      },
+      {
+        "osc": "/knobs/micro_looper_modify",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs",
+        "_usage": "0-15: No stretch rev; 16-30: 1.5x reverse; 31-46: 2x reverse; 47-60: 4x reverse; 61-80: Stalled; 81-96: 4x forward; 97-111: 2x forward; 112-126: 1.5x "
+      },
+      {
+        "osc": "/knobs/ramp_speed",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/other/midi_clock_ignore",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Ignore MIDI clock; 1-127: Follow MIDI clock"
+      },
+      {
+        "osc": "/other/stop_ramping",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Stop ramping; 1-127: Resume ramping"
+      },
+      {
+        "osc": "/other/wet_channel_clock_division",
+        "cc": 53,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Thirty second note; 1: Sixteenth note; 2: Eighth note triplet; 3: Eighth note; 4: Dotted eighth note; 5: Quarter note; 6: Half note; 7: Whole note"
+      },
+      {
+        "osc": "/other/micro_looper_channel_clock_division",
+        "cc": 54,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Thirty second note; 1: Sixteenth note; 2: Eighth note triplet; 3: Eighth note; 4: Dotted eighth note; 5: Quarter note; 6: Half note; 7: Whole note"
+      },
+      {
+        "osc": "/other/true_bypass_mode",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Standard buffered bypass; 1-127: True bypass"
+      },
+      {
+        "osc": "/other/factory_reset",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0-127: Factory reset"
+      },
+      {
+        "osc": "/other/expression_over_midi",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/midi_reset",
+        "cc": 110,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "1-127: Reset"
+      },
+      {
+        "osc": "/other/preset_save",
+        "cc": 111,
+        "range": [
+          0,
+          122
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0~122: Preset slot"
+      },
+      {
+        "osc": "/dip_switches_left_bank/time",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/wet_channel_modify",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/clock",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/micro_looper_channel_modify",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/length",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/bounce",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/sweep",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: B; 1-127: T"
+      },
+      {
+        "osc": "/dip_switches_left_bank/polarity",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: F; 1-127: R"
+      },
+      {
+        "osc": "/dip_switches_right_bank/classic",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/miso",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/spread",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/dry_kill",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/trails",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/latch",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/micro_looper_no_dub",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/smooth",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/synth_mode/exit_synth_mode",
+        "cc": 59,
+        "range": [
+          2,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth mode",
+        "_usage": "2-127: Exit synth mode"
+      },
+      {
+        "osc": "/synth_mode/output_type",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth mode",
+        "_usage": "0: Open; 1: On/off; 2-127: ADSR"
+      },
+      {
+        "osc": "/synth_mode/attack",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth mode"
+      },
+      {
+        "osc": "/synth_mode/decay",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth mode"
+      },
+      {
+        "osc": "/synth_mode/sustain",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth mode"
+      },
+      {
+        "osc": "/synth_mode/release",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth mode"
+      },
+      {
+        "osc": "/synth_mode/octave_transpose",
+        "cc": 57,
+        "range": [
+          1,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Synth mode",
+        "_usage": "1: 12 semitones; 2: 24 semitones; 3: 36 semitones; 4: 48 semitones; 5: 60 semitones; 6: 72 semitones; 7: 84 semitones; 8: 96 semitones; 9: 108 semiton"
+      },
+      {
+        "osc": "/synth_mode/portamento",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth mode"
+      },
+      {
+        "osc": "/synth_mode/modulation_wheel",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth mode"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

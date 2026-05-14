@@ -1,0 +1,2457 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/wlq2VmEupB1zAkIIsm9E",
+      "preset_name": "Yamaha Reface DX",
+      "imported_at": "2026-04-13",
+      "preset_id": "wlq2VmEupB1zAkIIsm9E",
+      "revision": "47",
+      "author": "Enzo Soniq"
+    },
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Yamaha/reface DX.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 130,
+    "cc_entries": 53,
+    "sysex_commands": 77
+  },
+  "device": {
+    "name": "reface DX",
+    "vendor": "Yamaha",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/reface_dx",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/pitch_eg/level_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -48,
+            48
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        25,
+        "{val}"
+      ],
+      "section": "Pitch EG"
+    },
+    {
+      "osc": "/pitch_eg/level_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -48,
+            48
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        26,
+        "{val}"
+      ],
+      "section": "Pitch EG"
+    },
+    {
+      "osc": "/pitch_eg/level_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -48,
+            48
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        27,
+        "{val}"
+      ],
+      "section": "Pitch EG"
+    },
+    {
+      "osc": "/pitch_eg/level_4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -48,
+            48
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        28,
+        "{val}"
+      ],
+      "section": "Pitch EG"
+    },
+    {
+      "osc": "/op_1_eg",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        "{function}",
+        0,
+        109,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pitch_eg/rate_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        21,
+        "{val}"
+      ],
+      "section": "Pitch EG"
+    },
+    {
+      "osc": "/pitch_eg/rate_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        22,
+        "{val}"
+      ],
+      "section": "Pitch EG"
+    },
+    {
+      "osc": "/pitch_eg/rate_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        23,
+        "{val}"
+      ],
+      "section": "Pitch EG"
+    },
+    {
+      "osc": "/pitch_eg/rate_4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        24,
+        "{val}"
+      ],
+      "section": "Pitch EG"
+    },
+    {
+      "osc": "/pitch_lfo/waveform",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        17,
+        "{val}"
+      ],
+      "section": "Pitch LFO"
+    },
+    {
+      "osc": "/pitch_lfo/speed",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        18,
+        "{val}"
+      ],
+      "section": "Pitch LFO"
+    },
+    {
+      "osc": "/op_1/lfo_pmd",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        15,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/pitch_lfo/delay",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        19,
+        "{val}"
+      ],
+      "section": "Pitch LFO"
+    },
+    {
+      "osc": "/pitch_lfo/pitch_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        20,
+        "{val}"
+      ],
+      "section": "Pitch LFO"
+    },
+    {
+      "osc": "/op_1/lfo_depth_op1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        14,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/lfo_depth_op2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        1,
+        14,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/lfo_depth_op3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        2,
+        14,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/lfo_depth_op4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        3,
+        14,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/effect_1/eff_type",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        29,
+        "{val}"
+      ],
+      "section": "Effect 1"
+    },
+    {
+      "osc": "/effect_2/eff_type",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        32,
+        "{val}"
+      ],
+      "section": "Effect 2"
+    },
+    {
+      "osc": "/effect_1/para_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        30,
+        "{val}"
+      ],
+      "section": "Effect 1"
+    },
+    {
+      "osc": "/effect_1/para_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        31,
+        "{val}"
+      ],
+      "section": "Effect 1"
+    },
+    {
+      "osc": "/effect_2/para_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        33,
+        "{val}"
+      ],
+      "section": "Effect 2"
+    },
+    {
+      "osc": "/effect_2/para_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        34,
+        "{val}"
+      ],
+      "section": "Effect 2"
+    },
+    {
+      "osc": "/char1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        64,
+        0,
+        16,
+        0,
+        3,
+        4,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/char2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        64,
+        0,
+        16,
+        0,
+        3,
+        4,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/char3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        64,
+        0,
+        16,
+        0,
+        3,
+        4,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/char4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        64,
+        0,
+        16,
+        0,
+        3,
+        4,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/char5",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        64,
+        0,
+        16,
+        0,
+        3,
+        4,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/char6",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        64,
+        0,
+        16,
+        0,
+        3,
+        4,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/char7",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        64,
+        0,
+        16,
+        0,
+        3,
+        4,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/char8",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        64,
+        0,
+        16,
+        0,
+        3,
+        4,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/char9",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        64,
+        0,
+        16,
+        0,
+        3,
+        4,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/char10",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        64,
+        0,
+        16,
+        0,
+        3,
+        4,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/local_transpos",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -12,
+            12
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        12,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/effect_1/part_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        29,
+        "{val}"
+      ],
+      "section": "Effect 1"
+    },
+    {
+      "osc": "/portamento",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        14,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/p_bend_range",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -24,
+            24
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        15,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/algo",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        48,
+        0,
+        16,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/speaker_output",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        0,
+        0,
+        13,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/lcd_contrast",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        0,
+        0,
+        10,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/master_transp",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -12,
+            12
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        0,
+        0,
+        7,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/op1_on",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fb_saw_sqr",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        20,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        21,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/op_1/detune",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        24,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/lfo_depth",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        14,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/output",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        18,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/fb_amount",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        19,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/coarse",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            31
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        22,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/fine",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        23,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/lfo_peg",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        16,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/op_1/level_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        5,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/level_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        6,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/level_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        7,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/level_4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        8,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/rate_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        1,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/rate_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        2,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/rate_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        3,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/rate_4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        4,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/rate_scale",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        9,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/level_l_depth",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        10,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/level_r_depth",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        11,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/vel_sense",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        17,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/l_scale_typ",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        12,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op_1/r_scale_typ",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        0,
+        13,
+        "{val}"
+      ],
+      "section": "OP 1"
+    },
+    {
+      "osc": "/op2_on",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        1,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/op_2/output",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        1,
+        18,
+        "{val}"
+      ],
+      "section": "OP 2"
+    },
+    {
+      "osc": "/op_2/level_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        1,
+        5,
+        "{val}"
+      ],
+      "section": "OP 2"
+    },
+    {
+      "osc": "/op_2/level_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        1,
+        6,
+        "{val}"
+      ],
+      "section": "OP 2"
+    },
+    {
+      "osc": "/op_2/level_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        1,
+        7,
+        "{val}"
+      ],
+      "section": "OP 2"
+    },
+    {
+      "osc": "/op_2/level_4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        1,
+        8,
+        "{val}"
+      ],
+      "section": "OP 2"
+    },
+    {
+      "osc": "/op_2/rate_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        1,
+        1,
+        "{val}"
+      ],
+      "section": "OP 2"
+    },
+    {
+      "osc": "/op_2/rate_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        1,
+        2,
+        "{val}"
+      ],
+      "section": "OP 2"
+    },
+    {
+      "osc": "/op3_on",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        2,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/lfo_pitch_eg",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        2,
+        16,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/op4_on",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        16,
+        127,
+        28,
+        5,
+        49,
+        3,
+        0,
+        "{val}"
+      ]
+    }
+  ],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/general/algorithm",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0-11: Algo 1; 12-21: Algo 2; 22-32: Algo 3; 33-42: Algo 4; 43-53: Algo 5; 54-64: Algo 6; 65-74: Algo 7; 75-85: Algo 8; 86-95: Algo 9; 96-106: Algo 10;"
+      },
+      {
+        "osc": "/operator_1/op_1_output_level",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 1"
+      },
+      {
+        "osc": "/operator_1/op_1_feedback_level",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 1"
+      },
+      {
+        "osc": "/operator_1/op_1_feedback_type",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 1",
+        "_usage": "0-63: Sawtooth; 64-127: Square"
+      },
+      {
+        "osc": "/operator_1/op_1_frequency_mode",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 1",
+        "_usage": "0-63: Frequency/ratio; 64-127: Fixed frequency/Hz"
+      },
+      {
+        "osc": "/operator_1/op_1_frequency_ratio_freq_coarse",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 1"
+      },
+      {
+        "osc": "/operator_1/op_1_frequency_ratio_freq_fine",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 1"
+      },
+      {
+        "osc": "/operator_2/op_2_output_level",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 2"
+      },
+      {
+        "osc": "/operator_2/op_2_feedback_level",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 2"
+      },
+      {
+        "osc": "/operator_2/op_2_feedback_type",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 2",
+        "_usage": "0-63: Sawtooth; 64-127: Square"
+      },
+      {
+        "osc": "/operator_2/op_2_frequency_mode",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 2",
+        "_usage": "0-63: Frequency/ratio; 64-127: Fixed frequency/Hz"
+      },
+      {
+        "osc": "/operator_2/op_2_frequency_ratio_freq_coarse",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 2"
+      },
+      {
+        "osc": "/operator_2/op_2_frequency_ratio_freq_fine",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 2"
+      },
+      {
+        "osc": "/operator_3/op_3_output_level",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 3"
+      },
+      {
+        "osc": "/operator_3/op_3_feedback_level",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 3"
+      },
+      {
+        "osc": "/operator_3/op_3_feedback_type",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 3",
+        "_usage": "0-63: Sawtooth; 64-127: Square"
+      },
+      {
+        "osc": "/operator_3/op_3_frequency_mode",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 3",
+        "_usage": "0-63: Frequency/ratio; 64-127: Fixed frequency/Hz"
+      },
+      {
+        "osc": "/operator_3/op_3_frequency_ratio_freq_coarse",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 3"
+      },
+      {
+        "osc": "/operator_3/op_3_frequency_ratio_freq_fine",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 3"
+      },
+      {
+        "osc": "/operator_4/op_4_output_level",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 4"
+      },
+      {
+        "osc": "/operator_4/op_4_feedback_level",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 4"
+      },
+      {
+        "osc": "/operator_4/op_4_feedback_type",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 4",
+        "_usage": "0-63: Sawtooth; 64-127: Square"
+      },
+      {
+        "osc": "/operator_4/op_4_frequency_mode",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 4",
+        "_usage": "0-63: Frequency/ratio; 64-127: Fixed frequency/Hz"
+      },
+      {
+        "osc": "/operator_4/op_4_frequency_ratio_freq_coarse",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 4"
+      },
+      {
+        "osc": "/operator_4/op_4_frequency_ratio_freq_fine",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Operator 4"
+      },
+      {
+        "osc": "/operator_level/level_1",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Operator Level"
+      },
+      {
+        "osc": "/operator_level/level_2",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Operator Level"
+      },
+      {
+        "osc": "/operator_level/level_3",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Operator Level"
+      },
+      {
+        "osc": "/operator_level/level_4",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "section": "Operator Level"
+      },
+      {
+        "osc": "/algo",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fixed",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fixed",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fixed",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fixed",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/coase",
+        "cc": 89,
+        "range": [
+          0,
+          31
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/coase",
+        "cc": 106,
+        "range": [
+          0,
+          31
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/coase",
+        "cc": 112,
+        "range": [
+          0,
+          31
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/coase",
+        "cc": 118,
+        "range": [
+          0,
+          31
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fine",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fine",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fine",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fine",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/feedback_1",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/feedback_2",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/feedback_3",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/feedback_4",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/expression_11",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fb_saw_sqr",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fb_saw_sqr",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fb_saw_sqr",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fb_saw_sqr",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/modulation_1",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/volume_7",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

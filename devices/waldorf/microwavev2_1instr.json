@@ -1,0 +1,1080 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/tEkX5nvcYn6WFYUZhsAB",
+      "preset_name": "Waldorf MicrowaveV2 1instr",
+      "imported_at": "2026-04-13",
+      "preset_id": "tEkX5nvcYn6WFYUZhsAB",
+      "author": "Nick McCabe"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 54,
+    "cc_entries": 0,
+    "sysex_commands": 54
+  },
+  "device": {
+    "name": "MicrowaveV2 1instr",
+    "vendor": "Waldorf",
+    "revision": "per Electra preset",
+    "osc_prefix": "/microwavev2_1instr",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240,
+      62,
+      0,
+      0,
+      96,
+      0
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/cutoff_freq",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        3,
+        12,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/resonance",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        3,
+        13,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/env_amt",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        3,
+        14,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/modsrc1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        4,
+        1,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/modamt1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        4,
+        3,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/mod1via",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        4,
+        2,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/resmodifier",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        4,
+        6,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/resmodamt",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        4,
+        7,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/env_velocity",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        3,
+        15,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/modsrc2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        4,
+        4,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/modamt2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        4,
+        5,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/keytrkamt",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        4,
+        0,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/filter_env",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        5,
+        6,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/amp_env",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        4,
+        8,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/glide_speed",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        9,
+        1,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/lfo1_rate",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        7,
+        12,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/lfo1shape",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        7,
+        13,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/lfo1humanize",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            4
+          ]
+        }
+      ],
+      "frame": [
+        7,
+        15,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/wavetable_sel",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        1,
+        7,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/wavestart1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        1,
+        8,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/wavestart2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        2,
+        4,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/lfo2rate",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        8,
+        7,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/lfo2shape",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        8,
+        8,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/lfo2humanize",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            4
+          ]
+        }
+      ],
+      "frame": [
+        8,
+        10,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/osc1_octave",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        0,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/osc1mod2src",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        8,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/osc2_octave",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        11,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/osc2mod2src",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        1,
+        3,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/wave1vol",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            112
+          ]
+        }
+      ],
+      "frame": [
+        3,
+        0,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/wave2vol",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            112
+          ]
+        }
+      ],
+      "frame": [
+        3,
+        1,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/osc1_detune",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        2,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/osc1mod2amt",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        9,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/osc2_semi",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            120
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        12,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/osc2mod2amt",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        1,
+        4,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/noisevol",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            112
+          ]
+        }
+      ],
+      "frame": [
+        3,
+        2,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/soundvol",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        3,
+        0,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/wavenvamt",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        1,
+        10,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/keytrack",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        1,
+        12,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/wavenvvel",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        2,
+        7,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/wav1modsrc1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        1,
+        13,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/wav1modvia",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        1,
+        14,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/wav1modamt",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        1,
+        15,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/wav2modsrc1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        2,
+        9,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/wav2modvia",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        2,
+        10,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/wav2modamt",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        2,
+        11,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/wave_env1_4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        6,
+        6,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/wave_env5_8",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        6,
+        14,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/loop_switch",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        7,
+        11,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/loopstart",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            7
+          ]
+        }
+      ],
+      "frame": [
+        7,
+        10,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/key_off",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            7
+          ]
+        }
+      ],
+      "frame": [
+        7,
+        9,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/timemodsrc",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        7,
+        5,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/timemodamt",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        7,
+        6,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/levelmodsrc",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        7,
+        7,
+        "{val}",
+        127
+      ]
+    },
+    {
+      "osc": "/levelmodamt",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        7,
+        8,
+        "{val}",
+        127
+      ]
+    }
+  ],
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

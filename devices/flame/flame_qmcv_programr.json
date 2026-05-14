@@ -1,0 +1,208 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/zvelojGN06jXesbQ9ZyA",
+      "preset_name": "Flame \u00b5QMCV Programr",
+      "imported_at": "2026-04-13",
+      "preset_id": "zvelojGN06jXesbQ9ZyA",
+      "revision": "9",
+      "author": "Jamie"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 7,
+    "cc_entries": 0,
+    "sysex_commands": 7
+  },
+  "device": {
+    "name": "Flame \u00b5QMCV Programr",
+    "vendor": "Flame",
+    "revision": "per Electra preset",
+    "osc_prefix": "/flame_qmcv_programr",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240,
+      125,
+      12,
+      1,
+      6
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/output_1_midi",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/output_2_midi",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/output_3_midi",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/output_4_midi",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/modulation_out",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pitchbend_out",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/modulation_cc",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}"
+      ]
+    }
+  ],
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

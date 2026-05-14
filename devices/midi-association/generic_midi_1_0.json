@@ -1,0 +1,629 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/MIDI Association/Generic MIDI 1.0.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 55,
+    "cc_entries": 55,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 18
+  },
+  "device": {
+    "name": "Generic MIDI 1.0",
+    "vendor": "MIDI Association",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/generic_midi_1_0",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/control_change_messages/bank_select",
+        "cc": 0,
+        "cc_lsb": 32,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/modulation_wheel",
+        "cc": 1,
+        "cc_lsb": 33,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/breath_controller",
+        "cc": 2,
+        "cc_lsb": 34,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/foot_controller",
+        "cc": 4,
+        "cc_lsb": 36,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/portamento_time",
+        "cc": 5,
+        "cc_lsb": 37,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/data_entry",
+        "cc": 6,
+        "cc_lsb": 38,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/channel_volume",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/balance",
+        "cc": 8,
+        "cc_lsb": 40,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/pan",
+        "cc": 10,
+        "cc_lsb": 42,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/expression_controller",
+        "cc": 11,
+        "cc_lsb": 43,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/effect_control_1",
+        "cc": 12,
+        "cc_lsb": 44,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/effect_control_2",
+        "cc": 13,
+        "cc_lsb": 45,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/general_purpose_controller_1",
+        "cc": 16,
+        "cc_lsb": 48,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/general_purpose_controller_2",
+        "cc": 17,
+        "cc_lsb": 49,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/general_purpose_controller_3",
+        "cc": 18,
+        "cc_lsb": 50,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/general_purpose_controller_4",
+        "cc": 19,
+        "cc_lsb": 51,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/damper_pedal",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/control_change_messages/portamento_switch",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/control_change_messages/sostenuto_switch",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/control_change_messages/soft_pedal_switch",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages",
+        "_usage": "0-63: Normal; 64-127: Legato"
+      },
+      {
+        "osc": "/control_change_messages/legato_switch",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/control_change_messages/hold_2",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/sound_controller_1",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/sound_controller_2",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/sound_controller_3",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/sound_controller_4",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/sound_controller_5",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/sound_controller_6",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/sound_controller_7",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/sound_controller_8",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/sound_controller_9",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/sound_controller_10",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/general_purpose_controller_5",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/general_purpose_controller_6",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/general_purpose_controller_7",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/general_purpose_controller_8",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/portamento_control",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/high_resolution_velocity_prefix",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/effects_1_depth",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/effects_2_depth",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/effects_3_depth",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/effects_4_depth",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/effects_5_depth",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/data_increment",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/data_decrement",
+        "cc": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/non_registered_parameter_number",
+        "cc": 99,
+        "cc_lsb": 98,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/control_change_messages/registered_parameter_number",
+        "cc": 101,
+        "cc_lsb": 100,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Control Change messages"
+      },
+      {
+        "osc": "/channel_mode_messages/all_sound_off",
+        "cc": 120,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel Mode messages",
+        "_usage": "0: All sound off"
+      },
+      {
+        "osc": "/channel_mode_messages/reset_all_controllers",
+        "cc": 121,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel Mode messages",
+        "_usage": "0: Reset all controllers"
+      },
+      {
+        "osc": "/channel_mode_messages/local_control",
+        "cc": 122,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel Mode messages",
+        "_usage": "0: Local control off; 127: Local control on"
+      },
+      {
+        "osc": "/channel_mode_messages/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel Mode messages",
+        "_usage": "0: All notes off"
+      },
+      {
+        "osc": "/channel_mode_messages/omni_mode_off",
+        "cc": 124,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel Mode messages",
+        "_usage": "0: Omni mode off"
+      },
+      {
+        "osc": "/channel_mode_messages/omni_mode_on",
+        "cc": 125,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel Mode messages",
+        "_usage": "0: Omni mode on"
+      },
+      {
+        "osc": "/channel_mode_messages/mono_mode_on",
+        "cc": 126,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel Mode messages",
+        "_usage": "0: Number of channels equal to the number of voices; 1~127: Number of voices"
+      },
+      {
+        "osc": "/channel_mode_messages/poly_mode_on",
+        "cc": 127,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel Mode messages",
+        "_usage": "0: Poly mode on"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

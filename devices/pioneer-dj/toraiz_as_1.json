@@ -1,0 +1,3954 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/hFi2HYU62PbQRB1joLwc",
+      "preset_name": "Toraiz AS-1",
+      "imported_at": "2026-04-13",
+      "preset_id": "hFi2HYU62PbQRB1joLwc",
+      "author": "Pedro"
+    },
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Pioneer DJ/Toraiz AS-1.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 346,
+    "cc_entries": 346,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "Toraiz AS-1",
+    "vendor": "Pioneer DJ",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/toraiz_as_1",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/oscillator_1/frequency",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 0,
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/oscillator_1/level",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/shape",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/pulse_width",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/sub_level",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 27,
+        "orientation": "0-based",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_2/frequency",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/fine_frequency",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 6,
+        "orientation": "centered",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/level",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/shape",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/pulse_width",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 9,
+        "orientation": "0-based",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/low_frequency_mode",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/oscillator_2/keyboard_tracking",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/mixer/noise_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/voice_volume",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 62,
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/slop",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/low_pass_filter/frequency",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 45,
+        "orientation": "0-based",
+        "section": "Low-pass filter"
+      },
+      {
+        "osc": "/low_pass_filter/resonance",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 46,
+        "orientation": "0-based",
+        "section": "Low-pass filter"
+      },
+      {
+        "osc": "/low_pass_filter/key_tracking",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 47,
+        "orientation": "0-based",
+        "section": "Low-pass filter"
+      },
+      {
+        "osc": "/low_pass_filter/velocity",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 48,
+        "orientation": "0-based",
+        "section": "Low-pass filter",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/high_pass_filter/frequency",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 49,
+        "orientation": "0-based",
+        "section": "High-pass filter"
+      },
+      {
+        "osc": "/high_pass_filter/resonance",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 50,
+        "orientation": "0-based",
+        "section": "High-pass filter"
+      },
+      {
+        "osc": "/high_pass_filter/key_tracking",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 51,
+        "orientation": "0-based",
+        "section": "High-pass filter"
+      },
+      {
+        "osc": "/high_pass_filter/velocity",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 52,
+        "orientation": "0-based",
+        "section": "High-pass filter",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/amplifier_envelope/amount",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 66,
+        "orientation": "0-based",
+        "section": "Amplifier envelope"
+      },
+      {
+        "osc": "/amplifier_envelope/velocity",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 71,
+        "orientation": "0-based",
+        "section": "Amplifier envelope",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/amplifier_envelope/attack",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 67,
+        "orientation": "0-based",
+        "section": "Amplifier envelope"
+      },
+      {
+        "osc": "/amplifier_envelope/decay",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 68,
+        "orientation": "0-based",
+        "section": "Amplifier envelope"
+      },
+      {
+        "osc": "/amplifier_envelope/sustain",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 69,
+        "orientation": "0-based",
+        "section": "Amplifier envelope"
+      },
+      {
+        "osc": "/amplifier_envelope/release",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 70,
+        "orientation": "0-based",
+        "section": "Amplifier envelope"
+      },
+      {
+        "osc": "/filter_envelope/low_pass_amount",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 77,
+        "orientation": "centered",
+        "section": "Filter envelope"
+      },
+      {
+        "osc": "/filter_envelope/high_pass_amount",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 82,
+        "orientation": "centered",
+        "section": "Filter envelope"
+      },
+      {
+        "osc": "/filter_envelope/attack",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 78,
+        "orientation": "0-based",
+        "section": "Filter envelope"
+      },
+      {
+        "osc": "/filter_envelope/decay",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 79,
+        "orientation": "0-based",
+        "section": "Filter envelope"
+      },
+      {
+        "osc": "/filter_envelope/sustain",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 80,
+        "orientation": "0-based",
+        "section": "Filter envelope"
+      },
+      {
+        "osc": "/filter_envelope/release",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 81,
+        "orientation": "0-based",
+        "section": "Filter envelope"
+      },
+      {
+        "osc": "/lfo/frequency",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 88,
+        "range": [
+          0,
+          255
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/initial_amount",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 89,
+        "range": [
+          0,
+          255
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/shape",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 90,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/external_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 91,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/lfo/to_oscillator_1_frequency",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 93,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/lfo/to_oscillator_2_frequency",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 94,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/lfo/to_pulse_width_1_and_2",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 95,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/lfo/to_amplifier",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 96,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/lfo/to_low_pass_filter",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 97,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/lfo/to_high_pass_filter",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 98,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/poly_mod/filter_envelope_amount",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          254
+        ],
+        "orientation": "centered",
+        "section": "Poly mod"
+      },
+      {
+        "osc": "/poly_mod/oscillator_2_amount",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          254
+        ],
+        "orientation": "centered",
+        "section": "Poly mod"
+      },
+      {
+        "osc": "/poly_mod/to_oscillator_1_frequency",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Poly mod",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/poly_mod/to_oscillator_1_shape",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Poly mod",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/poly_mod/to_oscillator_1_pulse_width",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 19,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Poly mod",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/poly_mod/to_low_pass_filter",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Poly mod",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/poly_mod/to_high_pass_filter",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 21,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Poly mod",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/pressure/amount",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 109,
+        "range": [
+          0,
+          254
+        ],
+        "orientation": "centered",
+        "section": "Pressure"
+      },
+      {
+        "osc": "/pressure/to_oscillator_1_frequency",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 110,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Pressure",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/pressure/to_oscillator_2_frequency",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 111,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Pressure",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/pressure/to_low_pass_filter",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 112,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Pressure",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/pressure/to_high_pass_filter",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 113,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Pressure",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/pressure/to_amplifier",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 114,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Pressure",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/pressure/to_lfo_amount",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 115,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Pressure",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/effects/on_off",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/effects_1/effect_1_select",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 119,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Effects 1"
+      },
+      {
+        "osc": "/effects_1/effect_1_mix",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 120,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects 1"
+      },
+      {
+        "osc": "/effects_1/effect_1_parameter_1",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 121,
+        "range": [
+          0,
+          255
+        ],
+        "orientation": "0-based",
+        "section": "Effects 1"
+      },
+      {
+        "osc": "/effects_1/effect_1_parameter_2",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 122,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects 1"
+      },
+      {
+        "osc": "/effects_1/effect_1_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 123,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Effects 1",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/effects_1/effect_1_sync_rate",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 124,
+        "range": [
+          0,
+          10
+        ],
+        "orientation": "0-based",
+        "section": "Effects 1"
+      },
+      {
+        "osc": "/effects_2/effect_2_select",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 127,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Effects 2"
+      },
+      {
+        "osc": "/effects_2/effect_2_mix",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects 2"
+      },
+      {
+        "osc": "/effects_2/effect_2_parameter_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects 2"
+      },
+      {
+        "osc": "/effects_2/effect_2_parameter_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects 2"
+      },
+      {
+        "osc": "/performance/tempo",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 39,
+        "orientation": "0-based",
+        "section": "Performance"
+      },
+      {
+        "osc": "/performance/glide_mode",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 28,
+        "orientation": "0-based",
+        "section": "Performance"
+      },
+      {
+        "osc": "/performance/glide_on_off",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 29,
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/performance/glide_rate",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance"
+      },
+      {
+        "osc": "/performance/pitch_bend_range",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 31,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0~12: Semitones"
+      },
+      {
+        "osc": "/performance/key_mode",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 30,
+        "range": [
+          0,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Performance"
+      },
+      {
+        "osc": "/arpeggiator/on_off",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 32,
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/arpeggiator/mode",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 33,
+        "orientation": "0-based",
+        "section": "Arpeggiator"
+      },
+      {
+        "osc": "/arpeggiator/range",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 34,
+        "orientation": "0-based",
+        "section": "Arpeggiator"
+      },
+      {
+        "osc": "/arpeggiator/time_signature",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 35,
+        "orientation": "0-based",
+        "section": "Arpeggiator"
+      },
+      {
+        "osc": "/sequencer/on_off",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/sequencer/length",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/record_on_off",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 44,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/sequencer/lock_sequence_on_off",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/sequencer/step_1_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 0,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_2_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 1,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_3_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 2,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_4_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 3,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_5_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 4,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_6_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 5,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_7_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 6,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_8_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 7,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_9_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 8,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_10_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 9,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_11_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 10,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_12_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 11,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_13_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 12,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_14_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 13,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_15_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 14,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_16_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 15,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_17_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 16,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_18_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 17,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_19_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 18,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_20_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 19,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_21_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 20,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_22_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 21,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_23_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 22,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_24_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 23,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_25_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 24,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_26_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 25,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_27_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 26,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_28_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 27,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_29_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 28,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_30_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 29,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_31_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 30,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_32_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 31,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_33_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 32,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_34_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 33,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_35_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 34,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_36_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 35,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_37_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 36,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_38_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 37,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_39_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 38,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_40_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 39,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_41_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 40,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_42_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 41,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_43_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 42,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_44_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 43,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_45_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 44,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_46_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 45,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_47_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 46,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_48_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 47,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_49_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 48,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_50_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 49,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_51_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 50,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_52_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 51,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_53_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 52,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_54_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 53,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_55_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 54,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_56_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 55,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_57_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 56,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_58_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 57,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_59_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 58,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_60_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 59,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_61_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 60,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_62_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 61,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_63_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 62,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_64_note",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 63,
+        "range": [
+          12,
+          108
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "12~108: MIDI note number"
+      },
+      {
+        "osc": "/sequencer/step_1_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_2_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_3_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_4_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_5_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_6_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_7_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_8_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_9_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_10_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_11_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_12_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_13_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_14_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_15_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_16_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_17_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_18_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_19_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_20_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_21_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_22_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_23_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_24_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_25_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_26_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_27_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_28_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_29_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_30_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_31_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_32_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_33_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_34_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_35_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_36_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_37_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_38_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_39_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_40_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_41_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_42_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_43_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_44_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_45_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_46_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_47_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_48_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_49_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_50_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_51_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_52_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_53_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_54_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_55_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_56_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_57_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 120,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_58_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 121,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_59_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 122,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_60_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_61_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 124,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_62_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 125,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_63_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 126,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/step_64_velocity",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 127,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/slider/oscillator_1_frequency_amount",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          254
+        ],
+        "orientation": "centered",
+        "section": "Slider",
+        "_usage": "0~254: Modulation amount"
+      },
+      {
+        "osc": "/slider/oscillator_2_frequency_amount",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 53,
+        "range": [
+          0,
+          254
+        ],
+        "orientation": "centered",
+        "section": "Slider",
+        "_usage": "0~254: Modulation amount"
+      },
+      {
+        "osc": "/slider/lfo_amount",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 54,
+        "range": [
+          0,
+          254
+        ],
+        "orientation": "centered",
+        "section": "Slider",
+        "_usage": "0~254: Modulation amount"
+      },
+      {
+        "osc": "/slider/effect_1_mix_amount",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 55,
+        "range": [
+          0,
+          254
+        ],
+        "orientation": "centered",
+        "section": "Slider",
+        "_usage": "0~254: Modulation amount"
+      },
+      {
+        "osc": "/slider/effect_2_mix_amount",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 56,
+        "range": [
+          0,
+          254
+        ],
+        "orientation": "centered",
+        "section": "Slider",
+        "_usage": "0~254: Modulation amount"
+      },
+      {
+        "osc": "/slider/low_pass_filter_amount",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 57,
+        "range": [
+          0,
+          254
+        ],
+        "orientation": "centered",
+        "section": "Slider",
+        "_usage": "0~254: Modulation amount"
+      },
+      {
+        "osc": "/slider/high_pass_filter_amount",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 58,
+        "range": [
+          0,
+          254
+        ],
+        "orientation": "centered",
+        "section": "Slider",
+        "_usage": "0~254: Modulation amount"
+      },
+      {
+        "osc": "/global/master_fine_tune",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "centered",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/master_coarse_tune",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          24
+        ],
+        "orientation": "centered",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/midi_channel",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/midi_clock_mode",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/midi_clock_cable",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/midi_parameter_send",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/midi_parameter_receive",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/midi_control_enable",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/global/midi_system_exclusive_cable",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/midi_output_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/midi_output_thru",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/global/local_control",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/global/potentiometer_mode",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/sequencer_jack_mode",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/pedal_polarity",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/mono_stereo",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 19,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/alternate_tuning",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/scale_mode",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 21,
+        "range": [
+          0,
+          21
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/midi_sequencer_output",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 22,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/global/screen_saver",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 23,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/global/key_sensitivity",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 25,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/quick_program_1_program_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 26,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~99: Program number"
+      },
+      {
+        "osc": "/global/quick_program_2_program_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 27,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~99: Program number"
+      },
+      {
+        "osc": "/global/quick_program_3_program_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 28,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~99: Program number"
+      },
+      {
+        "osc": "/global/quick_program_4_program_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 29,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~99: Program number"
+      },
+      {
+        "osc": "/global/quick_program_5_program_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 30,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~99: Program number"
+      },
+      {
+        "osc": "/global/quick_program_6_program_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 31,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~99: Program number"
+      },
+      {
+        "osc": "/global/quick_program_7_program_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 32,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~99: Program number"
+      },
+      {
+        "osc": "/global/quick_program_8_program_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~99: Program number"
+      },
+      {
+        "osc": "/global/quick_program_9_program_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 34,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~99: Program number"
+      },
+      {
+        "osc": "/global/quick_program_10_program_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 35,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~99: Program number"
+      },
+      {
+        "osc": "/global/quick_program_11_program_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 36,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~99: Program number"
+      },
+      {
+        "osc": "/global/quick_program_12_program_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 37,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~99: Program number"
+      },
+      {
+        "osc": "/global/quick_program_13_program_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 38,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~99: Program number"
+      },
+      {
+        "osc": "/global/quick_program_1_bank_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 39,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~9: Bank number"
+      },
+      {
+        "osc": "/global/quick_program_2_bank_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~9: Bank number"
+      },
+      {
+        "osc": "/global/quick_program_3_bank_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 41,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~9: Bank number"
+      },
+      {
+        "osc": "/global/quick_program_4_bank_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~9: Bank number"
+      },
+      {
+        "osc": "/global/quick_program_5_bank_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 43,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~9: Bank number"
+      },
+      {
+        "osc": "/global/quick_program_6_bank_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 44,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~9: Bank number"
+      },
+      {
+        "osc": "/global/quick_program_7_bank_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~9: Bank number"
+      },
+      {
+        "osc": "/global/quick_program_8_bank_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 46,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~9: Bank number"
+      },
+      {
+        "osc": "/global/quick_program_9_bank_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~9: Bank number"
+      },
+      {
+        "osc": "/global/quick_program_10_bank_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~9: Bank number"
+      },
+      {
+        "osc": "/global/quick_program_11_bank_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 49,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~9: Bank number"
+      },
+      {
+        "osc": "/global/quick_program_12_bank_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 50,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~9: Bank number"
+      },
+      {
+        "osc": "/global/quick_program_13_bank_select",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 51,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~9: Bank number"
+      },
+      {
+        "osc": "/osc1_freq",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc1_shape",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc1_pw",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc1_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/slope",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc2_freq",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc2_freqfine",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          254
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc2_shape",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc2_pw",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc2_keyfollow",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc2_lowfreq",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc1_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc2_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lpf_freq",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          164
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lpf_res",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 46,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lpf_key_amnt",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lpf_velocity",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sub_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 27,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/noise_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 32,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hpf_freq",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 49,
+        "range": [
+          0,
+          164
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hpf_res",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 50,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hpf_key_amnt",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 51,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hpf_velocity",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lpf_amount",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 77,
+        "range": [
+          0,
+          254
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hpf_amount",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 82,
+        "range": [
+          0,
+          254
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vcf_attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 78,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vcf_decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 79,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vcf_sustain",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 80,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vcf_release",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 81,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vca_amount",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 66,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vca_attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 67,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vca_decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 68,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vca_sustain",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 69,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vca_release",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 70,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vca_velocity",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_freq",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 88,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 91,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_shape",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 90,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_init",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 89,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_osc1",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 93,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_osc2",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 94,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_pwm",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 95,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_lpf",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 97,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_hpf",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 98,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_vca",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 96,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc2_amount",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          254
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc1_freq_dest",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc1_shape_dest",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc1_pw_dest",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 19,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lp_cutoff",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hp_cutoff",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 21,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vcf_env_amount",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          254
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/glide_rate",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 30,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/glide_mode",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 28,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/glide",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 29,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx1_type",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 119,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx1_amount",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 120,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx1_param1",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 121,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx1_param2",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 122,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx1_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 123,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx1_syncrate",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 124,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx2_type",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 127,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx2_amount",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx2_param1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx2_param2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sld_fx1_mix",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 55,
+        "range": [
+          0,
+          254
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sld_osc1_freq",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          254
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sld_osc2_freq",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 53,
+        "range": [
+          0,
+          254
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sld_lpf_amount",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 57,
+        "range": [
+          0,
+          254
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sld_hpf_amount",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 58,
+        "range": [
+          0,
+          254
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sld_lfo_amount",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 54,
+        "range": [
+          0,
+          254
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sld_fx2_mix",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 56,
+        "range": [
+          0,
+          254
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/master_fine",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/master_coarse",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          24
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/master_bpm",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 39,
+        "range": [
+          30,
+          250
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/master_mode",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 19,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pitchbend",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 31,
+        "range": [
+          0,
+          12
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/volume",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 62,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

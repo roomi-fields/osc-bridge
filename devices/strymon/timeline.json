@@ -1,0 +1,1114 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/ff10lnNMiC8czJAxQbkn",
+      "preset_name": "Strymon Timeline",
+      "imported_at": "2026-04-13",
+      "preset_id": "ff10lnNMiC8czJAxQbkn",
+      "revision": "11",
+      "author": "Riccardo"
+    },
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Strymon/TimeLine.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 104,
+    "cc_entries": 104,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "TimeLine",
+    "vendor": "Strymon",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/timeline",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/knobs/time",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs",
+        "_usage": "0~127: Delay time"
+      },
+      {
+        "osc": "/knobs/repeats",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs",
+        "_usage": "0~127: Feedback amount"
+      },
+      {
+        "osc": "/knobs/mix",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs",
+        "_usage": "0~127: Wet level"
+      },
+      {
+        "osc": "/knobs/filter",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs",
+        "_usage": "0~127: Filter amount / voicing"
+      },
+      {
+        "osc": "/knobs/grit",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs",
+        "_usage": "0~127: Grit / coloration"
+      },
+      {
+        "osc": "/knobs/speed",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs",
+        "_usage": "0~127: Mod speed"
+      },
+      {
+        "osc": "/knobs/depth",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs",
+        "_usage": "0~127: Mod depth"
+      },
+      {
+        "osc": "/knobs/type_algorithm_select",
+        "cc": 19,
+        "range": [
+          0,
+          11
+        ],
+        "orientation": "0-based",
+        "section": "Knobs",
+        "_usage": "0-11: Select delay machine"
+      },
+      {
+        "osc": "/common_parameters/tap_division",
+        "cc": 21,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Common Parameters",
+        "_usage": "0: Quarter; 1: Dotted Eighth; 2: Eighth; 3: Triplets; 4: Sixteenth"
+      },
+      {
+        "osc": "/common_parameters/persist_trails",
+        "cc": 22,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Common Parameters",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/common_parameters/boost",
+        "cc": 23,
+        "range": [
+          0,
+          60
+        ],
+        "orientation": "centered",
+        "section": "Common Parameters",
+        "_usage": "0~60: -3 dB to +3 dB"
+      },
+      {
+        "osc": "/common_parameters/smear",
+        "cc": 38,
+        "range": [
+          0,
+          18
+        ],
+        "orientation": "0-based",
+        "section": "Common Parameters",
+        "_usage": "0~18: Smear amount"
+      },
+      {
+        "osc": "/common_parameters/high_pass",
+        "cc": 47,
+        "range": [
+          0,
+          20
+        ],
+        "orientation": "0-based",
+        "section": "Common Parameters",
+        "_usage": "0~20: HPF amount"
+      },
+      {
+        "osc": "/common_parameters/expression_enable",
+        "cc": 60,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Common Parameters",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/common_parameters/midi_clock",
+        "cc": 63,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Common Parameters",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/dtape/tape_speed",
+        "cc": 58,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "dTape",
+        "_usage": "0: Normal; 1: Fast"
+      },
+      {
+        "osc": "/dtape/low_end_contour",
+        "cc": 59,
+        "range": [
+          0,
+          20
+        ],
+        "orientation": "0-based",
+        "section": "dTape",
+        "_usage": "0~20: Low-end contour amount"
+      },
+      {
+        "osc": "/dbucket/range",
+        "cc": 45,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "dBucket",
+        "_usage": "0: Single; 1: Double"
+      },
+      {
+        "osc": "/digital/repeat_dynamics",
+        "cc": 56,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Digital",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/dual/time_2_ratio",
+        "cc": 32,
+        "range": [
+          0,
+          26
+        ],
+        "orientation": "0-based",
+        "section": "Dual",
+        "_usage": "0-26: Select ratio"
+      },
+      {
+        "osc": "/dual/repeats_2",
+        "cc": 34,
+        "range": [
+          0,
+          18
+        ],
+        "orientation": "0-based",
+        "section": "Dual",
+        "_usage": "0~18: Repeats 2 amount"
+      },
+      {
+        "osc": "/dual/mix_2",
+        "cc": 33,
+        "range": [
+          0,
+          18
+        ],
+        "orientation": "0-based",
+        "section": "Dual",
+        "_usage": "0~18: Mix 2 level"
+      },
+      {
+        "osc": "/dual/configuration",
+        "cc": 36,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Dual",
+        "_usage": "0: Series; 1: Parallel"
+      },
+      {
+        "osc": "/pattern/pattern",
+        "cc": 39,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Pattern",
+        "_usage": "0-15: Pattern 1-16"
+      },
+      {
+        "osc": "/swell/rise_time",
+        "cc": 44,
+        "range": [
+          0,
+          27
+        ],
+        "orientation": "0-based",
+        "section": "Swell",
+        "_usage": "0~27: Rise time"
+      },
+      {
+        "osc": "/trem/speed_ratio",
+        "cc": 61,
+        "range": [
+          0,
+          34
+        ],
+        "orientation": "0-based",
+        "section": "Trem",
+        "_usage": "0-34: Speed ratio (1/32 to 32/1)"
+      },
+      {
+        "osc": "/trem/depth",
+        "cc": 57,
+        "range": [
+          0,
+          18
+        ],
+        "orientation": "0-based",
+        "section": "Trem",
+        "_usage": "0~18: Depth amount"
+      },
+      {
+        "osc": "/trem/lfo_shape",
+        "cc": 29,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Trem",
+        "_usage": "0: Triangle; 1: Square; 2: Sine; 3: Ramp; 4: Saw"
+      },
+      {
+        "osc": "/filter/q_resonance",
+        "cc": 40,
+        "range": [
+          0,
+          11
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~11: Q amount"
+      },
+      {
+        "osc": "/filter/lfo_shape",
+        "cc": 28,
+        "range": [
+          0,
+          10
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: +Triangle; 1: -Triangle; 2: -Square; 3: +Square; 4: -Sine, 5: +Sine; 6: Ramp; 7: Down; 8: Up; 9: Saw; 10: Random"
+      },
+      {
+        "osc": "/filter/depth",
+        "cc": 41,
+        "range": [
+          0,
+          18
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~18: Depth amount"
+      },
+      {
+        "osc": "/filter/speed_ratio",
+        "cc": 42,
+        "range": [
+          0,
+          34
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0-34: Speed ratio (1/32 to 32/1)"
+      },
+      {
+        "osc": "/filter/location",
+        "cc": 43,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Pre; 1: Post"
+      },
+      {
+        "osc": "/lo_fi/mix",
+        "cc": 51,
+        "range": [
+          0,
+          20
+        ],
+        "orientation": "0-based",
+        "section": "Lo-Fi",
+        "_usage": "0~20: Lo-Fi mix"
+      },
+      {
+        "osc": "/lo_fi/vinyl",
+        "cc": 52,
+        "range": [
+          0,
+          18
+        ],
+        "orientation": "0-based",
+        "section": "Lo-Fi",
+        "_usage": "0~18: Vinyl amount"
+      },
+      {
+        "osc": "/lo_fi/sample_rate",
+        "cc": 49,
+        "range": [
+          0,
+          20
+        ],
+        "orientation": "0-based",
+        "section": "Lo-Fi",
+        "_usage": "0~20: 96 kHz to 750 Hz"
+      },
+      {
+        "osc": "/lo_fi/bit_depth",
+        "cc": 50,
+        "range": [
+          0,
+          20
+        ],
+        "orientation": "0-based",
+        "section": "Lo-Fi",
+        "_usage": "0~20: 32-bit to 4-bit"
+      },
+      {
+        "osc": "/lo_fi/filter_shape",
+        "cc": 53,
+        "range": [
+          0,
+          8
+        ],
+        "orientation": "0-based",
+        "section": "Lo-Fi",
+        "_usage": "0: Off; 1: Portable Vintage Amp; 2: Victrola Phonograph; 3: 70s Clock Radio; 4: Bullhorn Megaphone; 5: Cheerleader's Plastic Megaphone; 6: Antique Tel"
+      },
+      {
+        "osc": "/ice/interval",
+        "cc": 30,
+        "range": [
+          0,
+          29
+        ],
+        "orientation": "0-based",
+        "section": "Ice",
+        "_usage": "0: -Oct; 1: -Maj7; 2: -min7; 3: -Maj6; 4: -min6; 5: -P5; 6: -min3; 7: -Maj2; 8: +Maj2; 9: +min3; 10: +Maj3; 11: +P4; 12: +Tritone; 13: +min7; 14: +Maj"
+      },
+      {
+        "osc": "/ice/slice",
+        "cc": 46,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Ice",
+        "_usage": "0: Short; 1: Medium; 2: Long"
+      },
+      {
+        "osc": "/ice/blend",
+        "cc": 25,
+        "range": [
+          0,
+          20
+        ],
+        "orientation": "0-based",
+        "section": "Ice",
+        "_usage": "0~20: Blend amount"
+      },
+      {
+        "osc": "/duck/sensitivity",
+        "cc": 37,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Duck",
+        "_usage": "0~17: Sensitivity"
+      },
+      {
+        "osc": "/duck/release",
+        "cc": 55,
+        "range": [
+          0,
+          20
+        ],
+        "orientation": "0-based",
+        "section": "Duck",
+        "_usage": "0~20: Release time"
+      },
+      {
+        "osc": "/duck/feedback_ducking",
+        "cc": 54,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Duck",
+        "_usage": "0: Normal; 1: Gate"
+      },
+      {
+        "osc": "/looper/record",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-127: Trigger"
+      },
+      {
+        "osc": "/looper/play",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-127: Trigger"
+      },
+      {
+        "osc": "/looper/stop",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-127: Trigger"
+      },
+      {
+        "osc": "/looper/reverse_toggle",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-127: Toggle"
+      },
+      {
+        "osc": "/looper/half_speed_toggle",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-127: Toggle"
+      },
+      {
+        "osc": "/looper/pre_post_toggle",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-127: Toggle"
+      },
+      {
+        "osc": "/looper/undo_to_initial",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-127: Trigger"
+      },
+      {
+        "osc": "/looper/redo",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-127: Trigger"
+      },
+      {
+        "osc": "/looper/level",
+        "cc": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0~127: Level"
+      },
+      {
+        "osc": "/global_control/footswitch_a",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global / Control",
+        "_usage": "0: Down; 127: Up"
+      },
+      {
+        "osc": "/global_control/footswitch_b",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global / Control",
+        "_usage": "0: Down; 127: Up"
+      },
+      {
+        "osc": "/global_control/tap_footswitch",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global / Control",
+        "_usage": "0: Off; 127: On"
+      },
+      {
+        "osc": "/global_control/remote_tap",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global / Control",
+        "_usage": "0-127: Tap"
+      },
+      {
+        "osc": "/global_control/expression_pedal",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global / Control",
+        "_usage": "0~127: Expression position"
+      },
+      {
+        "osc": "/global_control/bypass",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global / Control",
+        "_usage": "0: Bypass; 127: Engage"
+      },
+      {
+        "osc": "/global_control/phase_reset",
+        "cc": 125,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global / Control",
+        "_usage": "0-127: Reset"
+      },
+      {
+        "osc": "/global_control/midi_bank_select_msb",
+        "cc": 0,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Global / Control",
+        "_usage": "0: Bank 0 (00A-63B); 1: Bank 1 (64A-99B)"
+      },
+      {
+        "osc": "/delay_type",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/time",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/repeats",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mix",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/filter",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/grit",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/tap_division",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/smear",
+        "cc": 38,
+        "range": [
+          0,
+          18
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/high_pass",
+        "cc": 47,
+        "range": [
+          0,
+          20
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/boost_db",
+        "cc": 23,
+        "range": [
+          -30,
+          30
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/speed",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/tape_speed",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/low_end",
+        "cc": 59,
+        "range": [
+          -10,
+          10
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/range",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/phase_reset",
+        "cc": 125,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/tap",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/repeats",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/time_2",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/repeats_2",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mix_2",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/configuration",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pattern",
+        "cc": 39,
+        "range": [
+          1,
+          16
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/interval",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/slice",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/blend_dry_ice",
+        "cc": 25,
+        "range": [
+          0,
+          20
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sensitivity",
+        "cc": 37,
+        "range": [
+          0,
+          17
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/release",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/feedback",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/rise_time_s",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/speed",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "cc": 57,
+        "range": [
+          0,
+          18
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/speed",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "cc": 41,
+        "range": [
+          0,
+          18
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/res",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/location",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mix",
+        "cc": 51,
+        "range": [
+          0,
+          20
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vinyl",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sample_rate",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/bit_depth",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/filter",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

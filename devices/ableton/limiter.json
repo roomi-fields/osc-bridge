@@ -1,0 +1,116 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/IZv1UoLQ69Ea4bz5HwqP",
+      "preset_name": "Limiter",
+      "imported_at": "2026-04-13",
+      "preset_id": "IZv1UoLQ69Ea4bz5HwqP",
+      "revision": "3",
+      "author": "Jaap-Henk Hoepman"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 7,
+    "cc_entries": 7,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "Limiter",
+    "vendor": "Ableton",
+    "revision": "per Electra preset",
+    "osc_prefix": "/limiter",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 10,
+    "entries": [
+      {
+        "osc": "/gain",
+        "cc": 1,
+        "cc_lsb": 33,
+        "range": [
+          -240,
+          240
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/release_time",
+        "cc": 2,
+        "cc_lsb": 34,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/ceiling",
+        "cc": 0,
+        "cc_lsb": 32,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lookahead",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/auto",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/list",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/device_on",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 10,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

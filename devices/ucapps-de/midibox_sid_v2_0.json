@@ -1,0 +1,2420 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/uCApps.de/MIDIbox SID v2.0.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 225,
+    "cc_entries": 225,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "MIDIbox SID v2.0",
+    "vendor": "uCApps.de",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/midibox_sid_v2_0",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/lead_engine_arp/voice_1_2_3_arp_speed",
+        "cc": 36,
+        "range": [
+          0,
+          63
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Arp"
+      },
+      {
+        "osc": "/lead_engine_arp/voice_1_2_3_arp_gate_length",
+        "cc": 37,
+        "range": [
+          0,
+          31
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Arp"
+      },
+      {
+        "osc": "/lead_engine_envelopes/envelope_1_depth",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Envelopes"
+      },
+      {
+        "osc": "/lead_engine_envelopes/envelope_1_attack_1",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Envelopes"
+      },
+      {
+        "osc": "/lead_engine_envelopes/envelope_1_decay_2",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Envelopes"
+      },
+      {
+        "osc": "/lead_engine_envelopes/envelope_1_sustain",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Envelopes"
+      },
+      {
+        "osc": "/lead_engine_envelopes/envelope_1_release_1",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Envelopes"
+      },
+      {
+        "osc": "/lead_engine_envelopes/envelope_2_depth",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Envelopes"
+      },
+      {
+        "osc": "/lead_engine_envelopes/envelope_2_attack_1",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Envelopes"
+      },
+      {
+        "osc": "/lead_engine_envelopes/envelope_2_decay_2",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Envelopes"
+      },
+      {
+        "osc": "/lead_engine_envelopes/envelope_2_sustain",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Envelopes"
+      },
+      {
+        "osc": "/lead_engine_envelopes/envelope_2_release_1",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Envelopes"
+      },
+      {
+        "osc": "/lead_engine_filter/filter_cutoff_frequency",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Filter"
+      },
+      {
+        "osc": "/lead_engine_filter/filter_resonance",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Filter"
+      },
+      {
+        "osc": "/lead_engine_filter/filter_channels",
+        "cc": 8,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Filter"
+      },
+      {
+        "osc": "/lead_engine_filter/filter_mode",
+        "cc": 9,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Filter"
+      },
+      {
+        "osc": "/lead_engine_lfos/lfo_1_depth",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: LFOs",
+        "_usage": "0~63: Negative depth amount; 64: Off; 65~127: Positive depth amount"
+      },
+      {
+        "osc": "/lead_engine_lfos/lfo_2_depth",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: LFOs",
+        "_usage": "0~63: Negative depth amount; 64: Off; 65~127: Positive depth amount"
+      },
+      {
+        "osc": "/lead_engine_lfos/lfo_3_depth",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: LFOs",
+        "_usage": "0~63: Negative depth amount; 64: Off; 65~127: Positive depth amount"
+      },
+      {
+        "osc": "/lead_engine_lfos/lfo_4_depth",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: LFOs",
+        "_usage": "0~63: Negative depth amount; 64: Off; 65~127: Positive depth amount"
+      },
+      {
+        "osc": "/lead_engine_lfos/lfo_5_depth",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: LFOs",
+        "_usage": "0~63: Negative depth amount; 64: Off; 65~127: Positive depth amount"
+      },
+      {
+        "osc": "/lead_engine_lfos/lfo_6_depth",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: LFOs",
+        "_usage": "0~63: Negative depth amount; 64: Off; 65~127: Positive depth amount"
+      },
+      {
+        "osc": "/lead_engine_lfos/lfo_1_rate",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: LFOs",
+        "_usage": "0: Off; 1~127: LFO rate"
+      },
+      {
+        "osc": "/lead_engine_lfos/lfo_2_rate",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: LFOs",
+        "_usage": "0: Off; 1~127: LFO rate"
+      },
+      {
+        "osc": "/lead_engine_lfos/lfo_3_rate",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: LFOs",
+        "_usage": "0: Off; 1~127: LFO rate"
+      },
+      {
+        "osc": "/lead_engine_lfos/lfo_4_rate",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: LFOs",
+        "_usage": "0: Off; 1~127: LFO rate"
+      },
+      {
+        "osc": "/lead_engine_lfos/lfo_5_rate",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: LFOs",
+        "_usage": "0: Off; 1~127: LFO rate"
+      },
+      {
+        "osc": "/lead_engine_lfos/lfo_6_rate",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: LFOs",
+        "_usage": "0: Off; 1~127: LFO rate"
+      },
+      {
+        "osc": "/lead_engine_modulation/mod_1_depth",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Modulation",
+        "_usage": "0~63: Inverted depth; 64: Off; 65-127: Depth"
+      },
+      {
+        "osc": "/lead_engine_modulation/mod_2_depth",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Modulation",
+        "_usage": "0~63: Inverted depth; 64: Off; 65-127: Depth"
+      },
+      {
+        "osc": "/lead_engine_modulation/mod_3_depth",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Modulation",
+        "_usage": "0~63: Inverted depth; 64: Off; 65-127: Depth"
+      },
+      {
+        "osc": "/lead_engine_modulation/mod_4_depth",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Modulation",
+        "_usage": "0~63: Inverted depth; 64: Off; 65-127: Depth"
+      },
+      {
+        "osc": "/lead_engine_modulation/mod_5_depth",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Modulation",
+        "_usage": "0~63: Inverted depth; 64: Off; 65-127: Depth"
+      },
+      {
+        "osc": "/lead_engine_modulation/mod_6_depth",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Modulation",
+        "_usage": "0~63: Inverted depth; 64: Off; 65-127: Depth"
+      },
+      {
+        "osc": "/lead_engine_modulation/mod_7_depth",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Modulation",
+        "_usage": "0~63: Inverted depth; 64: Off; 65-127: Depth"
+      },
+      {
+        "osc": "/lead_engine_modulation/mod_8_depth",
+        "cc": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Modulation",
+        "_usage": "0~63: Inverted depth; 64: Off; 65-127: Depth"
+      },
+      {
+        "osc": "/lead_engine_vcas/voice_1_2_3_vca_attack",
+        "cc": 72,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: VCAs"
+      },
+      {
+        "osc": "/lead_engine_vcas/voice_1_single_vca_attack",
+        "cc": 73,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: VCAs"
+      },
+      {
+        "osc": "/lead_engine_vcas/voice_2_single_vca_attack",
+        "cc": 74,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: VCAs"
+      },
+      {
+        "osc": "/lead_engine_vcas/voice_3_single_vca_attack",
+        "cc": 75,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: VCAs"
+      },
+      {
+        "osc": "/lead_engine_vcas/voice_1_2_3_vca_decay",
+        "cc": 76,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: VCAs"
+      },
+      {
+        "osc": "/lead_engine_vcas/voice_1_single_vca_decay",
+        "cc": 77,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: VCAs"
+      },
+      {
+        "osc": "/lead_engine_vcas/voice_2_single_vca_decay",
+        "cc": 78,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: VCAs"
+      },
+      {
+        "osc": "/lead_engine_vcas/voice_3_single_vca_decay",
+        "cc": 79,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: VCAs"
+      },
+      {
+        "osc": "/lead_engine_vcas/voice_1_2_3_vca_sustain",
+        "cc": 80,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: VCAs"
+      },
+      {
+        "osc": "/lead_engine_vcas/voice_1_vca_sustain",
+        "cc": 81,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: VCAs"
+      },
+      {
+        "osc": "/lead_engine_vcas/voice_2_vca_sustain",
+        "cc": 82,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: VCAs"
+      },
+      {
+        "osc": "/lead_engine_vcas/voice_3_vca_sustain",
+        "cc": 83,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: VCAs"
+      },
+      {
+        "osc": "/lead_engine_vcas/voice_1_2_3_vca_release",
+        "cc": 84,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: VCAs"
+      },
+      {
+        "osc": "/lead_engine_vcas/voice_1_single_vca_release",
+        "cc": 85,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: VCAs"
+      },
+      {
+        "osc": "/lead_engine_vcas/voice_2_single_vca_release",
+        "cc": 86,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: VCAs"
+      },
+      {
+        "osc": "/lead_engine_vcas/voice_3_single_vca_release",
+        "cc": 87,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: VCAs"
+      },
+      {
+        "osc": "/lead_engine_voices/oscillator_phase_offset",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: Voices"
+      },
+      {
+        "osc": "/lead_engine_voices/oscillator_detune",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: Voices"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_1_2_3_waveform",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Voices"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_1_waveform",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Voices"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_2_waveform",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Voices"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_3_waveform",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Voices"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_1_2_3_transpose",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Voices",
+        "_usage": "0~63: Negative transpose; 64: Off; 65~127: Positive transpose"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_1_single_transpose",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: Voices",
+        "_usage": "0~63: Negative transpose; 64: Off; 65~127: Positive transpose"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_2_single_transpose",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: Voices",
+        "_usage": "0~63: Negative transpose; 64: Off; 65~127: Positive transpose"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_3_single_transpose",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: Voices",
+        "_usage": "0~63: Negative transpose; 64: Off; 65~127: Positive transpose"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_1_2_3_finetune",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: Voices",
+        "_usage": "0~63: Negative fine tune; 64: Off; 65~127: Positive fine tune"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_1_single_finetune",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: Voices",
+        "_usage": "0~63: Negative fine tune; 64: Off; 65~127: Positive fine tune"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_2_single_finetune",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: Voices",
+        "_usage": "0~63: Negative fine tune; 64: Off; 65~127: Positive fine tune"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_3_single_finetune",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: Voices",
+        "_usage": "0~63: Negative fine tune; 64: Off; 65~127: Positive fine tune"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_1_2_3_portamento_rate",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Voices",
+        "_usage": "0: Off; 1~127: Portamento rate"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_1_portamento_rate",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Voices",
+        "_usage": "0: Off; 1~127: Portamento rate"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_2_portamento_rate",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Voices",
+        "_usage": "0: Off; 1~127: Portamento rate"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_3_portamento_rate",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Voices",
+        "_usage": "0: Off; 1~127: Portamento rate"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_1_2_3_pulsewidth",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: Voices",
+        "_usage": "0~63: Negative; 64: Mid; 65-127: Positive"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_1_pulsewidth",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: Voices",
+        "_usage": "0~63: Negative; 64: Mid; 65-127: Positive"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_2_pulsewidth",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: Voices",
+        "_usage": "0~63: Negative; 64: Mid; 65-127: Positive"
+      },
+      {
+        "osc": "/lead_engine_voices/voice_3_pulsewidth",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Lead engine: Voices",
+        "_usage": "0~63: Negative; 64: Mid; 65-127: Positive"
+      },
+      {
+        "osc": "/lead_engine_knobs/knob_1_assignable_parameters",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Knobs"
+      },
+      {
+        "osc": "/lead_engine_knobs/knob_2_assignable_parameters",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Knobs"
+      },
+      {
+        "osc": "/lead_engine_knobs/knob_3_assignable_parameters",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Knobs"
+      },
+      {
+        "osc": "/lead_engine_knobs/knob_4_assignable_parameters",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Knobs"
+      },
+      {
+        "osc": "/lead_engine_knobs/knob_5_assignable_parameters",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: Knobs"
+      },
+      {
+        "osc": "/lead_engine_general/bank_change",
+        "cc": 0,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: General",
+        "_usage": "0~7: Bank"
+      },
+      {
+        "osc": "/lead_engine_general/nrpn_msb_value",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: General"
+      },
+      {
+        "osc": "/lead_engine_general/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: General"
+      },
+      {
+        "osc": "/lead_engine_general/nrpn_lsb_value",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: General"
+      },
+      {
+        "osc": "/lead_engine_general/sustain_on_off",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: General",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/lead_engine_general/nrpn_lsb",
+        "cc": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: General"
+      },
+      {
+        "osc": "/lead_engine_general/nrpn_msb",
+        "cc": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: General"
+      },
+      {
+        "osc": "/lead_engine_general/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Lead engine: General",
+        "_usage": "0: Off; 1-127: Ignore"
+      },
+      {
+        "osc": "/bassline_engine_drum_model/drum_model_instrument_1",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Drum model"
+      },
+      {
+        "osc": "/bassline_engine_drum_model/drum_model_instrument_2",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Drum model"
+      },
+      {
+        "osc": "/bassline_engine_drum_model/drum_model_instrument_3",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Drum model"
+      },
+      {
+        "osc": "/bassline_engine_drum_model/drum_model_instrument_4",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Drum model"
+      },
+      {
+        "osc": "/bassline_engine_drum_model/drum_model_instrument_5",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Drum model"
+      },
+      {
+        "osc": "/bassline_engine_drum_model/drum_model_instrument_6",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Drum model"
+      },
+      {
+        "osc": "/bassline_engine_drum_model/drum_model_instrument_7",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Drum model"
+      },
+      {
+        "osc": "/bassline_engine_drum_model/drum_model_instrument_8",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Drum model"
+      },
+      {
+        "osc": "/bassline_engine_drum_model/drum_model_instrument_9",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Drum model"
+      },
+      {
+        "osc": "/bassline_engine_drum_model/drum_model_instrument_10",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Drum model"
+      },
+      {
+        "osc": "/bassline_engine_drum_model/drum_model_instrument_11",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Drum model"
+      },
+      {
+        "osc": "/bassline_engine_drum_model/drum_model_instrument_12",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Drum model"
+      },
+      {
+        "osc": "/bassline_engine_drum_model/drum_model_instrument_13",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Drum model"
+      },
+      {
+        "osc": "/bassline_engine_drum_model/drum_model_instrument_14",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Drum model"
+      },
+      {
+        "osc": "/bassline_engine_drum_model/drum_model_instrument_15",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Drum model"
+      },
+      {
+        "osc": "/bassline_engine_drum_model/drum_model_instrument_16",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Drum model"
+      },
+      {
+        "osc": "/bassline_engine_filter/filter_cutoff_frequency",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Filter"
+      },
+      {
+        "osc": "/bassline_engine_filter/filter_resonance",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Filter"
+      },
+      {
+        "osc": "/bassline_engine_filter/filter_cutoff_frequency_left_channel_sid",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Filter"
+      },
+      {
+        "osc": "/bassline_engine_filter/filter_cutoff_frequency_right_channel_sid",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Filter"
+      },
+      {
+        "osc": "/bassline_engine_gate_length/gate_length_instrument_1",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Gate length",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_gate_length/gate_length_instrument_2",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Gate length",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_gate_length/gate_length_instrument_3",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Gate length",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_gate_length/gate_length_instrument_4",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Gate length",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_gate_length/gate_length_instrument_5",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Gate length",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_gate_length/gate_length_instrument_6",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Gate length",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_gate_length/gate_length_instrument_7",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Gate length",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_gate_length/gate_length_instrument_8",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Gate length",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_gate_length/gate_length_instrument_9",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Gate length",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_gate_length/gate_length_instrument_10",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Gate length",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_gate_length/gate_length_instrument_11",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Gate length",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_gate_length/gate_length_instrument_12",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Gate length",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_gate_length/gate_length_instrument_13",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Gate length",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_gate_length/gate_length_instrument_14",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Gate length",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_gate_length/gate_length_instrument_15",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Gate length",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_gate_length/gate_length_instrument_16",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Gate length",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_parameter_3/parameter_3_instrument_1",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Parameter 3",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_parameter_3/parameter_3_instrument_2",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Parameter 3",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_parameter_3/parameter_3_instrument_3",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Parameter 3",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_parameter_3/parameter_3_instrument_4",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Parameter 3",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_parameter_3/parameter_3_instrument_5",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Parameter 3",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_parameter_3/parameter_3_instrument_6",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Parameter 3",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_parameter_3/parameter_3_instrument_7",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Parameter 3",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_parameter_3/parameter_3_instrument_8",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Parameter 3",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_parameter_3/parameter_3_instrument_9",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Parameter 3",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_parameter_3/parameter_3_instrument_10",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Parameter 3",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_parameter_3/parameter_3_instrument_11",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Parameter 3",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_parameter_3/parameter_3_instrument_12",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Parameter 3",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_parameter_3/parameter_3_instrument_13",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Parameter 3",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_parameter_3/parameter_3_instrument_14",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Parameter 3",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_parameter_3/parameter_3_instrument_15",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Parameter 3",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_parameter_3/parameter_3_instrument_16",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Parameter 3",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_tuning/tuning_instrument_1",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Tuning",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_tuning/tuning_instrument_2",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Tuning",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_tuning/tuning_instrument_3",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Tuning",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_tuning/tuning_instrument_4",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Tuning",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_tuning/tuning_instrument_5",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Tuning",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_tuning/tuning_instrument_6",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Tuning",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_tuning/tuning_instrument_7",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Tuning",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_tuning/tuning_instrument_8",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Tuning",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_tuning/tuning_instrument_9",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Tuning",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_tuning/tuning_instrument_10",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Tuning",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_tuning/tuning_instrument_11",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Tuning",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_tuning/tuning_instrument_12",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Tuning",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_tuning/tuning_instrument_13",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Tuning",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_tuning/tuning_instrument_14",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Tuning",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_tuning/tuning_instrument_15",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Tuning",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_tuning/tuning_instrument_16",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Tuning",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_wavetable_speed/wt_speed_instrument_1",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Wavetable speed",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_wavetable_speed/wt_speed_instrument_2",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Wavetable speed",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_wavetable_speed/wt_speed_instrument_3",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Wavetable speed",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_wavetable_speed/wt_speed_instrument_4",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Wavetable speed",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_wavetable_speed/wt_speed_instrument_5",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Wavetable speed",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_wavetable_speed/wt_speed_instrument_6",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Wavetable speed",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_wavetable_speed/wt_speed_instrument_7",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Wavetable speed",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_wavetable_speed/wt_speed_instrument_8",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Wavetable speed",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_wavetable_speed/wt_speed_instrument_9",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Wavetable speed",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_wavetable_speed/wt_speed_instrument_10",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Wavetable speed",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_wavetable_speed/wt_speed_instrument_11",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Wavetable speed",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_wavetable_speed/wt_speed_instrument_12",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Wavetable speed",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_wavetable_speed/wt_speed_instrument_13",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Wavetable speed",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_wavetable_speed/wt_speed_instrument_14",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Wavetable speed",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_wavetable_speed/wt_speed_instrument_15",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Wavetable speed",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_wavetable_speed/wt_speed_instrument_16",
+        "cc": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Bassline engine: Wavetable speed",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/bassline_engine_knobs/knob_1_assignable_parameters",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Knobs"
+      },
+      {
+        "osc": "/bassline_engine_knobs/knob_2_assignable_parameters",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Knobs"
+      },
+      {
+        "osc": "/bassline_engine_knobs/knob_3_assignable_parameters",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Knobs"
+      },
+      {
+        "osc": "/bassline_engine_knobs/knob_4_assignable_parameters",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Knobs"
+      },
+      {
+        "osc": "/bassline_engine_knobs/knob_5_assignable_parameters",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: Knobs"
+      },
+      {
+        "osc": "/bassline_engine_general/bank_change",
+        "cc": 0,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: General",
+        "_usage": "0~7: Bank"
+      },
+      {
+        "osc": "/bassline_engine_general/nrpn_msb_value",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: General"
+      },
+      {
+        "osc": "/bassline_engine_general/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: General"
+      },
+      {
+        "osc": "/bassline_engine_general/nrpn_lsb_value",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: General"
+      },
+      {
+        "osc": "/bassline_engine_general/nrpn_lsb",
+        "cc": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: General"
+      },
+      {
+        "osc": "/bassline_engine_general/nrpn_msb",
+        "cc": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: General"
+      },
+      {
+        "osc": "/bassline_engine_general/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bassline engine: General",
+        "_usage": "0: Off; 1-127: Ignore"
+      },
+      {
+        "osc": "/multi_engine_envelopes/envelope_1_pitch_depth",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi engine: Envelopes",
+        "_usage": "0~63: Inverted depth; 64: Off; 65-127: Depth"
+      },
+      {
+        "osc": "/multi_engine_envelopes/envelope_1_pulsewidth_depth",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi engine: Envelopes",
+        "_usage": "0~63: Inverted depth; 64: Off; 65-127: Depth"
+      },
+      {
+        "osc": "/multi_engine_envelopes/envelope_1_filter_depth",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi engine: Envelopes",
+        "_usage": "0~63: Inverted depth; 64: Off; 65-127: Depth"
+      },
+      {
+        "osc": "/multi_engine_envelopes/envelope_1_attack_1",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: Envelopes"
+      },
+      {
+        "osc": "/multi_engine_envelopes/envelope_1_decay_2",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: Envelopes"
+      },
+      {
+        "osc": "/multi_engine_envelopes/envelope_1_sustain",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: Envelopes"
+      },
+      {
+        "osc": "/multi_engine_envelopes/envelope_1_release_1",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: Envelopes"
+      },
+      {
+        "osc": "/multi_engine_filter/filter_cutoff_frequency",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: Filter"
+      },
+      {
+        "osc": "/multi_engine_filter/filter_resonance",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: Filter"
+      },
+      {
+        "osc": "/multi_engine_filter/filter_cutoff_frequency_left_channel_sid",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: Filter"
+      },
+      {
+        "osc": "/multi_engine_filter/filter_cutoff_frequency_right_channel_sid",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: Filter"
+      },
+      {
+        "osc": "/multi_engine_lfos/lfo_1_pitch_depth",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi engine: LFOs",
+        "_usage": "0~63: Inverted depth; 64: Off; 65-127: Depth"
+      },
+      {
+        "osc": "/multi_engine_lfos/lfo_1_pulsewidth_depth",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi engine: LFOs",
+        "_usage": "0~63: Inverted depth; 64: Off; 65-127: Depth"
+      },
+      {
+        "osc": "/multi_engine_lfos/lfo_1_filter_depth",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi engine: LFOs",
+        "_usage": "0~63: Inverted depth; 64: Off; 65-127: Depth"
+      },
+      {
+        "osc": "/multi_engine_lfos/lfo_1_rate",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: LFOs",
+        "_usage": "0: Off; 1~127: LFO rate"
+      },
+      {
+        "osc": "/multi_engine_lfos/lfo_2_pitch_depth",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi engine: LFOs",
+        "_usage": "0~63: Inverted depth; 64: Off; 65-127: Depth"
+      },
+      {
+        "osc": "/multi_engine_lfos/lfo_2_pulsewidth_depth",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi engine: LFOs",
+        "_usage": "0~63: Inverted depth; 64: Off; 65-127: Depth"
+      },
+      {
+        "osc": "/multi_engine_lfos/lfo_2_filter_depth",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi engine: LFOs",
+        "_usage": "0~63: Inverted depth; 64: Off; 65-127: Depth"
+      },
+      {
+        "osc": "/multi_engine_lfos/lfo_2_rate",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: LFOs",
+        "_usage": "0: Off; 1~127: LFO rate"
+      },
+      {
+        "osc": "/multi_engine_vca/vca_attack",
+        "cc": 72,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: VCA"
+      },
+      {
+        "osc": "/multi_engine_vca/vca_decay",
+        "cc": 76,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: VCA"
+      },
+      {
+        "osc": "/multi_engine_vca/vca_sustain",
+        "cc": 80,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: VCA"
+      },
+      {
+        "osc": "/multi_engine_vca/vca_release",
+        "cc": 84,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: VCA"
+      },
+      {
+        "osc": "/multi_engine_voice/voice_waveform",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: Voice"
+      },
+      {
+        "osc": "/multi_engine_voice/voice_transpose",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi engine: Voice",
+        "_usage": "0~63: Negative; 64: Off; 65~127: Positive"
+      },
+      {
+        "osc": "/multi_engine_voice/voice_finetune",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi engine: Voice",
+        "_usage": "0~63: Negative; 64: Off; 65~127: Positive"
+      },
+      {
+        "osc": "/multi_engine_voice/voice_portamento_rate",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: Voice",
+        "_usage": "0: Off; 1~127: Portamento amount"
+      },
+      {
+        "osc": "/multi_engine_voice/voice_arp_speed",
+        "cc": 36,
+        "range": [
+          0,
+          63
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: Voice"
+      },
+      {
+        "osc": "/multi_engine_voice/voice_arp_gate_length",
+        "cc": 37,
+        "range": [
+          0,
+          31
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: Voice"
+      },
+      {
+        "osc": "/multi_engine_voice/voice_pulsewidth",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi engine: Voice",
+        "_usage": "0~63: Negative; 64: Mid; 65~127: Positive"
+      },
+      {
+        "osc": "/multi_engine_knobs/knob_1_assignable_parameters",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: Knobs"
+      },
+      {
+        "osc": "/multi_engine_knobs/knob_2_assignable_parameters",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: Knobs"
+      },
+      {
+        "osc": "/multi_engine_knobs/knob_3_assignable_parameters",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: Knobs"
+      },
+      {
+        "osc": "/multi_engine_knobs/knob_4_assignable_parameters",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: Knobs"
+      },
+      {
+        "osc": "/multi_engine_knobs/knob_5_assignable_parameters",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: Knobs"
+      },
+      {
+        "osc": "/multi_engine_general/bank_change",
+        "cc": 0,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: General",
+        "_usage": "0~7: Bank"
+      },
+      {
+        "osc": "/multi_engine_general/nrpn_msb_value",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: General"
+      },
+      {
+        "osc": "/multi_engine_general/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: General"
+      },
+      {
+        "osc": "/multi_engine_general/nrpn_lsb_value",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: General"
+      },
+      {
+        "osc": "/multi_engine_general/nrpn_lsb",
+        "cc": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: General"
+      },
+      {
+        "osc": "/multi_engine_general/nrpn_msb",
+        "cc": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: General"
+      },
+      {
+        "osc": "/multi_engine_general/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi engine: General",
+        "_usage": "0: Off; 1-127: Ignore"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

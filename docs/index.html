@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>osc-bridge — supported devices</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { color-scheme: light dark; --fg: #222; --bg: #fafafa; --muted: #666;
+          --card: #fff; --border: #e0e0e0; --accent: #0969da; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg: #e6edf3; --bg: #0d1117; --muted: #8b949e;
+            --card: #161b22; --border: #30363d; --accent: #58a6ff; }
+  }
+  * { box-sizing: border-box; }
+  body { font: 14px/1.5 -apple-system, system-ui, sans-serif;
+         color: var(--fg); background: var(--bg); margin: 0; padding: 24px; }
+  header { max-width: 1100px; margin: 0 auto 24px; }
+  h1 { margin: 0 0 4px; font-size: 22px; }
+  .tagline { color: var(--muted); margin-bottom: 16px; }
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  input[type=search], select { padding: 8px 12px; font-size: 14px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--card); color: var(--fg); }
+  input[type=search] { flex: 1; min-width: 240px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { padding: 4px 10px; border: 1px solid var(--border); border-radius: 999px;
+          background: var(--card); cursor: pointer; user-select: none; font-size: 13px; }
+  .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .stats { color: var(--muted); font-size: 13px; margin: 12px 0; }
+  main { max-width: 1100px; margin: 0 auto; }
+  table { width: 100%; border-collapse: collapse; background: var(--card);
+          border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  th { background: var(--bg); font-weight: 600; font-size: 12px;
+       text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+  tr:last-child td { border-bottom: 0; }
+  tr:hover td { background: var(--bg); }
+  td.vendor { font-weight: 600; white-space: nowrap; }
+  td.cov { color: var(--muted); font-size: 13px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .marker { font-size: 18px; }
+  .small { color: var(--muted); font-size: 12px; }
+  footer { max-width: 1100px; margin: 24px auto; color: var(--muted); font-size: 12px; }
+  mark { background: rgba(255, 200, 0, 0.4); color: inherit; padding: 0 2px; border-radius: 2px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>osc-bridge — supported devices</h1>
+  <div class="tagline">
+    Declarative OSC ↔ MIDI/SysEx bridge.
+    <a href="https://github.com/roomi-fields/osc-bridge">GitHub</a> ·
+    <a href="SUPPORTED_DEVICES.md">full catalogue (md)</a>
+  </div>
+  <div class="controls">
+    <input id="q" type="search" placeholder="Search vendor / device / author…" autofocus>
+    <select id="vendor"><option value="">All vendors</option></select>
+    <div class="chips" id="markers">
+      <span class="chip" data-m="✅">✅ hardware</span>
+      <span class="chip" data-m="📘">📘 vendor-doc</span>
+      <span class="chip" data-m="🎛️">🎛️ electra</span>
+      <span class="chip" data-m="📦">📦 pencil</span>
+    </div>
+  </div>
+  <div class="stats" id="stats">loading…</div>
+</header>
+<main>
+  <table>
+    <thead><tr>
+      <th></th><th>Vendor</th><th>Device</th><th>Coverage</th><th>Author</th><th></th>
+    </tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+</main>
+<footer>
+  Static page, data from <code>docs/devices.json</code>
+  (rebuilt by <code>scripts/build_device_index.py</code>).
+</footer>
+<script>
+const REPO = "https://github.com/roomi-fields/osc-bridge/blob/main/";
+const state = { q: "", vendor: "", markers: new Set() };
+let DATA = { entries: [], vendors: [] };
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+function highlight(text, q) {
+  const s = escapeHtml(text);
+  if (!q) return s;
+  try {
+    const re = new RegExp("(" + q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "ig");
+    return s.replace(re, "<mark>$1</mark>");
+  } catch { return s; }
+}
+function covLabel(c) {
+  const bits = [];
+  if (c.commands) bits.push(c.commands + " cmd");
+  if (c.sysex_params) bits.push(c.sysex_params + " sysex");
+  if (c.cc) {
+    let s = c.cc + " CC";
+    const ex = [];
+    if (c.cc14) ex.push(c.cc14 + " 14-bit");
+    if (c.nrpn) ex.push(c.nrpn + " NRPN");
+    if (ex.length) s += " (" + ex.join(", ") + ")";
+    bits.push(s);
+  }
+  if (c.replies) bits.push(c.replies + " reply");
+  return bits.join(" · ") || "—";
+}
+function render() {
+  const q = state.q.trim().toLowerCase();
+  const rows = DATA.entries.filter(e => {
+    if (state.vendor && e.vendor !== state.vendor) return false;
+    if (state.markers.size && !state.markers.has(e.marker)) return false;
+    if (!q) return true;
+    const hay = (e.vendor + " " + e.name + " " + (e.authors||[]).join(" ")).toLowerCase();
+    return hay.includes(q);
+  });
+  document.getElementById("stats").textContent =
+    `${rows.length} of ${DATA.entries.length} devices across ${DATA.vendors.length} vendors`;
+  const html = rows.map(e => `
+    <tr>
+      <td class="marker">${e.marker}</td>
+      <td class="vendor">${highlight(e.vendor, q)}</td>
+      <td>${highlight(e.name, q)}</td>
+      <td class="cov">${covLabel(e.coverage)}</td>
+      <td class="small">${e.authors && e.authors.length ? highlight(e.authors.join(", "), q) : ""}</td>
+      <td><a href="${REPO}${e.path}" target="_blank">JSON</a></td>
+    </tr>`).join("");
+  document.getElementById("rows").innerHTML = html || `<tr><td colspan="6" class="small" style="text-align:center;padding:32px">no match</td></tr>`;
+}
+async function boot() {
+  const r = await fetch("devices.json");
+  DATA = await r.json();
+  const sel = document.getElementById("vendor");
+  for (const v of DATA.vendors) {
+    const o = document.createElement("option");
+    o.value = o.textContent = v;
+    sel.appendChild(o);
+  }
+  document.getElementById("q").addEventListener("input", e => { state.q = e.target.value; render(); });
+  sel.addEventListener("change", e => { state.vendor = e.target.value; render(); });
+  document.querySelectorAll("#markers .chip").forEach(c => {
+    c.addEventListener("click", () => {
+      const m = c.dataset.m;
+      if (state.markers.has(m)) { state.markers.delete(m); c.classList.remove("active"); }
+      else { state.markers.add(m); c.classList.add("active"); }
+      render();
+    });
+  });
+  render();
+}
+boot();
+</script>
+</body>
+</html>

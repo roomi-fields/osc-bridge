@@ -1,0 +1,5123 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/9GTxVRUEFJPBDAyiEYXH",
+      "preset_name": "Access Virus TI",
+      "imported_at": "2026-04-13",
+      "preset_id": "9GTxVRUEFJPBDAyiEYXH",
+      "author": "Joris R\u00f6ling"
+    },
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Access/Virus TI.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 341,
+    "cc_entries": 217,
+    "sysex_commands": 124
+  },
+  "device": {
+    "name": "Virus TI",
+    "vendor": "Access",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/virus_ti",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            7
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        30,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/interpolation",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        44,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/part",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            16
+          ]
+        }
+      ],
+      "frame": [
+        125,
+        32,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/local_detune",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        43,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/f_spread",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        37,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/f_shift",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        42,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fm_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            6
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        34,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/mode_wave",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            67
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        41,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/semitone",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -48,
+            48
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        43,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/detune",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        44,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/osc_3_volume",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        42,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/key_follw_base",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        33,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/env_polarity",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        30,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/res_velocity",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -100,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        56,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/env_velocity",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -100,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        54,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/cutoff_link",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        32,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/env_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        80,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/sustain_slope",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -63,
+            64
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        83,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/env_4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        89,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/clock",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            21
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        18,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/rate",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        7,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/shape",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            67
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        8,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fade_in",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        13,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/key_follow",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        10,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/target",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        79,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/amount",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -100,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        80,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/type",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            8
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        26,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/intensity",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        97,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/frequency",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        98,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/mix",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        72,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/treble_boost",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        70,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/high_cut",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        71,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/left_clock",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            5
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        13,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/right_clock",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            5
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        14,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/bandwidth",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        17,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/ratio",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            6
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        12,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/feedback",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -100,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        89,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/mod_rate",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        86,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/mod_depth",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        87,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/q_factor",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            28,
+            1540
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        94,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/gain",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -1600,
+            1600
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        95,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/send",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        2,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/time",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        4,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/damping",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        5,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/coloration",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        6,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pre_delay",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            500
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        7,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/poles",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            200,
+            600
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        23,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/slope",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        24,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/input",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            3
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        38,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/resonance",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        25,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/filter_type",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        23,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/stereo_phase",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        22,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/shape_l",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -100,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        23,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/shape_r",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -100,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        24,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/volume",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -100,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        60,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/panorama",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -100,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        61,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fm_amount",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -100,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        50,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/osc_1_shape",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -100,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        47,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/osc_2_shape",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -100,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        48,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pulse_width",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -100,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        49,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/filter_1_env",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -100,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        54,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/resonance_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -100,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        56,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/filter_2_env",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -100,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        55,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/resonance_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -100,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        57,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/atomizer",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            16
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        126,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/output",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        115,
+        0,
+        45,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/balance",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        58,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/source",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            39
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        64,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/target_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        65,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/target_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        90,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/target_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        92,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/amount_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        66,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/amount_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        91,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/amount_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -63,
+            64
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        93,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/multi_tempo",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            63,
+            190
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        114,
+        0,
+        15,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/smooth_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            20
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        25,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/down",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        27,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/up",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        26,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/scale",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        28,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/tempo",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            63,
+            199
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        114,
+        0,
+        15,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pattern",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            64
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        2,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/octave_range",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            4
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        3,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/resolution",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            17
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        17,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/hold",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        4,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/note_length",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        5,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/note_swing",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            50,
+            75
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        6,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/steps",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            32
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        110,
+        0,
+        127,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/voices",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            7
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        120,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pan_spread",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        122,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/lfo_phase",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            63
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        123,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/function",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        62,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/name",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        113,
+        0,
+        51,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        1,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        4,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        7,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        10,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_5",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        13,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_6",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        16,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_7",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        19,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_8",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        22,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_9",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        25,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_10",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        28,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_11",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        31,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_12",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        34,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_13",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        37,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_14",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        40,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_15",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        43,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_16",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        46,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_17",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        49,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_18",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        52,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_19",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        55,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_20",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        58,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_21",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        61,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_22",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        64,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_23",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        67,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_24",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        70,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_25",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        73,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_26",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        76,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_27",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        79,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_28",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        82,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_29",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        85,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_30",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        88,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_31",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        91,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/step_32",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        51,
+        1,
+        16,
+        111,
+        0,
+        94,
+        "{val}"
+      ]
+    }
+  ],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/controllers/mod_wheel",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/controllers/ctrl_breath",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/controllers/controller_3",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/controllers/ctrl_foot",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/general/glide_time",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/controllers/ctrl_data",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/general/volume",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/balance",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "General"
+      },
+      {
+        "osc": "/controllers/controller_9",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/general/pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "General"
+      },
+      {
+        "osc": "/controllers/ctrl_expression",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/controllers/controller_12",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/controllers/controller_13",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/controllers/controller_14",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/controllers/controller_15",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/controllers/controller_16",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/oscillators/osc1_shape",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc1_pulsewidth",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc1_wave_select",
+        "cc": 19,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0: Sine; 1: HarmncSweep; 2: Glass Sweep; 3: Draw Bars; 4: Clusters; 5: Insine Out; 6: Landing; 7: Liquid Metal; 8: Opposition; 9: Overtunes 1; 10: Ove"
+      },
+      {
+        "osc": "/oscillators/osc1_semitone",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc1_key_follow",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc2_shape",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc2_pulsewidth",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc2_wave_select",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc2_semitone",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc2_detune",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc2_fm_amount",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc2_sync",
+        "cc": 28,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/oscillators/osc2_filter_eg_amt",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/filter/fm_eg_amt",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter"
+      },
+      {
+        "osc": "/oscillators/osc2_key_follow",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/general/bank_select",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/mix/osc_balance",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mix"
+      },
+      {
+        "osc": "/mix/subosc_volume",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/oscillators/subosc_shape",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/mix/osc_mainvolume",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/mix/noise_volume",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/mix/ringmod_volume",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/oscillators/noise_color",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/filter/filter1_cutoff",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/filter2_cutoff",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/filter1_resonance",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/filter2_resonance",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/filter1_eg_amt",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/filter2_eg_amt",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/filter1_key_follow",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/filter2_key_follow",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/balance",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/saturation_curve",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/controllers/controller_50",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/filter/filter1_mode",
+        "cc": 51,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Low Pass; 1: High Pass; 2: Band Pass; 3: Band Stop; 4: Analog 1 Pole; 5: Analog 2 Pole; 6: Analog 3 Pole; 7: Analog 4 Pole"
+      },
+      {
+        "osc": "/filter/filter2_mode",
+        "cc": 52,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Low Pass; 1: High Pass; 2: Band Pass; 3: Band Stop; 4: Analog 1 Pole; 5: Analog 2 Pole; 6: Analog 3 Pole; 7: Analog 4 Pole"
+      },
+      {
+        "osc": "/filter/routing",
+        "cc": 53,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Serial 4; 1: Serial 6; 2: Parallel 4; 3: Split Mode"
+      },
+      {
+        "osc": "/filter/eg_attack",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/eg_decay",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/eg_sustain",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/eg_sus_time",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/eg_release",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/envelopes/amp_eg_attack",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelopes"
+      },
+      {
+        "osc": "/envelopes/amp_eg_decay",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelopes"
+      },
+      {
+        "osc": "/envelopes/amp_eg_sustain",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelopes"
+      },
+      {
+        "osc": "/envelopes/amp_eg_sus_time",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Envelopes"
+      },
+      {
+        "osc": "/envelopes/amp_eg_release",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelopes"
+      },
+      {
+        "osc": "/controllers/ctrl_hold_pedal",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/controllers/ctrl_glide_pedal",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/controllers/ctrl_sostenuto_pedal",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/lfo/lfo1_rate",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo1_shape",
+        "cc": 68,
+        "range": [
+          0,
+          67
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Sine; 1: Triangle; 2: Sawtooth; 3: Pulse; 4: S+H; 5: S+G; 6: Wave 3; 7: Wave 4; 8: Wave 5; 9: Wave 6; 10: Wave 7; 11: Wave 8; 12: Wave 9; 13: Wave "
+      },
+      {
+        "osc": "/lfo/lfo1_eg_mode",
+        "cc": 69,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/lfo/lfo1_mode",
+        "cc": 70,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Poly; 1: Mono"
+      },
+      {
+        "osc": "/lfo/lfo1_symmetry",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo1_keyboard",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo1_restart",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/oscillators/osc1_lfo1_amt",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc2_lfo1_amt",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/lfo/pw_lfo1_amt",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/reso_lfo1_amt",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/filtergain_lfo1_amt",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo2_rate",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo2_shape",
+        "cc": 80,
+        "range": [
+          0,
+          67
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Sine; 1: Triangle; 2: Sawtooth; 3: Pulse; 4: S+H; 5: S+G; 6: Wave 3; 7: Wave 4; 8: Wave 5; 9: Wave 6; 10: Wave 7; 11: Wave 8; 12: Wave 9; 13: Wave "
+      },
+      {
+        "osc": "/lfo/lfo2_eg_mode",
+        "cc": 81,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/lfo/lfo2_mode",
+        "cc": 82,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Poly; 1: Mono"
+      },
+      {
+        "osc": "/lfo/lfo2_symmetry",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo2_keyboard",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo2_restart",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/osc_shp_lfo2_amt",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/fm_lfo2_amt",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/filter1_lfo2_amt",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/filter2_lfo2_amt",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/pan_lfo2_amt",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/controllers/controller_92",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/general/transpose",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "General"
+      },
+      {
+        "osc": "/general/key_mode",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/controllers/controller_95",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/controllers/controller_96",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/general/unison_mode",
+        "cc": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/unison_detune",
+        "cc": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/unison_spread",
+        "cc": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/lfo/unison_lfo_phase",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/general/input_mode",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/input_select",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/fx/chorus_type",
+        "cc": 103,
+        "range": [
+          0,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "FX",
+        "_usage": "0: Off; 1: Classic; 2: Vintage; 3: Hyper Chorus; 4: Air Chorus; 5: Vibrato; 6: Rotary Speaker"
+      },
+      {
+        "osc": "/fx/chorus_mix",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/chorus_classic_mix",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/chorus_rate",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/chorus_depth",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/chorus_delay",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/chorus_feedback",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/chorus_lfo_shape",
+        "cc": 110,
+        "range": [
+          0,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "FX",
+        "_usage": "0: Sine; 1: Triangle; 2: Sawtooth; 3: Square; 4: S&H; 5: S&G"
+      },
+      {
+        "osc": "/controllers/controller_111",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/fx/delay_verb_mode",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/effect_send",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/delay_time",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/delay_feedback",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/delay_verb_time",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/delay_verb_size",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/delay_lfo_shape",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/delay_color",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/controllers/controller_120",
+        "cc": 120,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/controllers/controller_121",
+        "cc": 121,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/general/keyboard_local",
+        "cc": 122,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/controllers/controller_124",
+        "cc": 124,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/controllers/controller_125",
+        "cc": 125,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/controllers/controller_126",
+        "cc": 126,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/controllers/controller_127",
+        "cc": 127,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers"
+      },
+      {
+        "osc": "/shape",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/wavetable",
+        "cc": 19,
+        "range": [
+          0,
+          99
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/detune",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/semitone",
+        "cc": 20,
+        "range": [
+          -48,
+          48
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/key_follow",
+        "cc": 21,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sync",
+        "cc": 28,
+        "range": [
+          0,
+          1
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/shape",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/wavetable",
+        "cc": 24,
+        "range": [
+          0,
+          99
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/detune",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pulse_width",
+        "cc": 23,
+        "range": [
+          50,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/semitone",
+        "cc": 25,
+        "range": [
+          -48,
+          48
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/key_follow",
+        "cc": 31,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fm_amount",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/filt_env_pitch",
+        "cc": 29,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/filt_env_fm",
+        "cc": 30,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_balance",
+        "cc": 33,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_volume",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sub_osc_volume",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sub_osc_wave",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/noise_color",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/noise_level",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/ring_mod_level",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mode",
+        "cc": 51,
+        "range": [
+          0,
+          7
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/cutoff",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/resonance",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_amount",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/routing",
+        "cc": 53,
+        "range": [
+          0,
+          3
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/key_follow",
+        "cc": 46,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/balance",
+        "cc": 48,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mode",
+        "cc": 52,
+        "range": [
+          0,
+          3
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/cutoff",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/resonance",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_amount",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/key_follow",
+        "cc": 47,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/filter",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/filter",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/filter",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/filter",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sustain_slope",
+        "cc": 57,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/bank",
+        "cc": 0,
+        "range": [
+          0,
+          29
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/amplitude",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/amplitude",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/amplitude",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/amplitude",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sustain_slope",
+        "cc": 62,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/rate",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/shape",
+        "cc": 68,
+        "range": [
+          0,
+          67
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/contour",
+        "cc": 71,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mode",
+        "cc": 70,
+        "range": [
+          0,
+          1
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/key_follow",
+        "cc": 72,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/envelope_mode",
+        "cc": 69,
+        "range": [
+          0,
+          1
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_1_pitch",
+        "cc": 74,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_2_pitch",
+        "cc": 75,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pulse_width",
+        "cc": 76,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/resonance",
+        "cc": 77,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/filter_gain",
+        "cc": 78,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/rate",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/shape",
+        "cc": 80,
+        "range": [
+          0,
+          67
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/contour",
+        "cc": 83,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mode",
+        "cc": 82,
+        "range": [
+          0,
+          1
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/key_follow",
+        "cc": 84,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/envelope_mode",
+        "cc": 81,
+        "range": [
+          0,
+          1
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/filtr_1_cutoff",
+        "cc": 88,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/filtr_2_cutoff",
+        "cc": 89,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/panorama",
+        "cc": 90,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fm_amount",
+        "cc": 87,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/shape_1_2",
+        "cc": 86,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/type",
+        "cc": 103,
+        "range": [
+          0,
+          6
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/rate",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "cc": 107,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/feedback",
+        "cc": 109,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/classic_mix",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_wave",
+        "cc": 110,
+        "range": [
+          0,
+          5
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mix",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/x_over",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/send",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/feedback",
+        "cc": 115,
+        "range": [
+          0,
+          200
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/frequency",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/modulation",
+        "cc": 117,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/time",
+        "cc": 114,
+        "range": [
+          0,
+          694
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/volume",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/panorama",
+        "cc": 10,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/transpose",
+        "cc": 93,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/trigger_phase",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pitch_bend",
+        "nrpn_msb": 7,
+        "nrpn_lsb": 104,
+        "range": [
+          -8192,
+          8191
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/modulation",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/trigger_phase",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/control_3",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/control_11",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/control_9",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

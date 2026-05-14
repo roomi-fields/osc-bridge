@@ -1,0 +1,1402 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Analog Heat +FX.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 109,
+    "cc_entries": 109,
+    "nrpn_entries": 109,
+    "fourteen_bit_cc_pairs": 20
+  },
+  "device": {
+    "name": "Analog Heat +FX",
+    "vendor": "Elektron",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/analog_heat_fx",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/heat_character/character_circuit",
+        "cc": 108,
+        "range": [
+          0,
+          7
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 108,
+        "orientation": "0-based",
+        "section": "Heat: Character",
+        "_usage": "0: Clean Boost; 1: Saturation; 2: Enhance; 3: Mid Drive; 4: Rough Crunch; 5: Classic Distortion; 6: Round Fuzz; 7: High Gain"
+      },
+      {
+        "osc": "/heat_character/character_drive",
+        "cc": 109,
+        "cc_lsb": 37,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 109,
+        "orientation": "0-based",
+        "section": "Heat: Character"
+      },
+      {
+        "osc": "/heat_character/character_level",
+        "cc": 110,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 110,
+        "orientation": "0-based",
+        "section": "Heat: Character"
+      },
+      {
+        "osc": "/heat_character/character_mix",
+        "cc": 111,
+        "cc_lsb": 40,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 111,
+        "orientation": "0-based",
+        "section": "Heat: Character"
+      },
+      {
+        "osc": "/heat_eq/eq_low",
+        "cc": 28,
+        "cc_lsb": 41,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 28,
+        "orientation": "0-based",
+        "section": "Heat: EQ"
+      },
+      {
+        "osc": "/heat_eq/eq_high",
+        "cc": 29,
+        "cc_lsb": 42,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 29,
+        "orientation": "0-based",
+        "section": "Heat: EQ"
+      },
+      {
+        "osc": "/heat_filter/filter_mode",
+        "cc": 30,
+        "range": [
+          0,
+          13
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 30,
+        "orientation": "0-based",
+        "section": "Heat: Filter",
+        "_usage": "1: LP2; 3: LP1; 5: BP; 7: HP1; 9: HP2; 11: BS; 13: PK"
+      },
+      {
+        "osc": "/heat_filter/filter_frequency",
+        "cc": 22,
+        "cc_lsb": 43,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 22,
+        "orientation": "0-based",
+        "section": "Heat: Filter"
+      },
+      {
+        "osc": "/heat_filter/filter_frequency_pan",
+        "cc": 26,
+        "cc_lsb": 47,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 26,
+        "orientation": "centered",
+        "section": "Heat: Filter"
+      },
+      {
+        "osc": "/heat_filter/filter_resonance",
+        "cc": 23,
+        "cc_lsb": 44,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 23,
+        "orientation": "0-based",
+        "section": "Heat: Filter"
+      },
+      {
+        "osc": "/heat_filter/filter_dirt",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 27,
+        "orientation": "0-based",
+        "section": "Heat: Filter"
+      },
+      {
+        "osc": "/heat_filter/filter_envelope",
+        "cc": 24,
+        "cc_lsb": 45,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 24,
+        "orientation": "0-based",
+        "section": "Heat: Filter"
+      },
+      {
+        "osc": "/heat_filter/filter_lfo1",
+        "cc": 25,
+        "cc_lsb": 46,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 25,
+        "orientation": "0-based",
+        "section": "Heat: Filter"
+      },
+      {
+        "osc": "/envelope/envelope_mode",
+        "cc": 17,
+        "range": [
+          0,
+          125
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 17,
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/envelope_attack",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 13,
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/envelope_release",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 14,
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/envelope_trig_level",
+        "cc": 12,
+        "cc_lsb": 32,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 12,
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/envelope_base",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 15,
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/envelope_width",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 16,
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/envelope_destination",
+        "cc": 18,
+        "range": [
+          0,
+          112
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 18,
+        "orientation": "0-based",
+        "section": "Envelope",
+        "_usage": "0: META None; 3: AMP Drive; 4: AMP Level; 5: AMP Mix; 6: PST Volume; 7: GATE Threshold; 8: GATE Hold; 9: GATE Release; 10: GATE Range; 11: FILTER EQ L"
+      },
+      {
+        "osc": "/envelope/envelope_depth",
+        "cc": 19,
+        "cc_lsb": 33,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 19,
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/envelope_destination_2",
+        "cc": 20,
+        "range": [
+          0,
+          112
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 20,
+        "orientation": "0-based",
+        "section": "Envelope",
+        "_usage": "0: META None; 3: AMP Drive; 4: AMP Level; 5: AMP Mix; 6: PST Volume; 7: GATE Threshold; 8: GATE Hold; 9: GATE Release; 10: GATE Range; 11: FILTER EQ L"
+      },
+      {
+        "osc": "/envelope/envelope_depth_2",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 21,
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/lfos/lfo1_mode",
+        "cc": 70,
+        "range": [
+          0,
+          4
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 70,
+        "orientation": "0-based",
+        "section": "LFOs",
+        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half"
+      },
+      {
+        "osc": "/lfos/lfo1_speed",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 67,
+        "orientation": "0-based",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo1_multiplier",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 68,
+        "orientation": "0-based",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo1_fade",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 69,
+        "orientation": "centered",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo1_waveform",
+        "cc": 66,
+        "range": [
+          0,
+          6
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 66,
+        "orientation": "0-based",
+        "section": "LFOs",
+        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random"
+      },
+      {
+        "osc": "/lfos/lfo1_start_phase",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 71,
+        "orientation": "0-based",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo1_destination",
+        "cc": 72,
+        "range": [
+          0,
+          112
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 72,
+        "orientation": "0-based",
+        "section": "LFOs",
+        "_usage": "0: META None; 3: AMP Drive; 4: AMP Level; 5: AMP Mix; 6: PST Volume; 7: GATE Threshold; 8: GATE Hold; 9: GATE Release; 10: GATE Range; 11: FILTER EQ L"
+      },
+      {
+        "osc": "/lfos/lfo1_depth",
+        "cc": 73,
+        "cc_lsb": 34,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 73,
+        "orientation": "centered",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo1_destination_2",
+        "cc": 74,
+        "range": [
+          0,
+          112
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 74,
+        "orientation": "0-based",
+        "section": "LFOs",
+        "_usage": "0: META None; 3: AMP Drive; 4: AMP Level; 5: AMP Mix; 6: PST Volume; 7: GATE Threshold; 8: GATE Hold; 9: GATE Release; 10: GATE Range; 11: FILTER EQ L"
+      },
+      {
+        "osc": "/lfos/lfo1_depth_2",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 75,
+        "orientation": "centered",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo2_mode",
+        "cc": 80,
+        "range": [
+          0,
+          4
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 80,
+        "orientation": "0-based",
+        "section": "LFOs",
+        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half"
+      },
+      {
+        "osc": "/lfos/lfo2_speed",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 77,
+        "orientation": "0-based",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo2_multiplier",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 78,
+        "orientation": "0-based",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo2_fade",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 79,
+        "orientation": "centered",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo2_waveform",
+        "cc": 76,
+        "range": [
+          0,
+          6
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 76,
+        "orientation": "0-based",
+        "section": "LFOs",
+        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random"
+      },
+      {
+        "osc": "/lfos/lfo2_start_phase",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 81,
+        "orientation": "0-based",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo2_destination",
+        "cc": 82,
+        "range": [
+          0,
+          112
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 82,
+        "orientation": "0-based",
+        "section": "LFOs",
+        "_usage": "0: META None; 3: AMP Drive; 4: AMP Level; 5: AMP Mix; 6: PST Volume; 7: GATE Threshold; 8: GATE Hold; 9: GATE Release; 10: GATE Range; 11: FILTER EQ L"
+      },
+      {
+        "osc": "/lfos/lfo2_depth",
+        "cc": 83,
+        "cc_lsb": 35,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 83,
+        "orientation": "centered",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo2_destination_2",
+        "cc": 84,
+        "range": [
+          0,
+          112
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 84,
+        "orientation": "0-based",
+        "section": "LFOs",
+        "_usage": "0: META None; 3: AMP Drive; 4: AMP Level; 5: AMP Mix; 6: PST Volume; 7: GATE Threshold; 8: GATE Hold; 9: GATE Release; 10: GATE Range; 11: FILTER EQ L"
+      },
+      {
+        "osc": "/lfos/lfo2_depth_2",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 85,
+        "orientation": "centered",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo3_mode",
+        "cc": 90,
+        "range": [
+          0,
+          4
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 90,
+        "orientation": "0-based",
+        "section": "LFOs",
+        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half"
+      },
+      {
+        "osc": "/lfos/lfo3_speed",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 87,
+        "orientation": "0-based",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo3_multiplier",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 88,
+        "orientation": "0-based",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo3_fade",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 89,
+        "orientation": "centered",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo3_waveform",
+        "cc": 86,
+        "range": [
+          0,
+          6
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 86,
+        "orientation": "0-based",
+        "section": "LFOs",
+        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random"
+      },
+      {
+        "osc": "/lfos/lfo3_start_phase",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 91,
+        "orientation": "0-based",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo3_destination",
+        "cc": 92,
+        "range": [
+          0,
+          112
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 92,
+        "orientation": "0-based",
+        "section": "LFOs",
+        "_usage": "0: META None; 3: AMP Drive; 4: AMP Level; 5: AMP Mix; 6: PST Volume; 7: GATE Threshold; 8: GATE Hold; 9: GATE Release; 10: GATE Range; 11: FILTER EQ L"
+      },
+      {
+        "osc": "/lfos/lfo3_depth",
+        "cc": 93,
+        "cc_lsb": 36,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 93,
+        "orientation": "centered",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/lfos/lfo3_destination_2",
+        "cc": 94,
+        "range": [
+          0,
+          112
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 94,
+        "orientation": "0-based",
+        "section": "LFOs",
+        "_usage": "0: META None; 3: AMP Drive; 4: AMP Level; 5: AMP Mix; 6: PST Volume; 7: GATE Threshold; 8: GATE Hold; 9: GATE Release; 10: GATE Range; 11: FILTER EQ L"
+      },
+      {
+        "osc": "/lfos/lfo3_depth_2",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 95,
+        "orientation": "centered",
+        "section": "LFOs"
+      },
+      {
+        "osc": "/controls/cv_a_destination",
+        "cc": 100,
+        "range": [
+          0,
+          112
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 102,
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "0: META None; 3: AMP Drive; 4: AMP Level; 5: AMP Mix; 6: PST Volume; 7: GATE Threshold; 8: GATE Hold; 9: GATE Release; 10: GATE Range; 11: FILTER EQ L"
+      },
+      {
+        "osc": "/controls/cv_a_depth",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 103,
+        "orientation": "centered",
+        "section": "Controls"
+      },
+      {
+        "osc": "/controls/cv_b_destination",
+        "cc": 104,
+        "range": [
+          0,
+          112
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 106,
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "0: META None; 3: AMP Drive; 4: AMP Level; 5: AMP Mix; 6: PST Volume; 7: GATE Threshold; 8: GATE Hold; 9: GATE Release; 10: GATE Range; 11: FILTER EQ L"
+      },
+      {
+        "osc": "/controls/cv_b_depth",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 107,
+        "orientation": "centered",
+        "section": "Controls"
+      },
+      {
+        "osc": "/controls/expr_a_destination",
+        "cc": 102,
+        "range": [
+          0,
+          112
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 104,
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "0: META None; 3: AMP Drive; 4: AMP Level; 5: AMP Mix; 6: PST Volume; 7: GATE Threshold; 8: GATE Hold; 9: GATE Release; 10: GATE Range; 11: FILTER EQ L"
+      },
+      {
+        "osc": "/controls/expr_a_depth",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 105,
+        "orientation": "centered",
+        "section": "Controls"
+      },
+      {
+        "osc": "/controls/expr_b_destination",
+        "cc": 106,
+        "range": [
+          0,
+          112
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 108,
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "0: META None; 3: AMP Drive; 4: AMP Level; 5: AMP Mix; 6: PST Volume; 7: GATE Threshold; 8: GATE Hold; 9: GATE Release; 10: GATE Range; 11: FILTER EQ L"
+      },
+      {
+        "osc": "/controls/expr_b_depth",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 109,
+        "orientation": "centered",
+        "section": "Controls"
+      },
+      {
+        "osc": "/gate/gate_threshold",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 113,
+        "orientation": "0-based",
+        "section": "Gate"
+      },
+      {
+        "osc": "/gate/gate_hold",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 114,
+        "orientation": "0-based",
+        "section": "Gate"
+      },
+      {
+        "osc": "/gate/gate_release",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 115,
+        "orientation": "0-based",
+        "section": "Gate"
+      },
+      {
+        "osc": "/gate/gate_range",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 116,
+        "orientation": "0-based",
+        "section": "Gate"
+      },
+      {
+        "osc": "/preset/preset_volume",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 112,
+        "orientation": "0-based",
+        "section": "Preset"
+      },
+      {
+        "osc": "/fx_bits/bits_srr",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 88,
+        "orientation": "0-based",
+        "section": "FX: Bits"
+      },
+      {
+        "osc": "/fx_bits/bits_br",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 89,
+        "orientation": "0-based",
+        "section": "FX: Bits"
+      },
+      {
+        "osc": "/fx_bits/bits_filter",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 90,
+        "orientation": "centered",
+        "section": "FX: Bits"
+      },
+      {
+        "osc": "/fx_bits/bits_mix",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 91,
+        "orientation": "0-based",
+        "section": "FX: Bits"
+      },
+      {
+        "osc": "/fx_chorus/chorus_depth",
+        "cc": 102,
+        "cc_lsb": 36,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 102,
+        "orientation": "centered",
+        "section": "FX: Chorus"
+      },
+      {
+        "osc": "/fx_chorus/chorus_speed",
+        "cc": 103,
+        "cc_lsb": 37,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 103,
+        "orientation": "centered",
+        "section": "FX: Chorus"
+      },
+      {
+        "osc": "/fx_chorus/chorus_width",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 105,
+        "orientation": "0-based",
+        "section": "FX: Chorus"
+      },
+      {
+        "osc": "/fx_chorus/chorus_mix",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 106,
+        "orientation": "0-based",
+        "section": "FX: Chorus"
+      },
+      {
+        "osc": "/fx_delay/delay_time",
+        "cc": 107,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 107,
+        "orientation": "0-based",
+        "section": "FX: Delay"
+      },
+      {
+        "osc": "/fx_delay/delay_pingpong",
+        "cc": 108,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 108,
+        "orientation": "0-based",
+        "section": "FX: Delay",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/fx_delay/delay_width",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 109,
+        "orientation": "centered",
+        "section": "FX: Delay"
+      },
+      {
+        "osc": "/fx_delay/delay_feedback",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 110,
+        "orientation": "0-based",
+        "section": "FX: Delay"
+      },
+      {
+        "osc": "/fx_delay/delay_hpf",
+        "cc": 111,
+        "cc_lsb": 40,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 111,
+        "orientation": "0-based",
+        "section": "FX: Delay"
+      },
+      {
+        "osc": "/fx_delay/delay_lpf",
+        "cc": 112,
+        "cc_lsb": 41,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 112,
+        "orientation": "0-based",
+        "section": "FX: Delay"
+      },
+      {
+        "osc": "/fx_delay/delay_amount",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 113,
+        "orientation": "0-based",
+        "section": "FX: Delay"
+      },
+      {
+        "osc": "/fx_delay/delay_mode",
+        "cc": 114,
+        "range": [
+          0,
+          2
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 114,
+        "orientation": "0-based",
+        "section": "FX: Delay",
+        "_usage": "0: Send; 1: Return; 2: Mix"
+      },
+      {
+        "osc": "/fx_reverb/reverb_pre_delay",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 12,
+        "orientation": "0-based",
+        "section": "FX: Reverb"
+      },
+      {
+        "osc": "/fx_reverb/reverb_decay_time",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 13,
+        "orientation": "0-based",
+        "section": "FX: Reverb",
+        "_usage": "0~126: Time; 127: Infinite"
+      },
+      {
+        "osc": "/fx_reverb/reverb_frequency",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 14,
+        "orientation": "0-based",
+        "section": "FX: Reverb"
+      },
+      {
+        "osc": "/fx_reverb/reverb_gain",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 15,
+        "orientation": "0-based",
+        "section": "FX: Reverb"
+      },
+      {
+        "osc": "/fx_reverb/reverb_hpf",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 16,
+        "orientation": "0-based",
+        "section": "FX: Reverb"
+      },
+      {
+        "osc": "/fx_reverb/reverb_lpf",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 17,
+        "orientation": "0-based",
+        "section": "FX: Reverb"
+      },
+      {
+        "osc": "/fx_reverb/reverb_amount",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 18,
+        "orientation": "0-based",
+        "section": "FX: Reverb"
+      },
+      {
+        "osc": "/fx_reverb/reverb_mode",
+        "cc": 19,
+        "range": [
+          0,
+          2
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 19,
+        "orientation": "0-based",
+        "section": "FX: Reverb",
+        "_usage": "0: Send; 1: Return; 2: Mix"
+      },
+      {
+        "osc": "/fx_compressor/compressor_threshold",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 20,
+        "orientation": "0-based",
+        "section": "FX: Compressor"
+      },
+      {
+        "osc": "/fx_compressor/compressor_attack",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 21,
+        "orientation": "0-based",
+        "section": "FX: Compressor"
+      },
+      {
+        "osc": "/fx_compressor/compressor_release",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 22,
+        "orientation": "0-based",
+        "section": "FX: Compressor"
+      },
+      {
+        "osc": "/fx_compressor/compressor_makeup_gain",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 23,
+        "orientation": "0-based",
+        "section": "FX: Compressor"
+      },
+      {
+        "osc": "/fx_compressor/compressor_ratio",
+        "cc": 24,
+        "range": [
+          0,
+          7
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 24,
+        "orientation": "0-based",
+        "section": "FX: Compressor",
+        "_usage": "0: 1.50; 1: 2.00; 2: 3.00; 3: 4.00; 4: 6.00; 5: 8.00; 6: 16.00; 7: 20.00"
+      },
+      {
+        "osc": "/fx_compressor/compressor_s_chain_filter",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 26,
+        "orientation": "centered",
+        "section": "FX: Compressor"
+      },
+      {
+        "osc": "/fx_compressor/compressor_mix",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 27,
+        "orientation": "0-based",
+        "section": "FX: Compressor"
+      },
+      {
+        "osc": "/fx_warble/warble_mix",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 28,
+        "orientation": "0-based",
+        "section": "FX: Warble"
+      },
+      {
+        "osc": "/fx_warble/warble_depth",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 29,
+        "orientation": "0-based",
+        "section": "FX: Warble"
+      },
+      {
+        "osc": "/fx_warble/warble_speed",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 30,
+        "orientation": "0-based",
+        "section": "FX: Warble"
+      },
+      {
+        "osc": "/fx_warble/warble_base",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 31,
+        "orientation": "0-based",
+        "section": "FX: Warble"
+      },
+      {
+        "osc": "/fx_warble/warble_width",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 32,
+        "orientation": "0-based",
+        "section": "FX: Warble"
+      },
+      {
+        "osc": "/fx_warble/warble_stereo",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 33,
+        "orientation": "0-based",
+        "section": "FX: Warble"
+      },
+      {
+        "osc": "/fx_warble/warble_noise_level",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 34,
+        "orientation": "0-based",
+        "section": "FX: Warble"
+      },
+      {
+        "osc": "/fx_warble/warble_noise_hpf",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 35,
+        "orientation": "0-based",
+        "section": "FX: Warble"
+      },
+      {
+        "osc": "/fx_bass_focus/bass_focus_xfreq",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 115,
+        "orientation": "0-based",
+        "section": "FX: Bass Focus"
+      },
+      {
+        "osc": "/fx_bass_focus/bass_focus_hp_level",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 116,
+        "orientation": "0-based",
+        "section": "FX: Bass Focus"
+      },
+      {
+        "osc": "/fx_bass_focus/bass_focus_lp_level",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 117,
+        "orientation": "0-based",
+        "section": "FX: Bass Focus"
+      },
+      {
+        "osc": "/fx_bass_focus/bass_focus_bass",
+        "cc": 118,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 118,
+        "orientation": "0-based",
+        "section": "FX: Bass Focus",
+        "_usage": "0: Stereo; 1: Mono"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

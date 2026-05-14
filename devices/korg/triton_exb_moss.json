@@ -1,0 +1,3934 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/kvYpk5BZGkTxsUldztf8",
+      "preset_name": "Korg Triton EXB MOSS",
+      "imported_at": "2026-04-13",
+      "preset_id": "kvYpk5BZGkTxsUldztf8",
+      "author": "Shankar Arunachalam"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 150,
+    "cc_entries": 0,
+    "sysex_commands": 150
+  },
+  "device": {
+    "name": "Triton EXB MOSS",
+    "vendor": "KORG",
+    "revision": "per Electra preset",
+    "osc_prefix": "/triton_exb_moss",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/type",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        41,
+        0,
+        0,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/octave",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        42,
+        0,
+        0,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/transpose",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -12,
+            12
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        42,
+        0,
+        1,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/tune",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -50,
+            50
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        42,
+        0,
+        2,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/freq_offset",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -10,
+            10
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        42,
+        0,
+        3,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/mono_poly",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        40,
+        0,
+        3,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/note_priority",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        40,
+        0,
+        2,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/waveform",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        45,
+        0,
+        0,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/hold",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        40,
+        0,
+        1,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/filter_type",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        45,
+        0,
+        1,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/input_trim",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        45,
+        0,
+        2,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/frequency",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        45,
+        0,
+        3,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/resonance",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        45,
+        0,
+        8,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/freq_mod_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        45,
+        0,
+        4,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/mod_1_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        45,
+        0,
+        5,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/switch",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        195,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/edit",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        78,
+        3
+      ]
+    },
+    {
+      "osc": "/retrigger_ctrl",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        40,
+        0,
+        4,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/retrig_thresh",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        40,
+        0,
+        5,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/unison",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        40,
+        0,
+        6,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        40,
+        0,
+        7,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/detune",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        40,
+        0,
+        8,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/key",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        40,
+        0,
+        11,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/random",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        40,
+        0,
+        12,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/osc_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        46,
+        0,
+        0,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/osc_1_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        46,
+        0,
+        1,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/osc_1_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        46,
+        0,
+        2,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/noise",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        46,
+        0,
+        18,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/noise_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        46,
+        0,
+        19,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/noise_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        46,
+        0,
+        20,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/osc_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        46,
+        0,
+        6,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/osc_2_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        46,
+        0,
+        7,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/osc_2_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        46,
+        0,
+        8,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/feedback",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        46,
+        0,
+        24,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/feedback_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        46,
+        0,
+        25,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fdbk_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        46,
+        0,
+        26,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/sub_osc",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        46,
+        0,
+        12,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/sub_osc_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        46,
+        0,
+        13,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/subosc_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        46,
+        0,
+        14,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/center_key",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        42,
+        0,
+        4,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/ramp_low",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        42,
+        0,
+        5,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/ramp_high",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        42,
+        0,
+        6,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pitch_mod_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        42,
+        0,
+        7,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/mod_1_int_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        42,
+        0,
+        9,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/int_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        42,
+        0,
+        10,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pitch_mod_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        42,
+        0,
+        11,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/mod_2_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        42,
+        0,
+        12,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/enable",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        41,
+        0,
+        8,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fingered",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        41,
+        0,
+        9,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/time",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        41,
+        0,
+        10,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/time_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        41,
+        0,
+        11,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/time_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        41,
+        0,
+        12,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/filter_routing",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        47,
+        0,
+        0,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/eg",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        48,
+        0,
+        7,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/eg_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        48,
+        0,
+        8,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/freq_mod_1_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        48,
+        0,
+        10,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/freq_mod_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        48,
+        0,
+        11,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/freq_mod_2_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        48,
+        0,
+        12,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/res_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        48,
+        0,
+        14,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/res_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        48,
+        0,
+        15,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/link_filters",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        47,
+        0,
+        1,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        52,
+        0,
+        0,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        52,
+        0,
+        6,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        52,
+        0,
+        7,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/output_level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        52,
+        0,
+        19,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pan",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        52,
+        0,
+        16,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/amp_1_pan_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        52,
+        0,
+        17,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pan_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        52,
+        0,
+        18,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/key_sync",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        58,
+        0,
+        1,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/amplitude_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        58,
+        0,
+        8,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/amp_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        58,
+        0,
+        9,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/velocity_ctrl",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        54,
+        0,
+        11,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/level_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        54,
+        0,
+        9,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/level_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        54,
+        0,
+        10,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/time_mod_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        54,
+        0,
+        12,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/time_mod_1_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        54,
+        0,
+        13,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/time_mod_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        54,
+        0,
+        14,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/time_mod_2_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        54,
+        0,
+        15,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/wave",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        69,
+        0,
+        0,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/harmonics",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        69,
+        0,
+        1,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fine",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        69,
+        0,
+        2,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/percussion",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        69,
+        0,
+        6,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/decay",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        69,
+        0,
+        22,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/force",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        70,
+        0,
+        0,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/const_force",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        70,
+        0,
+        1,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/velocity_curve",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        70,
+        0,
+        1,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/hammer_width",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        70,
+        0,
+        2,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/click_level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        70,
+        0,
+        3,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/release",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        70,
+        0,
+        5,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/position",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        70,
+        0,
+        9,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/position_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        70,
+        0,
+        10,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pos_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        70,
+        0,
+        11,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/gain",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -18,
+            18
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        70,
+        0,
+        13,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/inst_type",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        71,
+        0,
+        0,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/lip",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        71,
+        0,
+        9,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/lip_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        71,
+        0,
+        10,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/lip_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        71,
+        0,
+        11,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/breath_noise",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        71,
+        0,
+        14,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/strength",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        71,
+        0,
+        18,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pressure_mod_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        71,
+        0,
+        5,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pressure_mod_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        71,
+        0,
+        7,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/tone",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        71,
+        0,
+        12,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/q",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            29
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        71,
+        0,
+        16,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/reed_character",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        72,
+        0,
+        10,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/char_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        72,
+        0,
+        11,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/offset",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        72,
+        0,
+        17,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/shape",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        72,
+        0,
+        19,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/level_velocity",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        1,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/noise_velocity",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        7,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/up",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        2,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/up_velocity",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        3,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/down",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        4,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/down_velocity",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        5,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/point",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        8,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/point_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        9,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/point_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        10,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/decay_kbdtrack",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        19,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/damp",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        14,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/damp_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        16,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/damp_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        17,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/dispersion",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        11,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/dispersion_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        12,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/disp_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        13,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/damp_kbd_track",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        15,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pickup",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        24,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/location",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        25,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pickup_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        26,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pickup_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        27,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/control",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        22,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/intensity",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        23,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/low_boost",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        73,
+        0,
+        30,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/speed_mod_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        74,
+        0,
+        2,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/differential",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        74,
+        0,
+        6,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/rosin",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        74,
+        0,
+        11,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/speed_mod_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        74,
+        0,
+        4,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pressure_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        74,
+        0,
+        9,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/reflection_amt",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        74,
+        0,
+        24,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/reflection_mod",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        74,
+        0,
+        25,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/refl_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        74,
+        0,
+        26,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/level_mod_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        64,
+        0,
+        2,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/level_mod_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        64,
+        0,
+        4,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/wave_shape",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        64,
+        0,
+        6,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/ws_mod_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        64,
+        0,
+        7,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/ws_mod_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        64,
+        0,
+        9,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/coarse",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        64,
+        0,
+        13,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/ws_mod_2_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        64,
+        0,
+        18,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/input",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        63,
+        0,
+        0,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/noise_level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        63,
+        0,
+        2,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pulse_width",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        63,
+        0,
+        3,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/high_damp",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{val}",
+        80,
+        65,
+        3,
+        0,
+        63,
+        0,
+        11,
+        0,
+        "{val}"
+      ]
+    }
+  ],
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

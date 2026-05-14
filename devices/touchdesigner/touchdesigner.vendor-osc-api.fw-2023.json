@@ -1,0 +1,30 @@
+{
+  "_sources": [
+    {
+      "type": "vendor-osc-api",
+      "name": "TouchDesigner OSC In / OSC Out CHOP / DAT",
+      "url": "https://docs.derivative.ca/OSC",
+      "version": "2023",
+      "firmware": "TouchDesigner 2023.x"
+    }
+  ],
+  "_limitations": "Passthrough mode — TouchDesigner's OSC surface is whatever the OSC In CHOP / DAT / OSC In DAT operators in the project decide to receive. The bridge forwards `/td/...` (with `/td` stripped) to UDP 7000. Replies from TouchDesigner via OSC Out CHOP / DAT pointed at port 7001 re-emit as `/td/...` to clients.",
+  "_coverage": {
+    "mode": "passthrough",
+    "host_software": "TouchDesigner 2023.x"
+  },
+  "device": {
+    "name": "TouchDesigner",
+    "vendor": "Derivative",
+    "revision": "TouchDesigner 2023 (passthrough)",
+    "osc_prefix": "/td",
+    "kind": "software",
+    "transport": {
+      "kind": "osc",
+      "host": "127.0.0.1",
+      "port": 7000,
+      "reply_port": 7001,
+      "passthrough_prefix": ""
+    }
+  }
+}

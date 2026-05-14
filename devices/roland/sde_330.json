@@ -1,0 +1,191 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/KUe0iQbrqd2wMIL12Ys3",
+      "preset_name": "Roland SDE-330",
+      "imported_at": "2026-04-13",
+      "preset_id": "KUe0iQbrqd2wMIL12Ys3",
+      "revision": "118",
+      "author": "Matthias Millhoff"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 6,
+    "cc_entries": 0,
+    "sysex_commands": 6
+  },
+  "device": {
+    "name": "SDE-330",
+    "vendor": "Roland",
+    "revision": "per Electra preset",
+    "osc_prefix": "/sde_330",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240,
+      65,
+      90,
+      18
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/tx_exp_pedal",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -1,
+            95
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        90,
+        18,
+        16,
+        0,
+        2,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/rx_prg_change",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        90,
+        18,
+        16,
+        0,
+        1,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/lcd_contrast",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        90,
+        18,
+        16,
+        0,
+        4,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/bypass_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        90,
+        18,
+        16,
+        0,
+        3,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/omni_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        90,
+        18,
+        16,
+        0,
+        0,
+        "{val}",
+        "{checksum}"
+      ]
+    },
+    {
+      "osc": "/lock_panel",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        "{function}",
+        90,
+        18,
+        32,
+        2,
+        16,
+        "{val}",
+        "{checksum}"
+      ]
+    }
+  ],
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

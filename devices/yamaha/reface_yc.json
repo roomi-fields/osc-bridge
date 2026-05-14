@@ -1,0 +1,244 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Yamaha/reface YC.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 18,
+    "cc_entries": 18,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "reface YC",
+    "vendor": "Yamaha",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/reface_yc",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/sound/rotary_speed",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0-32: Off; 33-64: Stop; 65-95: Slow; 96-127: Fast"
+      },
+      {
+        "osc": "/sound/wave",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0-25: H; 26-51: V; 52-76: F; 77-102: A; 103-127: Y"
+      },
+      {
+        "osc": "/sound/footage_16",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0-18: Footage slider 0; 19-36: Footage slider 1; 37-54: Footage slider 2; 55-73: Footage slider 3; 74-91: Footage slider 4; 92-109: Footage slider 5; "
+      },
+      {
+        "osc": "/sound/footage_5_1_3",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0-18: Footage slider 0; 19-36: Footage slider 1; 37-54: Footage slider 2; 55-73: Footage slider 3; 74-91: Footage slider 4; 92-109: Footage slider 5; "
+      },
+      {
+        "osc": "/sound/footage_8",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0-18: Footage slider 0; 19-36: Footage slider 1; 37-54: Footage slider 2; 55-73: Footage slider 3; 74-91: Footage slider 4; 92-109: Footage slider 5; "
+      },
+      {
+        "osc": "/sound/footage_4",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0-18: Footage slider 0; 19-36: Footage slider 1; 37-54: Footage slider 2; 55-73: Footage slider 3; 74-91: Footage slider 4; 92-109: Footage slider 5; "
+      },
+      {
+        "osc": "/sound/footage_2_2_3",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0-18: Footage slider 0; 19-36: Footage slider 1; 37-54: Footage slider 2; 55-73: Footage slider 3; 74-91: Footage slider 4; 92-109: Footage slider 5; "
+      },
+      {
+        "osc": "/sound/footage_2",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0-18: Footage slider 0; 19-36: Footage slider 1; 37-54: Footage slider 2; 55-73: Footage slider 3; 74-91: Footage slider 4; 92-109: Footage slider 5; "
+      },
+      {
+        "osc": "/sound/footage_1_3_5",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0-18: Footage slider 0; 19-36: Footage slider 1; 37-54: Footage slider 2; 55-73: Footage slider 3; 74-91: Footage slider 4; 92-109: Footage slider 5; "
+      },
+      {
+        "osc": "/sound/footage_1_1_3",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0-18: Footage slider 0; 19-36: Footage slider 1; 37-54: Footage slider 2; 55-73: Footage slider 3; 74-91: Footage slider 4; 92-109: Footage slider 5; "
+      },
+      {
+        "osc": "/sound/footage_1",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0-18: Footage slider 0; 19-36: Footage slider 1; 37-54: Footage slider 2; 55-73: Footage slider 3; 74-91: Footage slider 4; 92-109: Footage slider 5; "
+      },
+      {
+        "osc": "/vibrato_chorus/switch",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vibrato/chorus",
+        "_usage": "0-63: Vibrato; 64-127: Chorus"
+      },
+      {
+        "osc": "/vibrato_chorus/depth",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vibrato/chorus",
+        "_usage": "0-25: 0; 26-51: 1; 52-76: 2; 77-102: 3; 103-127: 4"
+      },
+      {
+        "osc": "/percussion/on_off_switch",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Percussion",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/percussion/type_switch",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Percussion",
+        "_usage": "0-63: A; 64-127: B"
+      },
+      {
+        "osc": "/percussion/length",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Percussion",
+        "_usage": "0-25: 0; 26-51: 1; 52-76: 2; 77-102: 3; 103-127: 4"
+      },
+      {
+        "osc": "/effects/effect_dist",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/effect_reverb",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

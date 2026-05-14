@@ -1,0 +1,1038 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Kurzweil/K2000 V3.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 99,
+    "cc_entries": 99,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "K2000 V3",
+    "vendor": "Kurzweil",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/k2000_v3",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/effects_ultimate_reverb/decay_time",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Ultimate reverb"
+      },
+      {
+        "osc": "/effects_ultimate_reverb/room_volume",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Ultimate reverb"
+      },
+      {
+        "osc": "/effects_ultimate_reverb/hf_damping",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Ultimate reverb"
+      },
+      {
+        "osc": "/effects_ultimate_reverb/envelopment",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Ultimate reverb"
+      },
+      {
+        "osc": "/effects_ultimate_reverb/early_delay",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Ultimate reverb"
+      },
+      {
+        "osc": "/effects_ultimate_reverb/early_diffusion",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Ultimate reverb"
+      },
+      {
+        "osc": "/effects_ultimate_reverb/later_diffusion",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Ultimate reverb"
+      },
+      {
+        "osc": "/effects_ultimate_reverb/dry_level",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Ultimate reverb"
+      },
+      {
+        "osc": "/effects_ultimate_reverb/early_level",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Ultimate reverb"
+      },
+      {
+        "osc": "/effects_ultimate_reverb/later_level",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Ultimate reverb"
+      },
+      {
+        "osc": "/effects_room_simulation/gross_size",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Room simulation"
+      },
+      {
+        "osc": "/effects_room_simulation/decay_time",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Room simulation"
+      },
+      {
+        "osc": "/effects_room_simulation/listening_position",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Room simulation"
+      },
+      {
+        "osc": "/effects_room_simulation/hf_damping",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Room simulation"
+      },
+      {
+        "osc": "/effects_room_simulation/dry_level",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Room simulation"
+      },
+      {
+        "osc": "/effects_room_simulation/reverb_level",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Room simulation"
+      },
+      {
+        "osc": "/effects_reverb_in_multi_fx/revpre_delay",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Reverb in multi FX"
+      },
+      {
+        "osc": "/effects_reverb_in_multi_fx/hi_freq_damp",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Reverb in multi FX"
+      },
+      {
+        "osc": "/effects_reverb_in_multi_fx/reverb_decay",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Reverb in multi FX"
+      },
+      {
+        "osc": "/effects_reverb_in_multi_fx/rev_in_dry",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Reverb in multi FX"
+      },
+      {
+        "osc": "/effects_reverb_in_multi_fx/rev_in_flange",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Reverb in multi FX"
+      },
+      {
+        "osc": "/effects_reverb_in_multi_fx/rev_in_delay",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Reverb in multi FX"
+      },
+      {
+        "osc": "/effects_gated_reverb/pre_delay",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Gated reverb"
+      },
+      {
+        "osc": "/effects_gated_reverb/decay_time",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Gated reverb"
+      },
+      {
+        "osc": "/effects_gated_reverb/envelope",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Gated reverb"
+      },
+      {
+        "osc": "/effects_gated_reverb/accent_delay",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Gated reverb"
+      },
+      {
+        "osc": "/effects_gated_reverb/dry_level",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Gated reverb"
+      },
+      {
+        "osc": "/effects_gated_reverb/accent_level",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Gated reverb"
+      },
+      {
+        "osc": "/effects_gated_reverb/right_level",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Gated reverb"
+      },
+      {
+        "osc": "/effects_gated_reverb/left_level",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Gated reverb"
+      },
+      {
+        "osc": "/effects_reverse_reverb/pre_delay",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Reverse reverb"
+      },
+      {
+        "osc": "/effects_reverse_reverb/reverse_time",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Reverse reverb"
+      },
+      {
+        "osc": "/effects_reverse_reverb/accent_delay",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Reverse reverb"
+      },
+      {
+        "osc": "/effects_reverse_reverb/accent_level",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Reverse reverb"
+      },
+      {
+        "osc": "/effects_reverse_reverb/dry_level",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Reverse reverb"
+      },
+      {
+        "osc": "/effects_reverse_reverb/right_level",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Reverse reverb"
+      },
+      {
+        "osc": "/effects_reverse_reverb/left_level",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Reverse reverb"
+      },
+      {
+        "osc": "/effects_reverse_reverb/accent_lvl_l",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Reverse reverb"
+      },
+      {
+        "osc": "/effects_reverse_reverb/accent_lvl_r",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Reverse reverb"
+      },
+      {
+        "osc": "/effects_parametric_eq/band_1_freq",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Parametric EQ"
+      },
+      {
+        "osc": "/effects_parametric_eq/band_1_level",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Parametric EQ"
+      },
+      {
+        "osc": "/effects_parametric_eq/band_2_freq",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Parametric EQ"
+      },
+      {
+        "osc": "/effects_parametric_eq/band_2_level",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Parametric EQ"
+      },
+      {
+        "osc": "/effects_parametric_eq/band_3_freq",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Parametric EQ"
+      },
+      {
+        "osc": "/effects_parametric_eq/band_3_level",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Parametric EQ"
+      },
+      {
+        "osc": "/effects_parametric_eq/eq_level",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Parametric EQ"
+      },
+      {
+        "osc": "/effects_graphic_eq/63_hz",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Graphic EQ"
+      },
+      {
+        "osc": "/effects_graphic_eq/125_hz",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Graphic EQ"
+      },
+      {
+        "osc": "/effects_graphic_eq/250_hz",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Graphic EQ"
+      },
+      {
+        "osc": "/effects_graphic_eq/500_hz",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Graphic EQ"
+      },
+      {
+        "osc": "/effects_graphic_eq/1_0_khz",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Graphic EQ"
+      },
+      {
+        "osc": "/effects_graphic_eq/2_0_khz",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Graphic EQ"
+      },
+      {
+        "osc": "/effects_graphic_eq/4_0_khz",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Graphic EQ"
+      },
+      {
+        "osc": "/effects_graphic_eq/8_0_khz",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Graphic EQ"
+      },
+      {
+        "osc": "/effects_stereo_chorus/chorus_delay",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo chorus"
+      },
+      {
+        "osc": "/effects_stereo_chorus/lfo_speed",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo chorus"
+      },
+      {
+        "osc": "/effects_stereo_chorus/lfo_depth",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo chorus"
+      },
+      {
+        "osc": "/effects_stereo_chorus/dry_level",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo chorus"
+      },
+      {
+        "osc": "/effects_stereo_chorus/right_level",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo chorus"
+      },
+      {
+        "osc": "/effects_stereo_chorus/left_level",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo chorus"
+      },
+      {
+        "osc": "/effects_stereo_chorus/chorus_level",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo chorus"
+      },
+      {
+        "osc": "/effects_stereo_flange/flange_delay",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo flange"
+      },
+      {
+        "osc": "/effects_stereo_flange/lfo_speed",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo flange"
+      },
+      {
+        "osc": "/effects_stereo_flange/lfo_depth",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo flange"
+      },
+      {
+        "osc": "/effects_stereo_flange/feedback",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo flange"
+      },
+      {
+        "osc": "/effects_stereo_flange/dry_level",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo flange"
+      },
+      {
+        "osc": "/effects_stereo_flange/right_level",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo flange"
+      },
+      {
+        "osc": "/effects_stereo_flange/left_level",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo flange"
+      },
+      {
+        "osc": "/effects_stereo_flange/flange_level",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo flange"
+      },
+      {
+        "osc": "/effects_stereo_delay/delay_time",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo delay"
+      },
+      {
+        "osc": "/effects_stereo_delay/feedback",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo delay"
+      },
+      {
+        "osc": "/effects_stereo_delay/dry_level",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo delay"
+      },
+      {
+        "osc": "/effects_stereo_delay/right_level",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo delay"
+      },
+      {
+        "osc": "/effects_stereo_delay/left_level",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo delay"
+      },
+      {
+        "osc": "/effects_stereo_delay/delay_dry_in",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo delay"
+      },
+      {
+        "osc": "/effects_stereo_delay/delay_chr_in",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo delay"
+      },
+      {
+        "osc": "/effects_stereo_delay/delay_flg_in",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo delay"
+      },
+      {
+        "osc": "/effects_stereo_delay/delay_eq_in",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo delay"
+      },
+      {
+        "osc": "/effects_stereo_delay/delay_eq_src",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Stereo delay"
+      },
+      {
+        "osc": "/effects_tap_delay/tap_1_delay",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Tap delay"
+      },
+      {
+        "osc": "/effects_tap_delay/tap_2_delay",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Tap delay"
+      },
+      {
+        "osc": "/effects_tap_delay/tap_3_delay",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Tap delay"
+      },
+      {
+        "osc": "/effects_tap_delay/tap_4_delay",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Tap delay"
+      },
+      {
+        "osc": "/effects_tap_delay/feed_delay",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Tap delay"
+      },
+      {
+        "osc": "/effects_tap_delay/feedback",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Tap delay"
+      },
+      {
+        "osc": "/effects_tap_delay/dry_level",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Tap delay"
+      },
+      {
+        "osc": "/effects_tap_delay/tap_1_level_l",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Tap delay"
+      },
+      {
+        "osc": "/effects_tap_delay/tap_1_level_r",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Tap delay"
+      },
+      {
+        "osc": "/effects_tap_delay/tap_2_level_l",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Tap delay"
+      },
+      {
+        "osc": "/effects_tap_delay/tap_2_level_r",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Tap delay"
+      },
+      {
+        "osc": "/effects_tap_delay/tap_3_level_l",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Tap delay"
+      },
+      {
+        "osc": "/effects_tap_delay/tap_3_level_r",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Tap delay"
+      },
+      {
+        "osc": "/effects_tap_delay/tap_4_level_l",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Tap delay"
+      },
+      {
+        "osc": "/effects_tap_delay/tap_4_level_r",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Tap delay"
+      },
+      {
+        "osc": "/effects_tap_delay/tap_2_level",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Tap delay"
+      },
+      {
+        "osc": "/effects_tap_delay/tap_4_level",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Tap delay"
+      },
+      {
+        "osc": "/effects_other/wet_dry_mix",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Other"
+      },
+      {
+        "osc": "/effects_other/bypass",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Other"
+      },
+      {
+        "osc": "/effects_other/low_pass_filter",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects: Other"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

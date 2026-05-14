@@ -1,0 +1,205 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/8aJLrIjLu8eKiL7JajZa",
+      "preset_name": "Baloran The River",
+      "imported_at": "2026-04-13",
+      "preset_id": "8aJLrIjLu8eKiL7JajZa",
+      "revision": "24",
+      "author": "Bohdan"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 16,
+    "cc_entries": 16,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "Baloran The River",
+    "vendor": "Baloran",
+    "revision": "per Electra preset",
+    "osc_prefix": "/baloran_the_river",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/tempo",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/switch",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/motif",
+        "cc": 25,
+        "range": [
+          0,
+          9
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/octave",
+        "cc": 26,
+        "range": [
+          1,
+          5
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vel_attack",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 12,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vel_release",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vel_attack",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vel_release",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vel_vcf",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dlfo_emphasis",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dlfo_mix_osc1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dlfo_mix_osc2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 21,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dlfo_mix_noise",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 22,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dlfo_key_reset",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 19,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dlfo_decay",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 23,
+        "range": [
+          0,
+          400
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay_lfo",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

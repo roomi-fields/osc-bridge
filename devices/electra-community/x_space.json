@@ -1,0 +1,166 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/KILJeybJEwtmgK4KnCVw",
+      "preset_name": "X-Space",
+      "imported_at": "2026-04-13",
+      "preset_id": "KILJeybJEwtmgK4KnCVw",
+      "revision": "35"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 13,
+    "cc_entries": 13,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "X-Space",
+    "vendor": "Electra Community",
+    "revision": "per Electra preset",
+    "osc_prefix": "/x_space",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 9,
+    "entries": [
+      {
+        "osc": "/mix",
+        "cc": 31,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/time",
+        "cc": 20,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/color",
+        "cc": 22,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mod",
+        "cc": 23,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mod_rate",
+        "cc": 25,
+        "range": [
+          10,
+          700
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pre_delay",
+        "cc": 21,
+        "range": [
+          0,
+          1000
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/size",
+        "cc": 26,
+        "range": [
+          50,
+          150
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hp_filter",
+        "cc": 24,
+        "range": [
+          0,
+          1000
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/low_decay",
+        "cc": 27,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mid_decay",
+        "cc": 28,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/high_decay",
+        "cc": 29,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/plate",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/x_mode_toggle",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 9,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

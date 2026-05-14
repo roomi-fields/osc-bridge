@@ -1,0 +1,891 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/BOSS/GM-800.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 83,
+    "cc_entries": 83,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 1
+  },
+  "device": {
+    "name": "GM-800",
+    "vendor": "BOSS",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/gm_800",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/performance/bank_select",
+        "cc": 0,
+        "cc_lsb": 32,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Performance"
+      },
+      {
+        "osc": "/performance/modulation",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance"
+      },
+      {
+        "osc": "/performance/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance"
+      },
+      {
+        "osc": "/performance/pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Performance"
+      },
+      {
+        "osc": "/performance/expression",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance"
+      },
+      {
+        "osc": "/performance/portamento_control",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance"
+      },
+      {
+        "osc": "/pedals/hold_1",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pedals",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/pedals/sostenuto",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pedals",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/pedals/soft_pedal",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pedals",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/pedals/legato_foot_switch",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pedals",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/filter/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter",
+        "_usage": "0~127: -64 to +63"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter",
+        "_usage": "0~127: -64 to +63"
+      },
+      {
+        "osc": "/envelope/attack_time",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Envelope",
+        "_usage": "0~127: -64 to +63"
+      },
+      {
+        "osc": "/envelope/decay_time",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Envelope",
+        "_usage": "0~127: -64 to +63"
+      },
+      {
+        "osc": "/envelope/release_time",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Envelope",
+        "_usage": "0~127: -64 to +63"
+      },
+      {
+        "osc": "/vibrato/rate",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vibrato",
+        "_usage": "0~127: -64 to +63"
+      },
+      {
+        "osc": "/vibrato/depth",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vibrato",
+        "_usage": "0~127: -64 to +63"
+      },
+      {
+        "osc": "/vibrato/delay",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vibrato",
+        "_usage": "0~127: -64 to +63"
+      },
+      {
+        "osc": "/effects/reverb_send_level",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/chorus_send_level",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_01",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_02",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_03",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_04",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_05",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_06",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_07",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_08",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_09",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_10",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_11",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_12",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_13",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_14",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_15",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_16",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_17",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_18",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_19",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_20",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_21",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_22",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_23",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_24",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_25",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_26",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_27",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_28",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_29",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_30",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_31",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_64",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_65",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_66",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_67",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_68",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_69",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_70",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_71",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_72",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_73",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_74",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_75",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_76",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_77",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_78",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_79",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_80",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_81",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_82",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_83",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_84",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_85",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_86",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_87",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_88",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_89",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_90",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_91",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_92",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_93",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_94",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      },
+      {
+        "osc": "/assignable_parameters/assignable_parameter_95",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Assignable parameters"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

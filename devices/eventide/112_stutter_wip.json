@@ -1,0 +1,190 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/tykBAorT3B8zkceQ0iF6",
+      "preset_name": "112 Stutter wip",
+      "imported_at": "2026-04-13",
+      "preset_id": "tykBAorT3B8zkceQ0iF6",
+      "revision": "27",
+      "author": "DC"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 14,
+    "cc_entries": 14,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "112 Stutter wip",
+    "vendor": "Eventide",
+    "revision": "per Electra preset",
+    "osc_prefix": "/112_stutter_wip",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 8,
+    "entries": [
+      {
+        "osc": "/left_mix",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/right_mix",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pad_toggle",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pad_toggle",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pad_toggle",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pad_toggle",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/program",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/speed_density",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/toggle",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/left_in",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 9,
+        "range": [
+          -48,
+          48
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/right_in",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 10,
+        "range": [
+          -48,
+          48
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/left_out",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 11,
+        "range": [
+          -48,
+          48
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/right_out",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 12,
+        "range": [
+          -48,
+          48
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/bypass",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 8,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

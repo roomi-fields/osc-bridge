@@ -1,0 +1,2715 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/PreenFM/PreenFM2 (PreenFM3).csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 223,
+    "cc_entries": 76,
+    "nrpn_entries": 211,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "PreenFM2 (PreenFM3)",
+    "vendor": "PreenFM",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/preenfm2_preenfm3",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/midi/bank_select",
+        "cc": 0,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0: PreenFM bank; 1: Combo; 2: DX7 bank 0-127; 3: DX7 bank 128-255"
+      },
+      {
+        "osc": "/midi/bank_select_lsb",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0~127: Bank number"
+      },
+      {
+        "osc": "/midi/mod_wheel",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0~127: Modulation amount"
+      },
+      {
+        "osc": "/midi/hold_pedal",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/midi/all_sounds_off",
+        "cc": 120,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/omni_on",
+        "cc": 124,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/omni_off",
+        "cc": 125,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/parameter_flush",
+        "nrpn_msb": 127,
+        "nrpn_lsb": 127,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/engine/algorithm_number",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 0,
+        "orientation": "0-based",
+        "section": "Engine",
+        "_usage": "0~28: Algorithm number"
+      },
+      {
+        "osc": "/engine/velocity",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Engine",
+        "_usage": "0~16: Velocity sensitivity"
+      },
+      {
+        "osc": "/engine/voice",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Engine",
+        "_usage": "0~16: Voice count"
+      },
+      {
+        "osc": "/engine/glide",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          10
+        ],
+        "orientation": "0-based",
+        "section": "Engine",
+        "_usage": "0~10: Glide time"
+      },
+      {
+        "osc": "/modulation/index_1",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Modulation",
+        "_usage": "0~1600: Modulation index amount"
+      },
+      {
+        "osc": "/modulation/index_1_velocity",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          1600
+        ],
+        "orientation": "0-based",
+        "section": "Modulation",
+        "_usage": "0~1600: Velocity modulation amount"
+      },
+      {
+        "osc": "/modulation/index_2",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Modulation",
+        "_usage": "0~1600: Modulation index amount"
+      },
+      {
+        "osc": "/modulation/index_2_velocity",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          1600
+        ],
+        "orientation": "0-based",
+        "section": "Modulation",
+        "_usage": "0~1600: Velocity modulation amount"
+      },
+      {
+        "osc": "/modulation/index_3",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Modulation",
+        "_usage": "0~1600: Modulation index amount"
+      },
+      {
+        "osc": "/modulation/index_3_velocity",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          1600
+        ],
+        "orientation": "0-based",
+        "section": "Modulation",
+        "_usage": "0~1600: Velocity modulation amount"
+      },
+      {
+        "osc": "/modulation/index_4",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 10,
+        "orientation": "0-based",
+        "section": "Modulation",
+        "_usage": "0~1600: Modulation index amount"
+      },
+      {
+        "osc": "/modulation/index_4_velocity",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          1600
+        ],
+        "orientation": "0-based",
+        "section": "Modulation",
+        "_usage": "0~1600: Velocity modulation amount"
+      },
+      {
+        "osc": "/modulation/index_5",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 12,
+        "orientation": "0-based",
+        "section": "Modulation",
+        "_usage": "0~1600: Modulation index amount"
+      },
+      {
+        "osc": "/modulation/index_5_velocity",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          1600
+        ],
+        "orientation": "0-based",
+        "section": "Modulation",
+        "_usage": "0~1600: Velocity modulation amount"
+      },
+      {
+        "osc": "/mixer/mix_1",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 16,
+        "orientation": "0-based",
+        "section": "Mixer",
+        "_usage": "0~100: Mix level"
+      },
+      {
+        "osc": "/mixer/pan_1",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 17,
+        "orientation": "centered",
+        "section": "Mixer",
+        "_usage": "0~200: Pan position"
+      },
+      {
+        "osc": "/mixer/mix_2",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 18,
+        "orientation": "0-based",
+        "section": "Mixer",
+        "_usage": "0~100: Mix level"
+      },
+      {
+        "osc": "/mixer/pan_2",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 19,
+        "orientation": "centered",
+        "section": "Mixer",
+        "_usage": "0~200: Pan position"
+      },
+      {
+        "osc": "/mixer/mix_3",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 20,
+        "orientation": "0-based",
+        "section": "Mixer",
+        "_usage": "0~100: Mix level"
+      },
+      {
+        "osc": "/mixer/pan_3",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 21,
+        "orientation": "centered",
+        "section": "Mixer",
+        "_usage": "0~200: Pan position"
+      },
+      {
+        "osc": "/mixer/mix_4",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 22,
+        "orientation": "0-based",
+        "section": "Mixer",
+        "_usage": "0~100: Mix level"
+      },
+      {
+        "osc": "/mixer/pan_4",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 23,
+        "orientation": "centered",
+        "section": "Mixer",
+        "_usage": "0~200: Pan position"
+      },
+      {
+        "osc": "/mixer/mix_5",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 24,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Mixer",
+        "_usage": "0~100: Mix level"
+      },
+      {
+        "osc": "/mixer/pan_5",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 25,
+        "range": [
+          0,
+          200
+        ],
+        "orientation": "centered",
+        "section": "Mixer",
+        "_usage": "0~200: Pan position"
+      },
+      {
+        "osc": "/mixer/mix_6",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 26,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Mixer",
+        "_usage": "0~100: Mix level"
+      },
+      {
+        "osc": "/mixer/pan_6",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 27,
+        "range": [
+          0,
+          200
+        ],
+        "orientation": "centered",
+        "section": "Mixer",
+        "_usage": "0~200: Pan position"
+      },
+      {
+        "osc": "/arpeggiator/clock",
+        "cc": 97,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 28,
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0: Off; 1: Internal; 2: External"
+      },
+      {
+        "osc": "/arpeggiator/tempo",
+        "cc": 98,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 29,
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0~127: Tempo"
+      },
+      {
+        "osc": "/arpeggiator/direction",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 30,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator"
+      },
+      {
+        "osc": "/arpeggiator/octave",
+        "cc": 99,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 31,
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0~127: Octave range"
+      },
+      {
+        "osc": "/arpeggiator/pattern",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 32,
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0~127: Pattern"
+      },
+      {
+        "osc": "/arpeggiator/division",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 33,
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0~127: Division"
+      },
+      {
+        "osc": "/arpeggiator/duration",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 34,
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0~127: Duration"
+      },
+      {
+        "osc": "/arpeggiator/latch",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 35,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator"
+      },
+      {
+        "osc": "/filter/type",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 40,
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Off; 1: Mix; 2: Low-pass; 3: High-pass; 4: Bass"
+      },
+      {
+        "osc": "/filter/parameter_1",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 41,
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~100: Filter parameter 1"
+      },
+      {
+        "osc": "/filter/parameter_2",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 42,
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~100: Filter parameter 2"
+      },
+      {
+        "osc": "/filter/gain",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 43,
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~200: Filter gain"
+      },
+      {
+        "osc": "/operator_1/shape",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 44,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Operator 1"
+      },
+      {
+        "osc": "/operator_1/frequency_type",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Operator 1"
+      },
+      {
+        "osc": "/operator_1/frequency",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 46,
+        "orientation": "0-based",
+        "section": "Operator 1",
+        "_usage": "0~127: Frequency"
+      },
+      {
+        "osc": "/operator_1/fine_tune",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Operator 1"
+      },
+      {
+        "osc": "/operator_1/envelope_attack",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 68,
+        "orientation": "0-based",
+        "section": "Operator 1",
+        "_usage": "0~127: Attack time"
+      },
+      {
+        "osc": "/operator_1/envelope_attack_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 69,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 1",
+        "_usage": "0~100: Attack level"
+      },
+      {
+        "osc": "/operator_1/envelope_decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 70,
+        "range": [
+          0,
+          1600
+        ],
+        "orientation": "0-based",
+        "section": "Operator 1",
+        "_usage": "0~1600: Decay time"
+      },
+      {
+        "osc": "/operator_1/envelope_decay_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 1",
+        "_usage": "0~100: Decay level"
+      },
+      {
+        "osc": "/operator_1/envelope_sustain",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          1600
+        ],
+        "orientation": "0-based",
+        "section": "Operator 1",
+        "_usage": "0~1600: Sustain time"
+      },
+      {
+        "osc": "/operator_1/envelope_sustain_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 73,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 1",
+        "_usage": "0~100: Sustain level"
+      },
+      {
+        "osc": "/operator_1/envelope_release",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 74,
+        "orientation": "0-based",
+        "section": "Operator 1",
+        "_usage": "0~127: Release time"
+      },
+      {
+        "osc": "/operator_1/envelope_release_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 75,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 1",
+        "_usage": "0~100: Release level"
+      },
+      {
+        "osc": "/operator_2/shape",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Operator 2"
+      },
+      {
+        "osc": "/operator_2/frequency_type",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 49,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Operator 2"
+      },
+      {
+        "osc": "/operator_2/frequency",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 50,
+        "orientation": "0-based",
+        "section": "Operator 2",
+        "_usage": "0~127: Frequency"
+      },
+      {
+        "osc": "/operator_2/fine_tune",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 51,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Operator 2"
+      },
+      {
+        "osc": "/operator_2/envelope_attack",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 76,
+        "orientation": "0-based",
+        "section": "Operator 2",
+        "_usage": "0~127: Attack time"
+      },
+      {
+        "osc": "/operator_2/envelope_attack_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 77,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 2",
+        "_usage": "0~100: Attack level"
+      },
+      {
+        "osc": "/operator_2/envelope_decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 78,
+        "range": [
+          0,
+          1600
+        ],
+        "orientation": "0-based",
+        "section": "Operator 2",
+        "_usage": "0~1600: Decay time"
+      },
+      {
+        "osc": "/operator_2/envelope_decay_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 79,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 2",
+        "_usage": "0~100: Decay level"
+      },
+      {
+        "osc": "/operator_2/envelope_sustain",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 80,
+        "range": [
+          0,
+          1600
+        ],
+        "orientation": "0-based",
+        "section": "Operator 2",
+        "_usage": "0~1600: Sustain time"
+      },
+      {
+        "osc": "/operator_2/envelope_sustain_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 81,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 2",
+        "_usage": "0~100: Sustain level"
+      },
+      {
+        "osc": "/operator_2/envelope_release",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 82,
+        "orientation": "0-based",
+        "section": "Operator 2",
+        "_usage": "0~127: Release time"
+      },
+      {
+        "osc": "/operator_2/envelope_release_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 83,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 2",
+        "_usage": "0~100: Release level"
+      },
+      {
+        "osc": "/operator_3/shape",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Operator 3"
+      },
+      {
+        "osc": "/operator_3/frequency_type",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 53,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Operator 3"
+      },
+      {
+        "osc": "/operator_3/frequency",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 54,
+        "orientation": "0-based",
+        "section": "Operator 3",
+        "_usage": "0~127: Frequency"
+      },
+      {
+        "osc": "/operator_3/fine_tune",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 55,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Operator 3"
+      },
+      {
+        "osc": "/operator_3/envelope_attack",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 84,
+        "orientation": "0-based",
+        "section": "Operator 3",
+        "_usage": "0~127: Attack time"
+      },
+      {
+        "osc": "/operator_3/envelope_attack_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 85,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 3",
+        "_usage": "0~100: Attack level"
+      },
+      {
+        "osc": "/operator_3/envelope_decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 86,
+        "range": [
+          0,
+          1600
+        ],
+        "orientation": "0-based",
+        "section": "Operator 3",
+        "_usage": "0~1600: Decay time"
+      },
+      {
+        "osc": "/operator_3/envelope_decay_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 87,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 3",
+        "_usage": "0~100: Decay level"
+      },
+      {
+        "osc": "/operator_3/envelope_sustain",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 88,
+        "range": [
+          0,
+          1600
+        ],
+        "orientation": "0-based",
+        "section": "Operator 3",
+        "_usage": "0~1600: Sustain time"
+      },
+      {
+        "osc": "/operator_3/envelope_sustain_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 89,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 3",
+        "_usage": "0~100: Sustain level"
+      },
+      {
+        "osc": "/operator_3/envelope_release",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 90,
+        "orientation": "0-based",
+        "section": "Operator 3",
+        "_usage": "0~127: Release time"
+      },
+      {
+        "osc": "/operator_3/envelope_release_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 91,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 3",
+        "_usage": "0~100: Release level"
+      },
+      {
+        "osc": "/operator_4/shape",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 56,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Operator 4"
+      },
+      {
+        "osc": "/operator_4/frequency_type",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 57,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Operator 4"
+      },
+      {
+        "osc": "/operator_4/frequency",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 58,
+        "orientation": "0-based",
+        "section": "Operator 4",
+        "_usage": "0~127: Frequency"
+      },
+      {
+        "osc": "/operator_4/fine_tune",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 59,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Operator 4"
+      },
+      {
+        "osc": "/operator_4/envelope_attack",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 92,
+        "orientation": "0-based",
+        "section": "Operator 4",
+        "_usage": "0~127: Attack time"
+      },
+      {
+        "osc": "/operator_4/envelope_attack_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 93,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 4",
+        "_usage": "0~100: Attack level"
+      },
+      {
+        "osc": "/operator_4/envelope_decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 94,
+        "range": [
+          0,
+          1600
+        ],
+        "orientation": "0-based",
+        "section": "Operator 4",
+        "_usage": "0~1600: Decay time"
+      },
+      {
+        "osc": "/operator_4/envelope_decay_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 95,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 4",
+        "_usage": "0~100: Decay level"
+      },
+      {
+        "osc": "/operator_4/envelope_sustain",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 96,
+        "range": [
+          0,
+          1600
+        ],
+        "orientation": "0-based",
+        "section": "Operator 4",
+        "_usage": "0~1600: Sustain time"
+      },
+      {
+        "osc": "/operator_4/envelope_sustain_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 97,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 4",
+        "_usage": "0~100: Sustain level"
+      },
+      {
+        "osc": "/operator_4/envelope_release",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 98,
+        "orientation": "0-based",
+        "section": "Operator 4",
+        "_usage": "0~127: Release time"
+      },
+      {
+        "osc": "/operator_4/envelope_release_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 99,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 4",
+        "_usage": "0~100: Release level"
+      },
+      {
+        "osc": "/operator_5/shape",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 60,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Operator 5"
+      },
+      {
+        "osc": "/operator_5/frequency_type",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 61,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Operator 5"
+      },
+      {
+        "osc": "/operator_5/frequency",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 62,
+        "orientation": "0-based",
+        "section": "Operator 5",
+        "_usage": "0~127: Frequency"
+      },
+      {
+        "osc": "/operator_5/fine_tune",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 63,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Operator 5"
+      },
+      {
+        "osc": "/operator_5/envelope_attack",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 100,
+        "orientation": "0-based",
+        "section": "Operator 5",
+        "_usage": "0~127: Attack time"
+      },
+      {
+        "osc": "/operator_5/envelope_attack_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 101,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 5",
+        "_usage": "0~100: Attack level"
+      },
+      {
+        "osc": "/operator_5/envelope_decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 102,
+        "range": [
+          0,
+          1600
+        ],
+        "orientation": "0-based",
+        "section": "Operator 5",
+        "_usage": "0~1600: Decay time"
+      },
+      {
+        "osc": "/operator_5/envelope_decay_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 103,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 5",
+        "_usage": "0~100: Decay level"
+      },
+      {
+        "osc": "/operator_5/envelope_sustain",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 104,
+        "range": [
+          0,
+          1600
+        ],
+        "orientation": "0-based",
+        "section": "Operator 5",
+        "_usage": "0~1600: Sustain time"
+      },
+      {
+        "osc": "/operator_5/envelope_sustain_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 105,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 5",
+        "_usage": "0~100: Sustain level"
+      },
+      {
+        "osc": "/operator_5/envelope_release",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 106,
+        "orientation": "0-based",
+        "section": "Operator 5",
+        "_usage": "0~127: Release time"
+      },
+      {
+        "osc": "/operator_5/envelope_release_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 107,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 5",
+        "_usage": "0~100: Release level"
+      },
+      {
+        "osc": "/operator_6/shape",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 64,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Operator 6"
+      },
+      {
+        "osc": "/operator_6/frequency_type",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 65,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Operator 6"
+      },
+      {
+        "osc": "/operator_6/frequency",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 66,
+        "orientation": "0-based",
+        "section": "Operator 6",
+        "_usage": "0~127: Frequency"
+      },
+      {
+        "osc": "/operator_6/fine_tune",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 67,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Operator 6"
+      },
+      {
+        "osc": "/operator_6/envelope_attack",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 108,
+        "orientation": "0-based",
+        "section": "Operator 6",
+        "_usage": "0~127: Attack time"
+      },
+      {
+        "osc": "/operator_6/envelope_attack_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 109,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 6",
+        "_usage": "0~100: Attack level"
+      },
+      {
+        "osc": "/operator_6/envelope_decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 110,
+        "range": [
+          0,
+          1600
+        ],
+        "orientation": "0-based",
+        "section": "Operator 6",
+        "_usage": "0~1600: Decay time"
+      },
+      {
+        "osc": "/operator_6/envelope_decay_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 111,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 6",
+        "_usage": "0~100: Decay level"
+      },
+      {
+        "osc": "/operator_6/envelope_sustain",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 112,
+        "range": [
+          0,
+          1600
+        ],
+        "orientation": "0-based",
+        "section": "Operator 6",
+        "_usage": "0~1600: Sustain time"
+      },
+      {
+        "osc": "/operator_6/envelope_sustain_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 113,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 6",
+        "_usage": "0~100: Sustain level"
+      },
+      {
+        "osc": "/operator_6/envelope_release",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 114,
+        "orientation": "0-based",
+        "section": "Operator 6",
+        "_usage": "0~127: Release time"
+      },
+      {
+        "osc": "/operator_6/envelope_release_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 115,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Operator 6",
+        "_usage": "0~100: Release level"
+      },
+      {
+        "osc": "/envelope/carrier_operator_envelope_attack",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope",
+        "_usage": "0~127: Carrier attack time"
+      },
+      {
+        "osc": "/envelope/carrier_operator_envelope_release",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope",
+        "_usage": "0~127: Carrier release time"
+      },
+      {
+        "osc": "/envelope/modulator_operator_envelope_attack",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope",
+        "_usage": "0~127: Modulator attack time"
+      },
+      {
+        "osc": "/envelope/modulator_operator_envelope_release",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope",
+        "_usage": "0~127: Modulator release time"
+      },
+      {
+        "osc": "/matrix/row_1_source",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 116,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_1_multiplier",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 117,
+        "orientation": "centered",
+        "section": "Matrix",
+        "_usage": "0~127: Multiplier amount between -10 and +10"
+      },
+      {
+        "osc": "/matrix/row_1_destination",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 118,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_2_source",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 120,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_2_multiplier",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 121,
+        "orientation": "centered",
+        "section": "Matrix",
+        "_usage": "0~127: Multiplier amount between -10 and +10"
+      },
+      {
+        "osc": "/matrix/row_2_destination",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 122,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_3_source",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 124,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_3_multiplier",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 125,
+        "orientation": "centered",
+        "section": "Matrix",
+        "_usage": "0~127: Multiplier amount between -10 and +10"
+      },
+      {
+        "osc": "/matrix/row_3_destination",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 126,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_4_source",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_4_multiplier",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Matrix",
+        "_usage": "0~127: Multiplier amount between -10 and +10"
+      },
+      {
+        "osc": "/matrix/row_4_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_5_source",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_5_multiplier",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          2000
+        ],
+        "orientation": "centered",
+        "section": "Matrix",
+        "_usage": "0~2000: Multiplier amount between -10 and +10"
+      },
+      {
+        "osc": "/matrix/row_5_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_6_source",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_6_multiplier",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          2000
+        ],
+        "orientation": "centered",
+        "section": "Matrix",
+        "_usage": "0~2000: Multiplier amount between -10 and +10"
+      },
+      {
+        "osc": "/matrix/row_6_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_7_source",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 12,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_7_multiplier",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          2000
+        ],
+        "orientation": "centered",
+        "section": "Matrix",
+        "_usage": "0~2000: Multiplier amount between -10 and +10"
+      },
+      {
+        "osc": "/matrix/row_7_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_8_source",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_8_multiplier",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          2000
+        ],
+        "orientation": "centered",
+        "section": "Matrix",
+        "_usage": "0~2000: Multiplier amount between -10 and +10"
+      },
+      {
+        "osc": "/matrix/row_8_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_9_source",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_9_multiplier",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 21,
+        "range": [
+          0,
+          2000
+        ],
+        "orientation": "centered",
+        "section": "Matrix",
+        "_usage": "0~2000: Multiplier amount between -10 and +10"
+      },
+      {
+        "osc": "/matrix/row_9_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 22,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_10_source",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 24,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_10_multiplier",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 25,
+        "range": [
+          0,
+          2000
+        ],
+        "orientation": "centered",
+        "section": "Matrix",
+        "_usage": "0~2000: Multiplier amount between -10 and +10"
+      },
+      {
+        "osc": "/matrix/row_10_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 26,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_11_source",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 28,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_11_multiplier",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 29,
+        "range": [
+          0,
+          2000
+        ],
+        "orientation": "centered",
+        "section": "Matrix",
+        "_usage": "0~2000: Multiplier amount between -10 and +10"
+      },
+      {
+        "osc": "/matrix/row_11_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 30,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_12_source",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 32,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/matrix/row_12_multiplier",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          2000
+        ],
+        "orientation": "centered",
+        "section": "Matrix",
+        "_usage": "0~2000: Multiplier amount between -10 and +10"
+      },
+      {
+        "osc": "/matrix/row_12_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 34,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Matrix"
+      },
+      {
+        "osc": "/performance/parameter_1",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 36,
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0~127: Performance parameter 1"
+      },
+      {
+        "osc": "/performance/parameter_2",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 37,
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0~127: Performance parameter 2"
+      },
+      {
+        "osc": "/performance/parameter_3",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 38,
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0~127: Performance parameter 3"
+      },
+      {
+        "osc": "/lfo_1/shape",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 40,
+        "orientation": "0-based",
+        "section": "LFO 1",
+        "_usage": "0: Sine; 1: Ramp; 2: Sawtooth; 3: Square; 4: Random; 5~164: Additional waveforms"
+      },
+      {
+        "osc": "/lfo_1/frequency",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 41,
+        "orientation": "0-based",
+        "section": "LFO 1",
+        "_usage": "0~127: LFO frequency"
+      },
+      {
+        "osc": "/lfo_1/bias",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 42,
+        "orientation": "centered",
+        "section": "LFO 1",
+        "_usage": "0~127: Bias amount"
+      },
+      {
+        "osc": "/lfo_1/key_sync",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 43,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1"
+      },
+      {
+        "osc": "/lfo_1/phase",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 68,
+        "orientation": "0-based",
+        "section": "LFO 1",
+        "_usage": "0~127: Phase"
+      },
+      {
+        "osc": "/lfo_2/shape",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 44,
+        "orientation": "0-based",
+        "section": "LFO 2",
+        "_usage": "0: Sine; 1: Ramp; 2: Sawtooth; 3: Square; 4: Random; 5~164: Additional waveforms"
+      },
+      {
+        "osc": "/lfo_2/frequency",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 45,
+        "orientation": "0-based",
+        "section": "LFO 2",
+        "_usage": "0~127: LFO frequency"
+      },
+      {
+        "osc": "/lfo_2/bias",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 46,
+        "orientation": "centered",
+        "section": "LFO 2",
+        "_usage": "0~127: Bias amount"
+      },
+      {
+        "osc": "/lfo_2/key_sync",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2"
+      },
+      {
+        "osc": "/lfo_2/phase",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 69,
+        "orientation": "0-based",
+        "section": "LFO 2",
+        "_usage": "0~127: Phase"
+      },
+      {
+        "osc": "/lfo_3/shape",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 48,
+        "orientation": "0-based",
+        "section": "LFO 3",
+        "_usage": "0: Sine; 1: Ramp; 2: Sawtooth; 3: Square; 4: Random; 5~164: Additional waveforms"
+      },
+      {
+        "osc": "/lfo_3/frequency",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 49,
+        "orientation": "0-based",
+        "section": "LFO 3",
+        "_usage": "0~127: LFO frequency"
+      },
+      {
+        "osc": "/lfo_3/bias",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 50,
+        "orientation": "centered",
+        "section": "LFO 3",
+        "_usage": "0~127: Bias amount"
+      },
+      {
+        "osc": "/lfo_3/key_sync",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 51,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 3"
+      },
+      {
+        "osc": "/lfo_3/phase",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 70,
+        "orientation": "0-based",
+        "section": "LFO 3",
+        "_usage": "0~127: Phase"
+      },
+      {
+        "osc": "/free_envelope_1/attack",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Free envelope 1"
+      },
+      {
+        "osc": "/free_envelope_1/decay",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 53,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Free envelope 1"
+      },
+      {
+        "osc": "/free_envelope_1/sustain",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 54,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Free envelope 1"
+      },
+      {
+        "osc": "/free_envelope_1/release",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 55,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Free envelope 1"
+      },
+      {
+        "osc": "/free_envelope_2/silence",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 56,
+        "orientation": "0-based",
+        "section": "Free envelope 2",
+        "_usage": "0~127: Silence time"
+      },
+      {
+        "osc": "/free_envelope_2/attack",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 57,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Free envelope 2"
+      },
+      {
+        "osc": "/free_envelope_2/decay",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 58,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Free envelope 2"
+      },
+      {
+        "osc": "/free_envelope_2/loop",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 59,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Free envelope 2"
+      },
+      {
+        "osc": "/step_sequencer_1/tempo",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 60,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1"
+      },
+      {
+        "osc": "/step_sequencer_1/gate",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 61,
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~127: Gate length"
+      },
+      {
+        "osc": "/step_sequencer_1/step_0",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_1/step_1",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_1/step_2",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_1/step_3",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_1/step_4",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_1/step_5",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_1/step_6",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_1/step_7",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_1/step_8",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_1/step_9",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_1/step_10",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_1/step_11",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_1/step_12",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 12,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_1/step_13",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_1/step_14",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_1/step_15",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_1/step_16",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 1",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_2/tempo",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 64,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2"
+      },
+      {
+        "osc": "/step_sequencer_2/gate",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 65,
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~127: Gate length"
+      },
+      {
+        "osc": "/step_sequencer_2/step_0",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_2/step_1",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_2/step_2",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_2/step_3",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_2/step_4",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_2/step_5",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_2/step_6",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_2/step_7",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_2/step_8",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_2/step_9",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_2/step_10",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_2/step_11",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_2/step_12",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 12,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_2/step_13",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_2/step_14",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_2/step_15",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~16: Step value"
+      },
+      {
+        "osc": "/step_sequencer_2/step_16",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Step sequencer 2",
+        "_usage": "0~16: Step value"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

@@ -1,0 +1,433 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Line 6/Helix Floor.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 35,
+    "cc_entries": 35,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Helix Floor",
+    "vendor": "Line 6",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/helix_floor",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/banks_and_presets/bank_msb",
+        "cc": 0,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "0~7: Bank MSB"
+      },
+      {
+        "osc": "/banks_and_presets/bank_lsb",
+        "cc": 32,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "0~7: Bank LSB"
+      },
+      {
+        "osc": "/banks_and_presets/snapshot_select",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "0: Snapshot 1; 1: Snapshot 2; 2: Snapshot 3; 3: Snapshot 4; 4: Snapshot 5; 5: Snapshot 6; 6: Snapshot 7; 7: Snapshot 8; 8: Next Snapshot; 9: Previous "
+      },
+      {
+        "osc": "/banks_and_presets/mode_switch",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "0-127: Mode switch"
+      },
+      {
+        "osc": "/banks_and_presets/preset_previous_next",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "0-63: Previous; 64-127: Next"
+      },
+      {
+        "osc": "/banks_and_presets/page_left_right",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "0-63: Page Left; 64-127: Page Right"
+      },
+      {
+        "osc": "/expression_pedal/1",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Expression pedal",
+        "_usage": "0~127: Expression pedal 1"
+      },
+      {
+        "osc": "/expression_pedal/2",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Expression pedal",
+        "_usage": "0~127: Expression pedal 2"
+      },
+      {
+        "osc": "/expression_pedal/3",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Expression pedal",
+        "_usage": "0~127: Expression pedal 3"
+      },
+      {
+        "osc": "/expression_pedal/exp_toe_switch",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Expression pedal",
+        "_usage": "0~127: EXP toe switch"
+      },
+      {
+        "osc": "/footswitch_control/footswitch_1",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitch control",
+        "_usage": "0~127: FS1"
+      },
+      {
+        "osc": "/footswitches/footswitch_2",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0~127: FS2"
+      },
+      {
+        "osc": "/footswitches/footswitch_3",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0~127: FS3"
+      },
+      {
+        "osc": "/footswitches/footswitch_4",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0~127: FS4"
+      },
+      {
+        "osc": "/footswitches/footswitch_5",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0~127: FS5"
+      },
+      {
+        "osc": "/footswitches/footswitch_7",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0~127: FS7"
+      },
+      {
+        "osc": "/footswitches/footswitch_8",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0~127: FS8"
+      },
+      {
+        "osc": "/footswitches/footswitch_9",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0~127: FS9"
+      },
+      {
+        "osc": "/footswitches/footswitch_10",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0~127: FS10"
+      },
+      {
+        "osc": "/footswitches/footswitch_11",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0~127: FS11"
+      },
+      {
+        "osc": "/looper/record_overdub",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-63: Overdub; 64-127: Record"
+      },
+      {
+        "osc": "/looper/play_stop",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-63: Stop; 64-127: Play"
+      },
+      {
+        "osc": "/looper/play_once",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-63: Noop; 64-127: Play Once"
+      },
+      {
+        "osc": "/looper/undo_redo",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-63: Noop; 64-127: Undo/Redo"
+      },
+      {
+        "osc": "/looper/forward_reverse",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-63: Forward; 64-127: Reverse"
+      },
+      {
+        "osc": "/looper/full_half_speed",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-63: Full Speed; 64-127: Half Speed"
+      },
+      {
+        "osc": "/looper/block_on_off",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/parameter_control/tap_tempo",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Parameter control",
+        "_usage": "0-63: Noop; 64-127: Tap Tempo"
+      },
+      {
+        "osc": "/parameter_control/parameter_knob_1",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Parameter control",
+        "_usage": "0~127: Parameter knob 1"
+      },
+      {
+        "osc": "/parameter_control/parameter_knob_2",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Parameter control",
+        "_usage": "0~127: Parameter knob 2"
+      },
+      {
+        "osc": "/parameter_control/parameter_knob_3",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Parameter control",
+        "_usage": "0~127: Parameter knob 3"
+      },
+      {
+        "osc": "/parameter_control/parameter_knob_4",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Parameter control",
+        "_usage": "0~127: Parameter knob 4"
+      },
+      {
+        "osc": "/parameter_control/parameter_knob_5",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Parameter control",
+        "_usage": "0~127: Parameter knob 5"
+      },
+      {
+        "osc": "/parameter_control/parameter_knob_6",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Parameter control",
+        "_usage": "0~127: Parameter knob 6"
+      },
+      {
+        "osc": "/tuner/tuner",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tuner",
+        "_usage": "0~127: Tuner"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

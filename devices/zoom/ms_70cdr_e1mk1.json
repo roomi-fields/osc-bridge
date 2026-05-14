@@ -1,0 +1,538 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/pa8lNpSSPzVbeW75quPO",
+      "preset_name": "zoom ms-70cdr_e1mk1",
+      "imported_at": "2026-04-13",
+      "preset_id": "pa8lNpSSPzVbeW75quPO"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 30,
+    "cc_entries": 14,
+    "sysex_commands": 16
+  },
+  "device": {
+    "name": "ms-70cdr_e1mk1",
+    "vendor": "Zoom",
+    "revision": "per Electra preset",
+    "osc_prefix": "/ms_70cdr_e1mk1",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/pedal_select",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        88,
+        95,
+        97
+      ]
+    },
+    {
+      "osc": "/edit_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        82,
+        0,
+        97,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fx_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1
+          ]
+        }
+      ],
+      "frame": [
+        82,
+        0,
+        "{val}",
+        49,
+        0,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/fx_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1
+          ]
+        }
+      ],
+      "frame": [
+        82,
+        0,
+        "{val}",
+        49,
+        1,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/fx_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            1
+          ]
+        }
+      ],
+      "frame": [
+        82,
+        0,
+        "{val}",
+        49,
+        2,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/fx1_pg1_pot1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            255
+          ]
+        }
+      ],
+      "frame": [
+        82,
+        0,
+        "{val}",
+        49,
+        0,
+        2,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fx1_pg1_pot2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            255
+          ]
+        }
+      ],
+      "frame": [
+        82,
+        0,
+        "{val}",
+        49,
+        0,
+        3,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fx1_pg1_pot3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            255
+          ]
+        }
+      ],
+      "frame": [
+        82,
+        0,
+        "{val}",
+        49,
+        0,
+        4,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/effect",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            1,
+            3
+          ]
+        }
+      ],
+      "frame": [
+        82,
+        0,
+        97,
+        49,
+        0,
+        2,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/value",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            255
+          ]
+        }
+      ],
+      "frame": [
+        82,
+        0,
+        "{val}",
+        49,
+        "{val}",
+        "{val}",
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fx2_pg1_pot1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            255
+          ]
+        }
+      ],
+      "frame": [
+        82,
+        0,
+        "{val}",
+        49,
+        1,
+        2,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fx2_pg1_pot2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            255
+          ]
+        }
+      ],
+      "frame": [
+        82,
+        0,
+        "{val}",
+        49,
+        1,
+        3,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fx2_pg1_pot3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            255
+          ]
+        }
+      ],
+      "frame": [
+        82,
+        0,
+        "{val}",
+        49,
+        1,
+        4,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fx3_pg1_pot1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            255
+          ]
+        }
+      ],
+      "frame": [
+        82,
+        0,
+        "{val}",
+        49,
+        2,
+        2,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fx3_pg1_pot2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            255
+          ]
+        }
+      ],
+      "frame": [
+        82,
+        0,
+        "{val}",
+        49,
+        2,
+        3,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fx3_pg1_pot3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            255
+          ]
+        }
+      ],
+      "frame": [
+        82,
+        0,
+        "{val}",
+        49,
+        2,
+        4,
+        "{val}",
+        "{val}"
+      ]
+    }
+  ],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/tuner",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/modify_tempo",
+        "cc": 37,
+        "cc_lsb": 69,
+        "range": [
+          40,
+          250
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx_count",
+        "cc": 124,
+        "range": [
+          0,
+          6
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/active_fx",
+        "cc": 82,
+        "range": [
+          1,
+          6
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx_types/fx1",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "section": "fx_types"
+      },
+      {
+        "osc": "/fx_types/fx2",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "section": "fx_types"
+      },
+      {
+        "osc": "/fx_types/fx3",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "section": "fx_types"
+      },
+      {
+        "osc": "/fx_types/fx4",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "section": "fx_types"
+      },
+      {
+        "osc": "/fx_types/fx5",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "section": "fx_types"
+      },
+      {
+        "osc": "/fx_types/fx6",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "section": "fx_types"
+      },
+      {
+        "osc": "/pad_toggle",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pad_toggle",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pad_toggle",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/active_fx",
+        "cc": 126,
+        "range": [
+          1,
+          6
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

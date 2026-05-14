@@ -1,0 +1,741 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Roland/Jupiter-6 Tauntek Upgrade.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 63,
+    "cc_entries": 63,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Jupiter-6 Tauntek Upgrade",
+    "vendor": "Roland",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/jupiter_6_tauntek_upgrade",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/performance/mod_wheel",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0~127: Mod wheel value"
+      },
+      {
+        "osc": "/performance/hold",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/performance/glissando",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/performance/bender",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/performance/portamento_switch",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/performance/sustain_pedal",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/performance/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0~127: Volume amount"
+      },
+      {
+        "osc": "/performance/split_balance_cc08",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0~127: Split balance amount"
+      },
+      {
+        "osc": "/performance/split_balance_cc80",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Performance",
+        "_usage": "0~127: Split balance amount"
+      },
+      {
+        "osc": "/performance/master_tune",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0~127: Master tune amount"
+      },
+      {
+        "osc": "/performance/key_assign_mode",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0-15: Poly 1; 16-31: Poly 2; 32-47: Unison; 48-63: Solo; 64-127: Solo Unison"
+      },
+      {
+        "osc": "/performance/unison_detune",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0~127: Detune amount"
+      },
+      {
+        "osc": "/performance/glide_time_cc05",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0~127: Glide time amount"
+      },
+      {
+        "osc": "/performance/glide_time_cc62",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance",
+        "_usage": "0~127: Glide time amount"
+      },
+      {
+        "osc": "/oscillators/vco1_triangle",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/oscillators/vco1_saw",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/oscillators/vco1_pulse",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/oscillators/vco1_square",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/oscillators/vco2_triangle",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/oscillators/vco2_saw",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/oscillators/vco2_pulse",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/oscillators/vco2_noise",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/oscillators/vco_1_range",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0~127: Range value"
+      },
+      {
+        "osc": "/oscillators/vco_2_range",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0~127: Range value"
+      },
+      {
+        "osc": "/oscillators/vco_2_fine",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0~127: Fine tune amount"
+      },
+      {
+        "osc": "/oscillators/vco_mixer",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0~127: VCO mix amount"
+      },
+      {
+        "osc": "/oscillators/pulse_width",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0~127: Pulse width amount"
+      },
+      {
+        "osc": "/oscillators/pwm_amount",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0~127: PWM amount"
+      },
+      {
+        "osc": "/oscillators/pwm_mod_source",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-63: ENV1; 64-127: LFO1"
+      },
+      {
+        "osc": "/oscillators/vco_mod_amount",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0~127: VCO mod amount"
+      },
+      {
+        "osc": "/oscillators/vco_mod_source",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-31: None; 32-63: VCO1; 64-95: VCO2; 96-127: VCO1+2"
+      },
+      {
+        "osc": "/oscillators/vco_mod_by_env1",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/oscillators/xmod_manual",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0~127: XMOD amount"
+      },
+      {
+        "osc": "/oscillators/xmod_by_env1",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/oscillators/osc_sync_mode",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-31: None; 32-63: VCO2 syncs to VCO1; 64-95: VCO1 syncs to VCO2; 96-127: Both sync"
+      },
+      {
+        "osc": "/oscillators/vco_1_wave_bitmask",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0~127: Wave enable bitmask"
+      },
+      {
+        "osc": "/oscillators/vco_2_wave_bitmask",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0~127: Wave enable bitmask"
+      },
+      {
+        "osc": "/lfo/lfo1_rate",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0~127: Rate amount"
+      },
+      {
+        "osc": "/lfo/lfo1_delay",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0~127: Delay amount"
+      },
+      {
+        "osc": "/lfo/lfo1_shape",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0-31: Triangle; 32-63: Saw; 64-95: Square; 96-127: Random"
+      },
+      {
+        "osc": "/filter/vcf_frequency",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~127: Cutoff amount"
+      },
+      {
+        "osc": "/filter/vcf_resonance",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~127: Resonance amount"
+      },
+      {
+        "osc": "/filter/vcf_mod_by_env",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/filter/vcf_mod_by_lfo1",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/filter/vcf_keyboard_tracking",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~127: Tracking amount"
+      },
+      {
+        "osc": "/filter/mode",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0-31: LPF; 32-63: HPF; 64-127: BPF"
+      },
+      {
+        "osc": "/filter/vcf_envelope_select",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0-63: ENV1; 64-127: ENV2"
+      },
+      {
+        "osc": "/filter/vcf_env1_polarity",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0-63: Positive; 64-127: Negative"
+      },
+      {
+        "osc": "/amplifier/vca_by_env2_amount",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/amplifier/vca_mod_by_lfo1",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/envelope_1/attack",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 1",
+        "_usage": "0~127: Attack amount"
+      },
+      {
+        "osc": "/envelope_1/decay",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 1",
+        "_usage": "0~127: Decay amount"
+      },
+      {
+        "osc": "/envelope_1/sustain",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 1",
+        "_usage": "0~127: Sustain amount"
+      },
+      {
+        "osc": "/envelope_1/release",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 1",
+        "_usage": "0~127: Release amount"
+      },
+      {
+        "osc": "/envelope_1/key_follow",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 1",
+        "_usage": "0~127: Key follow amount"
+      },
+      {
+        "osc": "/envelope_2/attack",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 2",
+        "_usage": "0~127: Attack amount"
+      },
+      {
+        "osc": "/envelope_2/decay",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 2",
+        "_usage": "0~127: Decay amount"
+      },
+      {
+        "osc": "/envelope_2/sustain",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 2",
+        "_usage": "0~127: Sustain amount"
+      },
+      {
+        "osc": "/envelope_2/release",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 2",
+        "_usage": "0~127: Release amount"
+      },
+      {
+        "osc": "/envelope_2/key_follow",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope 2",
+        "_usage": "0~127: Key follow amount"
+      },
+      {
+        "osc": "/arpeggiator/arp_rate",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0~127: Arp rate amount"
+      },
+      {
+        "osc": "/arpeggiator/arp_mode",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0-63: Off; 64-79: Up; 80-95: Down; 96-111: Up/Down; 112-127: Random"
+      },
+      {
+        "osc": "/arpeggiator/arp_range",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0-31: 1 Oct; 32-63: 2 Oct; 64-95: 3 Oct; 96-127: 4 Oct"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

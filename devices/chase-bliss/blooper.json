@@ -1,0 +1,337 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/blooper.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 27,
+    "cc_entries": 27,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "blooper",
+    "vendor": "Chase Bliss",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/blooper",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/loop_control/record",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Loop control",
+        "_usage": "0: Off; 1-127: Record"
+      },
+      {
+        "osc": "/loop_control/play",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Loop control",
+        "_usage": "0: Off; 1-127: Play"
+      },
+      {
+        "osc": "/loop_control/overdub",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Loop control",
+        "_usage": "0: Off; 1-127: Overdub"
+      },
+      {
+        "osc": "/loop_control/stop",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Loop control",
+        "_usage": "0: Off; 1-127: Stop"
+      },
+      {
+        "osc": "/loop_control/undo",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Loop control",
+        "_usage": "0: Off; 1-127: Undo"
+      },
+      {
+        "osc": "/loop_control/redo",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Loop control",
+        "_usage": "0: Off; 1-127: Redo"
+      },
+      {
+        "osc": "/loop_control/erase",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Loop control",
+        "_usage": "0: Off; 1-127: Erase"
+      },
+      {
+        "osc": "/loop_control/hold_switch_b",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Loop control",
+        "_usage": "0: Off; 1-127: Hold switch B"
+      },
+      {
+        "osc": "/loop_control/one_shot_dub",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Loop control",
+        "_usage": "0: Off; 1-127: One-shot dub"
+      },
+      {
+        "osc": "/sound_control/volume",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound control"
+      },
+      {
+        "osc": "/sound_control/layers",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound control"
+      },
+      {
+        "osc": "/sound_control/repeats",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound control"
+      },
+      {
+        "osc": "/sound_control/mod_a_knob",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound control"
+      },
+      {
+        "osc": "/sound_control/stability",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound control"
+      },
+      {
+        "osc": "/sound_control/mod_b_knob",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound control"
+      },
+      {
+        "osc": "/sound_control/ramp",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound control"
+      },
+      {
+        "osc": "/control/multi_control",
+        "cc": 11,
+        "range": [
+          1,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Control",
+        "_usage": "1: Record; 2: Play; 3: Overdub; 4: Stop; 5: Undo; 6: Redo; 7: Erase"
+      },
+      {
+        "osc": "/control/mod_a_toggle",
+        "cc": 21,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Control",
+        "_usage": "1: Left; 2: Center; 3: Right"
+      },
+      {
+        "osc": "/control/looper_mode",
+        "cc": 22,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Control",
+        "_usage": "1: Left; 2: Center; 3: Right"
+      },
+      {
+        "osc": "/control/mod_b_toggle",
+        "cc": 23,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Control",
+        "_usage": "1: Left; 2: Center; 3: Right"
+      },
+      {
+        "osc": "/control/preview_save_load",
+        "cc": 24,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Control",
+        "_usage": "1: Left; 2: Center; 3: Right"
+      },
+      {
+        "osc": "/modifiers/mod_a",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Modifiers",
+        "_usage": "0: Off; 1: Mod A"
+      },
+      {
+        "osc": "/modifiers/mod_b",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Modifiers",
+        "_usage": "0: Off; 1: Mod B"
+      },
+      {
+        "osc": "/other/midi_clock_ignore",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Ignore clock; 1-127: Listen for clock"
+      },
+      {
+        "osc": "/other/ramping_on_off",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Ramping off; 1-127: Ramping on"
+      },
+      {
+        "osc": "/other/note_division",
+        "cc": 21,
+        "range": [
+          0,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Whole notes; 1: Half notes; 2: Quarter note triplets; 3: Quarter notes; 4: Eighth notes; 5: Sixteenth notes"
+      },
+      {
+        "osc": "/other/expression",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

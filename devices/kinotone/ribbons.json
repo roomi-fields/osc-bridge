@@ -1,0 +1,970 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/uLgmrEua8FsiR8y38KZp",
+      "preset_name": "Ribbons",
+      "imported_at": "2026-04-13",
+      "preset_id": "uLgmrEua8FsiR8y38KZp",
+      "revision": "111",
+      "author": "Sean"
+    },
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Kinotone/Ribbons.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 95,
+    "cc_entries": 95,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "Ribbons",
+    "vendor": "Kinotone",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/ribbons",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/mix_and_utility/high_pass_filter",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix and utility"
+      },
+      {
+        "osc": "/mix_and_utility/low_pass_filter",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix and utility"
+      },
+      {
+        "osc": "/mix_and_utility/mix",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mix and utility"
+      },
+      {
+        "osc": "/mix_and_utility/compression_saturation",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix and utility"
+      },
+      {
+        "osc": "/wow_and_flutter/wow_frequency",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Wow and flutter"
+      },
+      {
+        "osc": "/wow_and_flutter/wow_depth",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Wow and flutter"
+      },
+      {
+        "osc": "/wow_and_flutter/flutter_depth",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Wow and flutter"
+      },
+      {
+        "osc": "/wow_and_flutter/flutter_frequency",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Wow and flutter"
+      },
+      {
+        "osc": "/degradation/dropouts_frequency",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Degradation"
+      },
+      {
+        "osc": "/degradation/dropouts_depth",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Degradation"
+      },
+      {
+        "osc": "/degradation/crinkle",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Degradation"
+      },
+      {
+        "osc": "/degradation/noise",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Degradation"
+      },
+      {
+        "osc": "/reverb/decay",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/mix_and_placement",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/touch/param_1",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Touch"
+      },
+      {
+        "osc": "/touch/param_2",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Touch"
+      },
+      {
+        "osc": "/touch/mode_select",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Touch",
+        "_usage": "0-18: Magnetic dance; 19-36: Tape stop; 37-54: Broken machine; 55-73: Repeater; 74-91: Crushed cassette; 92-109: Disintegration loop; 110-127: UnrealP"
+      },
+      {
+        "osc": "/touch/clear_touch_mode_loops",
+        "cc": 60,
+        "range": [
+          65,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Touch",
+        "_usage": "65-127: Clear touch mode loops"
+      },
+      {
+        "osc": "/looper_control/change_looper_track",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper control",
+        "_usage": "0-31: Track 1; 32-63: Track 2; 64-95: Track 3; 96-127: Track 4"
+      },
+      {
+        "osc": "/looper_control/clear_current_looper_track",
+        "cc": 33,
+        "range": [
+          65,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper control",
+        "_usage": "65-127: Clear current looper track"
+      },
+      {
+        "osc": "/looper_control/clear_all_looper_tracks",
+        "cc": 34,
+        "range": [
+          65,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper control",
+        "_usage": "65-127: Clear all looper tracks"
+      },
+      {
+        "osc": "/track_1/direction",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track 1"
+      },
+      {
+        "osc": "/track_1/speed",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track 1"
+      },
+      {
+        "osc": "/track_1/volume",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track 1"
+      },
+      {
+        "osc": "/track_1/scale",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track 1"
+      },
+      {
+        "osc": "/track_2/direction",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track 2"
+      },
+      {
+        "osc": "/track_2/speed",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track 2"
+      },
+      {
+        "osc": "/track_2/volume",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track 2"
+      },
+      {
+        "osc": "/track_2/scale",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track 2"
+      },
+      {
+        "osc": "/track_3/direction",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track 3"
+      },
+      {
+        "osc": "/track_3/speed",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track 3"
+      },
+      {
+        "osc": "/track_3/volume",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track 3"
+      },
+      {
+        "osc": "/track_3/scale",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track 3"
+      },
+      {
+        "osc": "/track_4/direction",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track 4"
+      },
+      {
+        "osc": "/track_4/speed",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track 4"
+      },
+      {
+        "osc": "/track_4/volume",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track 4"
+      },
+      {
+        "osc": "/track_4/scale",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track 4"
+      },
+      {
+        "osc": "/other/ignore_midi_clock",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Ignore MIDI clock; 1-127: Listen to MIDI clock"
+      },
+      {
+        "osc": "/synth/attack",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth"
+      },
+      {
+        "osc": "/synth/release",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth"
+      },
+      {
+        "osc": "/synth/volume",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth"
+      },
+      {
+        "osc": "/degradation/unrealplayer_fidelity",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Degradation",
+        "_usage": "0-64: Lo-fi; 65-127: Hi-fi"
+      },
+      {
+        "osc": "/hidden_options/ribbons_mode_select",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options",
+        "_usage": "0-64: Tape effects; 65-127: Looper"
+      },
+      {
+        "osc": "/hidden_options/filter_resonance",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options"
+      },
+      {
+        "osc": "/hidden_options/makeup_gain",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options"
+      },
+      {
+        "osc": "/hidden_options/compression_saturation",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options",
+        "_usage": "0-64: Compression; 65-127: Saturation"
+      },
+      {
+        "osc": "/footswitches/touch_footswitch",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0-64: Off; 65-127: On"
+      },
+      {
+        "osc": "/footswitches/bypass_footswitch",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0-64: Off; 65-127: On"
+      },
+      {
+        "osc": "/lp_filter",
+        "cc": 15,
+        "range": [
+          -100,
+          0
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/wow_depth",
+        "cc": 19,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/flutter_depth",
+        "cc": 20,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dropout_depth",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/crinkle",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hp_filter",
+        "cc": 14,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/comp_sat",
+        "cc": 17,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/wow_freq",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/flutter_freq",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dropout_freq",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/noise",
+        "cc": 25,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/filter_res",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mix",
+        "cc": 16,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/reverb_decay",
+        "cc": 26,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/touch_1",
+        "cc": 28,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/touch_mode",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/touch_2",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/boost",
+        "cc": 58,
+        "range": [
+          -6,
+          6
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/midi_clock",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/reverb_mix",
+        "cc": 27,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/latch",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fidelity",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/adr",
+        "cc": 52,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/adr",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/volume",
+        "cc": 54,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mode",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/bypass",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/record_1",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/volume_1",
+        "cc": 37,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/direction_1",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/track_speed_1",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/scale_1",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/clear_1",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/volume_2",
+        "cc": 41,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/direction_2",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/track_speed_2",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/scale_2",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/volume_3",
+        "cc": 45,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/direction_3",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/track_speed_3",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/scale_3",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/volume_4",
+        "cc": 49,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/direction_4",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/track_speed_4",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/scale_4",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/list",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/clear_all",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

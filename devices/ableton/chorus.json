@@ -1,0 +1,165 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/VAnnOOOnemdQ4hUUB6zG",
+      "preset_name": "Chorus",
+      "imported_at": "2026-04-13",
+      "preset_id": "VAnnOOOnemdQ4hUUB6zG",
+      "revision": "2",
+      "author": "Jaap-Henk Hoepman"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 12,
+    "cc_entries": 12,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "Chorus",
+    "vendor": "Ableton",
+    "revision": "per Electra preset",
+    "osc_prefix": "/chorus",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 10,
+    "entries": [
+      {
+        "osc": "/delay_1_hipass",
+        "cc": 0,
+        "cc_lsb": 32,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay_2_mode",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_amount",
+        "cc": 5,
+        "cc_lsb": 37,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_rate",
+        "cc": 6,
+        "cc_lsb": 38,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/polarity",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dry_wet",
+        "cc": 3,
+        "cc_lsb": 35,
+        "range": [
+          0,
+          1000
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay_1_time",
+        "cc": 1,
+        "cc_lsb": 33,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay_2_time",
+        "cc": 2,
+        "cc_lsb": 34,
+        "range": [
+          0,
+          16383
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/link_on",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_extend_on",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/feedback",
+        "cc": 4,
+        "cc_lsb": 36,
+        "range": [
+          0,
+          950
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/device_on",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 10,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

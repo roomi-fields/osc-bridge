@@ -1,0 +1,221 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/6Iw0nB3iu5xPKvi1FDZr",
+      "preset_name": "Jomox M.Brane 11",
+      "imported_at": "2026-04-13",
+      "preset_id": "6Iw0nB3iu5xPKvi1FDZr",
+      "revision": "21",
+      "author": "Fubu"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 19,
+    "cc_entries": 19,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "M.Brane 11",
+    "vendor": "Jomox",
+    "revision": "per Electra preset",
+    "osc_prefix": "/m_brane_11",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/pitch",
+        "cc": 91,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dampen",
+        "cc": 93,
+        "range": [
+          -128,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/coupling",
+        "cc": 101,
+        "range": [
+          -128,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pitch",
+        "cc": 95,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dampen",
+        "cc": 97,
+        "range": [
+          -128,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/coupling",
+        "cc": 103,
+        "range": [
+          -128,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/decay",
+        "cc": 110,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/noise",
+        "cc": 109,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/noise_filter",
+        "cc": 112,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/metal_noise_a",
+        "cc": 107,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/metal_noise_b",
+        "cc": 116,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/waveform",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_select",
+        "cc": 125,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/intensity",
+        "cc": 121,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/speed",
+        "cc": 122,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sync",
+        "cc": 120,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/one_shot",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/gate",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/volume",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

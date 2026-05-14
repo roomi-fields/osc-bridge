@@ -1,0 +1,384 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/Ts1Cxi7wLmLfnfLlNto2",
+      "preset_name": "Jomox MBase 11",
+      "imported_at": "2026-04-13",
+      "preset_id": "Ts1Cxi7wLmLfnfLlNto2",
+      "author": "user:9MeRedSU"
+    },
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Jomox/MBase 11.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 33,
+    "cc_entries": 33,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "MBase 11",
+    "vendor": "Jomox",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/mbase_11",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/sound/tune",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0~127: Pitch sweep amount"
+      },
+      {
+        "osc": "/sound/pitch",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0~127: Base pitch"
+      },
+      {
+        "osc": "/sound/decay",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0~127: Decay time"
+      },
+      {
+        "osc": "/sound/harmonics",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0~127: Harmonic shaping"
+      },
+      {
+        "osc": "/sound/pulse",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0~127: Pulse attack level"
+      },
+      {
+        "osc": "/sound/noise",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0~127: Noise attack level"
+      },
+      {
+        "osc": "/sound/attack",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0~127: Attack mix depth"
+      },
+      {
+        "osc": "/sound/eq",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0~127: Output lowpass amount"
+      },
+      {
+        "osc": "/sound/compression",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0~127: Decay envelope compression"
+      },
+      {
+        "osc": "/sound/gate_time",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0~127: Trigger gate length"
+      },
+      {
+        "osc": "/sound/metal_noise",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0~127: Metallic noise mode"
+      },
+      {
+        "osc": "/sound/volume",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0~127: Output level"
+      },
+      {
+        "osc": "/lfo/sync",
+        "cc": 120,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/lfo/intensity",
+        "cc": 121,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0~127: LFO depth"
+      },
+      {
+        "osc": "/lfo/rate",
+        "cc": 122,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0~127: LFO speed"
+      },
+      {
+        "osc": "/lfo/one_shot",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/kick_tune",
+        "cc": 100,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/kick_pitch",
+        "cc": 101,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/kick_decay",
+        "cc": 102,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/kick_harmonics",
+        "cc": 103,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/kick_pulse",
+        "cc": 104,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/kick_noise",
+        "cc": 105,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/kick_attack",
+        "cc": 106,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/kick_eq",
+        "cc": 107,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/kick_level",
+        "cc": 117,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/compression",
+        "cc": 113,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/gate",
+        "cc": 114,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/metal_noise",
+        "cc": 115,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_waveform",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_intensity",
+        "cc": 121,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_rate",
+        "cc": 122,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_sync",
+        "cc": 120,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_one_shot",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

@@ -1,0 +1,230 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/zQiL9iiWY6A9taWLpjMw",
+      "preset_name": "111 Patch Factory",
+      "imported_at": "2026-04-13",
+      "preset_id": "zQiL9iiWY6A9taWLpjMw",
+      "revision": "23",
+      "author": "DC"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 18,
+    "cc_entries": 18,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "111 Patch Factory",
+    "vendor": "Eventide",
+    "revision": "per Electra preset",
+    "osc_prefix": "/111_patch_factory",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 8,
+    "entries": [
+      {
+        "osc": "/dry_wet/left_mix",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          100
+        ],
+        "section": "DRY/WET"
+      },
+      {
+        "osc": "/dry_wet/right_mix",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          100
+        ],
+        "section": "DRY/WET"
+      },
+      {
+        "osc": "/cutoff_1",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          7000
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/cutoff_2",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          7000
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/q_factor_1",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          1000
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/q_factor_2",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          1000
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/shift",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 8,
+        "range": [
+          -4800,
+          1200
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dry_wet/delay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          500
+        ],
+        "section": "DRY/WET"
+      },
+      {
+        "osc": "/delay_1",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16000
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay_2",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          16000
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attenuator_1",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 6,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attenuator_2",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 7,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/left_in",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 12,
+        "range": [
+          -48,
+          48
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/right_in",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 13,
+        "range": [
+          -48,
+          48
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/left_out",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 14,
+        "range": [
+          -48,
+          48
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/right_out",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 15,
+        "range": [
+          -48,
+          48
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/poly_mono",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 18,
+        "range": [
+          5,
+          95
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/bank",
+        "nrpn_msb": 64,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 8,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

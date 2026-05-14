@@ -1,0 +1,69 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/4SLfpELK8caLvdEBVzMc",
+      "preset_name": "Repro-1",
+      "imported_at": "2026-04-13",
+      "preset_id": "4SLfpELK8caLvdEBVzMc",
+      "revision": "33",
+      "author": "Christian"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 2,
+    "cc_entries": 2,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "Repro-1",
+    "vendor": "u-he",
+    "revision": "per Electra preset",
+    "osc_prefix": "/repro_1",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/oscillator/fine",
+        "nrpn_msb": 15,
+        "nrpn_lsb": 80,
+        "range": [
+          -60,
+          60
+        ],
+        "section": "oscillator"
+      },
+      {
+        "osc": "/pad_toggle",
+        "cc": 0,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

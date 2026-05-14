@@ -1,0 +1,488 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Generation Loss MKII.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 41,
+    "cc_entries": 41,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Generation Loss MKII",
+    "vendor": "Chase Bliss",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/generation_loss_mkii",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/knobs/wow",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/volume",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/model_lp",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs",
+        "_usage": "0: None; 15: CPR-3300 Gen 1; 24: CPR-3300 Gen 2; 33: CPR-3300 Gen 3; 43: Portamax-RT; 53: Portamax-HT; 62: CAM-8; 72: DICTATRON-EX; 82: DICTATRON-IN; "
+      },
+      {
+        "osc": "/knobs/flutter",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/saturate_gen",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/failure_hp",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/ramp_speed",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/toggles/dry",
+        "cc": 22,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Toggles",
+        "_usage": "1: Dry 1; 2: Dry 2; 3: Dry 3"
+      },
+      {
+        "osc": "/toggles/noise",
+        "cc": 23,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Toggles",
+        "_usage": "1: Noise 1; 2: Noise 2; 3: Noise 3"
+      },
+      {
+        "osc": "/toggles/aux",
+        "cc": 21,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Toggles",
+        "_usage": "1: Aux 1; 2: Aux 2; 3: Aux 3"
+      },
+      {
+        "osc": "/switches/bypass_engage",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Switches",
+        "_usage": "0: Pedal off; 1-127: Pedal on"
+      },
+      {
+        "osc": "/switches/aux",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Switches",
+        "_usage": "0: Pedal off; 1-127: Pedal on"
+      },
+      {
+        "osc": "/switches/alt",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Switches",
+        "_usage": "0: Alt enter; 1-127: Alt exit"
+      },
+      {
+        "osc": "/aux_switch/left_switch",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Aux switch",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/aux_switch/center_switch",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Aux switch",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/aux_switch/right_switch",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Aux switch",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/wow",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/flutter",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/sat_gen",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/failure_hp",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/model_lp",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/bounce",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/random",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/sweep",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: B; 1-127: T"
+      },
+      {
+        "osc": "/dip_switches_right_bank/polarity",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: F; 1-127: R"
+      },
+      {
+        "osc": "/dip_switches_right_bank/classic",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/miso",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/spread",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/dry_type",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/drop_byp",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/snag_byp",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/hum_byp",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/other/expression",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/aux_onset_time",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/hiss_level",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/mechanical_noise_level",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/crinkle_pop_level",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/input_gain",
+        "cc": 32,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "1: Line level; 2: Instrument level; 3: High gain"
+      },
+      {
+        "osc": "/other/dsp_bypass",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0-63: True bypass; 64-127: DSP bypass"
+      },
+      {
+        "osc": "/other/preset_save",
+        "cc": 111,
+        "range": [
+          1,
+          122
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "1~122: Preset slot"
+      },
+      {
+        "osc": "/other/ramp_bounce",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Off; 1-127: On"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

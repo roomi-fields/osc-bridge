@@ -1,0 +1,44 @@
+name: "New device request"
+description: "Ask for a device to be added, or offer to add one yourself."
+title: "[device] <Vendor> <Model>"
+labels: ["device-request"]
+body:
+  - type: input
+    id: vendor
+    attributes:
+      label: "Vendor"
+      placeholder: "e.g. Sequential"
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: "Model"
+      placeholder: "e.g. Prophet 5 Rev 4"
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: "Firmware version you target (if known)"
+  - type: textarea
+    id: source
+    attributes:
+      label: "Source of the MIDI spec"
+      description: "Official PDF / vendor page / pencilresearch CSV / USB sniff. URL preferred."
+      placeholder: "https://..."
+    validations:
+      required: true
+  - type: checkboxes
+    id: volunteer
+    attributes:
+      label: "Do you want to open the PR yourself?"
+      options:
+        - label: "Yes, I'll submit the device JSON (possibly doc-derived, possibly hardware-verified)."
+        - label: "No, I'm asking for someone else to pick this up."
+  - type: checkboxes
+    id: hardware
+    attributes:
+      label: "Do you own the hardware?"
+      options:
+        - label: "Yes — I can test and promote 📄 → ✅ after initial merge."

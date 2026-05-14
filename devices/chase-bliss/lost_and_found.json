@@ -1,0 +1,594 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Lost and Found.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 51,
+    "cc_entries": 51,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Lost and Found",
+    "vendor": "Chase Bliss",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/lost_and_found",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/knobs/left_time",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/mix",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/right_time",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/left_modify",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/blend",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/knobs/right_modify",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Knobs"
+      },
+      {
+        "osc": "/footswitches/right_footswitch",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/footswitches/left_footswitch",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0: Alt exit; 1-127: Alt enter"
+      },
+      {
+        "osc": "/footswitches/alt_menu",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/footswitches/left_hold",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/footswitches/right_hold",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/hidden_options/ramp_speed",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options"
+      },
+      {
+        "osc": "/hidden_options/left_alt",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options"
+      },
+      {
+        "osc": "/hidden_options/spill",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options"
+      },
+      {
+        "osc": "/hidden_options/right_alt",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options"
+      },
+      {
+        "osc": "/hidden_options/left_eq",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options"
+      },
+      {
+        "osc": "/hidden_options/glue",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options"
+      },
+      {
+        "osc": "/hidden_options/right_eq",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options"
+      },
+      {
+        "osc": "/hidden_options/master_wet_volume",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden options"
+      },
+      {
+        "osc": "/toggles/left_effects_mode",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Toggles",
+        "_usage": "0-1: Mode 1; 2: Mode 2; 3-127: Mode 3"
+      },
+      {
+        "osc": "/toggles/routing",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Toggles",
+        "_usage": "0-1: Left to right; 2: Left + right; 3-127: Right to left"
+      },
+      {
+        "osc": "/toggles/right_effects_mode",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Toggles",
+        "_usage": "0-1: Mode 4; 2: Mode 5; 3-127: Mode 6"
+      },
+      {
+        "osc": "/toggles/spread",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Toggles",
+        "_usage": "0-1: Left only; 2: Both; 3-127: Right only"
+      },
+      {
+        "osc": "/dip_switches_left_bank/left_time",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/left_modify",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/blend",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/right_modify",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/right_time",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/bounce",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_left_bank/sweep",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: B; 1-127: T"
+      },
+      {
+        "osc": "/dip_switches_left_bank/polarity",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, left bank",
+        "_usage": "0: F; 1-127: R"
+      },
+      {
+        "osc": "/dip_switches_right_bank/miso",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/spread",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/latch",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/left_swap",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/right_swap",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/unsync",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/trails",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/dip_switches_right_bank/bank",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dip switches, right bank",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/other/midi_clock_ignore",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Ignore MIDI clock; 1-127: Listen for MIDI clock"
+      },
+      {
+        "osc": "/other/ramping",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/other/left_tap_subdivision",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Thirty-second; 1: Sixteenth; 2: Triplet sixteenth; 3: Eighth; 4: Triplet eighth; 5: Dotted eighth; 6: Quarter; 7: Triplet quarter; 8: Dotted quarte"
+      },
+      {
+        "osc": "/other/right_tap_subdivision",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Thirty-second; 1: Sixteenth; 2: Triplet sixteenth; 3: Eighth; 4: Triplet eighth; 5: Dotted eighth; 6: Quarter; 7: Triplet quarter; 8: Dotted quarte"
+      },
+      {
+        "osc": "/other/factory_reset",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0-127: Factory reset"
+      },
+      {
+        "osc": "/other/dry_kill",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/other/tap_tempo",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0-127: Tap tempo"
+      },
+      {
+        "osc": "/other/expression_over_midi",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other"
+      },
+      {
+        "osc": "/other/save_preset",
+        "cc": 111,
+        "range": [
+          0,
+          122
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0~122: Preset slot"
+      },
+      {
+        "osc": "/other/random_left_mode",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0-127: Trigger"
+      },
+      {
+        "osc": "/other/random_right_mode",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0-127: Trigger"
+      },
+      {
+        "osc": "/other/random_both_modes",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0-127: Trigger"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

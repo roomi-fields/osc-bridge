@@ -1,0 +1,59 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/vYR71P0vqXDiFZTDxGf4",
+      "preset_name": "LXP-5 v 1.3",
+      "imported_at": "2026-04-13",
+      "preset_id": "vYR71P0vqXDiFZTDxGf4",
+      "revision": "100",
+      "author": "Thomas Moravansky"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 1,
+    "cc_entries": 1,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "LXP-5 v 1.3",
+    "vendor": "Lexicon",
+    "revision": "per Electra preset",
+    "osc_prefix": "/lxp_5_v_1_3",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/save_2_library",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

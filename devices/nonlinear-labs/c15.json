@@ -1,0 +1,135 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Nonlinear Labs/C15.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 8,
+    "cc_entries": 8,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 7
+  },
+  "device": {
+    "name": "C15",
+    "vendor": "Nonlinear Labs",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/c15",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/pedals/pedal_1",
+        "cc": 20,
+        "cc_lsb": 52,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Pedals"
+      },
+      {
+        "osc": "/pedals/pedal_2",
+        "cc": 21,
+        "cc_lsb": 53,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Pedals"
+      },
+      {
+        "osc": "/pedals/pedal_3",
+        "cc": 22,
+        "cc_lsb": 54,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Pedals"
+      },
+      {
+        "osc": "/pedals/pedal_4",
+        "cc": 23,
+        "cc_lsb": 55,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Pedals"
+      },
+      {
+        "osc": "/ribbons/ribbon_1",
+        "cc": 24,
+        "cc_lsb": 56,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Ribbons"
+      },
+      {
+        "osc": "/ribbons/ribbon_2",
+        "cc": 25,
+        "cc_lsb": 57,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Ribbons"
+      },
+      {
+        "osc": "/expression/aftertouch",
+        "cc": 26,
+        "cc_lsb": 58,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Expression"
+      },
+      {
+        "osc": "/velocity/high_resolution_velocity_lsb",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Velocity"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

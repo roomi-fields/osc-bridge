@@ -1,0 +1,1818 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/8aATPJMWlpIGyFaL4MuW",
+      "preset_name": "Emu Morpheus",
+      "imported_at": "2026-04-13",
+      "preset_id": "8aATPJMWlpIGyFaL4MuW",
+      "revision": "8",
+      "author": "David"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 101,
+    "cc_entries": 16,
+    "sysex_commands": 85
+  },
+  "device": {
+    "name": "Emu Morpheus",
+    "vendor": "E-MU",
+    "revision": "per Electra preset",
+    "osc_prefix": "/emu_morpheus",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240,
+      24,
+      12,
+      0,
+      3
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/waveform",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        80,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/sound_reverse",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        106,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/non_transpose",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        107,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/delay",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        100,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/start",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        99,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/loop_on",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        94,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/loop_start_crs",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -999,
+            999
+          ]
+        }
+      ],
+      "frame": [
+        95,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/loop_start_fin",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -999,
+            999
+          ]
+        }
+      ],
+      "frame": [
+        96,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/loop_lngth_crs",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -999,
+            999
+          ]
+        }
+      ],
+      "frame": [
+        97,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/loop_lngth_fin",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -999,
+            999
+          ]
+        }
+      ],
+      "frame": [
+        98,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/solo_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        101,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/solo_priority",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        102,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/porta_rate",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        103,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/porta_shape",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        104,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/coarse_tune",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -36,
+            36
+          ]
+        }
+      ],
+      "frame": [
+        85,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fine_tune",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -64,
+            64
+          ]
+        }
+      ],
+      "frame": [
+        87,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/key_xpose",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -36,
+            36
+          ]
+        }
+      ],
+      "frame": [
+        86,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/double_detune",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        105,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/volume",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        83,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pan",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -7,
+            7
+          ]
+        }
+      ],
+      "frame": [
+        84,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/z_plane_type",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        108,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/filter_reverse",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        109,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            255
+          ]
+        }
+      ],
+      "frame": [
+        110,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/morph_axis",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            255
+          ]
+        }
+      ],
+      "frame": [
+        111,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/freq_tracking",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            255
+          ]
+        }
+      ],
+      "frame": [
+        112,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/transform_axis",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            255
+          ]
+        }
+      ],
+      "frame": [
+        113,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/alt_env_on",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        88,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/attack_rate",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        89,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/hold_time",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        90,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/decay_rate",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        91,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/sustain_level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        92,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/release_rate",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        93,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/shape",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        93,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fgen_1_amount",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -128,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        103,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pressure_amt",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -128,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        92,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/ctrl_a_amount",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -128,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        88,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/ctrl_b_amount",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -128,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        89,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/ctrl_c_amount",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -128,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        90,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/ctrl_d_amount",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -128,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        91,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/source_0",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        55,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/amount_0",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -128,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        57,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/destination_0",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        56,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/source_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        58,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/amount_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -128,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        60,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/destination_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        59,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/source_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        61,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/amount_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -128,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        63,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/destination_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        62,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/source_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        64,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/amount_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -128,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/destination_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        65,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/source_4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        67,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/amount_4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -128,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        69,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/destination_4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        68,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/source_5",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        70,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/amount_5",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -128,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        72,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/destination_5",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        71,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/source_6",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        73,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/amount_6",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -128,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        75,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/destination_6",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        74,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/source_7",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        76,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/amount_7",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -128,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        78,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/destination_7",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        77,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/source_8",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        79,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/amount_8",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -128,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        81,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/destination_8",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        80,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/source_9",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        82,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/amount_9",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -128,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        84,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/destination_9",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        83,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/mix_bus",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        18,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/tuning",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        17,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/porta_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        19,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/pbend_range",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        14,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/velocity_curve",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        15,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/xfade_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        20,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/x_direction",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        21,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/x_balance",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        22,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/x_amount",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            255
+          ]
+        }
+      ],
+      "frame": [
+        23,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/x_point",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        24,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/low_key",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        81,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/high_key",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        82,
+        65,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/centre_key",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        16,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fsw_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        85,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fsw_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        86,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/fsw_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        87,
+        64,
+        "{val}",
+        "{val}"
+      ]
+    }
+  ],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/delay",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/rate",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/variation",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/rate",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/variation",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attack_rate",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hold_time",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/decay_rate",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sustain_level",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/release_rate",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo1_amount",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo2_amount",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/aux_env_amount",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fgen_2_amount",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

@@ -1,0 +1,948 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Polyend/Tracker Mini.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 90,
+    "cc_entries": 90,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Tracker Mini",
+    "vendor": "Polyend",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/tracker_mini",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/performance_patterns/track_1_pattern_select",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance patterns"
+      },
+      {
+        "osc": "/performance_patterns/track_2_pattern_select",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance patterns"
+      },
+      {
+        "osc": "/performance_patterns/track_3_pattern_select",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance patterns"
+      },
+      {
+        "osc": "/performance_patterns/track_4_pattern_select",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance patterns"
+      },
+      {
+        "osc": "/performance_patterns/track_5_pattern_select",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance patterns"
+      },
+      {
+        "osc": "/performance_patterns/track_6_pattern_select",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance patterns"
+      },
+      {
+        "osc": "/performance_patterns/track_7_pattern_select",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance patterns"
+      },
+      {
+        "osc": "/performance_patterns/track_8_pattern_select",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance patterns"
+      },
+      {
+        "osc": "/performance_effects/slot_1_value",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance effects"
+      },
+      {
+        "osc": "/performance_effects/slot_2_value",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance effects"
+      },
+      {
+        "osc": "/performance_effects/slot_3_value",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance effects"
+      },
+      {
+        "osc": "/performance_effects/slot_4_value",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance effects"
+      },
+      {
+        "osc": "/performance_effects/slot_5_value",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance effects"
+      },
+      {
+        "osc": "/performance_effects/slot_6_value",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance effects"
+      },
+      {
+        "osc": "/performance_effects/slot_7_value",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance effects"
+      },
+      {
+        "osc": "/performance_effects/slot_8_value",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance effects"
+      },
+      {
+        "osc": "/performance_effects/slot_9_value",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance effects"
+      },
+      {
+        "osc": "/performance_effects/slot_10_value",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance effects"
+      },
+      {
+        "osc": "/performance_effects/slot_11_value",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance effects"
+      },
+      {
+        "osc": "/performance_effects/slot_12_value",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance effects"
+      },
+      {
+        "osc": "/mixer/track_1_volume",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/track_2_volume",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/track_3_volume",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/track_4_volume",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/track_5_volume",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/track_6_volume",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/track_7_volume",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/track_8_volume",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/delay_mix",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/reverb_mix",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/dry_mix",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/line_input",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/instrument/tune",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Instrument"
+      },
+      {
+        "osc": "/instrument/finetune",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Instrument"
+      },
+      {
+        "osc": "/instrument/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Instrument"
+      },
+      {
+        "osc": "/instrument/panning",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Instrument"
+      },
+      {
+        "osc": "/instrument/filter_type",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Instrument"
+      },
+      {
+        "osc": "/instrument/cutoff",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Instrument"
+      },
+      {
+        "osc": "/instrument/resonance",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Instrument"
+      },
+      {
+        "osc": "/instrument/overdrive",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Instrument"
+      },
+      {
+        "osc": "/instrument/bit_depth",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Instrument"
+      },
+      {
+        "osc": "/instrument/reverb_send",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Instrument"
+      },
+      {
+        "osc": "/instrument/delay_send",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Instrument"
+      },
+      {
+        "osc": "/volume_automation/automation_type",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume automation"
+      },
+      {
+        "osc": "/volume_automation/envelope_attack",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume automation"
+      },
+      {
+        "osc": "/volume_automation/lfo_shape",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume automation"
+      },
+      {
+        "osc": "/volume_automation/envelope_decay",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume automation"
+      },
+      {
+        "osc": "/volume_automation/lfo_speed",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume automation"
+      },
+      {
+        "osc": "/volume_automation/sustain",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume automation"
+      },
+      {
+        "osc": "/volume_automation/release",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume automation"
+      },
+      {
+        "osc": "/volume_automation/amount",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume automation"
+      },
+      {
+        "osc": "/panning_automation/automation_type",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Panning automation"
+      },
+      {
+        "osc": "/panning_automation/envelope_attack",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Panning automation"
+      },
+      {
+        "osc": "/panning_automation/lfo_shape",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Panning automation"
+      },
+      {
+        "osc": "/panning_automation/envelope_decay",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Panning automation"
+      },
+      {
+        "osc": "/panning_automation/lfo_speed",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Panning automation"
+      },
+      {
+        "osc": "/panning_automation/sustain",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Panning automation"
+      },
+      {
+        "osc": "/panning_automation/release",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Panning automation"
+      },
+      {
+        "osc": "/panning_automation/amount",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Panning automation"
+      },
+      {
+        "osc": "/cutoff_automation/automation_type",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Cutoff automation"
+      },
+      {
+        "osc": "/cutoff_automation/envelope_attack",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Cutoff automation"
+      },
+      {
+        "osc": "/cutoff_automation/lfo_shape",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Cutoff automation"
+      },
+      {
+        "osc": "/cutoff_automation/envelope_decay",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Cutoff automation"
+      },
+      {
+        "osc": "/cutoff_automation/lfo_speed",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Cutoff automation"
+      },
+      {
+        "osc": "/cutoff_automation/sustain",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Cutoff automation"
+      },
+      {
+        "osc": "/cutoff_automation/release",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Cutoff automation"
+      },
+      {
+        "osc": "/cutoff_automation/amount",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Cutoff automation"
+      },
+      {
+        "osc": "/wavetable_position_automation/automation_type",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Wavetable position automation"
+      },
+      {
+        "osc": "/wavetable_position_automation/envelope_attack",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Wavetable position automation"
+      },
+      {
+        "osc": "/wavetable_position_automation/lfo_shape",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Wavetable position automation"
+      },
+      {
+        "osc": "/wavetable_position_automation/envelope_decay",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Wavetable position automation"
+      },
+      {
+        "osc": "/wavetable_position_automation/lfo_speed",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Wavetable position automation"
+      },
+      {
+        "osc": "/wavetable_position_automation/sustain",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Wavetable position automation"
+      },
+      {
+        "osc": "/wavetable_position_automation/release",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Wavetable position automation"
+      },
+      {
+        "osc": "/wavetable_position_automation/amount",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Wavetable position automation"
+      },
+      {
+        "osc": "/granular_position_automation/automation_type",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Granular position automation"
+      },
+      {
+        "osc": "/granular_position_automation/envelope_attack",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Granular position automation"
+      },
+      {
+        "osc": "/granular_position_automation/lfo_shape",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Granular position automation"
+      },
+      {
+        "osc": "/granular_position_automation/envelope_decay",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Granular position automation"
+      },
+      {
+        "osc": "/granular_position_automation/lfo_speed",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Granular position automation"
+      },
+      {
+        "osc": "/granular_position_automation/sustain",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Granular position automation"
+      },
+      {
+        "osc": "/granular_position_automation/release",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Granular position automation"
+      },
+      {
+        "osc": "/granular_position_automation/amount",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Granular position automation"
+      },
+      {
+        "osc": "/finetune_automation/automation_type",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Finetune automation"
+      },
+      {
+        "osc": "/finetune_automation/envelope_attack",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Finetune automation"
+      },
+      {
+        "osc": "/finetune_automation/lfo_shape",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Finetune automation"
+      },
+      {
+        "osc": "/finetune_automation/envelope_decay",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Finetune automation"
+      },
+      {
+        "osc": "/finetune_automation/lfo_speed",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Finetune automation"
+      },
+      {
+        "osc": "/finetune_automation/sustain",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Finetune automation"
+      },
+      {
+        "osc": "/finetune_automation/release",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Finetune automation"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

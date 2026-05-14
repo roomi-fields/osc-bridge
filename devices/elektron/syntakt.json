@@ -1,0 +1,4914 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Syntakt.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 404,
+    "cc_entries": 404,
+    "nrpn_entries": 385,
+    "fourteen_bit_cc_pairs": 4
+  },
+  "device": {
+    "name": "Syntakt",
+    "vendor": "Elektron",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/syntakt",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/track/track_mute",
+        "cc": 94,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 101,
+        "orientation": "0-based",
+        "section": "Track",
+        "_usage": "0: Unmuted; 1: Muted"
+      },
+      {
+        "osc": "/track/track_level",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 100,
+        "orientation": "0-based",
+        "section": "Track"
+      },
+      {
+        "osc": "/trig/trig_note",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 3,
+        "nrpn_lsb": 0,
+        "orientation": "0-based",
+        "section": "Trig"
+      },
+      {
+        "osc": "/trig/trig_velocity",
+        "cc": 4,
+        "range": [
+          1,
+          127
+        ],
+        "nrpn_msb": 3,
+        "nrpn_lsb": 1,
+        "orientation": "0-based",
+        "section": "Trig"
+      },
+      {
+        "osc": "/trig/trig_length",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 3,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Trig",
+        "_usage": "6: 1/32; 14: 1/16; 30: 1/8; 38: 3.00; 46: 1/4; 62: 1/2; 78: 16.0; 94: 32.0; 110: 64.0; 127: Infinite; 0-127: Length"
+      },
+      {
+        "osc": "/trig/trig_filter",
+        "cc": 13,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Trig",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/trig/trig_lfo",
+        "cc": 14,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Trig",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/trig/trig_portamento_time",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 3,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Trig"
+      },
+      {
+        "osc": "/trig/trig_portamento_on_off",
+        "cc": 65,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 3,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Trig",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/filter/filter_frequency",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 20,
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/filter_resonance",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 21,
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/filter_type",
+        "cc": 76,
+        "range": [
+          0,
+          7
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 22,
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: LP; 1: HP; 2: EQ 1; 3: EQ 2; 4: EQ 3; 5: EQ 4; 6: EQ 5; 7: Off"
+      },
+      {
+        "osc": "/filter/filter_attack_time",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 16,
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~126: Time; 127: Infinite"
+      },
+      {
+        "osc": "/filter/filter_decay_time",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 17,
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/filter_sustain_level",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 18,
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/filter_release_time",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 19,
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~126: Time; 127: Infinite"
+      },
+      {
+        "osc": "/filter/filter_envelope_depth",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 23,
+        "orientation": "centered",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/filter_envelope_delay",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 52,
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/filter_envelope_reset",
+        "cc": 111,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 56,
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/filter/filter_base",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 50,
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/filter_width",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 51,
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/amp/amp_attack_time",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 48,
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/amp_hold_time",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 25,
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/amp_decay_time",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 26,
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/amp_sustain_level",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 49,
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/amp_release_time",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 24,
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/amp_delay_send",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 28,
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/amp_reverb_send",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 29,
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/amp_pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 30,
+        "orientation": "centered",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/amp_volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 31,
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/lfo/lfo1_speed",
+        "cc": 102,
+        "cc_lsb": 60,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 32,
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo1_multiplier",
+        "cc": 103,
+        "range": [
+          0,
+          23
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 33,
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:"
+      },
+      {
+        "osc": "/lfo/lfo1_fade_in_out",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 34,
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo1_destination",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 35,
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo1_waveform",
+        "cc": 106,
+        "range": [
+          0,
+          6
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 36,
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random"
+      },
+      {
+        "osc": "/lfo/lfo1_start_phase",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 37,
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo1_trig_mode",
+        "cc": 108,
+        "range": [
+          0,
+          4
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 38,
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half"
+      },
+      {
+        "osc": "/lfo/lfo1_depth",
+        "cc": 109,
+        "cc_lsb": 61,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 39,
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo2_speed",
+        "cc": 112,
+        "cc_lsb": 62,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 40,
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo2_multiplier",
+        "cc": 113,
+        "range": [
+          0,
+          23
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 41,
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:"
+      },
+      {
+        "osc": "/lfo/lfo2_fade_in_out",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 42,
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo2_destination",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 43,
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo2_waveform",
+        "cc": 116,
+        "range": [
+          0,
+          6
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 44,
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random"
+      },
+      {
+        "osc": "/lfo/lfo2_start_phase",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 45,
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo2_trig_mode",
+        "cc": 118,
+        "range": [
+          0,
+          4
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 46,
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half"
+      },
+      {
+        "osc": "/lfo/lfo2_depth",
+        "cc": 119,
+        "cc_lsb": 63,
+        "range": [
+          0,
+          16383
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 47,
+        "orientation": "centered",
+        "section": "LFO"
+      },
+      {
+        "osc": "/fx_delay/delay_time",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 0,
+        "orientation": "0-based",
+        "section": "FX: Delay"
+      },
+      {
+        "osc": "/fx_delay/delay_pingpong",
+        "cc": 22,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 1,
+        "orientation": "0-based",
+        "section": "FX: Delay",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/fx_delay/delay_stereo_width",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 2,
+        "orientation": "centered",
+        "section": "FX: Delay"
+      },
+      {
+        "osc": "/fx_delay/delay_feedback",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "FX: Delay"
+      },
+      {
+        "osc": "/fx_delay/delay_highpass_filter",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "FX: Delay"
+      },
+      {
+        "osc": "/fx_delay/delay_lowpass_filter",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "FX: Delay"
+      },
+      {
+        "osc": "/fx_delay/delay_reverb_send",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "FX: Delay"
+      },
+      {
+        "osc": "/fx_delay/delay_mix_volume",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "FX: Delay"
+      },
+      {
+        "osc": "/fx_reverb/reverb_predelay",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "FX: Reverb"
+      },
+      {
+        "osc": "/fx_reverb/reverb_decay_time",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 9,
+        "orientation": "0-based",
+        "section": "FX: Reverb"
+      },
+      {
+        "osc": "/fx_reverb/reverb_shelving_frequency",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 10,
+        "orientation": "0-based",
+        "section": "FX: Reverb"
+      },
+      {
+        "osc": "/fx_reverb/reverb_shelving_gain",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 11,
+        "orientation": "0-based",
+        "section": "FX: Reverb"
+      },
+      {
+        "osc": "/fx_reverb/reverb_highpass_filter",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 12,
+        "orientation": "0-based",
+        "section": "FX: Reverb"
+      },
+      {
+        "osc": "/fx_reverb/reverb_lowpass_filter",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 13,
+        "orientation": "0-based",
+        "section": "FX: Reverb"
+      },
+      {
+        "osc": "/fx_reverb/reverb_mix_volume",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 15,
+        "orientation": "0-based",
+        "section": "FX: Reverb"
+      },
+      {
+        "osc": "/fx_external_mixer/input_lr",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 30,
+        "orientation": "0-based",
+        "section": "FX: External Mixer"
+      },
+      {
+        "osc": "/fx_external_mixer/input_balance",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 32,
+        "orientation": "centered",
+        "section": "FX: External Mixer"
+      },
+      {
+        "osc": "/fx_external_mixer/input_delay_send",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 33,
+        "orientation": "0-based",
+        "section": "FX: External Mixer"
+      },
+      {
+        "osc": "/fx_external_mixer/input_reverb_send",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 35,
+        "orientation": "0-based",
+        "section": "FX: External Mixer"
+      },
+      {
+        "osc": "/fx_external_mixer/input_fx_routing",
+        "cc": 20,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 2,
+        "nrpn_lsb": 38,
+        "orientation": "0-based",
+        "section": "FX: External Mixer",
+        "_usage": "0: Pre; 1: Post"
+      },
+      {
+        "osc": "/pattern/pattern_mute",
+        "cc": 110,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 104,
+        "orientation": "0-based",
+        "section": "Pattern",
+        "_usage": "0: Unmuted; 1: Muted"
+      },
+      {
+        "osc": "/misc/sustain",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Misc"
+      },
+      {
+        "osc": "/misc/sostenuto",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Misc"
+      },
+      {
+        "osc": "/analog_fx_synth/afx_synth_drive",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 29,
+        "orientation": "0-based",
+        "section": "Analog FX: Synth"
+      },
+      {
+        "osc": "/analog_fx_filter/afx_filter_frequency",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 20,
+        "orientation": "0-based",
+        "section": "Analog FX: Filter"
+      },
+      {
+        "osc": "/analog_fx_filter/afx_filter_resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 21,
+        "orientation": "0-based",
+        "section": "Analog FX: Filter"
+      },
+      {
+        "osc": "/analog_fx_filter/afx_filter_type",
+        "cc": 72,
+        "range": [
+          0,
+          7
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 22,
+        "orientation": "0-based",
+        "section": "Analog FX: Filter",
+        "_usage": "0: LP4; 1: LP2; 2: BP2; 3: HP2; 4: NO1; 5: NO2; 6: LPN; 7: Off"
+      },
+      {
+        "osc": "/analog_fx_filter/afx_filter_attack_time",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Analog FX: Filter"
+      },
+      {
+        "osc": "/analog_fx_filter/afx_filter_decay_time",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Analog FX: Filter"
+      },
+      {
+        "osc": "/analog_fx_filter/afx_filter_sustain_level",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Analog FX: Filter"
+      },
+      {
+        "osc": "/analog_fx_filter/afx_filter_release_time",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Analog FX: Filter"
+      },
+      {
+        "osc": "/analog_fx_filter/afx_filter_envelope_depth",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Analog FX: Filter"
+      },
+      {
+        "osc": "/analog_fx_filter/afx_filter_envelope_delay",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Analog FX: Filter"
+      },
+      {
+        "osc": "/analog_fx_filter/afx_filter_envelope_reset",
+        "cc": 111,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 56,
+        "orientation": "0-based",
+        "section": "Analog FX: Filter",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/analog_fx_amp/afx_amp_attack_time",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 24,
+        "orientation": "0-based",
+        "section": "Analog FX: Amp"
+      },
+      {
+        "osc": "/analog_fx_amp/afx_amp_hold_time",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 25,
+        "orientation": "0-based",
+        "section": "Analog FX: Amp"
+      },
+      {
+        "osc": "/analog_fx_amp/afx_amp_decay_time",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 26,
+        "orientation": "0-based",
+        "section": "Analog FX: Amp"
+      },
+      {
+        "osc": "/analog_fx_amp/afx_amp_sustain_level",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 27,
+        "orientation": "0-based",
+        "section": "Analog FX: Amp"
+      },
+      {
+        "osc": "/analog_fx_amp/afx_amp_release_time",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 28,
+        "orientation": "0-based",
+        "section": "Analog FX: Amp"
+      },
+      {
+        "osc": "/analog_fx_amp/afx_amp_delay_send",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 30,
+        "orientation": "0-based",
+        "section": "Analog FX: Amp"
+      },
+      {
+        "osc": "/analog_fx_amp/afx_amp_reverb_send",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 31,
+        "orientation": "0-based",
+        "section": "Analog FX: Amp"
+      },
+      {
+        "osc": "/analog_fx_amp/afx_amp_pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 32,
+        "orientation": "centered",
+        "section": "Analog FX: Amp"
+      },
+      {
+        "osc": "/analog_fx_amp/afx_amp_volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 33,
+        "orientation": "0-based",
+        "section": "Analog FX: Amp"
+      },
+      {
+        "osc": "/analog_fx_amp/afx_amp_envelope_depth",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 34,
+        "orientation": "0-based",
+        "section": "Analog FX: Amp"
+      },
+      {
+        "osc": "/analog_fx_amp/afx_amp_mode",
+        "cc": 87,
+        "range": [
+          0,
+          2
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 35,
+        "orientation": "0-based",
+        "section": "Analog FX: Amp",
+        "_usage": "0: AHD Negative; 1: AHD; 2: ADSR"
+      },
+      {
+        "osc": "/analog_fx_amp/afx_amp_envelope_reset",
+        "cc": 88,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 36,
+        "orientation": "0-based",
+        "section": "Analog FX: Amp",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/synth_general/general_data_entry_knob_a",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "0-based",
+        "section": "Synth: General"
+      },
+      {
+        "osc": "/synth_general/general_data_entry_knob_b",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: General"
+      },
+      {
+        "osc": "/synth_general/general_data_entry_knob_c",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: General"
+      },
+      {
+        "osc": "/synth_general/general_data_entry_knob_d",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: General"
+      },
+      {
+        "osc": "/synth_general/general_data_entry_knob_e",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: General"
+      },
+      {
+        "osc": "/synth_general/general_data_entry_knob_f",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: General"
+      },
+      {
+        "osc": "/synth_general/general_data_entry_knob_g",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: General"
+      },
+      {
+        "osc": "/synth_general/general_data_entry_knob_h",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: General"
+      },
+      {
+        "osc": "/synth_bd_modern/bd_modern_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: BD Modern"
+      },
+      {
+        "osc": "/synth_bd_modern/bd_modern_pitch_sweep",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: BD Modern"
+      },
+      {
+        "osc": "/synth_bd_modern/bd_modern_punch",
+        "cc": 19,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: BD Modern",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/synth_bd_modern/bd_modern_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: BD Modern"
+      },
+      {
+        "osc": "/synth_bd_modern/bd_modern_square_modulation",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: BD Modern"
+      },
+      {
+        "osc": "/synth_bd_modern/bd_modern_triangle_modulation",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: BD Modern"
+      },
+      {
+        "osc": "/synth_bd_modern/bd_modern_modulation_envelope",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: BD Modern"
+      },
+      {
+        "osc": "/synth_bd_modern/bd_modern_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: BD Modern"
+      },
+      {
+        "osc": "/synth_bd_hard/bd_hard_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: BD Hard"
+      },
+      {
+        "osc": "/synth_bd_hard/bd_hard_sweep_time",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: BD Hard"
+      },
+      {
+        "osc": "/synth_bd_hard/bd_hard_snap_amount",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: BD Hard"
+      },
+      {
+        "osc": "/synth_bd_hard/bd_hard_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: BD Hard",
+        "_usage": "0~126: Time; 127: Infinite"
+      },
+      {
+        "osc": "/synth_bd_hard/bd_hard_waveform",
+        "cc": 21,
+        "range": [
+          0,
+          2
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: BD Hard",
+        "_usage": "0: Sine; 1: Asymmetric Sine; 2: Triangle"
+      },
+      {
+        "osc": "/synth_bd_hard/bd_hard_hold_time",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: BD Hard"
+      },
+      {
+        "osc": "/synth_bd_hard/bd_hard_tick_level",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: BD Hard"
+      },
+      {
+        "osc": "/synth_bd_hard/bd_hard_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: BD Hard"
+      },
+      {
+        "osc": "/synth_bd_classic/bd_classic_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: BD Classic"
+      },
+      {
+        "osc": "/synth_bd_classic/bd_classic_sweep_time",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: BD Classic"
+      },
+      {
+        "osc": "/synth_bd_classic/bd_classic_sweep_depth",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: BD Classic"
+      },
+      {
+        "osc": "/synth_bd_classic/bd_classic_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: BD Classic",
+        "_usage": "0~126: Time; 127: Infinite"
+      },
+      {
+        "osc": "/synth_bd_classic/bd_classic_waveform",
+        "cc": 21,
+        "range": [
+          0,
+          2
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: BD Classic",
+        "_usage": "0: Sine; 1: Asymmetric Sine; 2: Triangle"
+      },
+      {
+        "osc": "/synth_bd_classic/bd_classic_hold_time",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: BD Classic"
+      },
+      {
+        "osc": "/synth_bd_classic/bd_classic_transient",
+        "cc": 23,
+        "range": [
+          0,
+          55
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: BD Classic",
+        "_usage": "0: Off; 1~5: Tic; 6~10: A1; 11~15: B1; 16~20: C1; 21~25: D1; 26~30: E1; 31~35: A2; 36~40: B2; 41~45: C2; 46~50: D2; 51~55: E2"
+      },
+      {
+        "osc": "/synth_bd_classic/bd_classic_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: BD Classic"
+      },
+      {
+        "osc": "/synth_bd_fm/bd_fm_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: BD FM"
+      },
+      {
+        "osc": "/synth_bd_fm/bd_fm_sweep_time",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: BD FM"
+      },
+      {
+        "osc": "/synth_bd_fm/bd_fm_fm_decay",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: BD FM"
+      },
+      {
+        "osc": "/synth_bd_fm/bd_fm_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: BD FM"
+      },
+      {
+        "osc": "/synth_bd_fm/bd_fm_fm_tune",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "centered",
+        "section": "Synth: BD FM"
+      },
+      {
+        "osc": "/synth_bd_fm/bd_fm_fm_sweep_time",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: BD FM"
+      },
+      {
+        "osc": "/synth_bd_fm/bd_fm_fm_amount",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: BD FM"
+      },
+      {
+        "osc": "/synth_bd_fm/bd_fm_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: BD FM"
+      },
+      {
+        "osc": "/synth_bd_plastic/bd_plastic_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: BD Plastic"
+      },
+      {
+        "osc": "/synth_bd_plastic/bd_plastic_sweep_time",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: BD Plastic"
+      },
+      {
+        "osc": "/synth_bd_plastic/bd_plastic_sweep_depth",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: BD Plastic"
+      },
+      {
+        "osc": "/synth_bd_plastic/bd_plastic_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: BD Plastic"
+      },
+      {
+        "osc": "/synth_bd_plastic/bd_plastic_modulation_type",
+        "cc": 21,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: BD Plastic",
+        "_usage": "0: Osc Frequency Modulation; 1: FM & Ring Modulation"
+      },
+      {
+        "osc": "/synth_bd_plastic/bd_plastic_modulation_level",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: BD Plastic"
+      },
+      {
+        "osc": "/synth_bd_plastic/bd_plastic_tick_level",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: BD Plastic"
+      },
+      {
+        "osc": "/synth_bd_plastic/bd_plastic_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: BD Plastic"
+      },
+      {
+        "osc": "/synth_bd_silky/bd_silky_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: BD Silky"
+      },
+      {
+        "osc": "/synth_bd_silky/bd_silky_sweep_time",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: BD Silky"
+      },
+      {
+        "osc": "/synth_bd_silky/bd_silky_sweep_depth",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: BD Silky"
+      },
+      {
+        "osc": "/synth_bd_silky/bd_silky_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: BD Silky"
+      },
+      {
+        "osc": "/synth_bd_silky/bd_silky_dust_level",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: BD Silky"
+      },
+      {
+        "osc": "/synth_bd_silky/bd_silky_hold_time",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: BD Silky"
+      },
+      {
+        "osc": "/synth_bd_silky/bd_silky_vco_click",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: BD Silky"
+      },
+      {
+        "osc": "/synth_bd_silky/bd_silky_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: BD Silky"
+      },
+      {
+        "osc": "/synth_bd_sharp/bd_sharp_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: BD Sharp"
+      },
+      {
+        "osc": "/synth_bd_sharp/bd_sharp_sweep_time",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: BD Sharp"
+      },
+      {
+        "osc": "/synth_bd_sharp/bd_sharp_sweep_depth",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: BD Sharp"
+      },
+      {
+        "osc": "/synth_bd_sharp/bd_sharp_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: BD Sharp"
+      },
+      {
+        "osc": "/synth_bd_sharp/bd_sharp_waveform",
+        "cc": 21,
+        "range": [
+          0,
+          11
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: BD Sharp",
+        "_usage": "0: Sine (reset); 1: Sine (free); 2: Asymmetric Sine (reset); 3: Asymmetric Sine (free); 4: Triangle (reset); 5: Triangle (free); 6: Sinetooth (reset);"
+      },
+      {
+        "osc": "/synth_bd_sharp/bd_sharp_hold_time",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: BD Sharp"
+      },
+      {
+        "osc": "/synth_bd_sharp/bd_sharp_tick_level",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: BD Sharp"
+      },
+      {
+        "osc": "/synth_bd_sharp/bd_sharp_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: BD Sharp"
+      },
+      {
+        "osc": "/synth_bd_acoustic/bd_acoustic_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: BD Acoustic"
+      },
+      {
+        "osc": "/synth_bd_acoustic/bd_acoustic_sweep_time",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: BD Acoustic"
+      },
+      {
+        "osc": "/synth_bd_acoustic/bd_acoustic_sweep_depth",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: BD Acoustic"
+      },
+      {
+        "osc": "/synth_bd_acoustic/bd_acoustic_decay",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: BD Acoustic"
+      },
+      {
+        "osc": "/synth_bd_acoustic/bd_acoustic_hold_time",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: BD Acoustic"
+      },
+      {
+        "osc": "/synth_bd_acoustic/bd_acoustic_impact",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: BD Acoustic"
+      },
+      {
+        "osc": "/synth_bd_acoustic/bd_acoustic_waveform",
+        "cc": 23,
+        "range": [
+          0,
+          11
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: BD Acoustic",
+        "_usage": "0: Sine (reset); 1: Sine (free); 2: Asymmetric Sine (reset); 3: Asymmetric Sine (free); 4: Triangle (reset); 5: Triangle (free); 6: Sinetooth (reset);"
+      },
+      {
+        "osc": "/synth_bd_acoustic/bd_acoustic_level",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 0,
+        "orientation": "0-based",
+        "section": "Synth: BD Acoustic"
+      },
+      {
+        "osc": "/synth_sd_basic/sd_basic_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: SD Basic"
+      },
+      {
+        "osc": "/synth_sd_basic/sd_basic_pitch_sweep",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: SD Basic"
+      },
+      {
+        "osc": "/synth_sd_basic/sd_basic_punch",
+        "cc": 19,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: SD Basic",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/synth_sd_basic/sd_basic_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: SD Basic"
+      },
+      {
+        "osc": "/synth_sd_basic/sd_basic_inharmonicity",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: SD Basic"
+      },
+      {
+        "osc": "/synth_sd_basic/sd_basic_modulation_feedback",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: SD Basic"
+      },
+      {
+        "osc": "/synth_sd_basic/sd_basic_modulation_envelope",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: SD Basic"
+      },
+      {
+        "osc": "/synth_sd_basic/sd_basic_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: SD Basic"
+      },
+      {
+        "osc": "/synth_sd_vintage/sd_vintage_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: SD Vintage"
+      },
+      {
+        "osc": "/synth_sd_vintage/sd_vintage_pitch_sweep",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: SD Vintage"
+      },
+      {
+        "osc": "/synth_sd_vintage/sd_vintage_punch",
+        "cc": 19,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: SD Vintage",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/synth_sd_vintage/sd_vintage_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: SD Vintage"
+      },
+      {
+        "osc": "/synth_sd_vintage/sd_vintage_inharmonicity",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: SD Vintage"
+      },
+      {
+        "osc": "/synth_sd_vintage/sd_vintage_frequency_complexity",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: SD Vintage"
+      },
+      {
+        "osc": "/synth_sd_vintage/sd_vintage_modulation_envelope",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: SD Vintage"
+      },
+      {
+        "osc": "/synth_sd_vintage/sd_vintage_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: SD Vintage"
+      },
+      {
+        "osc": "/synth_sd_hard/sd_hard_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: SD Hard"
+      },
+      {
+        "osc": "/synth_sd_hard/sd_hard_sweep_time",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: SD Hard"
+      },
+      {
+        "osc": "/synth_sd_hard/sd_hard_sweep_depth",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: SD Hard"
+      },
+      {
+        "osc": "/synth_sd_hard/sd_hard_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: SD Hard"
+      },
+      {
+        "osc": "/synth_sd_hard/sd_hard_tick_level",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: SD Hard"
+      },
+      {
+        "osc": "/synth_sd_hard/sd_hard_noise_decay",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: SD Hard"
+      },
+      {
+        "osc": "/synth_sd_hard/sd_hard_noise_level",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: SD Hard"
+      },
+      {
+        "osc": "/synth_sd_hard/sd_hard_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: SD Hard"
+      },
+      {
+        "osc": "/synth_sd_classic/sd_classic_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: SD Classic"
+      },
+      {
+        "osc": "/synth_sd_classic/sd_classic_detune",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: SD Classic"
+      },
+      {
+        "osc": "/synth_sd_classic/sd_classic_osc_balance",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: SD Classic"
+      },
+      {
+        "osc": "/synth_sd_classic/sd_classic_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: SD Classic"
+      },
+      {
+        "osc": "/synth_sd_classic/sd_classic_snap_amount",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: SD Classic"
+      },
+      {
+        "osc": "/synth_sd_classic/sd_classic_noise_decay",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: SD Classic"
+      },
+      {
+        "osc": "/synth_sd_classic/sd_classic_noise_level",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: SD Classic"
+      },
+      {
+        "osc": "/synth_sd_classic/sd_classic_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: SD Classic"
+      },
+      {
+        "osc": "/synth_sd_fm/sd_fm_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: SD FM"
+      },
+      {
+        "osc": "/synth_sd_fm/sd_fm_fm_tune",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "centered",
+        "section": "Synth: SD FM"
+      },
+      {
+        "osc": "/synth_sd_fm/sd_fm_fm_decay_time",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: SD FM"
+      },
+      {
+        "osc": "/synth_sd_fm/sd_fm_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: SD FM"
+      },
+      {
+        "osc": "/synth_sd_fm/sd_fm_fm_amount",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: SD FM"
+      },
+      {
+        "osc": "/synth_sd_fm/sd_fm_noise_decay",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: SD FM"
+      },
+      {
+        "osc": "/synth_sd_fm/sd_fm_noise_level",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: SD FM"
+      },
+      {
+        "osc": "/synth_sd_fm/sd_fm_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: SD FM"
+      },
+      {
+        "osc": "/synth_sd_natural/sd_natural_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: SD Natural"
+      },
+      {
+        "osc": "/synth_sd_natural/sd_natural_noise_decay",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: SD Natural"
+      },
+      {
+        "osc": "/synth_sd_natural/sd_natural_noise_balance",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: SD Natural"
+      },
+      {
+        "osc": "/synth_sd_natural/sd_natural_decay_time",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: SD Natural"
+      },
+      {
+        "osc": "/synth_sd_natural/sd_natural_noise_hpf_frequency",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: SD Natural"
+      },
+      {
+        "osc": "/synth_sd_natural/sd_natural_noise_lpf_frequency",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: SD Natural"
+      },
+      {
+        "osc": "/synth_sd_natural/sd_natural_noise_lpf_resonance",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: SD Natural"
+      },
+      {
+        "osc": "/synth_sd_natural/sd_natural_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: SD Natural"
+      },
+      {
+        "osc": "/synth_sd_acoustic/sd_acoustic_tune",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: SD Acoustic"
+      },
+      {
+        "osc": "/synth_sd_acoustic/sd_acoustic_noise_decay",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: SD Acoustic"
+      },
+      {
+        "osc": "/synth_sd_acoustic/sd_acoustic_noise_level",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: SD Acoustic"
+      },
+      {
+        "osc": "/synth_sd_acoustic/sd_acoustic_body_decay",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: SD Acoustic"
+      },
+      {
+        "osc": "/synth_sd_acoustic/sd_acoustic_hold_time",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: SD Acoustic"
+      },
+      {
+        "osc": "/synth_sd_acoustic/sd_acoustic_impact",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: SD Acoustic"
+      },
+      {
+        "osc": "/synth_sd_acoustic/sd_acoustic_sweep_depth",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: SD Acoustic"
+      },
+      {
+        "osc": "/synth_sd_acoustic/sd_acoustic_overdrive",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 0,
+        "orientation": "0-based",
+        "section": "Synth: SD Acoustic"
+      },
+      {
+        "osc": "/synth_rs_hard/rs_hard_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: RS Hard"
+      },
+      {
+        "osc": "/synth_rs_hard/rs_hard_sweep_time",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: RS Hard"
+      },
+      {
+        "osc": "/synth_rs_hard/rs_hard_sweep_depth",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: RS Hard"
+      },
+      {
+        "osc": "/synth_rs_hard/rs_hard_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: RS Hard"
+      },
+      {
+        "osc": "/synth_rs_hard/rs_hard_tick_level",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: RS Hard"
+      },
+      {
+        "osc": "/synth_rs_hard/rs_hard_noise_level",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: RS Hard"
+      },
+      {
+        "osc": "/synth_rs_hard/rs_hard_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: RS Hard"
+      },
+      {
+        "osc": "/synth_rs_classic/rs_classic_tune_osc1",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: RS Classic"
+      },
+      {
+        "osc": "/synth_rs_classic/rs_classic_tine_osc2",
+        "cc": 18,
+        "range": [
+          32,
+          96
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "centered",
+        "section": "Synth: RS Classic"
+      },
+      {
+        "osc": "/synth_rs_classic/rs_classic_osc_balance",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: RS Classic"
+      },
+      {
+        "osc": "/synth_rs_classic/rs_classic_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: RS Classic"
+      },
+      {
+        "osc": "/synth_rs_classic/rs_classic_tick_level",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: RS Classic"
+      },
+      {
+        "osc": "/synth_rs_classic/rs_classic_noise_level",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: RS Classic"
+      },
+      {
+        "osc": "/synth_rs_classic/rs_classic_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: RS Classic"
+      },
+      {
+        "osc": "/synth_pc_carbon/pc_carbon_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: PC Carbon"
+      },
+      {
+        "osc": "/synth_pc_carbon/pc_carbon_pitch_sweep",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: PC Carbon"
+      },
+      {
+        "osc": "/synth_pc_carbon/pc_carbon_punch",
+        "cc": 19,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: PC Carbon",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/synth_pc_carbon/pc_carbon_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: PC Carbon"
+      },
+      {
+        "osc": "/synth_pc_carbon/pc_carbon_inharmonicity",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: PC Carbon"
+      },
+      {
+        "osc": "/synth_pc_carbon/pc_carbon_modulation",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: PC Carbon"
+      },
+      {
+        "osc": "/synth_pc_carbon/pc_carbon_modulation_envelope",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: PC Carbon"
+      },
+      {
+        "osc": "/synth_pc_carbon/pc_carbon_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: PC Carbon"
+      },
+      {
+        "osc": "/synth_cp_vintage/cp_vintage_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: CP Vintage"
+      },
+      {
+        "osc": "/synth_cp_vintage/cp_vintage_spacing_crunch",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: CP Vintage"
+      },
+      {
+        "osc": "/synth_cp_vintage/cp_vintage_punch",
+        "cc": 19,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: CP Vintage",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/synth_cp_vintage/cp_vintage_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: CP Vintage"
+      },
+      {
+        "osc": "/synth_cp_vintage/cp_vintage_balance",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: CP Vintage"
+      },
+      {
+        "osc": "/synth_cp_vintage/cp_vintage_body_character",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: CP Vintage"
+      },
+      {
+        "osc": "/synth_cp_vintage/cp_vintage_body_envelope",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: CP Vintage"
+      },
+      {
+        "osc": "/synth_cp_vintage/cp_vintage_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: CP Vintage"
+      },
+      {
+        "osc": "/synth_cy_alloy/cy_alloy_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: CY Alloy"
+      },
+      {
+        "osc": "/synth_cy_alloy/cy_alloy_shimmer",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: CY Alloy"
+      },
+      {
+        "osc": "/synth_cy_alloy/cy_alloy_punch",
+        "cc": 19,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: CY Alloy",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/synth_cy_alloy/cy_alloy_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: CY Alloy"
+      },
+      {
+        "osc": "/synth_cy_alloy/cy_alloy_radio",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: CY Alloy"
+      },
+      {
+        "osc": "/synth_cy_alloy/cy_alloy_modulation",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: CY Alloy"
+      },
+      {
+        "osc": "/synth_cy_alloy/cy_alloy_modulation_envelope",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: CY Alloy"
+      },
+      {
+        "osc": "/synth_cy_alloy/cy_alloy_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: CY Alloy"
+      },
+      {
+        "osc": "/synth_ch_classic/ch_classic_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: CH Classic"
+      },
+      {
+        "osc": "/synth_ch_classic/ch_classic_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: CH Classic"
+      },
+      {
+        "osc": "/synth_ch_classic/ch_classic_noise_level",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "centered",
+        "section": "Synth: CH Classic"
+      },
+      {
+        "osc": "/synth_ch_classic/ch_classic_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: CH Classic"
+      },
+      {
+        "osc": "/synth_oh_classic/oh_classic_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: OH Classic"
+      },
+      {
+        "osc": "/synth_oh_classic/oh_classic_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: OH Classic"
+      },
+      {
+        "osc": "/synth_oh_classic/oh_classic_noise_level",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "centered",
+        "section": "Synth: OH Classic"
+      },
+      {
+        "osc": "/synth_oh_classic/oh_classic_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: OH Classic"
+      },
+      {
+        "osc": "/synth_ch_metallic/ch_metallic_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: CH Metallic"
+      },
+      {
+        "osc": "/synth_ch_metallic/ch_metallic_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: CH Metallic"
+      },
+      {
+        "osc": "/synth_ch_metallic/ch_metallic_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: CH Metallic"
+      },
+      {
+        "osc": "/synth_oh_metallic/oh_metallic_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: OH Metallic"
+      },
+      {
+        "osc": "/synth_oh_metallic/oh_metallic_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: OH Metallic"
+      },
+      {
+        "osc": "/synth_oh_metallic/oh_metallic_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: OH Metallic"
+      },
+      {
+        "osc": "/synth_hh_basic/hh_basic_tune",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: HH Basic"
+      },
+      {
+        "osc": "/synth_hh_basic/hh_basic_tone",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "centered",
+        "section": "Synth: HH Basic"
+      },
+      {
+        "osc": "/synth_hh_basic/hh_basic_transient_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: HH Basic"
+      },
+      {
+        "osc": "/synth_hh_basic/hh_basic_decay",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: HH Basic"
+      },
+      {
+        "osc": "/synth_hh_basic/hh_basic_osc_reset",
+        "cc": 21,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: HH Basic",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/synth_hh_basic/hh_basic_level",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 0,
+        "orientation": "0-based",
+        "section": "Synth: HH Basic"
+      },
+      {
+        "osc": "/synth_hh_lab/hh_lab_tune_1",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: HH Lab"
+      },
+      {
+        "osc": "/synth_hh_lab/hh_lab_decay",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: HH Lab"
+      },
+      {
+        "osc": "/synth_hh_lab/hh_lab_tune_2",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "centered",
+        "section": "Synth: HH Lab"
+      },
+      {
+        "osc": "/synth_hh_lab/hh_lab_tune_3",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "centered",
+        "section": "Synth: HH Lab"
+      },
+      {
+        "osc": "/synth_hh_lab/hh_lab_tune_4",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "centered",
+        "section": "Synth: HH Lab"
+      },
+      {
+        "osc": "/synth_hh_lab/hh_lab_tune_5",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "centered",
+        "section": "Synth: HH Lab"
+      },
+      {
+        "osc": "/synth_hh_lab/hh_lab_tune_6",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "centered",
+        "section": "Synth: HH Lab"
+      },
+      {
+        "osc": "/synth_hh_lab/hh_lab_level",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 0,
+        "orientation": "0-based",
+        "section": "Synth: HH Lab"
+      },
+      {
+        "osc": "/synth_cy_classic/cy_classic_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: CY Classic"
+      },
+      {
+        "osc": "/synth_cy_classic/cy_classic_tone",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "centered",
+        "section": "Synth: CY Classic"
+      },
+      {
+        "osc": "/synth_cy_classic/cy_classic_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: CY Classic"
+      },
+      {
+        "osc": "/synth_cy_classic/cy_classic_noise_level",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "centered",
+        "section": "Synth: CY Classic"
+      },
+      {
+        "osc": "/synth_cy_classic/cy_classic_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: CY Classic"
+      },
+      {
+        "osc": "/synth_cy_metallic/cy_metallic_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: CY Metallic"
+      },
+      {
+        "osc": "/synth_cy_metallic/cy_metallic_tone",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "centered",
+        "section": "Synth: CY Metallic"
+      },
+      {
+        "osc": "/synth_cy_metallic/cy_metallic_transient_decay",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: CY Metallic"
+      },
+      {
+        "osc": "/synth_cy_metallic/cy_metallic_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: CY Metallic"
+      },
+      {
+        "osc": "/synth_cy_metallic/cy_metallic_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: CY Metallic"
+      },
+      {
+        "osc": "/synth_cy_ride/cy_ride_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: CY Ride"
+      },
+      {
+        "osc": "/synth_cy_ride/cy_ride_cymbal_type",
+        "cc": 18,
+        "range": [
+          0,
+          3
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: CY Ride",
+        "_usage": "0: A; 1: B; 2: C; 3: D"
+      },
+      {
+        "osc": "/synth_cy_ride/cy_ride_hit_decay",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: CY Ride"
+      },
+      {
+        "osc": "/synth_cy_ride/cy_ride_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: CY Ride"
+      },
+      {
+        "osc": "/synth_cy_ride/cy_ride_hit",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: CY Ride"
+      },
+      {
+        "osc": "/synth_cy_ride/cy_ride_timbral_level",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: CY Ride"
+      },
+      {
+        "osc": "/synth_cy_ride/cy_ride_wash_level",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: CY Ride"
+      },
+      {
+        "osc": "/synth_cy_ride/cy_ride_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: CY Ride"
+      },
+      {
+        "osc": "/synth_cb_classic/cb_classic_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: CB Classic"
+      },
+      {
+        "osc": "/synth_cb_classic/cb_classic_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: CB Classic"
+      },
+      {
+        "osc": "/synth_cb_classic/cb_classic_detune",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: CB Classic"
+      },
+      {
+        "osc": "/synth_cb_classic/cb_classic_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: CB Classic"
+      },
+      {
+        "osc": "/synth_cb_metallic/cb_metallic_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: CB Metallic"
+      },
+      {
+        "osc": "/synth_cb_metallic/cb_metallic_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: CB Metallic"
+      },
+      {
+        "osc": "/synth_cb_metallic/cb_metallic_detune",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: CB Metallic"
+      },
+      {
+        "osc": "/synth_cb_metallic/cb_metallic_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: CB Metallic"
+      },
+      {
+        "osc": "/synth_sy_bits/sy_bits_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: SY Bits"
+      },
+      {
+        "osc": "/synth_sy_bits/sy_bits_osc_2_detune",
+        "cc": 18,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "centered",
+        "section": "Synth: SY Bits"
+      },
+      {
+        "osc": "/synth_sy_bits/sy_bits_balance",
+        "cc": 19,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: SY Bits",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/synth_sy_bits/sy_bits_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: SY Bits"
+      },
+      {
+        "osc": "/synth_sy_bits/sy_bits_wave",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: SY Bits"
+      },
+      {
+        "osc": "/synth_sy_bits/sy_bits_sample_rate_reduction",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: SY Bits"
+      },
+      {
+        "osc": "/synth_sy_bits/sy_bits_bit_reduction",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: SY Bits"
+      },
+      {
+        "osc": "/synth_sy_bits/sy_bits_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: SY Bits"
+      },
+      {
+        "osc": "/synth_sy_chord/sy_chord_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: SY Chord"
+      },
+      {
+        "osc": "/synth_sy_chord/sy_chord_wave_sweep",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: SY Chord"
+      },
+      {
+        "osc": "/synth_sy_chord/sy_chord_punch",
+        "cc": 19,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: SY Chord",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/synth_sy_chord/sy_chord_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: SY Chord"
+      },
+      {
+        "osc": "/synth_sy_chord/sy_chord_type",
+        "cc": 21,
+        "range": [
+          0,
+          37
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: SY Chord",
+        "_usage": "0: Unison \u00d7 2; 1: Unison \u00d7 3; 2: Unison \u00d7 4; 3: minor; 4: Major; 5: sus2; 6: sus4; 7: m7; 8: M7; 9: mMaj7; 10: Maj7; 11: 7sus4; 12: dim7; 13: madd9; 1"
+      },
+      {
+        "osc": "/synth_sy_chord/sy_chord_chord_osc_balance",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: SY Chord",
+        "_usage": "32: Root; 62: Inv 1; 74: Inv 2; 84: Inv 3; 0~127: Balance"
+      },
+      {
+        "osc": "/synth_sy_chord/sy_chord_filter_envelope",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: SY Chord"
+      },
+      {
+        "osc": "/synth_sy_chord/sy_chord_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: SY Chord"
+      },
+      {
+        "osc": "/synth_sy_tone/sy_tone_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: SY Tone"
+      },
+      {
+        "osc": "/synth_sy_tone/sy_tone_ratio",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: SY Tone"
+      },
+      {
+        "osc": "/synth_sy_tone/sy_tone_punch",
+        "cc": 19,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: SY Tone",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/synth_sy_tone/sy_tone_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: SY Tone"
+      },
+      {
+        "osc": "/synth_sy_tone/sy_tone_feedback",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: SY Tone"
+      },
+      {
+        "osc": "/synth_sy_tone/sy_tone_modulation",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: SY Tone"
+      },
+      {
+        "osc": "/synth_sy_tone/sy_tone_modulation_envelope",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: SY Tone"
+      },
+      {
+        "osc": "/synth_sy_tone/sy_tone_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: SY Tone"
+      },
+      {
+        "osc": "/synth_sy_toy/sy_toy_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: SY Toy"
+      },
+      {
+        "osc": "/synth_sy_toy/sy_toy_form",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: SY Toy"
+      },
+      {
+        "osc": "/synth_sy_toy/sy_toy_punch",
+        "cc": 19,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: SY Toy",
+        "_usage": "0: Off; 1: On"
+      },
+      {
+        "osc": "/synth_sy_toy/sy_toy_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: SY Toy"
+      },
+      {
+        "osc": "/synth_sy_toy/sy_toy_impact",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: SY Toy"
+      },
+      {
+        "osc": "/synth_sy_toy/sy_toy_brightness",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: SY Toy"
+      },
+      {
+        "osc": "/synth_sy_toy/sy_toy_partial_decay",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: SY Toy"
+      },
+      {
+        "osc": "/synth_sy_toy/sy_toy_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: SY Toy"
+      },
+      {
+        "osc": "/synth_sp_twinshot/sp_twinshot_tun1",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: SP Twinshot"
+      },
+      {
+        "osc": "/synth_sp_twinshot/sp_twinshot_smp1",
+        "cc": 18,
+        "range": [
+          0,
+          63
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: SP Twinshot"
+      },
+      {
+        "osc": "/synth_sp_twinshot/sp_twinshot_flt1",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: SP Twinshot"
+      },
+      {
+        "osc": "/synth_sp_twinshot/sp_twinshot_dec1",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: SP Twinshot"
+      },
+      {
+        "osc": "/synth_sp_twinshot/sp_twinshot_tun2",
+        "cc": 21,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "centered",
+        "section": "Synth: SP Twinshot"
+      },
+      {
+        "osc": "/synth_sp_twinshot/sp_twinshot_smp2",
+        "cc": 22,
+        "range": [
+          0,
+          63
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: SP Twinshot"
+      },
+      {
+        "osc": "/synth_sp_twinshot/sp_twinshot_mix",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "centered",
+        "section": "Synth: SP Twinshot"
+      },
+      {
+        "osc": "/synth_sp_twinshot/sp_twinshot_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: SP Twinshot"
+      },
+      {
+        "osc": "/synth_sy_swarm/sy_swarm_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: SY Swarm"
+      },
+      {
+        "osc": "/synth_sy_swarm/sy_swarm_detune",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: SY Swarm"
+      },
+      {
+        "osc": "/synth_sy_swarm/sy_swarm_mix",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: SY Swarm"
+      },
+      {
+        "osc": "/synth_sy_swarm/sy_swarm_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: SY Swarm"
+      },
+      {
+        "osc": "/synth_sy_swarm/sy_swarm_noise_modulation",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: SY Swarm"
+      },
+      {
+        "osc": "/synth_sy_swarm/sy_swarm_detune_animation",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: SY Swarm"
+      },
+      {
+        "osc": "/synth_sy_swarm/sy_swarm_fundamental_sub",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: SY Swarm"
+      },
+      {
+        "osc": "/synth_sy_swarm/sy_swarm_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: SY Swarm"
+      },
+      {
+        "osc": "/synth_sy_dual_vco/sy_dual_vco_osc_1_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: SY Dual VCO"
+      },
+      {
+        "osc": "/synth_sy_dual_vco/sy_dual_vco_osc_2_detune",
+        "cc": 18,
+        "range": [
+          48,
+          80
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: SY Dual VCO"
+      },
+      {
+        "osc": "/synth_sy_dual_vco/sy_dual_vco_osc_1_decay",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: SY Dual VCO",
+        "_usage": "0~126: Time; 127: Infinite"
+      },
+      {
+        "osc": "/synth_sy_dual_vco/sy_dual_vco_osc_2_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: SY Dual VCO",
+        "_usage": "0~126: Time; 127: Infinite"
+      },
+      {
+        "osc": "/synth_sy_dual_vco/sy_dual_vco_osc_config",
+        "cc": 21,
+        "range": [
+          0,
+          79
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: SY Dual VCO",
+        "_usage": "0: Sine + Sine -; 1: Sine + Sine; 2: Sine + Skewed Sine -; 3: Sine + Skewed Sine; 4: Sine + Triangle -; 5: Sine + Triangle; 6: Sine + Sinesaw -; 7: Si"
+      },
+      {
+        "osc": "/synth_sy_dual_vco/sy_dual_vco_bend",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "centered",
+        "section": "Synth: SY Dual VCO"
+      },
+      {
+        "osc": "/synth_sy_dual_vco/sy_dual_vco_balance",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: SY Dual VCO"
+      },
+      {
+        "osc": "/synth_sy_dual_vco/sy_dual_vco_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: SY Dual VCO"
+      },
+      {
+        "osc": "/synth_sy_raw/sy_raw_osc_1_tune",
+        "cc": 17,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: SY Raw"
+      },
+      {
+        "osc": "/synth_sy_raw/sy_raw_detune",
+        "cc": 18,
+        "range": [
+          48,
+          80
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: SY Raw"
+      },
+      {
+        "osc": "/synth_sy_raw/sy_raw_osc_2_level",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: SY Raw"
+      },
+      {
+        "osc": "/synth_sy_raw/sy_raw_osc_2_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: SY Raw",
+        "_usage": "0~126: Time; 127: Infinite"
+      },
+      {
+        "osc": "/synth_sy_raw/sy_raw_osc_1_wave",
+        "cc": 21,
+        "range": [
+          0,
+          5
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: SY Raw",
+        "_usage": "0: Sine; 1: Asymetric Sine; 2: Triangle; 3: Sinesaw; 4: Saw; 5: Square"
+      },
+      {
+        "osc": "/synth_sy_raw/sy_raw_osc_2_wave",
+        "cc": 22,
+        "range": [
+          0,
+          6
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: SY Raw",
+        "_usage": "0: Sine; 1: Asymetric Sine; 2: Triangle; 3: Sinesaw; 4: Saw; 5: Square; 6: Ring Modulator"
+      },
+      {
+        "osc": "/synth_sy_raw/sy_raw_noise_level",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: SY Raw"
+      },
+      {
+        "osc": "/synth_sy_raw/sy_raw_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: SY Raw"
+      },
+      {
+        "osc": "/synth_sy_chip/sy_chip_tune",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: SY Chip"
+      },
+      {
+        "osc": "/synth_sy_chip/sy_chip_waveform",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: SY Chip",
+        "_usage": "0: Analog Sine; 1: Asymmetric Sine; 2: Triangle; 3: Sinesaw; 4: Saw; 5: Square; 6: Noise; 7: Anim 1; 8: Anim 2; 9: Anim 3; 10: Anim 4; 11: Anim 5; 12:"
+      },
+      {
+        "osc": "/synth_sy_chip/sy_chip_speed",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: SY Chip"
+      },
+      {
+        "osc": "/synth_sy_chip/sy_chip_decay",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "Synth: SY Chip"
+      },
+      {
+        "osc": "/synth_sy_chip/sy_chip_offset_2",
+        "cc": 21,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "centered",
+        "section": "Synth: SY Chip"
+      },
+      {
+        "osc": "/synth_sy_chip/sy_chip_offset_3",
+        "cc": 22,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "centered",
+        "section": "Synth: SY Chip"
+      },
+      {
+        "osc": "/synth_sy_chip/sy_chip_offset_4",
+        "cc": 23,
+        "range": [
+          40,
+          88
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "centered",
+        "section": "Synth: SY Chip"
+      },
+      {
+        "osc": "/synth_sy_chip/sy_chip_level",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth: SY Chip"
+      },
+      {
+        "osc": "/synth_ut_noise/ut_noise_sweep_depth",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "orientation": "centered",
+        "section": "Synth: UT Noise"
+      },
+      {
+        "osc": "/synth_ut_noise/ut_noise_sweep_time",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 2,
+        "orientation": "centered",
+        "section": "Synth: UT Noise"
+      },
+      {
+        "osc": "/synth_ut_noise/ut_noise_attack",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: UT Noise"
+      },
+      {
+        "osc": "/synth_ut_noise/ut_noise_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: UT Noise"
+      },
+      {
+        "osc": "/synth_ut_noise/ut_noise_noise_hpf_frequency",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Synth: UT Noise"
+      },
+      {
+        "osc": "/synth_ut_noise/ut_noise_noise_lpf_frequency",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 6,
+        "orientation": "0-based",
+        "section": "Synth: UT Noise"
+      },
+      {
+        "osc": "/synth_ut_noise/ut_noise_noise_lpf_resonance",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: UT Noise"
+      },
+      {
+        "osc": "/synth_ut_noise/ut_noise_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: UT Noise"
+      },
+      {
+        "osc": "/synth_ut_impulse/ut_impulse_attack",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Synth: UT Impulse"
+      },
+      {
+        "osc": "/synth_ut_impulse/ut_impulse_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Synth: UT Impulse"
+      },
+      {
+        "osc": "/synth_ut_impulse/ut_impulse_polarity",
+        "cc": 23,
+        "range": [
+          0,
+          1
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Synth: UT Impulse",
+        "_usage": "0: Positive; 1: Negative"
+      },
+      {
+        "osc": "/synth_ut_impulse/ut_impulse_overdrive",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 1,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Synth: UT Impulse"
+      },
+      {
+        "osc": "/midi/midi_cc1_value",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/midi_cc2_value",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/midi_cc3_value",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/midi_cc4_value",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/midi_cc5_value",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/midi_cc6_value",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/midi_cc7_value",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/midi_cc8_value",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

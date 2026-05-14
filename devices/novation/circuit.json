@@ -1,0 +1,6678 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/OmK30QzDEjTZj5O5byyX",
+      "preset_name": "Novation Circuit Tracks - Synth Editor",
+      "imported_at": "2026-04-13",
+      "preset_id": "OmK30QzDEjTZj5O5byyX",
+      "revision": "14",
+      "author": "Rich"
+    },
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Novation/Circuit.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 638,
+    "cc_entries": 638,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "Circuit",
+    "vendor": "Novation",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/circuit",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/voice/polyphony_mode",
+        "cc": 3,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Voice",
+        "_usage": "0: Mono; 1: Mono AG; 2: Poly"
+      },
+      {
+        "osc": "/voice/portamento_rate",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice"
+      },
+      {
+        "osc": "/voice/pre_glide",
+        "cc": 9,
+        "range": [
+          52,
+          76
+        ],
+        "orientation": "centered",
+        "section": "Voice"
+      },
+      {
+        "osc": "/voice/keyboard_octave",
+        "cc": 13,
+        "range": [
+          58,
+          69
+        ],
+        "orientation": "centered",
+        "section": "Voice",
+        "_usage": "60: -4 Octaves; 64: 0 Octaves; 68: +4 Octaves"
+      },
+      {
+        "osc": "/oscillator/osc_1_wave",
+        "cc": 19,
+        "range": [
+          0,
+          29
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator",
+        "_usage": "0: Sine; 1: Triangle; 2: Sawtooth; 3: Saw 9-1 PW; 4: Saw 8-2 PW; 5: Saw 7-3 PW; 6: Saw 6-4 PW; 7: Saw 5-5 PW; 8: Saw 4-6 PW; 9: Saw 3-7 PW; 10: Saw 2-"
+      },
+      {
+        "osc": "/oscillator/osc_1_wave_interpolate",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/oscillator/osc_1_pulse_width_index",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/oscillator/osc_1_virtual_sync_depth",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/oscillator/osc_1_density",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/oscillator/osc_1_density_detune",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/oscillator/osc_1_semitones",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/oscillator/osc_1_cents",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/oscillator/osc_1_pitchbend",
+        "cc": 28,
+        "range": [
+          52,
+          76
+        ],
+        "orientation": "centered",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/oscillator/osc_2_wave",
+        "cc": 29,
+        "range": [
+          0,
+          29
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator",
+        "_usage": "0: Sine; 1: Triangle; 2: Sawtooth; 3: Saw 9-1 PW; 4: Saw 8-2 PW; 5: Saw 7-3 PW; 6: Saw 6-4 PW; 7: Saw 5-5 PW; 8: Saw 4-6 PW; 9: Saw 3-7 PW; 10: Saw 2-"
+      },
+      {
+        "osc": "/oscillator/osc_2_wave_interpolate",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/oscillator/osc_2_pulse_width_index",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/oscillator/osc_2_virtual_sync_depth",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/oscillator/osc_2_density",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/oscillator/osc_2_density_detune",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/oscillator/osc_2_semitones",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/oscillator/osc_2_cents",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/oscillator/osc_2_pitchbend",
+        "cc": 40,
+        "range": [
+          52,
+          76
+        ],
+        "orientation": "centered",
+        "section": "Oscillator"
+      },
+      {
+        "osc": "/mixer/osc_1_level",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/osc_2_level",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/ring_mod_level",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/noise_level",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/pre_fx_level",
+        "cc": 58,
+        "range": [
+          52,
+          82
+        ],
+        "orientation": "centered",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/post_fx_level",
+        "cc": 59,
+        "range": [
+          52,
+          82
+        ],
+        "orientation": "centered",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/filter/routing",
+        "cc": 60,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Normal; 1: Osc 1 bypasses the filter; 2: Osc 1 + Osc 2 bypass the filter"
+      },
+      {
+        "osc": "/filter/drive",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/drive_type",
+        "cc": 65,
+        "range": [
+          0,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Diode; 1: Valve; 2: Clipper; 3: Cross-over; 4: Rectifier; 5: Bit reducer; 6: Rate reducer"
+      },
+      {
+        "osc": "/filter/type",
+        "cc": 68,
+        "range": [
+          0,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Low pass 12dB; 1: Low pass 24dB; 2: Band pass 6db-6dB; 3: Band pass 12db-12 dB; 4: High pass 12dB; 5: High pass 24dB"
+      },
+      {
+        "osc": "/filter/frequency",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/tracking",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/q_normalise",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/env_2_to_frequency",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter"
+      },
+      {
+        "osc": "/envelope/env_1_velocity",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/env_1_attack",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/env_1_decay",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/env_1_sustain",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/env_1_release",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/env_2_velocity",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/env_2_attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/env_2_decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/env_2_sustain",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/env_2_release",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/env_3_delay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/env_3_attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/env_3_decay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/env_3_sustain",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/env_3_release",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/lfo/1_waveform",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 70,
+        "range": [
+          0,
+          37
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Sine; 1: Triangle; 2: Sawtooth; 3: Square; 4: Random S/H; 5: Time S/H; 6: Piano envelope; 7: Sequence 1; 8: Sequence 2; 9: Sequence 3; 10: Sequence"
+      },
+      {
+        "osc": "/lfo/1_phase_offset",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          119
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/1_slew_rate",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/1_delay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/1_delay_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 75,
+        "range": [
+          0,
+          35
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/1_rate",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/1_rate_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 77,
+        "range": [
+          0,
+          35
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/1_one_shot",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 122,
+        "range": [
+          12,
+          13
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "12: Off; 13: On"
+      },
+      {
+        "osc": "/lfo/1_key_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 122,
+        "range": [
+          14,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "14: Off; 15: On"
+      },
+      {
+        "osc": "/lfo/1_common_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 122,
+        "range": [
+          16,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "16: Off; 17: On"
+      },
+      {
+        "osc": "/lfo/1_delay_trigger",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 122,
+        "range": [
+          18,
+          19
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "18: Off; 19: On"
+      },
+      {
+        "osc": "/lfo/1_fade_mode",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 123,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Fade in; 1: Fade out; 2: Gate in; 3: Gate out"
+      },
+      {
+        "osc": "/lfo/2_waveform",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 79,
+        "range": [
+          0,
+          37
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Sine; 1: Triangle; 2: Sawtooth; 3: Square; 4: Random S/H; 5: Time S/H; 6: Piano envelope; 7: Sequence 1; 8: Sequence 2; 9: Sequence 3; 10: Sequence"
+      },
+      {
+        "osc": "/lfo/2_phase_offset",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 80,
+        "range": [
+          0,
+          119
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/2_slew_rate",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/2_delay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/2_delay_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 84,
+        "range": [
+          0,
+          35
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/2_rate",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/2_rate_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 86,
+        "range": [
+          0,
+          35
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/2_one_shot",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 122,
+        "range": [
+          22,
+          23
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "22: Off; 23: On"
+      },
+      {
+        "osc": "/lfo/2_key_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 122,
+        "range": [
+          24,
+          25
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "24: Off; 25: On"
+      },
+      {
+        "osc": "/lfo/2_common_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 122,
+        "range": [
+          26,
+          27
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "26: Off; 27: On"
+      },
+      {
+        "osc": "/lfo/2_delay_trigger",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 122,
+        "range": [
+          28,
+          29
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "28: Off; 29: On"
+      },
+      {
+        "osc": "/lfo/2_fade_mode",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 123,
+        "range": [
+          4,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "4: Fade in; 5: Fade out; 6: Gate in; 7: Gate out"
+      },
+      {
+        "osc": "/effects_and_eq/distortion_level",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects and EQ"
+      },
+      {
+        "osc": "/effects_and_eq/chorus_level",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects and EQ"
+      },
+      {
+        "osc": "/effects_and_eq/eq_bass_frequency",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects and EQ"
+      },
+      {
+        "osc": "/effects_and_eq/eq_bass_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Effects and EQ"
+      },
+      {
+        "osc": "/effects_and_eq/eq_mid_frequency",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects and EQ"
+      },
+      {
+        "osc": "/effects_and_eq/eq_mid_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Effects and EQ"
+      },
+      {
+        "osc": "/effects_and_eq/eq_treble_frequency",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects and EQ"
+      },
+      {
+        "osc": "/effects_and_eq/eq_treble_level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Effects and EQ"
+      },
+      {
+        "osc": "/effects_and_eq/distortion_type",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "Effects and EQ",
+        "_usage": "0: Diode; 1: Valve; 2: Clipper; 3: Cross-over; 4: Rectifier; 5: Bit reducer; 6: Rate reducer"
+      },
+      {
+        "osc": "/effects_and_eq/distortion_compensation",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects and EQ"
+      },
+      {
+        "osc": "/effects_and_eq/chorus_type",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 24,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Effects and EQ",
+        "_usage": "0: Phaser; 1: Chorus"
+      },
+      {
+        "osc": "/effects_and_eq/chorus_rate",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects and EQ"
+      },
+      {
+        "osc": "/effects_and_eq/chorus_rate_sync",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 26,
+        "range": [
+          0,
+          35
+        ],
+        "orientation": "0-based",
+        "section": "Effects and EQ"
+      },
+      {
+        "osc": "/effects_and_eq/chorus_feedback",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Effects and EQ"
+      },
+      {
+        "osc": "/effects_and_eq/chorus_mod_depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects and EQ"
+      },
+      {
+        "osc": "/effects_and_eq/chorus_delay",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects and EQ"
+      },
+      {
+        "osc": "/mod_matrix/1_source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 83,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/1_source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 84,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/1_depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/1_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 87,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/2_source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 88,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/2_source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 89,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/2_depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/2_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 92,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/3_source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 93,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/3_source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 94,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/3_depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/3_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 97,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/4_source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 98,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/4_source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 99,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/4_depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/4_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 102,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/5_source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 103,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/5_source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 104,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/5_depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/5_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 107,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/6_source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 108,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/6_source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 109,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/6_depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/6_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 112,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/7_source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 113,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/7_source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 114,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/7_depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/7_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 117,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/8_source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 118,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/8_source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 119,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/8_depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 121,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/8_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 122,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/9_source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 123,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/9_source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 124,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/9_depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 126,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/9_destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 127,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/10_source_1",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/10_source_2",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/10_depth",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/10_destination",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/11_source_1",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/11_source_2",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/11_depth",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/11_destination",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/12_source_1",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/12_source_2",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/12_depth",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/12_destination",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/13_source_1",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/13_source_2",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/13_depth",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/13_destination",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 19,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/14_source_1",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/14_source_2",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 21,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/14_depth",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/14_destination",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 24,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/15_source_1",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 25,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/15_source_2",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 27,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/15_depth",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/15_destination",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 29,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/16_source_1",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 30,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/16_source_2",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 32,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/16_depth",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/16_destination",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 34,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/17_source_1",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 35,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/17_source_2",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 37,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/17_depth",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/17_destination",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 39,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/18_source_1",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/18_source_2",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/18_depth",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/18_destination",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 44,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/19_source_1",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/19_source_2",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/19_depth",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/19_destination",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 49,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/mod_matrix/20_source_1",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 50,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/20_source_2",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Direct; 1: Modulation wheel; 2: After touch; 3: Expression; 4: Velocity; 5: Keyboard; 6: LFO 1 +; 7: LFO 1 +/-; 8: LFO 2 +; 9: LFO 2 +/-; 10: Env a"
+      },
+      {
+        "osc": "/mod_matrix/20_depth",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix"
+      },
+      {
+        "osc": "/mod_matrix/20_destination",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 54,
+        "range": [
+          0,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mod Matrix",
+        "_usage": "0: Osc 1 & 2 pitch; 1: Osc 1 pitch; 2: Osc 2 pitch; 3: Osc 1 v-sync; 4: Osc 2 v-sync; 5: Osc 1 pulse width / index; 6: Osc 2 pulse width / index; 7: O"
+      },
+      {
+        "osc": "/macro_knob/1_position",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/1_destination_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/1_start_position_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/1_end_position_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/1_depth_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/1_destination_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/1_start_position_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/1_end_position_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/1_depth_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/1_destination_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/1_start_position_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/1_end_position_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/1_depth_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/1_destination_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 12,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/1_start_position_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/1_end_position_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/1_depth_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/2_position",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/2_destination_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/2_start_position_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/2_end_position_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/2_depth_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/2_destination_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/2_start_position_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/2_end_position_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/2_depth_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/2_destination_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 24,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/2_start_position_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/2_end_position_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/2_depth_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/2_destination_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 28,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/2_start_position_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/2_end_position_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/2_depth_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/3_position",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/3_destination_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 32,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/3_start_position_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/3_end_position_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/3_depth_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/3_destination_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 36,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/3_start_position_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/3_end_position_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/3_depth_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/3_destination_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/3_start_position_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/3_end_position_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/3_depth_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/3_destination_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 44,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/3_start_position_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/3_end_position_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/3_depth_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/4_position",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/4_destination_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/4_start_position_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/4_end_position_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/4_depth_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/4_destination_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/4_start_position_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/4_end_position_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/4_depth_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/4_destination_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 56,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/4_start_position_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/4_end_position_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/4_depth_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/4_destination_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 60,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/4_start_position_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/4_end_position_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/4_depth_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/5_position",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/5_destination_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 64,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/5_start_position_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/5_end_position_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/5_depth_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/5_destination_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 68,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/5_start_position_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/5_end_position_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/5_depth_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/5_destination_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/5_start_position_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/5_end_position_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/5_depth_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/5_destination_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 76,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/5_start_position_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/5_end_position_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/5_depth_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/6_position",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/6_destination_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 80,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/6_start_position_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/6_end_position_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/6_depth_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/6_destination_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 84,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/6_start_position_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/6_end_position_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/6_depth_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/6_destination_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 88,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/6_start_position_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/6_end_position_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/6_depth_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/6_destination_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 92,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/6_start_position_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/6_end_position_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/6_depth_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/7_position",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/7_destination_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 96,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/7_start_position_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/7_end_position_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/7_depth_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/7_destination_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 100,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/7_start_position_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/7_end_position_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/7_depth_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/7_destination_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 104,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/7_start_position_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/7_end_position_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/7_depth_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/7_destination_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 108,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/7_start_position_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/7_end_position_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/7_depth_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/8_position",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/8_destination_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 112,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/8_start_position_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/8_end_position_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/8_depth_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/8_destination_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 116,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/8_start_position_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/8_end_position_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/8_depth_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/8_destination_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 120,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/8_start_position_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 121,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/8_end_position_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 122,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/8_depth_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/8_destination_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 124,
+        "range": [
+          0,
+          70
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/8_start_position_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 125,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/8_end_position_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 126,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/macro_knob/8_depth_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 127,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro Knob"
+      },
+      {
+        "osc": "/osc_1_coarse",
+        "cc": 27,
+        "cc_lsb": 59,
+        "range": [
+          -127,
+          128
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_1_fine",
+        "cc": 26,
+        "cc_lsb": 58,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_1_range",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_1_wave",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_1_pw",
+        "cc": 39,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_1_glide",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_2_coarse",
+        "cc": 30,
+        "cc_lsb": 62,
+        "range": [
+          -127,
+          128
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_2_fine",
+        "cc": 29,
+        "cc_lsb": 61,
+        "range": [
+          -100,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_2_range",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_2_wave",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_2_pw",
+        "cc": 79,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_2_glide",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_2_sync",
+        "cc": 110,
+        "range": [
+          0,
+          1
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/overdrive",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/cutoff_freq",
+        "cc": 16,
+        "cc_lsb": 48,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/key_tracking",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_1_octave",
+        "cc": 117,
+        "range": [
+          -6,
+          5
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_2_octave",
+        "cc": 76,
+        "range": [
+          -6,
+          5
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/filter_shape",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/slope",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/filter_bypass",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/envelope",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/envelope",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/envelope",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/envelope",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/retrigger",
+        "cc": 6,
+        "range": [
+          0,
+          1
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/distort_level",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/type",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/patch_vol",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_1_level",
+        "cc": 20,
+        "cc_lsb": 52,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc_2_level",
+        "cc": 21,
+        "cc_lsb": 53,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sub_level",
+        "cc": 22,
+        "cc_lsb": 54,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/noise_level",
+        "cc": 23,
+        "cc_lsb": 55,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/audio_in_level",
+        "cc": 25,
+        "cc_lsb": 57,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/ring_1_2_lev",
+        "cc": 24,
+        "cc_lsb": 56,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/clock_sync",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_rate",
+        "cc": 18,
+        "cc_lsb": 50,
+        "range": [
+          0,
+          255
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/sync_rate",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/key_sync",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_shape",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_o1_pitch",
+        "cc": 12,
+        "cc_lsb": 44,
+        "range": [
+          -128,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_o1_pwm",
+        "cc": 41,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_amp",
+        "cc": 42,
+        "range": [
+          0,
+          1
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_filter",
+        "cc": 14,
+        "cc_lsb": 46,
+        "range": [
+          -128,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_distort",
+        "cc": 103,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_aux_cv",
+        "cc": 104,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_02_pitch",
+        "cc": 13,
+        "cc_lsb": 45,
+        "range": [
+          -128,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env_02_pwm",
+        "cc": 33,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_o1_pitch",
+        "cc": 28,
+        "cc_lsb": 60,
+        "range": [
+          -128,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_o1_pwm",
+        "cc": 73,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_amp",
+        "cc": 78,
+        "range": [
+          -63,
+          64
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_filter",
+        "cc": 17,
+        "cc_lsb": 49,
+        "range": [
+          -128,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_distort",
+        "cc": 108,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_aux_cv",
+        "cc": 109,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_o2_pitch",
+        "cc": 3,
+        "cc_lsb": 35,
+        "range": [
+          -128,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_o2_pwm",
+        "cc": 34,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/seq_o1_pitch",
+        "cc": 15,
+        "cc_lsb": 47,
+        "range": [
+          -128,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/seq_o1_pwm",
+        "cc": 118,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/seq_amp",
+        "cc": 119,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/seq_filter",
+        "cc": 31,
+        "cc_lsb": 63,
+        "range": [
+          -128,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/seq_distort",
+        "cc": 111,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/seq_aux_cv",
+        "cc": 116,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/seq_o2_pitch",
+        "cc": 19,
+        "cc_lsb": 51,
+        "range": [
+          -128,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/seq_02_pwm",
+        "cc": 38,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vel_o1_pitch",
+        "cc": 115,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vel_o1_pwm",
+        "cc": 107,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vel_amp",
+        "cc": 112,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vel_filter",
+        "cc": 113,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vel_distort",
+        "cc": 105,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vel_aux_cv",
+        "cc": 89,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vel_o2_pitch",
+        "cc": 9,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vel_o2_pwm",
+        "cc": 36,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/wave",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/interpolate",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/index",
+        "cc": 21,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/wave",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/interpolate",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/index",
+        "cc": 31,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vsync",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/density",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/detune",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/vsync",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/density",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/detune",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/semitones",
+        "cc": 26,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/cents",
+        "cc": 27,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pitchbend",
+        "cc": 28,
+        "range": [
+          -12,
+          12
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/semitones",
+        "cc": 37,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/cents",
+        "cc": 39,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pitchbend",
+        "cc": 40,
+        "range": [
+          -12,
+          12
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/velocity",
+        "cc": 108,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attack",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attack",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attack",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attack",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc1_mix",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/osc2_mix",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/ring_mod",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/noise",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pre_fx",
+        "cc": 58,
+        "range": [
+          -12,
+          18
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/post_fx",
+        "cc": 59,
+        "range": [
+          -12,
+          18
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mode",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/portamento",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pre_glide",
+        "cc": 9,
+        "range": [
+          -12,
+          12
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/kb_octave",
+        "cc": 13,
+        "range": [
+          -6,
+          5
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/frequency",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/q",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/drive",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/bypass",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/filter_type",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/tracking",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/drive_type",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/velocity",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 0,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/env2_filter",
+        "cc": 79,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dist_level",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dist_comp",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/frequency",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 104,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/frequency",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 106,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/frequency",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 108,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dist_type",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 105,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 107,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 109,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/chorus_level",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/chorus_sync",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 26,
+        "range": [
+          0,
+          35
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/feedback",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 27,
+        "range": [
+          -63,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/chorus_delay",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 29,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/chorus_type",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 24,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/chorus_rate",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 25,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mod_depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 28,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/attack",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_waveform",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 70,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/rate_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 77,
+        "range": [
+          0,
+          35
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/phase_offset",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          357
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 75,
+        "range": [
+          0,
+          35
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/rate",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 76,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/slew_rate",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 74,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lfo_waveform",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 79,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/rate_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 86,
+        "range": [
+          0,
+          35
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/phase_offset",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 80,
+        "range": [
+          0,
+          357
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay_sync",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 84,
+        "range": [
+          0,
+          35
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/rate",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 85,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/slew_rate",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 81,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/delay",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 83,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 83,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 84,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 86,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 87,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 88,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 89,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 91,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 92,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 93,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 94,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 96,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 97,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 98,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 99,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 101,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 102,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 103,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 104,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 106,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 107,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 108,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 109,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 111,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 112,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 113,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 114,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 116,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 117,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 118,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 119,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 121,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 122,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 123,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 124,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 126,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 127,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_1",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_2",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 3,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_1",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_2",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 8,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_1",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/source_2",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 13,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 3,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 7,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 11,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 12,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 15,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 28,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 31,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 29,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 30,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 19,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 23,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 24,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 27,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 21,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 22,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 25,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 26,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 32,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 35,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 36,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 39,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 43,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 34,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 37,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 38,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 41,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 44,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 47,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 60,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 63,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 46,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 61,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 62,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 51,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 55,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 56,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 59,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 49,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 50,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 53,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 54,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 57,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 58,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 64,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 67,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 68,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 71,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 75,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 65,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 66,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 69,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 70,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 73,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 74,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 76,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 79,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 92,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 95,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 77,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 78,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 93,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 94,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 80,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 83,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 84,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 87,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 88,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 91,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 81,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 82,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 85,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 86,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 89,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 90,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 96,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 99,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 100,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 103,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 104,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 107,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 97,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 98,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 101,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 102,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 105,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 106,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 108,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 111,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 124,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 127,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 109,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 110,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 125,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_d",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 126,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 112,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 115,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 116,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 119,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/destination_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 120,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/depth_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 123,
+        "range": [
+          -64,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 113,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_a",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 114,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 117,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_b",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 118,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/start_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 121,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/end_c",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 122,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

@@ -1,0 +1,203 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Behringer/Pro VS Mini.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 15,
+    "cc_entries": 15,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Pro VS Mini",
+    "vendor": "Behringer",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/pro_vs_mini",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/general/modulation",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/portamento_time",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/fx/engine",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX",
+        "_usage": "0~42: Chorus; 43~84: Ensemble; 85~127: Reverb"
+      },
+      {
+        "osc": "/voice_wave/voice_a_wave",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice wave",
+        "_usage": "0: Twang; 1: Clav; 2: Xylophone; 3: Slippery Slope; 4: Enharmonic Square; 5: Xylophone 2; 6: Mellow Square; 7: Chaos 1; 8: Chaos 2; 9: Chaos 3; 10: Ch"
+      },
+      {
+        "osc": "/voice_wave/voice_b_wave",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice wave",
+        "_usage": "0: Twang; 1: Clav; 2: Xylophone; 3: Slippery Slope; 4: Enharmonic Square; 5: Xylophone 2; 6: Mellow Square; 7: Chaos 1; 8: Chaos 2; 9: Chaos 3; 10: Ch"
+      },
+      {
+        "osc": "/voice_wave/voice_c_wave",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice wave",
+        "_usage": "0: Twang; 1: Clav; 2: Xylophone; 3: Slippery Slope; 4: Enharmonic Square; 5: Xylophone 2; 6: Mellow Square; 7: Chaos 1; 8: Chaos 2; 9: Chaos 3; 10: Ch"
+      },
+      {
+        "osc": "/voice_wave/voice_d_wave",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice wave",
+        "_usage": "0: Twang; 1: Clav; 2: Xylophone; 3: Slippery Slope; 4: Enharmonic Square; 5: Xylophone 2; 6: Mellow Square; 7: Chaos 1; 8: Chaos 2; 9: Chaos 3; 10: Ch"
+      },
+      {
+        "osc": "/filter/env_amount",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/lfo/1_waveform",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/1_amount",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/1_rate",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/2_waveform",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/2_amount",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/2_rate",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

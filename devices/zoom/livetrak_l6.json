@@ -1,0 +1,1790 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/V0wJK9Nh9YBw8Zc1WQ9z",
+      "preset_name": "Zoom LiveTrak L6",
+      "imported_at": "2026-04-13",
+      "preset_id": "V0wJK9Nh9YBw8Zc1WQ9z",
+      "revision": "487",
+      "author": "Michael"
+    },
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Zoom/LiveTrak L6.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 157,
+    "cc_entries": 131,
+    "sysex_commands": 26
+  },
+  "device": {
+    "name": "LiveTrak L6",
+    "vendor": "Zoom",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/livetrak_l6",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240,
+      82,
+      0,
+      0,
+      49
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/decay",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        19,
+        0,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/tone",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        19,
+        0,
+        1,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/dwell",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        19,
+        2,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/time",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            10,
+            2000
+          ]
+        }
+      ],
+      "frame": [
+        19,
+        3,
+        0,
+        "{val}",
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/feedback",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        19,
+        3,
+        1,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/repeat",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            100
+          ]
+        }
+      ],
+      "frame": [
+        19,
+        4,
+        1,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/level_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            34,
+            59
+          ]
+        }
+      ],
+      "frame": [
+        7,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/play_mode_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        6,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/level_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            34,
+            59
+          ]
+        }
+      ],
+      "frame": [
+        7,
+        1,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/play_mode_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        6,
+        1,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/level_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            34,
+            59
+          ]
+        }
+      ],
+      "frame": [
+        7,
+        2,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/play_mode_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        6,
+        2,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/level_4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            34,
+            59
+          ]
+        }
+      ],
+      "frame": [
+        7,
+        3,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/play_mode_4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        6,
+        3,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/channel_1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        20,
+        0,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/channel_2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        20,
+        1,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/channel_3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        20,
+        2,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/channel_4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        20,
+        3,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/channel_5",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        20,
+        4,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/channel_6",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        20,
+        5,
+        0,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/mixer_control",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        3,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/midi_out_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        12,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/midi_channel",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        13,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/battery_type",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        1,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/auto_power_off",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        2,
+        "{val}"
+      ]
+    },
+    {
+      "osc": "/recorder_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        4,
+        "{val}"
+      ]
+    }
+  ],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/eq/hi_level_ch_1",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/hi_level_ch_2",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/hi_level_ch_3",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/hi_level_ch_4",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/hi_level_ch_5",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/hi_level_ch_6",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/mid_freq_ch_1",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/mid_freq_ch_2",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/mid_freq_ch_3",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/mid_freq_ch_4",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/mid_freq_ch_5",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/mid_freq_ch_6",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/mid_level_ch_1",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/mid_level_ch_2",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/mid_level_ch_3",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/mid_level_ch_4",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/mid_level_ch_5",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/mid_level_ch_6",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/lo_level_ch_1",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/lo_level_ch_2",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/lo_level_ch_3",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/lo_level_ch_4",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/lo_level_ch_5",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/eq/lo_level_ch_6",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EQ"
+      },
+      {
+        "osc": "/aux/aux1_send_ch_1",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "AUX"
+      },
+      {
+        "osc": "/aux/aux1_send_ch_2",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "AUX"
+      },
+      {
+        "osc": "/aux/aux1_send_ch_3",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "AUX"
+      },
+      {
+        "osc": "/aux/aux1_send_ch_4",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "AUX"
+      },
+      {
+        "osc": "/aux/aux1_send_ch_5",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "AUX"
+      },
+      {
+        "osc": "/aux/aux1_send_ch_6",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "AUX"
+      },
+      {
+        "osc": "/aux/aux2_send_ch_1",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "AUX"
+      },
+      {
+        "osc": "/aux/aux2_send_ch_2",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "AUX"
+      },
+      {
+        "osc": "/aux/aux2_send_ch_3",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "AUX"
+      },
+      {
+        "osc": "/aux/aux2_send_ch_4",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "AUX"
+      },
+      {
+        "osc": "/aux/aux2_send_ch_5",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "AUX"
+      },
+      {
+        "osc": "/aux/aux2_send_ch_6",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "AUX"
+      },
+      {
+        "osc": "/efx/send_ch_1",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFX"
+      },
+      {
+        "osc": "/efx/send_ch_2",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFX"
+      },
+      {
+        "osc": "/efx/send_ch_3",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFX"
+      },
+      {
+        "osc": "/efx/send_ch_4",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFX"
+      },
+      {
+        "osc": "/efx/send_ch_5",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFX"
+      },
+      {
+        "osc": "/efx/send_ch_6",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFX"
+      },
+      {
+        "osc": "/pan/ch_1",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "PAN"
+      },
+      {
+        "osc": "/pan/ch_2",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "PAN"
+      },
+      {
+        "osc": "/pan/ch_3",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "PAN"
+      },
+      {
+        "osc": "/pan/ch_4",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "PAN"
+      },
+      {
+        "osc": "/pan/ch_5",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "PAN"
+      },
+      {
+        "osc": "/pan/ch_6",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "PAN"
+      },
+      {
+        "osc": "/level/ch_1",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LEVEL"
+      },
+      {
+        "osc": "/level/ch_2",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LEVEL"
+      },
+      {
+        "osc": "/level/ch_3",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LEVEL"
+      },
+      {
+        "osc": "/level/ch_4",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LEVEL"
+      },
+      {
+        "osc": "/level/ch_5",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LEVEL"
+      },
+      {
+        "osc": "/level/ch_6",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LEVEL"
+      },
+      {
+        "osc": "/mute/ch_1",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MUTE"
+      },
+      {
+        "osc": "/mute/ch_2",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MUTE"
+      },
+      {
+        "osc": "/mute/ch_3",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MUTE"
+      },
+      {
+        "osc": "/mute/ch_4",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MUTE"
+      },
+      {
+        "osc": "/mute/ch_5",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MUTE"
+      },
+      {
+        "osc": "/mute/ch_6",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MUTE"
+      },
+      {
+        "osc": "/mono/x2_ch_3",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MONO"
+      },
+      {
+        "osc": "/mono/x2_ch_4",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MONO"
+      },
+      {
+        "osc": "/usb/1_2",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "USB"
+      },
+      {
+        "osc": "/usb/3_4",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "USB"
+      },
+      {
+        "osc": "/efx/type",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFX",
+        "_usage": "0-25: Hall; 25-49: Room; 52-76: Spring; 77-101: Delay; 102-127: Echo"
+      },
+      {
+        "osc": "/level",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pan",
+        "cc": 73,
+        "range": [
+          -63,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mute",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/efx_type",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/compressor",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/aux_1_send",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/aux_2_send",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/efx_send",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hi_level",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mid_level",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mid_freq",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lo_level",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pan",
+        "cc": 74,
+        "range": [
+          -63,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mute",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/aux_1_send",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/aux_2_send",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/efx_send",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hi_level",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mid_level",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mid_freq",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lo_level",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pan",
+        "cc": 75,
+        "range": [
+          -63,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mute",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mono_x2",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/aux_1_send",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/aux_2_send",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/efx_send",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hi_level",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mid_level",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mid_freq",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lo_level",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pan",
+        "cc": 76,
+        "range": [
+          -63,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mute",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mono_x2",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/aux_1_send",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/aux_2_send",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/efx_send",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hi_level",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mid_level",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mid_freq",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lo_level",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pan",
+        "cc": 77,
+        "range": [
+          -63,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mute",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/usb_1_2",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/aux_1_send",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/aux_2_send",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/efx_send",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hi_level",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mid_level",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mid_freq",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lo_level",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/level",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/pan",
+        "cc": 78,
+        "range": [
+          -63,
+          63
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mute",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/usb_3_4",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/aux_1_send",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/aux_2_send",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/efx_send",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/hi_level",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mid_level",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mid_freq",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/lo_level",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

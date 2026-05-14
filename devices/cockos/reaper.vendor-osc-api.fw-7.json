@@ -1,0 +1,109 @@
+{
+  "_sources": [
+    {
+      "type": "vendor-osc-api",
+      "name": "Reaper Default.ReaperOSC pattern (Preferences → Control/OSC/web)",
+      "url": "https://www.reaper.fm/sdk/osc/osc.php",
+      "version": "Default.ReaperOSC",
+      "firmware": "Reaper 7"
+    }
+  ],
+  "_limitations": "v1 covers transport (play / stop / record / tempo), per-track volume / mute / solo / arm for the first 8 tracks. Reaper's OSC pattern file is highly customizable; this driver matches the default mapping. If you've customized Default.ReaperOSC, adapt the driver paths accordingly. Track indices are 1-based.",
+  "_coverage": {
+    "host_software": "Reaper 7 with Default.ReaperOSC",
+    "commands": 8,
+    "replies": 5,
+    "subscriptions": 0
+  },
+  "device": {
+    "name": "Reaper",
+    "vendor": "Cockos",
+    "revision": "Reaper 7 (Default.ReaperOSC)",
+    "osc_prefix": "/reaper",
+    "kind": "software",
+    "transport": {
+      "kind": "osc",
+      "host": "127.0.0.1",
+      "port": 8000,
+      "reply_port": 9000
+    }
+  },
+  "commands": [
+    {
+      "osc": "/transport/play",
+      "forward": { "path": "/play", "args": [] }
+    },
+    {
+      "osc": "/transport/stop",
+      "forward": { "path": "/stop", "args": [] }
+    },
+    {
+      "osc": "/transport/record",
+      "forward": { "path": "/record", "args": [] }
+    },
+    {
+      "osc": "/transport/tempo",
+      "args": [{ "name": "bpm", "type": "float", "range": [20, 999] }],
+      "forward": { "path": "/tempo/raw", "args": ["{bpm}"] }
+    },
+    {
+      "osc": "/track/{n}/volume",
+      "args": [
+        { "name": "n", "type": "int", "range": [1, 8] },
+        { "name": "v", "type": "float", "range": [0, 1] }
+      ],
+      "forward": { "path": "/track/{n}/volume", "args": ["{v}"] }
+    },
+    {
+      "osc": "/track/{n}/mute",
+      "args": [
+        { "name": "n", "type": "int", "range": [1, 8] },
+        { "name": "on", "type": "bool" }
+      ],
+      "forward": { "path": "/track/{n}/mute", "args": ["{on}"] }
+    },
+    {
+      "osc": "/track/{n}/solo",
+      "args": [
+        { "name": "n", "type": "int", "range": [1, 8] },
+        { "name": "on", "type": "bool" }
+      ],
+      "forward": { "path": "/track/{n}/solo", "args": ["{on}"] }
+    },
+    {
+      "osc": "/track/{n}/arm",
+      "args": [
+        { "name": "n", "type": "int", "range": [1, 8] },
+        { "name": "on", "type": "bool" }
+      ],
+      "forward": { "path": "/track/{n}/recarm", "args": ["{on}"] }
+    }
+  ],
+  "replies": [
+    {
+      "match_osc": "/tempo/raw",
+      "match_args": [{ "name": "bpm", "type": "float" }],
+      "emit_osc": "/transport/tempo {bpm}"
+    },
+    {
+      "match_osc": "/track/{n}/volume",
+      "match_args": [{ "name": "v", "type": "float" }],
+      "emit_osc": "/track/{n}/volume {v}"
+    },
+    {
+      "match_osc": "/track/{n}/mute",
+      "match_args": [{ "name": "on", "type": "bool" }],
+      "emit_osc": "/track/{n}/mute {on}"
+    },
+    {
+      "match_osc": "/track/{n}/solo",
+      "match_args": [{ "name": "on", "type": "bool" }],
+      "emit_osc": "/track/{n}/solo {on}"
+    },
+    {
+      "match_osc": "/track/{n}/recarm",
+      "match_args": [{ "name": "on", "type": "bool" }],
+      "emit_osc": "/track/{n}/arm {on}"
+    }
+  ]
+}

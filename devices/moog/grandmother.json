@@ -1,0 +1,290 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Moog/Grandmother.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 22,
+    "cc_entries": 22,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 5
+  },
+  "device": {
+    "name": "Grandmother",
+    "vendor": "Moog",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/grandmother",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/modulation/mod_wheel",
+        "cc": 1,
+        "cc_lsb": 33,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Modulation"
+      },
+      {
+        "osc": "/modulation/rate",
+        "cc": 3,
+        "cc_lsb": 35,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Modulation"
+      },
+      {
+        "osc": "/glide/time",
+        "cc": 5,
+        "cc_lsb": 37,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Glide"
+      },
+      {
+        "osc": "/arp_seq/arpeggiator_sequencer_rate",
+        "cc": 8,
+        "cc_lsb": 40,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Arp/seq"
+      },
+      {
+        "osc": "/oscillators/oscillator_2_frequency",
+        "cc": 12,
+        "cc_lsb": 44,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/glide/on_off",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Glide",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/arp_seq/arpeggiator_sequencer_hold",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arp/seq",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/arp_seq/arpeggiator_sequencer_play",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arp/seq",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/oscillators/oscillator_1_octave",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0: 32'; 32: 16'; 64: 8'; 96: 4'"
+      },
+      {
+        "osc": "/oscillators/oscillator_2_octave",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0: 32'; 32: 16'; 64: 8'; 96: 4'"
+      },
+      {
+        "osc": "/oscillators/oscillator_2_sync",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/glide/type",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Glide",
+        "_usage": "0: LCR; 43: LCT; 85: exponential"
+      },
+      {
+        "osc": "/general/keyboard_octave",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "General",
+        "_usage": "0: -2; 26: -1; 51: 0; 77: +1; 102: +2"
+      },
+      {
+        "osc": "/arp_seq/arpeggiator_sequencer_clock_division",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arp/seq",
+        "_usage": "0: 4 whole; 5: 3 whole; 11: 2 whole; 16: dotted whole; 21: whole; 27: dotted half; 32: whole triplet; 37: half; 43: dotted quarter; 48: half triplet; "
+      },
+      {
+        "osc": "/arp_seq/arpeggiator_sequencer_mode",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arp/seq",
+        "_usage": "0: Arp; 43: Seq; 85: Rec"
+      },
+      {
+        "osc": "/arp_seq/arpeggiator_sequencer_pattern",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arp/seq",
+        "_usage": "0: ORDR; 43: FWD/BKWD; 85: RNDM"
+      },
+      {
+        "osc": "/arp_seq/arpeggiator_sequencer_number",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arp/seq",
+        "_usage": "0: 1; 43: 2; 85: 3"
+      },
+      {
+        "osc": "/glide/legato_glide",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Glide",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/glide/gated_glide",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Glide",
+        "_usage": "0: Off; 64: On"
+      },
+      {
+        "osc": "/general/pitch_bend_up_amount",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0~123: 0 to 24 semitones"
+      },
+      {
+        "osc": "/general/pitch_bend_down_amount",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0~123: 0 to 24 semitones"
+      },
+      {
+        "osc": "/general/keyboard_transpose_semitones",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "General",
+        "_usage": "0~123: -12 to +12 semitones"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

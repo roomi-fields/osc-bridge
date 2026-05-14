@@ -1,0 +1,179 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/mrgO5XQNpoMXBE3LXwYk",
+      "preset_name": "CamelCrusher",
+      "imported_at": "2026-04-13",
+      "preset_id": "mrgO5XQNpoMXBE3LXwYk",
+      "revision": "10",
+      "author": "Tim Bos"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 13,
+    "cc_entries": 13,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "CamelCrusher",
+    "vendor": "Camel Audio",
+    "revision": "per Electra preset",
+    "osc_prefix": "/camelcrusher",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 10,
+    "entries": [
+      {
+        "osc": "/filter",
+        "cc": 3,
+        "cc_lsb": 35,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/cutoff",
+        "cc": 4,
+        "cc_lsb": 36,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/resonance",
+        "cc": 5,
+        "cc_lsb": 37,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/distortion",
+        "cc": 0,
+        "cc_lsb": 32,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mechanical",
+        "cc": 1,
+        "cc_lsb": 33,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/tube",
+        "cc": 2,
+        "cc_lsb": 34,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/compression",
+        "cc": 6,
+        "cc_lsb": 38,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/amount",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/type",
+        "cc": 8,
+        "cc_lsb": 40,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/master",
+        "cc": 9,
+        "cc_lsb": 41,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mastervolume",
+        "cc": 11,
+        "cc_lsb": 43,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/mastermix",
+        "cc": 10,
+        "cc_lsb": 42,
+        "range": [
+          0,
+          100
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/device_on",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 10,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

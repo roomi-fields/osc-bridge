@@ -1,0 +1,628 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Novation/Circuit Rhythm.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 58,
+    "cc_entries": 58,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Circuit Rhythm",
+    "vendor": "Novation",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/circuit_rhythm",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/macro_knobs/1_tune",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro knobs"
+      },
+      {
+        "osc": "/macro_knobs/2_start",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro knobs"
+      },
+      {
+        "osc": "/macro_knobs/3_length",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro knobs"
+      },
+      {
+        "osc": "/macro_knobs/4_slope",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Macro knobs"
+      },
+      {
+        "osc": "/macro_knobs/5_distortion",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro knobs"
+      },
+      {
+        "osc": "/macro_knobs/6_hp_filter",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro knobs"
+      },
+      {
+        "osc": "/macro_knobs/7_lp_filter",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro knobs"
+      },
+      {
+        "osc": "/macro_knobs/8_resonance",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Macro knobs"
+      },
+      {
+        "osc": "/voice/sample_choice",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice"
+      },
+      {
+        "osc": "/voice/playback_mode",
+        "cc": 12,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Voice"
+      },
+      {
+        "osc": "/voice/reverse",
+        "cc": 14,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Voice"
+      },
+      {
+        "osc": "/voice/choke",
+        "cc": 15,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Voice"
+      },
+      {
+        "osc": "/voice/slice",
+        "cc": 16,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Voice"
+      },
+      {
+        "osc": "/voice/number_of_slices",
+        "cc": 17,
+        "range": [
+          1,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Voice"
+      },
+      {
+        "osc": "/sampler/pitch",
+        "cc": 21,
+        "range": [
+          4,
+          124
+        ],
+        "orientation": "centered",
+        "section": "Sampler"
+      },
+      {
+        "osc": "/sampler/start_coarse",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sampler"
+      },
+      {
+        "osc": "/sampler/length_coarse",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sampler"
+      },
+      {
+        "osc": "/sampler/slope",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Sampler"
+      },
+      {
+        "osc": "/sampler/distortion",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sampler"
+      },
+      {
+        "osc": "/sampler/hpf",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sampler"
+      },
+      {
+        "osc": "/sampler/lpf",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sampler"
+      },
+      {
+        "osc": "/sampler/resonance",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sampler"
+      },
+      {
+        "osc": "/sampler/start_fine",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sampler"
+      },
+      {
+        "osc": "/sampler/length_fine",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sampler"
+      },
+      {
+        "osc": "/mixer/level",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/pan",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/reverb_send",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/delay_send",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/beat_repeat/on_off",
+        "cc": 39,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Beat repeat"
+      },
+      {
+        "osc": "/beat_repeat/rate",
+        "cc": 40,
+        "range": [
+          0,
+          10
+        ],
+        "orientation": "0-based",
+        "section": "Beat repeat"
+      },
+      {
+        "osc": "/beat_repeat/dry_wet",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Beat repeat"
+      },
+      {
+        "osc": "/reverser/reverse_on_off",
+        "cc": 42,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Reverser"
+      },
+      {
+        "osc": "/reverser/rate",
+        "cc": 43,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Reverser"
+      },
+      {
+        "osc": "/gator/on_off",
+        "cc": 44,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Gator"
+      },
+      {
+        "osc": "/gator/rate",
+        "cc": 45,
+        "range": [
+          0,
+          11
+        ],
+        "orientation": "0-based",
+        "section": "Gator"
+      },
+      {
+        "osc": "/autofilter/on_off",
+        "cc": 46,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Autofilter"
+      },
+      {
+        "osc": "/autofilter/filter_type",
+        "cc": 47,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Autofilter"
+      },
+      {
+        "osc": "/autofilter/frequency",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Autofilter"
+      },
+      {
+        "osc": "/autofilter/lfo_amount",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Autofilter"
+      },
+      {
+        "osc": "/autofilter/lfo_shape",
+        "cc": 50,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Autofilter"
+      },
+      {
+        "osc": "/autofilter/lfo_rate",
+        "cc": 51,
+        "range": [
+          0,
+          13
+        ],
+        "orientation": "0-based",
+        "section": "Autofilter"
+      },
+      {
+        "osc": "/autofilter/resonance",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Autofilter"
+      },
+      {
+        "osc": "/digital_lofi/on_off",
+        "cc": 53,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Digital lofi"
+      },
+      {
+        "osc": "/digital_lofi/bits",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Digital lofi"
+      },
+      {
+        "osc": "/digital_lofi/sample_rate",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Digital lofi"
+      },
+      {
+        "osc": "/phaser/on_off",
+        "cc": 56,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Phaser"
+      },
+      {
+        "osc": "/phaser/rate",
+        "cc": 57,
+        "range": [
+          0,
+          13
+        ],
+        "orientation": "0-based",
+        "section": "Phaser"
+      },
+      {
+        "osc": "/phaser/depth",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Phaser"
+      },
+      {
+        "osc": "/phaser/feedback",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Phaser"
+      },
+      {
+        "osc": "/phaser/centre",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Phaser"
+      },
+      {
+        "osc": "/vinyl/on_off",
+        "cc": 60,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Vinyl"
+      },
+      {
+        "osc": "/vinyl/filter",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vinyl"
+      },
+      {
+        "osc": "/vinyl/wobble",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vinyl"
+      },
+      {
+        "osc": "/vinyl/crackle",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vinyl"
+      },
+      {
+        "osc": "/vinyl/hiss",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vinyl"
+      },
+      {
+        "osc": "/lp_hp_filter/frequency",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "LP HP filter"
+      },
+      {
+        "osc": "/lp_hp_filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LP HP filter"
+      },
+      {
+        "osc": "/audio_input/level",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Audio input"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

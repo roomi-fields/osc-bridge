@@ -1,0 +1,528 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Teenage Engineering/OP-Z.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 48,
+    "cc_entries": 48,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "OP-Z",
+    "vendor": "Teenage Engineering",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/op_z",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/absolute_parameters/parameter_1_absolute",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/absolute_parameters/parameter_2_absolute",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/absolute_parameters/filter_cutoff_absolute",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/absolute_parameters/filter_resonance_absolute",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/absolute_parameters/envelope_attack_absolute",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/absolute_parameters/envelope_decay_absolute",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/absolute_parameters/envelope_sustain_absolute",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/absolute_parameters/envelope_release_absolute",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/absolute_parameters/lfo_depth_absolute",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/absolute_parameters/lfo_speed_absolute",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/absolute_parameters/lfo_target_absolute",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/absolute_parameters/lfo_shape_absolute",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/absolute_parameters/fx_1_send_absolute",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/absolute_parameters/fx_2_send_absolute",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/absolute_parameters/pan_absolute",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/absolute_parameters/volume_absolute",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/absolute_parameters/portamento_absolute",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/absolute_parameters/note_style_absolute",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Absolute parameters"
+      },
+      {
+        "osc": "/relative_parameters/parameter_1_relative",
+        "cc": 32,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/relative_parameters/parameter_2_relative",
+        "cc": 33,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/relative_parameters/filter_cutoff_relative",
+        "cc": 34,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/relative_parameters/filter_resonance_relative",
+        "cc": 35,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/relative_parameters/envelope_attack_relative",
+        "cc": 36,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/relative_parameters/envelope_decay_relative",
+        "cc": 37,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/relative_parameters/envelope_sustain_relative",
+        "cc": 38,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/relative_parameters/envelope_release_relative",
+        "cc": 39,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/relative_parameters/lfo_depth_relative",
+        "cc": 40,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/relative_parameters/lfo_speed_relative",
+        "cc": 41,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/relative_parameters/lfo_target_relative",
+        "cc": 42,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/relative_parameters/lfo_shape_relative",
+        "cc": 43,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/relative_parameters/fx_1_send_relative",
+        "cc": 44,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/relative_parameters/fx_2_send_relative",
+        "cc": 45,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/relative_parameters/pan_relative",
+        "cc": 46,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/relative_parameters/volume_relative",
+        "cc": 47,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/relative_parameters/portamento_relative",
+        "cc": 48,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/relative_parameters/note_style_relative",
+        "cc": 49,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Relative parameters"
+      },
+      {
+        "osc": "/system/track_gain_absolute",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/track_gain_relative",
+        "cc": 51,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/reset_track_gains",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/mute",
+        "cc": 53,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/audio_mute",
+        "cc": 54,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/mute_group",
+        "cc": 55,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/tempo",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/system/swing",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "System"
+      },
+      {
+        "osc": "/track/step_count",
+        "cc": 60,
+        "range": [
+          1,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Track"
+      },
+      {
+        "osc": "/track/step_length",
+        "cc": 61,
+        "range": [
+          1,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Track"
+      },
+      {
+        "osc": "/track/quantize",
+        "cc": 62,
+        "range": [
+          1,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Track"
+      },
+      {
+        "osc": "/track/note_length",
+        "cc": 63,
+        "range": [
+          1,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Track"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

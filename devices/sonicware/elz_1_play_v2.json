@@ -1,0 +1,1488 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Sonicware/ELZ_1 play V2.csv",
+      "imported_at": "2026-04-13",
+      "commit": "deb41f2"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 144,
+    "cc_entries": 144,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "ELZ_1 play V2",
+    "vendor": "Sonicware",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/elz_1_play_v2",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/layer/pitch",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer"
+      },
+      {
+        "osc": "/layer/detune",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer"
+      },
+      {
+        "osc": "/layer/delay",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer"
+      },
+      {
+        "osc": "/layer/level",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer"
+      },
+      {
+        "osc": "/layer/enable",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer"
+      },
+      {
+        "osc": "/mixer/level",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/mute",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/efx_send",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/osc/type_select",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_1_a",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_1_b",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_1_c",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_1_d",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_2_a",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_2_b",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_2_c",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_2_d",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_3_a",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_3_b",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_3_c",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_3_d",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_4_a",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_4_b",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_4_c",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_4_d",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_5_a",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_5_b",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_5_c",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/osc/parameter_page_5_d",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC"
+      },
+      {
+        "osc": "/effects/drive_mod_type_select",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/drive_mod_parameter_a",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/drive_mod_parameter_b",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/drive_mod_parameter_c",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/drive_mod_parameter_d",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/modulation_type_select",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/modulation_parameter_a",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/modulation_parameter_b",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/modulation_parameter_c",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/modulation_parameter_d",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/delay_reverb_type_select",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/delay_reverb_parameter_a",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/delay_reverb_parameter_b",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/delay_reverb_parameter_c",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/delay_reverb_parameter_d",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/reverb_master_type_select",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/reverb_master_parameter_a",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/reverb_master_parameter_b",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/reverb_master_parameter_c",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/effects/reverb_master_parameter_d",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EFFECTS"
+      },
+      {
+        "osc": "/osc_adsr/modulation_1_parameter_page_1_a",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_1_parameter_page_1_b",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_1_parameter_page_1_c",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_1_parameter_page_1_d",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_1_parameter_page_2_a",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_1_parameter_page_2_b",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_1_parameter_page_2_c",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_1_parameter_page_2_d",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_1_parameter_page_3_a",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_1_parameter_page_3_b",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_2_parameter_page_1_a",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_2_parameter_page_1_b",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_2_parameter_page_1_c",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_2_parameter_page_1_d",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_2_parameter_page_2_a",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_2_parameter_page_2_b",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_2_parameter_page_2_c",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_2_parameter_page_2_d",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_2_parameter_page_3_a",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_2_parameter_page_3_b",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_3_parameter_page_1_a",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_3_parameter_page_1_b",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_3_parameter_page_1_c",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_3_parameter_page_1_d",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_3_parameter_page_2_a",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_3_parameter_page_2_b",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_3_parameter_page_2_c",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_3_parameter_page_2_d",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_3_parameter_page_3_a",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_3_parameter_page_3_b",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_4_parameter_page_1_a",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_4_parameter_page_1_b",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_4_parameter_page_1_c",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_4_parameter_page_1_d",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_4_parameter_page_2_a",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_4_parameter_page_2_b",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_4_parameter_page_2_c",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_4_parameter_page_2_d",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_4_parameter_page_3_a",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/osc_adsr/modulation_4_parameter_page_3_b",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "OSC ADSR"
+      },
+      {
+        "osc": "/memory_setting/voice_mode_select",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/voice_mode_parameter_a",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/voice_mode_parameter_b",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/unison1_on_off",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/unison2_on_off",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/unison3_on_off",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/unison4_on_off",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/unison_1_pitch",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/unison_2_pitch",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/unison_3_pitch",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/unison_4_pitch",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/unison_1_detune",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/unison_2_detune",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/unison_3_detune",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/unison_4_detune",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/arpeggiator_type_select",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/arpeggiator_parameter_1",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/arpeggiator_parameter_2",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/arpeggiator_parameter_3",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/envelope_mode_select",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/filter_mode_select",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/memory_level",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/memory_tune_mode",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/memory_tune_cent",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/octave",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/memory_bank",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/memory_select",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/pattern_select",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/memory_setting/loop_select",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MEMORY SETTING"
+      },
+      {
+        "osc": "/envelope/type_select",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/attack_time",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/decay_time",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/sustain_level",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/release_time",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/release_attack_time",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/release_attack_level",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/attack_curve",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/decay_curve",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/release_curve",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/release_attack_curve",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/filter/type_select",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/parameter_page_1_a",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/parameter_page_1_b",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/parameter_page_1_c",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/parameter_page_1_d",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/modulation_1_parameter_page_1_a",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/modulation_1_parameter_page_1_b",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/modulation_1_parameter_page_1_c",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/modulation_1_parameter_page_1_d",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/modulation_1_parameter_page_2_a",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/modulation_1_parameter_page_2_b",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/modulation_1_parameter_page_2_c",
+        "cc": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/modulation_1_parameter_page_2_d",
+        "cc": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/modulation_1_parameter_page_3_a",
+        "cc": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

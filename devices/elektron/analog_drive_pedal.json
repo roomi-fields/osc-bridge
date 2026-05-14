@@ -1,0 +1,59 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/6xWGHtC3UwfN94jPGmlj",
+      "preset_name": "Analog Drive pedal",
+      "imported_at": "2026-04-13",
+      "preset_id": "6xWGHtC3UwfN94jPGmlj",
+      "revision": "38",
+      "author": "Noah Keating"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 1,
+    "cc_entries": 1,
+    "sysex_commands": 0
+  },
+  "device": {
+    "name": "Analog Drive pedal",
+    "vendor": "Elektron",
+    "revision": "per Electra preset",
+    "osc_prefix": "/analog_drive_pedal",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/drive_circuit",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

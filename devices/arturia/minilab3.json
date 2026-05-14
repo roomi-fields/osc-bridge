@@ -1,0 +1,3173 @@
+{
+  "_sources": [
+    {
+      "type": "hardware-verified",
+      "url": "https://github.com/roomi-fields/osc-bridge",
+      "notes": "Ghidra static analysis of STM32 firmware + empirical SysEx fuzz over 30,720 candidate addresses. 264 params confirmed.",
+      "imported_at": "2026-04-12"
+    }
+  ],
+  "device": {
+    "name": "Arturia MiniLab 3",
+    "vendor": "Arturia",
+    "revision": "fw 1.2.0",
+    "osc_prefix": "/minilab3",
+    "manufacturer_id": [
+      0,
+      32,
+      107
+    ],
+    "device_id": [
+      127,
+      66
+    ],
+    "rate_limit_hz": 800
+  },
+  "sysex": {
+    "header": [
+      240,
+      0,
+      32,
+      107,
+      127,
+      66
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/init",
+      "args": [],
+      "frame": [
+        2,
+        2,
+        64,
+        106,
+        33
+      ]
+    },
+    {
+      "osc": "/display/text",
+      "args": [
+        {
+          "name": "line1",
+          "type": "string"
+        },
+        {
+          "name": "line2",
+          "type": "string"
+        }
+      ],
+      "frame": [
+        4,
+        2,
+        96,
+        31,
+        7,
+        1,
+        0,
+        0,
+        1,
+        0,
+        1,
+        "{line1:ascii}",
+        0,
+        2,
+        "{line2:ascii}",
+        0
+      ]
+    },
+    {
+      "osc": "/display/icons",
+      "args": [
+        {
+          "name": "p1",
+          "type": "enum",
+          "values": {
+            "none": 0,
+            "heart": 1,
+            "play": 2,
+            "record": 3,
+            "armed": 4,
+            "shift": 5
+          },
+          "default": "none"
+        },
+        {
+          "name": "p2",
+          "type": "enum",
+          "values": {
+            "none": 0,
+            "heart": 1,
+            "play": 2,
+            "record": 3,
+            "armed": 4,
+            "shift": 5
+          },
+          "default": "none"
+        },
+        {
+          "name": "line1",
+          "type": "string"
+        },
+        {
+          "name": "line2",
+          "type": "string"
+        }
+      ],
+      "frame": [
+        4,
+        2,
+        96,
+        31,
+        7,
+        1,
+        "{p1}",
+        "{p2}",
+        1,
+        0,
+        1,
+        "{line1:ascii}",
+        0,
+        2,
+        "{line2:ascii}",
+        0
+      ]
+    },
+    {
+      "osc": "/pad/{pad}/color",
+      "args": [
+        {
+          "name": "pad",
+          "type": "u7",
+          "range": [
+            0,
+            7
+          ]
+        },
+        {
+          "name": "r",
+          "type": "u7"
+        },
+        {
+          "name": "g",
+          "type": "u7"
+        },
+        {
+          "name": "b",
+          "type": "u7"
+        },
+        {
+          "name": "mode",
+          "type": "enum",
+          "values": {
+            "user": 0,
+            "arturia": 1,
+            "daw": 2
+          },
+          "default": "user"
+        }
+      ],
+      "pre": [
+        {
+          "bind": "pad_id",
+          "expr": "pad + 4"
+        }
+      ],
+      "frame": [
+        2,
+        "{mode}",
+        22,
+        "{pad_id}",
+        "{r}",
+        "{g}",
+        "{b}"
+      ]
+    },
+    {
+      "osc": "/preset/recall",
+      "args": [
+        {
+          "name": "id",
+          "type": "u7",
+          "range": [
+            0,
+            7
+          ]
+        }
+      ],
+      "frame": [
+        5,
+        "{id}"
+      ]
+    },
+    {
+      "osc": "/preset/store",
+      "args": [
+        {
+          "name": "id",
+          "type": "u7",
+          "range": [
+            0,
+            7
+          ]
+        }
+      ],
+      "frame": [
+        6,
+        "{id}"
+      ]
+    }
+  ],
+  "params": {
+    "get_frame": [
+      32,
+      "{pr}",
+      "{p}",
+      "{c}",
+      "{r}"
+    ],
+    "set_frame": [
+      33,
+      "{pr}",
+      "{p}",
+      "{c}",
+      "{r}",
+      "{val}"
+    ],
+    "value_type": "u7",
+    "entries": [
+      {
+        "osc": "/minilab3/global/sleep_delay",
+        "pr": 0,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          2
+        ]
+      },
+      {
+        "osc": "/minilab3/global/keyboard_channel",
+        "pr": 1,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/global/backlight",
+        "pr": 7,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/global/low_power",
+        "pr": 18,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/global/transport_mode",
+        "pr": 24,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/global/sleep_mode",
+        "pr": 25,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pitch_wheel/enabled",
+        "pr": 14,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pitch_wheel/mode",
+        "pr": 15,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/mod_wheel/enabled",
+        "pr": 16,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/main_knob/output",
+        "pr": 14,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/main_knob/channel",
+        "pr": 16,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/main_knob/cc_number",
+        "pr": 18,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/main_knob_click/mode",
+        "pr": 20,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          2
+        ]
+      },
+      {
+        "osc": "/minilab3/main_knob_click/channel",
+        "pr": 22,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/main_knob_click/cc_number",
+        "pr": 24,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/main_knob_click/off_value",
+        "pr": 26,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/main_knob_click/on_value",
+        "pr": 28,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/main_knob_click/type",
+        "pr": 30,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/main_knob_click/mcu_hui_mode",
+        "pr": 32,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          6
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/1/output",
+        "pr": 0,
+        "p": 0,
+        "c": 34,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/1/channel",
+        "pr": 0,
+        "p": 0,
+        "c": 42,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/1/scale",
+        "pr": 0,
+        "p": 0,
+        "c": 50,
+        "r": 0,
+        "range": [
+          0,
+          7
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/1/option",
+        "pr": 0,
+        "p": 0,
+        "c": 55,
+        "r": 0,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/1/cc_number",
+        "pr": 0,
+        "p": 0,
+        "c": 58,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/1/nrpn_msb",
+        "pr": 0,
+        "p": 0,
+        "c": 66,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/1/nrpn_lsb",
+        "pr": 0,
+        "p": 0,
+        "c": 74,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/1/min_value",
+        "pr": 0,
+        "p": 0,
+        "c": 82,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/1/max_value",
+        "pr": 0,
+        "p": 0,
+        "c": 90,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/2/output",
+        "pr": 0,
+        "p": 1,
+        "c": 34,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/2/channel",
+        "pr": 0,
+        "p": 1,
+        "c": 42,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/2/scale",
+        "pr": 0,
+        "p": 1,
+        "c": 50,
+        "r": 0,
+        "range": [
+          0,
+          7
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/2/option",
+        "pr": 0,
+        "p": 1,
+        "c": 55,
+        "r": 0,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/2/cc_number",
+        "pr": 0,
+        "p": 1,
+        "c": 58,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/2/nrpn_msb",
+        "pr": 0,
+        "p": 1,
+        "c": 66,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/2/nrpn_lsb",
+        "pr": 0,
+        "p": 1,
+        "c": 74,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/2/min_value",
+        "pr": 0,
+        "p": 1,
+        "c": 82,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/2/max_value",
+        "pr": 0,
+        "p": 1,
+        "c": 90,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/3/output",
+        "pr": 0,
+        "p": 2,
+        "c": 34,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/3/channel",
+        "pr": 0,
+        "p": 2,
+        "c": 42,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/3/scale",
+        "pr": 0,
+        "p": 2,
+        "c": 50,
+        "r": 0,
+        "range": [
+          0,
+          7
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/3/option",
+        "pr": 0,
+        "p": 2,
+        "c": 55,
+        "r": 0,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/3/cc_number",
+        "pr": 0,
+        "p": 2,
+        "c": 58,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/3/nrpn_msb",
+        "pr": 0,
+        "p": 2,
+        "c": 66,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/3/nrpn_lsb",
+        "pr": 0,
+        "p": 2,
+        "c": 74,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/3/min_value",
+        "pr": 0,
+        "p": 2,
+        "c": 82,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/3/max_value",
+        "pr": 0,
+        "p": 2,
+        "c": 90,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/4/output",
+        "pr": 0,
+        "p": 3,
+        "c": 34,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/4/channel",
+        "pr": 0,
+        "p": 3,
+        "c": 42,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/4/scale",
+        "pr": 0,
+        "p": 3,
+        "c": 50,
+        "r": 0,
+        "range": [
+          0,
+          7
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/4/option",
+        "pr": 0,
+        "p": 3,
+        "c": 55,
+        "r": 0,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/4/cc_number",
+        "pr": 0,
+        "p": 3,
+        "c": 58,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/4/nrpn_msb",
+        "pr": 0,
+        "p": 3,
+        "c": 66,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/4/nrpn_lsb",
+        "pr": 0,
+        "p": 3,
+        "c": 74,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/4/min_value",
+        "pr": 0,
+        "p": 3,
+        "c": 82,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/4/max_value",
+        "pr": 0,
+        "p": 3,
+        "c": 90,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/5/output",
+        "pr": 0,
+        "p": 4,
+        "c": 34,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/5/channel",
+        "pr": 0,
+        "p": 4,
+        "c": 42,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/5/scale",
+        "pr": 0,
+        "p": 4,
+        "c": 50,
+        "r": 0,
+        "range": [
+          0,
+          7
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/5/option",
+        "pr": 0,
+        "p": 4,
+        "c": 55,
+        "r": 0,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/5/cc_number",
+        "pr": 0,
+        "p": 4,
+        "c": 58,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/5/nrpn_msb",
+        "pr": 0,
+        "p": 4,
+        "c": 66,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/5/nrpn_lsb",
+        "pr": 0,
+        "p": 4,
+        "c": 74,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/5/min_value",
+        "pr": 0,
+        "p": 4,
+        "c": 82,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/5/max_value",
+        "pr": 0,
+        "p": 4,
+        "c": 90,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/6/output",
+        "pr": 0,
+        "p": 5,
+        "c": 34,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/6/channel",
+        "pr": 0,
+        "p": 5,
+        "c": 42,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/6/scale",
+        "pr": 0,
+        "p": 5,
+        "c": 50,
+        "r": 0,
+        "range": [
+          0,
+          7
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/6/option",
+        "pr": 0,
+        "p": 5,
+        "c": 55,
+        "r": 0,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/6/cc_number",
+        "pr": 0,
+        "p": 5,
+        "c": 58,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/6/nrpn_msb",
+        "pr": 0,
+        "p": 5,
+        "c": 66,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/6/nrpn_lsb",
+        "pr": 0,
+        "p": 5,
+        "c": 74,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/6/min_value",
+        "pr": 0,
+        "p": 5,
+        "c": 82,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/6/max_value",
+        "pr": 0,
+        "p": 5,
+        "c": 90,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/7/output",
+        "pr": 0,
+        "p": 6,
+        "c": 34,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/7/channel",
+        "pr": 0,
+        "p": 6,
+        "c": 42,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/7/scale",
+        "pr": 0,
+        "p": 6,
+        "c": 50,
+        "r": 0,
+        "range": [
+          0,
+          7
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/7/option",
+        "pr": 0,
+        "p": 6,
+        "c": 55,
+        "r": 0,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/7/cc_number",
+        "pr": 0,
+        "p": 6,
+        "c": 58,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/7/nrpn_msb",
+        "pr": 0,
+        "p": 6,
+        "c": 66,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/7/nrpn_lsb",
+        "pr": 0,
+        "p": 6,
+        "c": 74,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/7/min_value",
+        "pr": 0,
+        "p": 6,
+        "c": 82,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/7/max_value",
+        "pr": 0,
+        "p": 6,
+        "c": 90,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/8/output",
+        "pr": 0,
+        "p": 7,
+        "c": 34,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/8/channel",
+        "pr": 0,
+        "p": 7,
+        "c": 42,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/8/scale",
+        "pr": 0,
+        "p": 7,
+        "c": 50,
+        "r": 0,
+        "range": [
+          0,
+          7
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/8/option",
+        "pr": 0,
+        "p": 7,
+        "c": 55,
+        "r": 0,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/8/cc_number",
+        "pr": 0,
+        "p": 7,
+        "c": 58,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/8/nrpn_msb",
+        "pr": 0,
+        "p": 7,
+        "c": 66,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/8/nrpn_lsb",
+        "pr": 0,
+        "p": 7,
+        "c": 74,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/8/min_value",
+        "pr": 0,
+        "p": 7,
+        "c": 82,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/knob/8/max_value",
+        "pr": 0,
+        "p": 7,
+        "c": 90,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/1/channel",
+        "pr": 0,
+        "p": 0,
+        "c": 98,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/1/cc_number",
+        "pr": 0,
+        "p": 0,
+        "c": 102,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/1/mode",
+        "pr": 0,
+        "p": 0,
+        "c": 106,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/1/min_value",
+        "pr": 0,
+        "p": 0,
+        "c": 110,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/1/max_value",
+        "pr": 0,
+        "p": 0,
+        "c": 114,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/2/channel",
+        "pr": 0,
+        "p": 1,
+        "c": 98,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/2/cc_number",
+        "pr": 0,
+        "p": 1,
+        "c": 102,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/2/mode",
+        "pr": 0,
+        "p": 1,
+        "c": 106,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/2/min_value",
+        "pr": 0,
+        "p": 1,
+        "c": 110,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/2/max_value",
+        "pr": 0,
+        "p": 1,
+        "c": 114,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/3/channel",
+        "pr": 0,
+        "p": 2,
+        "c": 98,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/3/cc_number",
+        "pr": 0,
+        "p": 2,
+        "c": 102,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/3/mode",
+        "pr": 0,
+        "p": 2,
+        "c": 106,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/3/min_value",
+        "pr": 0,
+        "p": 2,
+        "c": 110,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/3/max_value",
+        "pr": 0,
+        "p": 2,
+        "c": 114,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/4/channel",
+        "pr": 0,
+        "p": 3,
+        "c": 98,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/4/cc_number",
+        "pr": 0,
+        "p": 3,
+        "c": 102,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/4/mode",
+        "pr": 0,
+        "p": 3,
+        "c": 106,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/4/min_value",
+        "pr": 0,
+        "p": 3,
+        "c": 110,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/4/max_value",
+        "pr": 0,
+        "p": 3,
+        "c": 114,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/5/channel",
+        "pr": 0,
+        "p": 4,
+        "c": 98,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/5/cc_number",
+        "pr": 0,
+        "p": 4,
+        "c": 102,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/5/mode",
+        "pr": 0,
+        "p": 4,
+        "c": 106,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/5/min_value",
+        "pr": 0,
+        "p": 4,
+        "c": 110,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/5/max_value",
+        "pr": 0,
+        "p": 4,
+        "c": 114,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/6/channel",
+        "pr": 0,
+        "p": 5,
+        "c": 98,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/6/cc_number",
+        "pr": 0,
+        "p": 5,
+        "c": 102,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/6/mode",
+        "pr": 0,
+        "p": 5,
+        "c": 106,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/6/min_value",
+        "pr": 0,
+        "p": 5,
+        "c": 110,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/6/max_value",
+        "pr": 0,
+        "p": 5,
+        "c": 114,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/7/channel",
+        "pr": 0,
+        "p": 6,
+        "c": 98,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/7/cc_number",
+        "pr": 0,
+        "p": 6,
+        "c": 102,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/7/mode",
+        "pr": 0,
+        "p": 6,
+        "c": 106,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/7/min_value",
+        "pr": 0,
+        "p": 6,
+        "c": 110,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/7/max_value",
+        "pr": 0,
+        "p": 6,
+        "c": 114,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/8/channel",
+        "pr": 0,
+        "p": 7,
+        "c": 98,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/8/cc_number",
+        "pr": 0,
+        "p": 7,
+        "c": 102,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/8/mode",
+        "pr": 0,
+        "p": 7,
+        "c": 106,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/8/min_value",
+        "pr": 0,
+        "p": 7,
+        "c": 110,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/fader/8/max_value",
+        "pr": 0,
+        "p": 7,
+        "c": 114,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/1/mode",
+        "pr": 0,
+        "p": 0,
+        "c": 118,
+        "r": 1,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/1/channel",
+        "pr": 0,
+        "p": 0,
+        "c": 6,
+        "r": 1,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/1/option",
+        "pr": 0,
+        "p": 0,
+        "c": 38,
+        "r": 1,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/1/cc_number",
+        "pr": 0,
+        "p": 0,
+        "c": 54,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/1/on_value",
+        "pr": 0,
+        "p": 0,
+        "c": 70,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/1/off_value",
+        "pr": 0,
+        "p": 0,
+        "c": 86,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/1/note",
+        "pr": 0,
+        "p": 0,
+        "c": 102,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/2/mode",
+        "pr": 0,
+        "p": 1,
+        "c": 118,
+        "r": 1,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/2/channel",
+        "pr": 0,
+        "p": 1,
+        "c": 6,
+        "r": 1,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/2/option",
+        "pr": 0,
+        "p": 1,
+        "c": 38,
+        "r": 1,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/2/cc_number",
+        "pr": 0,
+        "p": 1,
+        "c": 54,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/2/on_value",
+        "pr": 0,
+        "p": 1,
+        "c": 70,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/2/off_value",
+        "pr": 0,
+        "p": 1,
+        "c": 86,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/2/note",
+        "pr": 0,
+        "p": 1,
+        "c": 102,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/3/mode",
+        "pr": 0,
+        "p": 2,
+        "c": 118,
+        "r": 1,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/3/channel",
+        "pr": 0,
+        "p": 2,
+        "c": 6,
+        "r": 1,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/3/option",
+        "pr": 0,
+        "p": 2,
+        "c": 38,
+        "r": 1,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/3/cc_number",
+        "pr": 0,
+        "p": 2,
+        "c": 54,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/3/on_value",
+        "pr": 0,
+        "p": 2,
+        "c": 70,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/3/off_value",
+        "pr": 0,
+        "p": 2,
+        "c": 86,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/3/note",
+        "pr": 0,
+        "p": 2,
+        "c": 102,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/4/mode",
+        "pr": 0,
+        "p": 3,
+        "c": 118,
+        "r": 1,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/4/channel",
+        "pr": 0,
+        "p": 3,
+        "c": 6,
+        "r": 1,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/4/option",
+        "pr": 0,
+        "p": 3,
+        "c": 38,
+        "r": 1,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/4/cc_number",
+        "pr": 0,
+        "p": 3,
+        "c": 54,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/4/on_value",
+        "pr": 0,
+        "p": 3,
+        "c": 70,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/4/off_value",
+        "pr": 0,
+        "p": 3,
+        "c": 86,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/4/note",
+        "pr": 0,
+        "p": 3,
+        "c": 102,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/5/mode",
+        "pr": 0,
+        "p": 4,
+        "c": 118,
+        "r": 1,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/5/channel",
+        "pr": 0,
+        "p": 4,
+        "c": 6,
+        "r": 1,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/5/option",
+        "pr": 0,
+        "p": 4,
+        "c": 38,
+        "r": 1,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/5/cc_number",
+        "pr": 0,
+        "p": 4,
+        "c": 54,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/5/on_value",
+        "pr": 0,
+        "p": 4,
+        "c": 70,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/5/off_value",
+        "pr": 0,
+        "p": 4,
+        "c": 86,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/5/note",
+        "pr": 0,
+        "p": 4,
+        "c": 102,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/6/mode",
+        "pr": 0,
+        "p": 5,
+        "c": 118,
+        "r": 1,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/6/channel",
+        "pr": 0,
+        "p": 5,
+        "c": 6,
+        "r": 1,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/6/option",
+        "pr": 0,
+        "p": 5,
+        "c": 38,
+        "r": 1,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/6/cc_number",
+        "pr": 0,
+        "p": 5,
+        "c": 54,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/6/on_value",
+        "pr": 0,
+        "p": 5,
+        "c": 70,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/6/off_value",
+        "pr": 0,
+        "p": 5,
+        "c": 86,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/6/note",
+        "pr": 0,
+        "p": 5,
+        "c": 102,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/7/mode",
+        "pr": 0,
+        "p": 6,
+        "c": 118,
+        "r": 1,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/7/channel",
+        "pr": 0,
+        "p": 6,
+        "c": 6,
+        "r": 1,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/7/option",
+        "pr": 0,
+        "p": 6,
+        "c": 38,
+        "r": 1,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/7/cc_number",
+        "pr": 0,
+        "p": 6,
+        "c": 54,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/7/on_value",
+        "pr": 0,
+        "p": 6,
+        "c": 70,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/7/off_value",
+        "pr": 0,
+        "p": 6,
+        "c": 86,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/7/note",
+        "pr": 0,
+        "p": 6,
+        "c": 102,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/8/mode",
+        "pr": 0,
+        "p": 7,
+        "c": 118,
+        "r": 1,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/8/channel",
+        "pr": 0,
+        "p": 7,
+        "c": 6,
+        "r": 1,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/8/option",
+        "pr": 0,
+        "p": 7,
+        "c": 38,
+        "r": 1,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/8/cc_number",
+        "pr": 0,
+        "p": 7,
+        "c": 54,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/8/on_value",
+        "pr": 0,
+        "p": 7,
+        "c": 70,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/8/off_value",
+        "pr": 0,
+        "p": 7,
+        "c": 86,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/8/note",
+        "pr": 0,
+        "p": 7,
+        "c": 102,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/9/mode",
+        "pr": 0,
+        "p": 8,
+        "c": 118,
+        "r": 1,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/9/channel",
+        "pr": 0,
+        "p": 8,
+        "c": 6,
+        "r": 1,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/9/option",
+        "pr": 0,
+        "p": 8,
+        "c": 38,
+        "r": 1,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/9/cc_number",
+        "pr": 0,
+        "p": 8,
+        "c": 54,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/9/on_value",
+        "pr": 0,
+        "p": 8,
+        "c": 70,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/9/off_value",
+        "pr": 0,
+        "p": 8,
+        "c": 86,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/9/note",
+        "pr": 0,
+        "p": 8,
+        "c": 102,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/10/mode",
+        "pr": 0,
+        "p": 9,
+        "c": 118,
+        "r": 1,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/10/channel",
+        "pr": 0,
+        "p": 9,
+        "c": 6,
+        "r": 1,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/10/option",
+        "pr": 0,
+        "p": 9,
+        "c": 38,
+        "r": 1,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/10/cc_number",
+        "pr": 0,
+        "p": 9,
+        "c": 54,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/10/on_value",
+        "pr": 0,
+        "p": 9,
+        "c": 70,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/10/off_value",
+        "pr": 0,
+        "p": 9,
+        "c": 86,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/10/note",
+        "pr": 0,
+        "p": 9,
+        "c": 102,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/11/mode",
+        "pr": 0,
+        "p": 10,
+        "c": 118,
+        "r": 1,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/11/channel",
+        "pr": 0,
+        "p": 10,
+        "c": 6,
+        "r": 1,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/11/option",
+        "pr": 0,
+        "p": 10,
+        "c": 38,
+        "r": 1,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/11/cc_number",
+        "pr": 0,
+        "p": 10,
+        "c": 54,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/11/on_value",
+        "pr": 0,
+        "p": 10,
+        "c": 70,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/11/off_value",
+        "pr": 0,
+        "p": 10,
+        "c": 86,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/11/note",
+        "pr": 0,
+        "p": 10,
+        "c": 102,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/12/mode",
+        "pr": 0,
+        "p": 11,
+        "c": 118,
+        "r": 1,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/12/channel",
+        "pr": 0,
+        "p": 11,
+        "c": 6,
+        "r": 1,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/12/option",
+        "pr": 0,
+        "p": 11,
+        "c": 38,
+        "r": 1,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/12/cc_number",
+        "pr": 0,
+        "p": 11,
+        "c": 54,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/12/on_value",
+        "pr": 0,
+        "p": 11,
+        "c": 70,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/12/off_value",
+        "pr": 0,
+        "p": 11,
+        "c": 86,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/12/note",
+        "pr": 0,
+        "p": 11,
+        "c": 102,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/13/mode",
+        "pr": 0,
+        "p": 12,
+        "c": 118,
+        "r": 1,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/13/channel",
+        "pr": 0,
+        "p": 12,
+        "c": 6,
+        "r": 1,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/13/option",
+        "pr": 0,
+        "p": 12,
+        "c": 38,
+        "r": 1,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/13/cc_number",
+        "pr": 0,
+        "p": 12,
+        "c": 54,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/13/on_value",
+        "pr": 0,
+        "p": 12,
+        "c": 70,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/13/off_value",
+        "pr": 0,
+        "p": 12,
+        "c": 86,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/13/note",
+        "pr": 0,
+        "p": 12,
+        "c": 102,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/14/mode",
+        "pr": 0,
+        "p": 13,
+        "c": 118,
+        "r": 1,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/14/channel",
+        "pr": 0,
+        "p": 13,
+        "c": 6,
+        "r": 1,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/14/option",
+        "pr": 0,
+        "p": 13,
+        "c": 38,
+        "r": 1,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/14/cc_number",
+        "pr": 0,
+        "p": 13,
+        "c": 54,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/14/on_value",
+        "pr": 0,
+        "p": 13,
+        "c": 70,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/14/off_value",
+        "pr": 0,
+        "p": 13,
+        "c": 86,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/14/note",
+        "pr": 0,
+        "p": 13,
+        "c": 102,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/15/mode",
+        "pr": 0,
+        "p": 14,
+        "c": 118,
+        "r": 1,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/15/channel",
+        "pr": 0,
+        "p": 14,
+        "c": 6,
+        "r": 1,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/15/option",
+        "pr": 0,
+        "p": 14,
+        "c": 38,
+        "r": 1,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/15/cc_number",
+        "pr": 0,
+        "p": 14,
+        "c": 54,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/15/on_value",
+        "pr": 0,
+        "p": 14,
+        "c": 70,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/15/off_value",
+        "pr": 0,
+        "p": 14,
+        "c": 86,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/15/note",
+        "pr": 0,
+        "p": 14,
+        "c": 102,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/16/mode",
+        "pr": 0,
+        "p": 15,
+        "c": 118,
+        "r": 1,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/16/channel",
+        "pr": 0,
+        "p": 15,
+        "c": 6,
+        "r": 1,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/16/option",
+        "pr": 0,
+        "p": 15,
+        "c": 38,
+        "r": 1,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/16/cc_number",
+        "pr": 0,
+        "p": 15,
+        "c": 54,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/16/on_value",
+        "pr": 0,
+        "p": 15,
+        "c": 70,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/16/off_value",
+        "pr": 0,
+        "p": 15,
+        "c": 86,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pad/16/note",
+        "pr": 0,
+        "p": 15,
+        "c": 102,
+        "r": 1,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pedal/type",
+        "pr": 8,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          3
+        ]
+      },
+      {
+        "osc": "/minilab3/pedal/footswitch_cc",
+        "pr": 9,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pedal/control_cc",
+        "pr": 10,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pedal/polarity",
+        "pr": 11,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/pedal/min_value",
+        "pr": 12,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pedal/max_value",
+        "pr": 13,
+        "p": 0,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/global/shift_mode",
+        "pr": 54,
+        "p": 2,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/global/shift_channel",
+        "pr": 10,
+        "p": 2,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/global/shift_cc_number",
+        "pr": 11,
+        "p": 2,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/global/shift_off_value",
+        "pr": 12,
+        "p": 2,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/global/shift_on_value",
+        "pr": 13,
+        "p": 2,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pitch_wheel/channel",
+        "pr": 7,
+        "p": 2,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/pitch_wheel/min_value",
+        "pr": 8,
+        "p": 2,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/pitch_wheel/max_value",
+        "pr": 9,
+        "p": 2,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/mod_wheel/channel",
+        "pr": 0,
+        "p": 2,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          15
+        ]
+      },
+      {
+        "osc": "/minilab3/mod_wheel/output",
+        "pr": 1,
+        "p": 2,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          1
+        ]
+      },
+      {
+        "osc": "/minilab3/mod_wheel/cc_number",
+        "pr": 2,
+        "p": 2,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/mod_wheel/min_value",
+        "pr": 3,
+        "p": 2,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/mod_wheel/max_value",
+        "pr": 4,
+        "p": 2,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/mod_wheel/nrpn_msb",
+        "pr": 5,
+        "p": 2,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/minilab3/mod_wheel/nrpn_lsb",
+        "pr": 6,
+        "p": 2,
+        "c": 0,
+        "r": 0,
+        "range": [
+          0,
+          127
+        ]
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": [
+    {
+      "match_frame": [
+        33,
+        "{pr}",
+        "{p}",
+        "{c}",
+        "{r}",
+        "{msb}",
+        "{lsb}"
+      ],
+      "emit_osc": "/param/value {pr} {p} {c} {r} {msb} {lsb}"
+    }
+  ]
+}

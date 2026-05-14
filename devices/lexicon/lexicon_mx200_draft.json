@@ -1,0 +1,686 @@
+{
+  "_sources": [
+    {
+      "type": "electra-preset",
+      "url": "https://app.electra.one/preset/ATZrP5DJfqMwKNIWJQin",
+      "preset_name": "Lexicon MX200 Draft",
+      "imported_at": "2026-04-13",
+      "preset_id": "ATZrP5DJfqMwKNIWJQin",
+      "revision": "17"
+    }
+  ],
+  "_limitations": "Imported from an Electra One community preset. The mapping reflects the preset author's editorial choices: parameter naming, ranges, and which params are exposed. Untested on hardware in this repo.",
+  "_coverage": {
+    "entries_total": 37,
+    "cc_entries": 15,
+    "sysex_commands": 22
+  },
+  "device": {
+    "name": "Lexicon MX200 Draft",
+    "vendor": "Lexicon",
+    "revision": "per Electra preset",
+    "osc_prefix": "/lexicon_mx200_draft",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [
+      240
+    ],
+    "footer": [
+      247
+    ]
+  },
+  "commands": [
+    {
+      "osc": "/range",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            12
+          ]
+        }
+      ],
+      "frame": [
+        0,
+        32,
+        50,
+        0,
+        1,
+        35,
+        0,
+        17,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/prog_edit_mode",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        78,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/fx1_type",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        23,
+        1,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/dry_wet",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -50,
+            50
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        39,
+        1,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/fx1_mod_source",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        30,
+        1,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/fx1_on_off",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        25,
+        1,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/fx2_type",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        24,
+        1,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/fx2_param1",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        0,
+        "{val}",
+        "{function}"
+      ]
+    },
+    {
+      "osc": "/fx2_param2",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        0,
+        "{val}",
+        "{function}"
+      ]
+    },
+    {
+      "osc": "/fx2_param3",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        0,
+        "{val}",
+        "{function}"
+      ]
+    },
+    {
+      "osc": "/fx2_param4",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        0,
+        "{val}",
+        "{function}"
+      ]
+    },
+    {
+      "osc": "/fx2_mod_source",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        41,
+        1,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/fx2_mod_int",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -15,
+            15
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        42,
+        1,
+        "{val}",
+        "{function}"
+      ]
+    },
+    {
+      "osc": "/fx2_param5",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        0,
+        "{val}",
+        "{function}"
+      ]
+    },
+    {
+      "osc": "/fx2_param6",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        0,
+        "{val}",
+        "{function}"
+      ]
+    },
+    {
+      "osc": "/fx2_param7",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -99,
+            99
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        0,
+        "{val}",
+        "{function}"
+      ]
+    },
+    {
+      "osc": "/fx2_on_off",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        26,
+        1,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/fx_placement",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        29,
+        1,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/fx2_out3_pan",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -51,
+            50
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        27,
+        1,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/osc_1_level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        0,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/fx2_out4_pan",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            -51,
+            50
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        28,
+        1,
+        "{val}",
+        0
+      ]
+    },
+    {
+      "osc": "/osc_2_level",
+      "args": [
+        {
+          "name": "val",
+          "type": "u7",
+          "range": [
+            0,
+            127
+          ]
+        }
+      ],
+      "frame": [
+        66,
+        "{function}",
+        48,
+        65,
+        0,
+        "{val}",
+        0
+      ]
+    }
+  ],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/fx1_type",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx1_tempo",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx1_bypass",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx2_type",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx2_tempo",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx2_bypass",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx1_pre_delay",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx1_decay",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx1_variation",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx2_pre_delay",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx2_decay",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx2_variation",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dry_wet",
+        "cc": 26,
+        "range": [
+          -50,
+          50
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/dry_wet",
+        "cc": 27,
+        "range": [
+          -50,
+          50
+        ],
+        "section": ""
+      },
+      {
+        "osc": "/fx_routing",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "section": ""
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}
