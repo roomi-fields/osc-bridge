@@ -1,0 +1,28 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.roomi-fields/osc-bridge",
+  "title": "osc-bridge",
+  "description": "OSC ↔ MIDI/SysEx bridge for 849 hardware synthesizers and music software (Ableton, Bitwig, Reaper, Sonic Pi, SuperCollider). A MIDI MCP and OSC MCP for controlling synths and DAWs from Claude.",
+  "repository": {
+    "url": "https://github.com/roomi-fields/osc-bridge",
+    "source": "github"
+  },
+  "version": "0.9.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@roomi-fields/osc-bridge",
+      "version": "0.9.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "packageArguments": [
+        {
+          "type": "positional",
+          "value": "mcp",
+          "valueHint": "subcommand"
+        }
+      ]
+    }
+  ]
+}
