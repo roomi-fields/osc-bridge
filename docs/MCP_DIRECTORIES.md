@@ -18,7 +18,7 @@ Legend: ✅ live · ⚠️ submitted, pending · 🔄 auto-indexing in progress 
 |---|---|---|
 | npm — `@roomi-fields/osc-bridge` | ✅ | v0.10.0 published 2026-05-14 |
 | Official MCP Registry — `io.github.roomi-fields/osc-bridge` | ✅ | published 2026-05-14, status `active` |
-| GitHub repo + topics | ✅ | public; topics include `mcp`, `mcp-server`, `model-context-protocol`, `midi`, `osc`, `claude`, `ableton`, `bitwig`, `reaper`, `daw`, `live-coding` (20-topic cap reached — dropped the long-tail vendor topics) |
+| GitHub repo metadata | ✅ | public; About description + homepage (Pages site) set to the 3-strata framing; topics include `mcp`, `mcp-server`, `model-context-protocol`, `midi`, `osc`, `claude`, `ableton`, `bitwig`, `reaper`, `daw`, `live-coding` (20-topic cap reached — dropped the long-tail vendor topics) |
 | `roomi-fields/claude-plugins` marketplace | ✅ | entry added 2026-05-14 |
 | Pages site (GitHub Pages) | ✅ | device browser + SEO/JSON-LD live |
 
