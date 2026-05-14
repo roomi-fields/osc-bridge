@@ -75,6 +75,27 @@ midi_in_port = 0
 }
 
 #[test]
+fn parses_osc_transport_overrides() {
+    // A software device can override host / port / reply_port from bridge.toml.
+    let toml = r#"
+[osc]
+bind = "127.0.0.1:7777"
+
+[[devices]]
+spec = "devices/ableton/live.third-party-osc.fw-12.2.json"
+host = "192.168.1.40"
+port = 11000
+reply_port = 11001
+"#;
+    let cfg: OrchestratorConfig = toml::from_str(toml).unwrap();
+    assert_eq!(cfg.devices[0].host.as_deref(), Some("192.168.1.40"));
+    assert_eq!(cfg.devices[0].port, Some(11000));
+    assert_eq!(cfg.devices[0].reply_port, Some(11001));
+    // Absent overrides stay None (driver JSON values are used as-is).
+    assert!(cfg.devices[0].midi_out_port.is_none());
+}
+
+#[test]
 fn parses_inter_device_routes() {
     let toml = r#"
 [osc]
