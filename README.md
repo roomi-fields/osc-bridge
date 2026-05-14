@@ -74,7 +74,7 @@ Each synth is described by one JSON file. No Rust recompile required to add a de
 - **Honest provenance.** Each device declares its source in `_sources[]`: `✅ hardware-verified`, `✅ software-verified`, `📘 vendor-doc`, `📡 vendor-osc-api` / `📡 third-party-osc`, `🎛️ electra-preset`, `📦 pencilresearch`. You always know whether a mapping was tested on the device or lifted from a spec sheet.
 - **Bidirectional out of the box.** Incoming MIDI (knob turns, SysEx replies, NRPN) is decoded and re-emitted as OSC. Multi-client fan-out is a `--osc-client` flag.
 - **N-to-N orchestration.** One process can drive several synths at once (`osc-bridge orchestrate --config bridge.toml`), each reachable under its own OSC prefix — so two MatrixBrutes live side-by-side as `/matrixbrute-1` and `/matrixbrute-2`.
-- **First-class reconfigurable controllers (Electra One MK2).** Upload a generated preset as one OSC call; the bridge parses the JSON, reconfigures the device over SysEx, and *dynamically* rewires its own CC↔OSC routing so each knob on the new layout is reachable by name. Self-describing over OSC: `/bridge/docs` returns the integration guide, `/electra1/routes/list` returns the authoritative address table, so clients (or LLM-driven integrators) never hardcode slugification or protocol details. See [§ Reconfigurable controllers](#reconfigurable-controllers-electra-one-mk2) below.
+- **First-class reconfigurable controllers (Electra One MK2).** Upload a generated preset as one OSC call; the bridge parses the JSON, reconfigures the device over SysEx, and *dynamically* rewires its own CC↔OSC routing so each knob on the new layout is reachable by name. Self-describing over OSC: `/bridge/docs` returns the integration guide, `/electra1/routes/list` returns the authoritative address table, so clients (or LLM-driven integrators) never hardcode slugification or protocol details. See [§ Reconfigurable controllers](#reconfigurable-controllers-electra-one-mk2--the-scripts-stress-test) below.
 - **Escape hatch when JSON isn't enough.** For devices with checksums, quirky scaling, or stateful protocols, an optional per-parameter `transform` / per-command `script` runs Lua 5.4 sandboxed (1 MiB / 10 ms caps, no `os`/`io`/loaders). Used sparingly — `osc-bridge lint` warns on every script use — but it lets the declarative core stay small without giving up on edge cases. See [`docs/scripting.md`](docs/scripting.md).
 - **Runtime you can trust.** Rate-limiting per device, backpressure-aware, zero-alloc hot path, no GC. Single static binary on Windows / Linux / macOS.
 
@@ -96,7 +96,7 @@ Each synth is described by one JSON file. No Rust recompile required to add a de
 - 🔎 Interactive browser → **<https://roomi-fields.github.io/osc-bridge/>** (live search by vendor / model / author / source).
 - 📄 Full catalogue as Markdown → [`docs/SUPPORTED_DEVICES.md`](docs/SUPPORTED_DEVICES.md) (auto-generated, organised by vendor).
 
-Your synth isn't there, or a `📄` entry needs promoting to `✅` after you test it on hardware? See the next section.
+Your synth isn't there, or a doc-derived entry (`📘` / `📡` / `🎛️` / `📦`) needs promoting to `✅` after you test it on hardware? See the next section.
 
 ### Share your own device
 
@@ -111,7 +111,7 @@ working driver end to end. Otherwise — three common cases, pick yours:
   5. Run `python3 scripts/regen_supported_devices.py` to refresh the catalogue.
   6. Open the PR — GitHub shows the `new_device.md` template.
 
-**Your synth is listed as `📄` and you have the hardware** → PR promoting it to `✅`. Test every route, attach the log, flip the marker. `promote_to_verified.md` template.
+**Your synth is listed but not yet `✅`, and you have the hardware** → PR promoting it to `✅`. Test every route, attach the log, flip the marker. `promote_to_verified.md` template.
 
 **Your synth is listed but a CC is wrong / needs SysEx added** → PR updating the JSON. `update_device.md` template. Especially welcome on pencilresearch-imported devices where SysEx needs to be layered in.
 
@@ -394,41 +394,31 @@ map.from = [0, 127]
 map.to = [0, 1]
 ```
 
-## Use from Claude / Cursor / Claude Desktop via MCP
+## Use from Claude via MCP
 
-osc-bridge embeds a [Model Context Protocol](https://modelcontextprotocol.io)
-server. Run it as a subprocess of any MCP-capable LLM client and the model
-gets typed tools to enumerate devices, read their `.md` docs, list their OSC
-surface, and send OSC messages to a running bridge.
-
-```
-osc-bridge mcp --devices-dir devices --default-target 127.0.0.1:7777
-```
-
-The server speaks JSON-RPC 2.0 over stdio and exposes five tools:
-
-- `list_devices` — enumerate every driver with name, vendor, slug, kind, and source tier.
-- `get_device_docs(slug)` — fetch the `.md` companion for a given device (the file already loaded next to the JSON).
-- `list_routes(slug)` — return every OSC route the device exposes: declarative commands, CC/NRPN params, SysEx params, reply patterns.
-- `send(addr, args, target?)` — emit a single OSC message at `addr` to a running `osc-bridge run` instance.
-- `get_status(target?)` — round-trip `/bridge/status` and return the replies received within 500 ms.
-
-Claude Desktop config example (`~/.config/claude/claude_desktop_config.json`):
+osc-bridge ships a [Model Context Protocol](https://modelcontextprotocol.io)
+server — a **MIDI MCP** *and* **OSC MCP**. Point any MCP client at it and the
+model can browse the 849-device catalogue, read a device's OSC surface, and
+send OSC to synths and DAWs.
 
 ```jsonc
 {
   "mcpServers": {
     "osc-bridge": {
-      "command": "/path/to/osc-bridge",
-      "args": ["mcp", "--devices-dir", "/path/to/osc-bridge/devices"]
+      "command": "npx",
+      "args": ["-y", "@roomi-fields/osc-bridge", "mcp"]
     }
   }
 }
 ```
 
-Then in conversation: *"What commands does the MatrixBrute expose? Send a
-filter-cutoff sweep to it."* — Claude calls `list_routes("matrixbrute")`,
-then `send("/matrixbrute/filter/cutoff", [0.7])` a few times. No glue code.
+Five tools — `list_devices`, `get_device_docs`, `list_routes`, `send`,
+`get_status`. Then in conversation: *"What can the MatrixBrute do? Sweep its
+filter cutoff."* — the model calls `list_routes("matrixbrute")`, then `send`.
+No glue code.
+
+Full setup — Claude Desktop / Cursor config, the workflow, driving software
+targets → **[`docs/MCP.md`](docs/MCP.md)**.
 
 ## Project genesis
 
