@@ -89,3 +89,25 @@ jobs:
           # (the GitHub API secondary rate limit hits hard past a few dozen).
           files: |
             osc-bridge-${{ matrix.suffix }}
+
+  npm-publish:
+    name: Publish npm wrapper
+    # Runs after every binary leg of `release` so the prebuilt binaries are
+    # attached before the wrapper goes live — the npm postinstall downloads
+    # them from the release. Needs the NPM_TOKEN repo secret.
+    if: github.event_name == 'release'
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Version mirrors are in sync with Cargo.toml
+        run: python3 scripts/sync_version.py --check
+      - name: Publish @roomi-fields/osc-bridge
+        working-directory: npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
