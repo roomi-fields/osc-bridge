@@ -73,7 +73,8 @@ Your synth isn't there, or a `📄` entry needs promoting to `✅` after you tes
 
 ### Share your own device
 
-Three common cases — pick yours:
+New here? The [30-minute tutorial](docs/TUTORIAL_FIRST_DEVICE.md) builds a
+working driver end to end. Otherwise — three common cases, pick yours:
 
 **Your synth isn't listed** → open a PR adding `devices/<vendor>/<slug>.json`.
   1. Find a source: vendor programmer's reference, MIDI implementation PDF, or a canonical CSV. No source cited = PR stays open until one is provided.
