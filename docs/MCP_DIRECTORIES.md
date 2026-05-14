@@ -16,8 +16,8 @@ Legend: ✅ live · ⚠️ submitted, pending · 🔄 auto-indexing in progress 
 
 | Channel | Status | Notes |
 |---|---|---|
-| npm — `@roomi-fields/osc-bridge` | ✅ | v0.10.0 published 2026-05-14 |
-| Official MCP Registry — `io.github.roomi-fields/osc-bridge` | ✅ | published 2026-05-14, status `active` |
+| npm — `@roomi-fields/osc-bridge` | ✅ | v0.10.1 published 2026-05-14 |
+| Official MCP Registry — `io.github.roomi-fields/osc-bridge` | ✅ | v0.10.1 published 2026-05-14, status `active`, `isLatest` |
 | GitHub repo metadata | ✅ | public; About description + homepage (Pages site) set to the 3-strata framing; topics include `mcp`, `mcp-server`, `model-context-protocol`, `midi`, `osc`, `claude`, `ableton`, `bitwig`, `reaper`, `daw`, `live-coding` (20-topic cap reached — dropped the long-tail vendor topics) |
 | `roomi-fields/claude-plugins` marketplace | ✅ | entry added 2026-05-14 |
 | Pages site (GitHub Pages) | ✅ | device browser + SEO/JSON-LD live |
@@ -39,11 +39,12 @@ and that the description/keywords landed correctly.
 
 | Directory | Status | Action |
 |---|---|---|
-| Smithery.ai | ✅ | `roomifields/osc-bridge` published 2026-05-14 as a stdio MCPB bundle (`npx -y @roomi-fields/osc-bridge mcp`); 5 tools + `default_target` config indexed; description + icon set via the registry API |
+| Smithery.ai | ✅ | `roomifields/osc-bridge` published 2026-05-14 as a stdio MCPB bundle; quality score 100% (output schemas + annotations shipped in v0.10.1); description + icon set via the registry API |
 | awesome-mcp-servers (punkpeye, ~80k★) | ⚠️ | PR #6342 open — entry under "Multimedia Process" |
+| awesome-mcp-servers (TensorBlock, ~680★) | ⚠️ | PR #543 open — entry under "Hardware & IoT" |
 | Cline Marketplace | ⚠️ | issue #1561 open on cline/mcp-marketplace |
-| awesome-mcp-servers (wong2) | ❌ | PR |
-| awesome-mcp-servers (appcypher) | ❌ | PR |
+| awesome-mcp-servers (wong2, ~4k★) | 🚫 | no PR / no issue — submit via web form at mcpservers.org/submit |
+| awesome-mcp-servers (appcypher, ~5.5k★) | 🚫 | submissions closed — PRs **and** issues both disabled, maintainer-only list |
 | Cursor Directory | ❌ | web form (~2 min) |
 | FindMCP.dev | ❌ | web form |
 
@@ -69,13 +70,14 @@ and that the description/keywords landed correctly.
 
 1. ~~Add GitHub topics~~ — ✅ done 2026-05-14.
 2. ~~Smithery~~ — ✅ done 2026-05-14.
-3. **Verify Tier 1 auto-indexers** picked us up correctly (description, keywords) —
+3. ~~PR-able awesome lists~~ — ✅ punkpeye #6342 + TensorBlock #543 done. wong2
+   and appcypher have no PR/issue path (web form / closed) — not actionable.
+4. **Verify Tier 1 auto-indexers** picked us up correctly (description, keywords) —
    give them a few days after the registry publish, then check.
-4. **Cursor Directory + FindMCP** — quick web forms.
-5. **Track PR #6342 (punkpeye) + issue #1561 (Cline)** — respond to maintainer
-   feedback if any; the music/audio positioning needs a clear category pitch
-   since we're not the typical "knowledge" or "dev-tools" MCP.
-6. **awesome-mcp-servers PRs (wong2, appcypher)** — remaining high-traffic lists.
+5. **Web forms (need a human)**: wong2 (mcpservers.org/submit), Cursor Directory,
+   FindMCP.dev, MCPIndex.net, MCPList.ai, Windsurf.
+6. **Track PR #6342 (punkpeye) + PR #543 (TensorBlock) + issue #1561 (Cline)** —
+   respond to maintainer feedback if any.
 
 ## Monitoring cadence (PLAYBOOK §6.2)
 
