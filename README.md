@@ -4,26 +4,51 @@
 [![CI](https://github.com/roomi-fields/osc-bridge/actions/workflows/ci.yml/badge.svg)](https://github.com/roomi-fields/osc-bridge/actions/workflows/ci.yml)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
 
-**Declarative OSC ↔ MIDI / SysEx bridge for hardware synthesizers.**
+**Declarative OSC bridge for music hardware *and* software — and an MCP server to drive it from an LLM.**
 
-Write a JSON file. Get an OSC server that understands your synth.
+849 hardware synthesizers over MIDI / SysEx, plus DAWs and live-coding
+environments over OSC (Ableton, Bitwig, Reaper, Sonic Pi, SuperCollider, Pure
+Data, TouchDesigner, VCV Rack). Every device gets a clean, named OSC surface
+described by one JSON file. Drive it from a live-coding client, a DAW, a
+script, the CLI — or from Claude via the built-in **MCP server** (a **MIDI MCP**
+*and* **OSC MCP**).
 
 ```
-  OSC client (SuperCollider, BPscript, TouchOSC, Max, Pd, Python, …)
+  OSC client · CLI · LLM via MCP
+  (SuperCollider, Max, TouchOSC, Python, Claude, …)
          │
-         ▼   UDP
-   ┌──────────────┐   reads  devices/<vendor>/<synth>.json
-   │  osc-bridge  │────────► frames built from placeholders
-   └──────────────┘          rate-limited, backpressure-aware
-         │
-         ▼  USB-MIDI
-   Hardware synth
+         ▼   UDP / stdio
+   ┌──────────────┐   reads  devices/<vendor>/<device>.json
+   │  osc-bridge  │
+   └──────┬───────┘
+          ├──► USB-MIDI ──► hardware synth          (849 drivers)
+          └──► UDP / OSC ──► DAW · live-coding env   (Ableton, Bitwig, Sonic Pi …)
 ```
+
+## Install
+
+As an **MCP server** — drive synths and DAWs from Claude, nothing to install:
+
+```bash
+npx -y @roomi-fields/osc-bridge mcp
+```
+
+As a **standalone bridge / CLI**:
+
+```bash
+npm install -g @roomi-fields/osc-bridge      # downloads the prebuilt binary
+# or grab a binary directly from the Releases page
+osc-bridge run --device devices/arturia/minilab3.json --out-port 4
+```
+
+MCP client config and the five tools → [`docs/MCP.md`](docs/MCP.md). Full
+quick-start with MIDI port discovery → [§ Install & quick start](#install--quick-start).
 
 ## Why a bridge?
 
-Modern hardware synths expose themselves over MIDI and SysEx with proprietary,
-undocumented protocols. Using them from live-coding / DAW environments is painful:
+Modern synths — hardware and software alike — expose themselves over MIDI,
+SysEx, and OSC with proprietary, scattered protocols. Using them from
+live-coding environments, a DAW, a script, or an LLM is painful:
 
 - CC / NRPN addresses are cryptic
 - SysEx byte formats are hand-rolled per device
@@ -43,8 +68,10 @@ Each synth is described by one JSON file. No Rust recompile required to add a de
 ## What makes it different
 
 - **One JSON = one driver.** Adding a synth is ~30 lines of declarative JSON — CC numbers, SysEx frame templates, optional parameter tables. No Rust, no bindings, no build step. Ship a PR, `osc-bridge run` picks it up.
-- **840 devices out of the box.** Every Prophet, every Oberheim, every Yamaha DX-family, MatrixBrute, Hydrasynth, Virus TI, Digitone, Matrix-1000… most of the catalogue is usable today. Fully searchable at [roomi-fields.github.io/osc-bridge](https://roomi-fields.github.io/osc-bridge/).
-- **Honest provenance.** Each device declares its source in `_sources[]`: `✅ hardware-verified`, `📘 vendor-doc`, `🎛️ electra-preset`, `📦 pencilresearch`. You always know whether a mapping was tested on the device or lifted from a spec sheet.
+- **849 devices out of the box.** Every Prophet, every Oberheim, every Yamaha DX-family, MatrixBrute, Hydrasynth, Virus TI, Digitone, Matrix-1000… most of the catalogue is usable today. Fully searchable at [roomi-fields.github.io/osc-bridge](https://roomi-fields.github.io/osc-bridge/).
+- **Hardware *and* software.** The same named OSC surface drives a hardware synth over MIDI/SysEx *or* a DAW / live-coding environment over OSC — Ableton, Bitwig, Reaper, Sonic Pi, SuperCollider, Pure Data, TouchDesigner, VCV Rack. See [§ Software targets](#software-targets--daws-and-live-coding-environments).
+- **An MCP server built in.** `osc-bridge mcp` exposes the whole catalogue to Claude (or any MCP client) — a MIDI MCP *and* OSC MCP. Discover devices, read a device's OSC surface, send OSC to synths and DAWs. See [`docs/MCP.md`](docs/MCP.md).
+- **Honest provenance.** Each device declares its source in `_sources[]`: `✅ hardware-verified`, `✅ software-verified`, `📘 vendor-doc`, `📡 vendor-osc-api` / `📡 third-party-osc`, `🎛️ electra-preset`, `📦 pencilresearch`. You always know whether a mapping was tested on the device or lifted from a spec sheet.
 - **Bidirectional out of the box.** Incoming MIDI (knob turns, SysEx replies, NRPN) is decoded and re-emitted as OSC. Multi-client fan-out is a `--osc-client` flag.
 - **N-to-N orchestration.** One process can drive several synths at once (`osc-bridge orchestrate --config bridge.toml`), each reachable under its own OSC prefix — so two MatrixBrutes live side-by-side as `/matrixbrute-1` and `/matrixbrute-2`.
 - **First-class reconfigurable controllers (Electra One MK2).** Upload a generated preset as one OSC call; the bridge parses the JSON, reconfigures the device over SysEx, and *dynamically* rewires its own CC↔OSC routing so each knob on the new layout is reachable by name. Self-describing over OSC: `/bridge/docs` returns the integration guide, `/electra1/routes/list` returns the authoritative address table, so clients (or LLM-driven integrators) never hardcode slugification or protocol details. See [§ Reconfigurable controllers](#reconfigurable-controllers-electra-one-mk2) below.
