@@ -24,7 +24,7 @@ Short-list of follow-ups. Move to an issue when picked up.
 - [ ] `osc-bridge lint` to also warn on `_sources[]` entries without a `type` or `url`.
 
 ## Docs
-- [ ] Write the "How I wrote my first device JSON in 30 min" tutorial — referenced by README but doesn't exist yet.
+- [x] "Your first device JSON in 30 minutes" tutorial — [`docs/TUTORIAL_FIRST_DEVICE.md`](docs/TUTORIAL_FIRST_DEVICE.md), linked from README and CONTRIBUTING.
 - [x] Surface on the Pages site: author credit per device — `index.html` shows the Author column and includes it in search; `📡 OSC-API` filter chip added.
 
 ## Security

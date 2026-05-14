@@ -59,6 +59,10 @@ The rule going forward:
 
 ## Adding a new device JSON
 
+New to this? Start with [`docs/TUTORIAL_FIRST_DEVICE.md`](docs/TUTORIAL_FIRST_DEVICE.md)
+— a 30-minute hands-on walkthrough that builds a working CC driver end to end.
+The steps below are the reference checklist.
+
 ### Step 0 — is there a source?
 
 We only merge device JSONs that have a **verifiable source**. In decreasing order of preference:
