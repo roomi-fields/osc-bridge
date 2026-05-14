@@ -9,6 +9,23 @@ additive minor bumps every time a new device class surfaces something
 the JSON can't yet express. Backwards-compat of existing device JSONs
 is tracked explicitly under each release.
 
+## [0.10.1] — 2026-05-14
+
+A polish release for the MCP server. No device-JSON or runtime changes.
+
+### Changed — MCP server
+- All five tools now declare an `outputSchema` and `annotations` (title +
+  read-only / idempotent / open-world hints). Tool results carry
+  `structuredContent` alongside the text block, so MCP clients get a typed,
+  machine-readable payload — not just prose to re-parse.
+- Protocol version advertised at `initialize` bumped to `2025-06-18` (the
+  revision that introduced `outputSchema` / `structuredContent`).
+
+### Compatibility
+- Device JSONs: unchanged — every `0.10.0` driver loads as-is.
+- MCP clients on the older `2025-03-26` revision still work; the text block
+  in every tool result is unchanged.
+
 ## [0.10.0] — 2026-05-14
 
 osc-bridge stops being a hardware-only tool. A new **OSC transport** lets a

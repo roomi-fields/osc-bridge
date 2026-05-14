@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "osc-bridge",
   "display_name": "osc-bridge",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "OSC ↔ MIDI/SysEx bridge for 849 synths and DAWs — a MIDI MCP and OSC MCP.",
   "long_description": "osc-bridge is a declarative bridge between OSC and the music world: 849 hardware synthesizers over MIDI/SysEx, plus music software over OSC (Ableton, Bitwig, Reaper, Sonic Pi, SuperCollider, Pure Data, TouchDesigner, VCV Rack). Its MCP server exposes the whole catalogue to an LLM — list devices, read a device's named OSC surface, send OSC to synths and DAWs, and check a running bridge's status. Both a MIDI MCP (hardware over MIDI/SysEx) and an OSC MCP (DAWs and live-coding environments).",
   "author": {
@@ -60,7 +60,31 @@
     {
       "name": "list_devices",
       "description": "Enumerate every device driver — name, vendor, slug, kind (hardware/software), and source tier. Use this first to discover the catalogue.",
-      "inputSchema": { "type": "object", "properties": {} }
+      "inputSchema": { "type": "object", "properties": {} },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "count": { "type": "integer", "description": "Number of device drivers found." },
+          "devices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "vendor": { "type": "string" },
+                "slug": { "type": "string", "description": "OSC prefix without the leading slash." },
+                "kind": { "type": "string", "description": "'hardware' or 'software'." },
+                "revision": { "type": "string" },
+                "source_tier": { "type": "string" },
+                "file": { "type": "string" }
+              },
+              "required": ["name", "vendor", "slug", "kind"]
+            }
+          }
+        },
+        "required": ["count", "devices"]
+      },
+      "annotations": { "title": "List devices", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": false }
     },
     {
       "name": "get_device_docs",
@@ -69,7 +93,17 @@
         "type": "object",
         "properties": { "slug": { "type": "string", "description": "Device slug, e.g. 'ableton' or 'minilab3'" } },
         "required": ["slug"]
-      }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "slug": { "type": "string" },
+          "has_docs": { "type": "boolean", "description": "False when no companion .md exists for the device." },
+          "markdown": { "type": "string", "description": "The companion documentation, or a not-found message when has_docs is false." }
+        },
+        "required": ["slug", "has_docs", "markdown"]
+      },
+      "annotations": { "title": "Get device docs", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": false }
     },
     {
       "name": "list_routes",
@@ -78,7 +112,22 @@
         "type": "object",
         "properties": { "slug": { "type": "string", "description": "Device slug, e.g. 'minilab3'" } },
         "required": ["slug"]
-      }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "device": { "type": "string" },
+          "vendor": { "type": "string" },
+          "osc_prefix": { "type": "string" },
+          "kind": { "type": "string" },
+          "commands": { "type": "array", "description": "Declarative OSC paths the device accepts, with typed args and mode.", "items": { "type": "object" } },
+          "cc_params": { "type": "array", "description": "CC / NRPN parameters, each mapped to an OSC address.", "items": { "type": "object" } },
+          "params": { "type": "array", "description": "SysEx parameters, each mapped to an OSC address.", "items": { "type": "object" } },
+          "replies": { "type": "array", "description": "Reply patterns the device emits back onto the OSC surface.", "items": { "type": "object" } }
+        },
+        "required": ["device", "osc_prefix", "commands", "cc_params", "params", "replies"]
+      },
+      "annotations": { "title": "List device routes", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": false }
     },
     {
       "name": "send",
@@ -91,7 +140,18 @@
           "target": { "type": "string", "description": "Optional host:port override" }
         },
         "required": ["addr"]
-      }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "sent": { "type": "boolean" },
+          "address": { "type": "string" },
+          "bytes": { "type": "integer", "description": "Encoded OSC packet size." },
+          "target": { "type": "string", "description": "host:port the packet was sent to." }
+        },
+        "required": ["sent", "address", "bytes", "target"]
+      },
+      "annotations": { "title": "Send OSC message", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
     },
     {
       "name": "get_status",
@@ -99,7 +159,24 @@
       "inputSchema": {
         "type": "object",
         "properties": { "target": { "type": "string", "description": "host:port to query, defaults to the configured default target" } }
-      }
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "target": { "type": "string" },
+          "replied": { "type": "boolean", "description": "False when no reply arrived within 500 ms." },
+          "replies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": { "addr": { "type": "string" }, "args": { "type": "array" } },
+              "required": ["addr", "args"]
+            }
+          }
+        },
+        "required": ["target", "replied", "replies"]
+      },
+      "annotations": { "title": "Get bridge status", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": true }
     }
   ]
 }

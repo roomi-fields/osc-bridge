@@ -1,7 +1,7 @@
 //! MCP (Model Context Protocol) server — exposes osc-bridge's catalogue and
 //! OSC surface to LLMs via JSON-RPC 2.0 over stdio.
 //!
-//! Spec: <https://modelcontextprotocol.io/specification/2025-03-26>
+//! Spec: <https://modelcontextprotocol.io/specification/2025-06-18>
 //!
 //! Tools exposed:
 //!  - `list_devices`   — enumerate all device JSONs under `--devices-dir`
@@ -23,7 +23,7 @@ use std::time::Duration;
 
 use crate::device::Device;
 
-const PROTOCOL_VERSION: &str = "2025-03-26";
+const PROTOCOL_VERSION: &str = "2025-06-18";
 const SERVER_NAME: &str = "osc-bridge";
 const SERVER_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -176,7 +176,36 @@ fn tools_list() -> Value {
             {
                 "name": "list_devices",
                 "description": "Enumerate every device driver JSON. Returns name, vendor, OSC prefix, kind (hardware/software), and source tier for each.",
-                "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false }
+                "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false },
+                "outputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "count": { "type": "integer", "description": "Number of device drivers found." },
+                        "devices": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": { "type": "string" },
+                                    "vendor": { "type": "string" },
+                                    "slug": { "type": "string", "description": "OSC prefix without the leading slash." },
+                                    "kind": { "type": "string", "description": "'hardware' or 'software'." },
+                                    "revision": { "type": "string" },
+                                    "source_tier": { "type": "string" },
+                                    "file": { "type": "string" }
+                                },
+                                "required": ["name", "vendor", "slug", "kind"]
+                            }
+                        }
+                    },
+                    "required": ["count", "devices"]
+                },
+                "annotations": {
+                    "title": "List devices",
+                    "readOnlyHint": true,
+                    "idempotentHint": true,
+                    "openWorldHint": false
+                }
             },
             {
                 "name": "get_device_docs",
@@ -187,6 +216,21 @@ fn tools_list() -> Value {
                         "slug": { "type": "string", "description": "Device slug, e.g. 'ableton' or 'minilab3'" }
                     },
                     "required": ["slug"]
+                },
+                "outputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "slug": { "type": "string" },
+                        "has_docs": { "type": "boolean", "description": "False when no companion .md exists for the device." },
+                        "markdown": { "type": "string", "description": "The companion documentation, or a not-found message when has_docs is false." }
+                    },
+                    "required": ["slug", "has_docs", "markdown"]
+                },
+                "annotations": {
+                    "title": "Get device docs",
+                    "readOnlyHint": true,
+                    "idempotentHint": true,
+                    "openWorldHint": false
                 }
             },
             {
@@ -198,6 +242,42 @@ fn tools_list() -> Value {
                         "slug": { "type": "string", "description": "Device slug, e.g. 'minilab3'" }
                     },
                     "required": ["slug"]
+                },
+                "outputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "device": { "type": "string" },
+                        "vendor": { "type": "string" },
+                        "osc_prefix": { "type": "string" },
+                        "kind": { "type": "string" },
+                        "commands": {
+                            "type": "array",
+                            "description": "Declarative OSC paths the device accepts, with typed args and mode (forward/frame).",
+                            "items": { "type": "object" }
+                        },
+                        "cc_params": {
+                            "type": "array",
+                            "description": "CC / NRPN parameters, each mapped to an OSC address.",
+                            "items": { "type": "object" }
+                        },
+                        "params": {
+                            "type": "array",
+                            "description": "SysEx parameters, each mapped to an OSC address.",
+                            "items": { "type": "object" }
+                        },
+                        "replies": {
+                            "type": "array",
+                            "description": "Reply patterns the device emits back onto the OSC surface.",
+                            "items": { "type": "object" }
+                        }
+                    },
+                    "required": ["device", "osc_prefix", "commands", "cc_params", "params", "replies"]
+                },
+                "annotations": {
+                    "title": "List device routes",
+                    "readOnlyHint": true,
+                    "idempotentHint": true,
+                    "openWorldHint": false
                 }
             },
             {
@@ -218,6 +298,23 @@ fn tools_list() -> Value {
                         }
                     },
                     "required": ["addr"]
+                },
+                "outputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "sent": { "type": "boolean" },
+                        "address": { "type": "string" },
+                        "bytes": { "type": "integer", "description": "Encoded OSC packet size." },
+                        "target": { "type": "string", "description": "host:port the packet was sent to." }
+                    },
+                    "required": ["sent", "address", "bytes", "target"]
+                },
+                "annotations": {
+                    "title": "Send OSC message",
+                    "readOnlyHint": false,
+                    "destructiveHint": false,
+                    "idempotentHint": false,
+                    "openWorldHint": true
                 }
             },
             {
@@ -228,6 +325,31 @@ fn tools_list() -> Value {
                     "properties": {
                         "target": { "type": "string", "description": "host:port to query, defaults to --default-target" }
                     }
+                },
+                "outputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "target": { "type": "string" },
+                        "replied": { "type": "boolean", "description": "False when no reply arrived within 500 ms." },
+                        "replies": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "addr": { "type": "string" },
+                                    "args": { "type": "array" }
+                                },
+                                "required": ["addr", "args"]
+                            }
+                        }
+                    },
+                    "required": ["target", "replied", "replies"]
+                },
+                "annotations": {
+                    "title": "Get bridge status",
+                    "readOnlyHint": true,
+                    "idempotentHint": true,
+                    "openWorldHint": true
                 }
             }
         ]
@@ -266,7 +388,7 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex) -
 }
 
 fn list_devices(index: &DeviceIndex) -> Result<Value, String> {
-    let out: Vec<Value> = index.entries.iter().map(|e| json!({
+    let devices: Vec<Value> = index.entries.iter().map(|e| json!({
         "name": e.name,
         "vendor": e.vendor,
         "slug": e.slug,
@@ -275,8 +397,11 @@ fn list_devices(index: &DeviceIndex) -> Result<Value, String> {
         "source_tier": e.tier,
         "file": e.path.display().to_string(),
     })).collect();
-    Ok(content_text(&format!("{} devices found.\n\n{}", out.len(),
-        serde_json::to_string_pretty(&out).unwrap_or_default())))
+    let count = devices.len();
+    let structured = json!({ "count": count, "devices": devices });
+    let text = format!("{count} devices found.\n\n{}",
+        serde_json::to_string_pretty(&structured["devices"]).unwrap_or_default());
+    Ok(content_structured(&text, structured))
 }
 
 fn load_device_by_slug(index: &DeviceIndex, slug: &str) -> Result<Device, String> {
@@ -287,10 +412,12 @@ fn load_device_by_slug(index: &DeviceIndex, slug: &str) -> Result<Device, String
 
 fn get_device_docs(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
     let dev = load_device_by_slug(index, slug)?;
-    match dev.docs.as_deref() {
-        Some(md) => Ok(content_text(md)),
-        None => Ok(content_text(&format!("No companion .md found for device '{slug}'."))),
-    }
+    let (has_docs, markdown) = match dev.docs.as_deref() {
+        Some(md) => (true, md.to_string()),
+        None => (false, format!("No companion .md found for device '{slug}'.")),
+    };
+    let structured = json!({ "slug": slug, "has_docs": has_docs, "markdown": markdown });
+    Ok(content_structured(&markdown, structured))
 }
 
 fn list_routes(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
@@ -332,7 +459,8 @@ fn list_routes(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
         "params": params,
         "replies": replies,
     });
-    Ok(content_text(&serde_json::to_string_pretty(&payload).unwrap_or_default()))
+    let text = serde_json::to_string_pretty(&payload).unwrap_or_default();
+    Ok(content_structured(&text, payload))
 }
 
 fn send_osc_message(addr: &str, args: &Value, target: SocketAddr) -> Result<Value, String> {
@@ -342,7 +470,13 @@ fn send_osc_message(addr: &str, args: &Value, target: SocketAddr) -> Result<Valu
     let bytes = encoder::encode(&pkt).map_err(|e| format!("osc encode: {e:?}"))?;
     let sock = UdpSocket::bind("0.0.0.0:0").map_err(|e| e.to_string())?;
     sock.send_to(&bytes, target).map_err(|e| e.to_string())?;
-    Ok(content_text(&format!("Sent {addr} ({} bytes) to {target}.", bytes.len())))
+    let structured = json!({
+        "sent": true,
+        "address": addr,
+        "bytes": bytes.len(),
+        "target": target.to_string(),
+    });
+    Ok(content_structured(&format!("Sent {addr} ({} bytes) to {target}.", bytes.len()), structured))
 }
 
 fn get_status(target: SocketAddr) -> Result<Value, String> {
@@ -359,11 +493,14 @@ fn get_status(target: SocketAddr) -> Result<Value, String> {
             collect_messages(pkt, &mut replies);
         }
     }
-    if replies.is_empty() {
-        Ok(content_text(&format!("No reply from {target} within 500 ms. Is osc-bridge running on that port?")))
+    let replied = !replies.is_empty();
+    let text = if replied {
+        serde_json::to_string_pretty(&replies).unwrap_or_default()
     } else {
-        Ok(content_text(&serde_json::to_string_pretty(&replies).unwrap_or_default()))
-    }
+        format!("No reply from {target} within 500 ms. Is osc-bridge running on that port?")
+    };
+    let structured = json!({ "target": target.to_string(), "replied": replied, "replies": replies });
+    Ok(content_structured(&text, structured))
 }
 
 fn collect_messages(pkt: rosc::OscPacket, out: &mut Vec<Value>) {
@@ -412,9 +549,14 @@ fn osc_to_json(v: &rosc::OscType) -> Value {
     }
 }
 
-fn content_text(text: &str) -> Value {
+/// A tool result carrying both a human-readable text block and the
+/// machine-readable `structuredContent` its `outputSchema` describes. The
+/// text block is the spec-recommended fallback for clients that don't read
+/// `structuredContent`.
+fn content_structured(text: &str, structured: Value) -> Value {
     json!({
-        "content": [ { "type": "text", "text": text } ]
+        "content": [ { "type": "text", "text": text } ],
+        "structuredContent": structured,
     })
 }
 
@@ -474,6 +616,32 @@ mod tests {
         for expected in ["list_devices", "get_device_docs", "list_routes", "send", "get_status"] {
             assert!(names.contains(&expected), "tool {expected} missing");
         }
+    }
+
+    #[test]
+    fn every_tool_declares_schema_and_annotations() {
+        let t = tools_list();
+        for tool in t.get("tools").unwrap().as_array().unwrap() {
+            let name = tool.get("name").and_then(Value::as_str).unwrap();
+            assert!(tool.get("inputSchema").map(Value::is_object).unwrap_or(false),
+                "tool {name} missing inputSchema");
+            assert!(tool.get("outputSchema").map(Value::is_object).unwrap_or(false),
+                "tool {name} missing outputSchema");
+            let ann = tool.get("annotations").and_then(Value::as_object);
+            assert!(ann.is_some(), "tool {name} missing annotations");
+            assert!(ann.unwrap().contains_key("title"), "tool {name} annotations missing title");
+        }
+    }
+
+    #[test]
+    fn list_devices_result_carries_structured_content() {
+        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let res = list_devices(&idx).unwrap();
+        let sc = res.get("structuredContent").expect("structuredContent present");
+        assert!(sc.get("count").and_then(Value::as_u64).unwrap() > 100);
+        assert!(sc.get("devices").and_then(Value::as_array).unwrap().len() > 100);
+        // The text fallback block is still there for non-structured clients.
+        assert!(res.get("content").and_then(Value::as_array).is_some());
     }
 
     #[test]
