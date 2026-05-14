@@ -13,13 +13,7 @@ described by one JSON file. Drive it from a live-coding client, a DAW, a
 script, the CLI — or from Claude via the built-in **MCP server** (a **MIDI MCP**
 *and* **OSC MCP**).
 
-![osc-bridge — an OSC ↔ MIDI bridge and MCP server: inspect a hardware synth's named OSC surface, do the same for a DAW over OSC, and list the MCP server's tools](docs/demo/osc-bridge-demo.gif)
-
-```
-  OSC client · CLI · LLM via MCP                    ┌─► USB-MIDI ─► hardware synth   (849 drivers)
-  (SuperCollider, Max, Python, Claude …) ─► osc-bridge ┤
-         reads devices/<vendor>/<device>.json       └─► UDP/OSC ──► DAW · live-coding (Ableton, Sonic Pi …)
-```
+![osc-bridge — clients (OSC clients, the CLI, an LLM via MCP) feed one osc-bridge core that fans out to hardware synthesizers over MIDI/SysEx and music software (Ableton, Bitwig, Reaper, Sonic Pi) over OSC](docs/demo/osc-bridge-demo.png)
 
 ## Install
 
