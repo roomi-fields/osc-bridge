@@ -39,18 +39,20 @@ and that the description/keywords landed correctly.
 
 | Directory | Status | Action |
 |---|---|---|
-| awesome-mcp-servers (punkpeye, ~80k★) | ❌ | PR — "Knowledge & Memory" is the wrong bucket; propose an **Audio / Music** entry. May want the Glama badge first. |
+| Smithery.ai | ✅ | `roomifields/osc-bridge` published 2026-05-14 as a stdio MCPB bundle (`npx -y @roomi-fields/osc-bridge mcp`); 5 tools + `default_target` config indexed; description + icon set via the registry API |
+| awesome-mcp-servers (punkpeye, ~80k★) | ⚠️ | PR #6342 open — entry under "Multimedia Process" |
+| Cline Marketplace | ⚠️ | issue #1561 open on cline/mcp-marketplace |
 | awesome-mcp-servers (wong2) | ❌ | PR |
 | awesome-mcp-servers (appcypher) | ❌ | PR |
 | Cursor Directory | ❌ | web form (~2 min) |
-| Cline Marketplace | ❌ | GitHub issue submission |
 | FindMCP.dev | ❌ | web form |
 
 ## Tier 3 — manual, low effort (long tail)
 
 | Directory | Status |
 |---|---|
-| mcp.so | ❌ |
+| mcp.directory | ✅ submitted by maintainer |
+| mcp.so | 🔄 in progress (maintainer) |
 | MCPIndex.net | ❌ |
 | MCPList.ai | ❌ |
 | Windsurf Directory | ❌ |
@@ -59,7 +61,6 @@ and that the description/keywords landed correctly.
 
 | Channel | Note |
 |---|---|
-| Smithery.ai | Historically N/A for stdio-local servers; re-check whether their CLI runner now supports stdio MCPs packaged on npm. |
 | Docker MCP Catalog | Would need a published Docker image — out of scope unless we ship one. |
 
 ---
@@ -67,12 +68,14 @@ and that the description/keywords landed correctly.
 ## Priority order
 
 1. ~~Add GitHub topics~~ — ✅ done 2026-05-14.
-2. **Verify Tier 1 auto-indexers** picked us up correctly (description, keywords) —
+2. ~~Smithery~~ — ✅ done 2026-05-14.
+3. **Verify Tier 1 auto-indexers** picked us up correctly (description, keywords) —
    give them a few days after the registry publish, then check.
-3. **Cursor Directory + FindMCP** — quick web forms.
-4. **awesome-mcp-servers PRs** — highest-traffic, but slowest; the music/audio
-   positioning needs a clear category pitch since we're not the typical
-   "knowledge" or "dev-tools" MCP.
+4. **Cursor Directory + FindMCP** — quick web forms.
+5. **Track PR #6342 (punkpeye) + issue #1561 (Cline)** — respond to maintainer
+   feedback if any; the music/audio positioning needs a clear category pitch
+   since we're not the typical "knowledge" or "dev-tools" MCP.
+6. **awesome-mcp-servers PRs (wong2, appcypher)** — remaining high-traffic lists.
 
 ## Monitoring cadence (PLAYBOOK §6.2)
 
