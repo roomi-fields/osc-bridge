@@ -1,22 +1,38 @@
 //! Multi-device orchestration: one `osc-bridge orchestrate --config bridge.toml`
-//! drives N devices over a single OSC socket. Dispatch by `osc_prefix`.
+//! drives N devices (hardware MIDI and/or software OSC) over a single OSC
+//! socket. Dispatch by `osc_prefix`.
 //!
-//! Config layout (see `docs/ORCHESTRATE.md`):
+//! Config layout:
 //!
 //! ```toml
 //! [osc]
 //! bind = "127.0.0.1:7777"
 //! clients = ["127.0.0.1:8888"]
 //!
+//! # Hardware (MIDI/SysEx) device.
 //! [[devices]]
 //! spec = "devices/moog/subsequent-37.json"
 //! midi_out_port = 3
 //! midi_in_port  = 2
 //!
+//! # Same model twice — override the prefix to avoid a dispatch collision.
 //! [[devices]]
 //! spec = "devices/arturia/matrixbrute.json"
-//! osc_prefix = "/matrixbrute-1"    # override when multiple units of one model
+//! osc_prefix = "/matrixbrute-1"
 //! midi_out_port = 5
+//!
+//! # Software (OSC-transport) device. No MIDI port. host / port /
+//! # reply_port are optional overrides of the driver JSON's transport block.
+//! [[devices]]
+//! spec = "devices/ableton/live.third-party-osc.fw-12.2.json"
+//! host = "192.168.1.40"      # optional — defaults to the JSON's value
+//!
+//! # Inter-device route: a knob turn on the MiniLab drives an Ableton track.
+//! [[routes]]
+//! from = "/minilab3/cc/74"
+//! to   = "/ableton/track/0/volume"
+//! map.from = [0, 127]
+//! map.to   = [0, 1]
 //! ```
 
 use anyhow::{anyhow, bail, Context, Result};
@@ -35,9 +51,9 @@ use std::sync::OnceLock;
 
 use crate::device::Device;
 use crate::runtime::{
-    bridge_status_replies, build_forward_msg, dispatch_osc_to_device, dispatch_to_device,
-    handle_midi_in, match_osc_path, parse_osc_tpl, run_osc_reply_loop, send_osc_to_target,
-    DeviceDispatch, OscDeviceHandle, Part, SendOsc,
+    bridge_docs_replies, bridge_status_replies, build_forward_msg, dispatch_osc_to_device,
+    dispatch_to_device, handle_midi_in, match_osc_path, parse_osc_tpl, run_osc_reply_loop,
+    send_osc_to_target, DeviceDispatch, OscDeviceHandle, Part, SendOsc,
 };
 
 /// Compiled form of a RouteRule, pattern parsed once at startup.
@@ -200,6 +216,17 @@ pub struct DeviceConfig {
     /// prefix ⇒ dispatch collision).
     #[serde(default)]
     pub osc_prefix: Option<String>,
+    /// OSC-transport override: replaces `device.transport.host` from the
+    /// driver JSON. Lets one driver JSON target a remote instance (or a
+    /// non-default port) without editing the file. Ignored for MIDI devices.
+    #[serde(default)]
+    pub host: Option<String>,
+    /// OSC-transport override: replaces `device.transport.port`.
+    #[serde(default)]
+    pub port: Option<u16>,
+    /// OSC-transport override: replaces `device.transport.reply_port`.
+    #[serde(default)]
+    pub reply_port: Option<u16>,
 }
 
 impl OrchestratorConfig {
@@ -291,7 +318,13 @@ impl Orchestrator {
                 .map(|t| t.kind.as_str()) == Some("osc");
 
             if is_osc {
-                // Software (OSC-transport) device.
+                // Software (OSC-transport) device. Apply optional host /
+                // port / reply_port overrides from bridge.toml before build.
+                if let Some(t) = dev.device.transport.as_mut() {
+                    if let Some(h) = &dc.host { t.host = Some(h.clone()); }
+                    if let Some(p) = dc.port { t.port = Some(p); }
+                    if let Some(rp) = dc.reply_port { t.reply_port = Some(rp); }
+                }
                 let transport_reply_port = dev.device.transport.as_ref()
                     .and_then(|t| t.reply_port);
                 let handle = OscDeviceHandle::build(dev)
@@ -484,6 +517,16 @@ fn orch_handle(
     if msg.addr == "/bridge/status" {
         let devs: Vec<Device> = devices.iter().map(|d| d.device().clone()).collect();
         for reply in bridge_status_replies(&devs) {
+            send_osc(reply);
+        }
+        return;
+    }
+
+    // Global: /bridge/docs → one reply per device that has a companion .md
+    // loaded. Mirrors the single-device `run` behaviour.
+    if msg.addr == "/bridge/docs" {
+        let devs: Vec<Device> = devices.iter().map(|d| d.device().clone()).collect();
+        for reply in bridge_docs_replies(&devs) {
             send_osc(reply);
         }
         return;
