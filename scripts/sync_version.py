@@ -2,10 +2,9 @@
 """Propagate the version from Cargo.toml (the source of truth) to every mirror.
 
 Mirrors kept in sync:
-  - npm/package.json   →  "version"
-
-Future phases will add `.claude-plugin/plugin.json` (version + the npx pin in
-mcpServers.args) and `server.json` here.
+  - npm/package.json              "version"
+  - .claude-plugin/plugin.json    "version" + the npx pin in mcpServers.args
+  - server.json                   "version" (top-level) + packages[].version
 
 Each mirror is patched with a targeted regex replace, never parse-then-dump —
 re-serialising a JSON file reflows it and produces phantom diffs.
@@ -33,13 +32,17 @@ def cargo_version() -> str:
     return m.group(1)
 
 
-# (path, compiled regex with 3 groups: prefix / version / suffix, label)
+# Each mirror: (relative path, [compiled patterns]). Every pattern has 3
+# groups — prefix / version / suffix — and EVERY match in the file is rewritten
+# (a file may legitimately repeat the version, e.g. server.json's top-level
+# field and packages[].version).
+_VERSION_FIELD = re.compile(r'("version"\s*:\s*")([^"]+)(")')
+_NPX_PIN = re.compile(r"(@roomi-fields/osc-bridge@)([^\"]+)(\")")
+
 MIRRORS = [
-    (
-        ROOT / "npm" / "package.json",
-        re.compile(r'("version"\s*:\s*")([^"]+)(")'),
-        "npm/package.json",
-    ),
+    ("npm/package.json", [_VERSION_FIELD]),
+    (".claude-plugin/plugin.json", [_VERSION_FIELD, _NPX_PIN]),
+    ("server.json", [_VERSION_FIELD]),
 ]
 
 
@@ -48,24 +51,25 @@ def main() -> None:
     want = cargo_version()
     drift: list[str] = []
 
-    for path, pat, label in MIRRORS:
+    for rel, patterns in MIRRORS:
+        path = ROOT / rel
         if not path.is_file():
             # A mirror that doesn't exist yet (earlier phase) is not drift.
             continue
         txt = path.read_text(encoding="utf-8")
-        m = pat.search(txt)
-        if not m:
-            sys.exit(f"error: version field not found in {label}")
-        have = m.group(2)
-        if have == want:
-            continue
-        if check:
-            drift.append(f"  {label}: {have} != {want}")
-        else:
-            path.write_text(
-                pat.sub(rf"\g<1>{want}\g<3>", txt, count=1), encoding="utf-8"
-            )
-            print(f"  {label}: {have} -> {want}")
+        new_txt = txt
+        for pat in patterns:
+            matches = list(pat.finditer(new_txt))
+            if not matches:
+                sys.exit(f"error: pattern {pat.pattern!r} not found in {rel}")
+            for m in matches:
+                if m.group(2) != want and check:
+                    drift.append(f"  {rel}: {m.group(2)} != {want}")
+            if not check:
+                new_txt = pat.sub(rf"\g<1>{want}\g<3>", new_txt)
+        if not check and new_txt != txt:
+            path.write_text(new_txt, encoding="utf-8")
+            print(f"  {rel}: synced to {want}")
 
     if check and drift:
         print(f"version drift (Cargo.toml = {want}):", file=sys.stderr)
