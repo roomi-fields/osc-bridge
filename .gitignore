@@ -30,3 +30,9 @@ CLAUDE.md
 # experiment caches. scripts/sync_sources.py reads an optional
 # .local/sources.toml for local source-declaration overrides.
 .local/
+
+# npm wrapper artifacts. vendor/ is populated by the postinstall download
+# on the user's machine; node_modules/ and *.tgz are local build output.
+npm/vendor/
+npm/node_modules/
+npm/*.tgz

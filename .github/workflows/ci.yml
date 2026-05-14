@@ -39,6 +39,9 @@ jobs:
             echo '::error::docs/SUPPORTED_DEVICES.md is out of sync — run scripts/regen_supported_devices.py locally and commit.'
             exit 1
           }
+      - name: Version mirrors are in sync with Cargo.toml
+        if: runner.os == 'Linux'
+        run: python3 scripts/sync_version.py --check
 
   release:
     name: Release binary on ${{ matrix.target }}
