@@ -1,0 +1,16 @@
+# Smithery configuration — https://smithery.ai/docs/config#smitheryyaml
+#
+# Lets Smithery (smithery.ai) discover and launch the osc-bridge MCP server
+# as a local stdio process. The server is the `mcp` subcommand of the
+# osc-bridge CLI, run straight from npm — no launch-time config required.
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema for the MCP's configuration options.
+    type: object
+    properties: {}
+  commandFunction:
+    # Produces the CLI command to start the MCP on stdio.
+    |-
+    (config) => ({ command: 'npx', args: ['-y', '@roomi-fields/osc-bridge', 'mcp'], env: {} })
