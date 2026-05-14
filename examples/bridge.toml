@@ -1,0 +1,33 @@
+# Example orchestrator config for osc-bridge.
+# Run with:  osc-bridge orchestrate --config examples/bridge.toml
+
+[osc]
+# Inbound OSC (clients send performance/config here).
+bind = "127.0.0.1:7777"
+# Outbound broadcast — every event is copied to all listed clients.
+# Leave empty for fire-and-forget setups that don't need feedback.
+clients = ["127.0.0.1:8888"]
+
+[[devices]]
+spec          = "devices/moog/subsequent-37.json"
+midi_out_port = 3
+midi_in_port  = 2
+# osc_prefix: inherited from the JSON (/sub37 here) unless overridden.
+
+[[devices]]
+spec          = "devices/polyend/synth.json"
+midi_out_port = 5
+midi_in_port  = 4
+
+# Two MatrixBrutes in the same rig — give them distinct OSC prefixes.
+# [[devices]]
+# spec          = "devices/arturia/matrixbrute.json"
+# osc_prefix    = "/matrixbrute-1"
+# midi_out_port = 7
+# midi_in_port  = 6
+#
+# [[devices]]
+# spec          = "devices/arturia/matrixbrute.json"
+# osc_prefix    = "/matrixbrute-2"
+# midi_out_port = 9
+# midi_in_port  = 8

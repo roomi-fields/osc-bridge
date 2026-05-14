@@ -1,0 +1,37 @@
+name: "Bug report"
+description: "Something went wrong — wrong bytes, JSON not loading, runtime crash, etc."
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: "osc-bridge version"
+      placeholder: "e.g. v0.5.0 or commit sha"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: "Device JSON involved"
+      placeholder: "e.g. devices/moog/subsequent-37.json"
+  - type: textarea
+    id: repro
+    attributes:
+      label: "Reproduction"
+      description: "OSC message(s) you sent, command lines, configuration."
+      render: "shell"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Expected vs observed"
+      description: "What MIDI / OSC bytes should have gone out, and what actually did."
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Logs"
+      render: "shell"

@@ -1,0 +1,32 @@
+target/
+Cargo.lock
+*.swp
+.DS_Store
+
+# Bulk-import caches (populated by scripts/sync_sources.py)
+.cache/
+
+# Local auth files (never commit)
+.electra_auth.json
+.auth.json
+__pycache__/
+
+# RTFM local database
+.rtfm/
+
+# Runtime artifacts from hardware testing
+bridge.log
+bridge.err
+listen.log
+listen.err
+test-preset.json
+
+# Local / user-specific harness configs
+.claude/
+.mcp.json
+CLAUDE.md
+
+# Machine-local files: scratch space, local-only config overrides,
+# experiment caches. scripts/sync_sources.py reads an optional
+# .local/sources.toml for local source-declaration overrides.
+.local/

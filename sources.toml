@@ -1,0 +1,45 @@
+# Bulk import sources for osc-bridge.
+#
+# Run `python3 scripts/sync_sources.py` to fetch + cache all sources declared
+# here into `.cache/<name>/`. Then run each source's importer to generate
+# device JSONs under `devices/`.
+#
+# Add a new source:
+#   - append a [[source]] block
+#   - supply a `type` the driver knows (git, firestore)
+#   - point `importer` / `converter` at the script that turns the cached data
+#     into `devices/<vendor>/<slug>.json`
+
+[[source]]
+name        = "pencilresearch"
+description = "Canonical MIDI CC/NRPN tables (community, MIT)"
+type        = "git"
+repo        = "https://github.com/pencilresearch/midi"
+cache_dir   = ".cache/pencilresearch-midi"
+# How to turn the cached clone into device JSONs
+importer    = "scripts/import_pencilresearch.py"
+importer_bulk_args = ["--bulk", "{cache_dir}"]
+update_args        = ["--update", "{json}", "--from", "{csv}"]
+
+[[source]]
+name        = "electra-one-public"
+description = "Public Electra One preset library (Firestore; user account required to enumerate)"
+type        = "firestore"
+firestore_project   = "electra-one-716c4"
+# Firebase API keys are public-by-design (they identify the project, not
+# authenticate users) but GitHub secret-scanning flags the AIza* pattern
+# regardless. To stay clean, we don't commit the key — `firestore.py`
+# extracts it on first use from Electra's published web bundle:
+#   firebase_api_key_extract = "https://app.electra.one/_nuxt/0c61af0.js"
+#   firebase_api_key_pattern = "AIza[A-Za-z0-9_-]{35}"
+# The driver caches the discovered key in /tmp for the session.
+firebase_api_key_source = "https://app.electra.one/"
+collection              = "projects"
+filter                  = "isPublic == true"
+# Path to a local file holding { email, password }. NOT committed.
+auth_file               = "~/.electra_auth.json"
+cache_dir               = ".cache/electra-presets"
+# The converter the importer step will invoke per cached file
+converter               = "scripts/import_electra_preset.py"
+# Whether to respect Electra revision field to skip unchanged presets on refresh
+incremental             = true
