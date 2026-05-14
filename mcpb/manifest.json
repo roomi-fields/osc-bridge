@@ -1,0 +1,105 @@
+{
+  "manifest_version": "0.3",
+  "name": "osc-bridge",
+  "display_name": "osc-bridge",
+  "version": "0.10.0",
+  "description": "OSC ↔ MIDI/SysEx bridge for 849 synths and DAWs — a MIDI MCP and OSC MCP.",
+  "long_description": "osc-bridge is a declarative bridge between OSC and the music world: 849 hardware synthesizers over MIDI/SysEx, plus music software over OSC (Ableton, Bitwig, Reaper, Sonic Pi, SuperCollider, Pure Data, TouchDesigner, VCV Rack). Its MCP server exposes the whole catalogue to an LLM — list devices, read a device's named OSC surface, send OSC to synths and DAWs, and check a running bridge's status. Both a MIDI MCP (hardware over MIDI/SysEx) and an OSC MCP (DAWs and live-coding environments).",
+  "author": {
+    "name": "roomi-fields",
+    "url": "https://github.com/roomi-fields"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/roomi-fields/osc-bridge.git"
+  },
+  "homepage": "https://roomi-fields.github.io/osc-bridge/",
+  "documentation": "https://github.com/roomi-fields/osc-bridge/blob/main/docs/MCP.md",
+  "support": "https://github.com/roomi-fields/osc-bridge/issues",
+  "icon": "icon.png",
+  "keywords": [
+    "mcp",
+    "midi",
+    "osc",
+    "midi mcp",
+    "osc mcp",
+    "synthesizer",
+    "ableton",
+    "bitwig",
+    "reaper",
+    "sonic pi",
+    "supercollider",
+    "daw",
+    "live coding"
+  ],
+  "license": "GPL-3.0-or-later",
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": { "node": ">=18.0.0" }
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "bin/osc-bridge.js",
+    "mcp_config": {
+      "command": "npx",
+      "args": ["-y", "@roomi-fields/osc-bridge", "mcp"],
+      "env": {}
+    }
+  },
+  "tools_generated": false,
+  "user_config": {
+    "default_target": {
+      "type": "string",
+      "title": "Default OSC target",
+      "description": "host:port that the send / get_status tools use when no target argument is given. Defaults to 127.0.0.1:7777 — the standard `osc-bridge run` bind.",
+      "required": false,
+      "default": "127.0.0.1:7777"
+    }
+  },
+  "tools": [
+    {
+      "name": "list_devices",
+      "description": "Enumerate every device driver — name, vendor, slug, kind (hardware/software), and source tier. Use this first to discover the catalogue.",
+      "inputSchema": { "type": "object", "properties": {} }
+    },
+    {
+      "name": "get_device_docs",
+      "description": "Fetch the markdown companion guide for one device, by slug (the device's OSC prefix without the leading slash, e.g. 'ableton').",
+      "inputSchema": {
+        "type": "object",
+        "properties": { "slug": { "type": "string", "description": "Device slug, e.g. 'ableton' or 'minilab3'" } },
+        "required": ["slug"]
+      }
+    },
+    {
+      "name": "list_routes",
+      "description": "Return the OSC routes a device exposes: declarative commands, CC/NRPN params, SysEx params, and reply patterns.",
+      "inputSchema": {
+        "type": "object",
+        "properties": { "slug": { "type": "string", "description": "Device slug, e.g. 'minilab3'" } },
+        "required": ["slug"]
+      }
+    },
+    {
+      "name": "send",
+      "description": "Send a single OSC message (typed args: int, float, string, bool) to a running osc-bridge instance — drive synths and DAWs.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "addr": { "type": "string", "description": "OSC address, e.g. /ableton/transport/play" },
+          "args": { "type": "array", "description": "Typed OSC args (int / float / string / bool)" },
+          "target": { "type": "string", "description": "Optional host:port override" }
+        },
+        "required": ["addr"]
+      }
+    },
+    {
+      "name": "get_status",
+      "description": "Send /bridge/status to a running osc-bridge and report the replies received within 500 ms.",
+      "inputSchema": {
+        "type": "object",
+        "properties": { "target": { "type": "string", "description": "host:port to query, defaults to the configured default target" } }
+      }
+    }
+  ]
+}
