@@ -18,7 +18,7 @@ Legend: ✅ live · ⚠️ submitted, pending · 🔄 auto-indexing in progress 
 |---|---|---|
 | npm — `@roomi-fields/osc-bridge` | ✅ | v0.10.0 published 2026-05-14 |
 | Official MCP Registry — `io.github.roomi-fields/osc-bridge` | ✅ | published 2026-05-14, status `active` |
-| GitHub repo + topics | ⚠️ | repo public; **add topics**: `mcp`, `mcp-server`, `model-context-protocol`, `midi`, `osc`, `claude` |
+| GitHub repo + topics | ✅ | public; topics include `mcp`, `mcp-server`, `model-context-protocol`, `midi`, `osc`, `claude`, `ableton`, `bitwig`, `reaper`, `daw`, `live-coding` (20-topic cap reached — dropped the long-tail vendor topics) |
 | `roomi-fields/claude-plugins` marketplace | ✅ | entry added 2026-05-14 |
 | Pages site (GitHub Pages) | ✅ | device browser + SEO/JSON-LD live |
 
@@ -66,8 +66,9 @@ and that the description/keywords landed correctly.
 
 ## Priority order
 
-1. **Add GitHub topics** — zero-effort, feeds GitHub search for `mcp` / `midi` / `osc`.
-2. **Verify Tier 1 auto-indexers** picked us up correctly (description, keywords).
+1. ~~Add GitHub topics~~ — ✅ done 2026-05-14.
+2. **Verify Tier 1 auto-indexers** picked us up correctly (description, keywords) —
+   give them a few days after the registry publish, then check.
 3. **Cursor Directory + FindMCP** — quick web forms.
 4. **awesome-mcp-servers PRs** — highest-traffic, but slowest; the music/audio
    positioning needs a clear category pitch since we're not the typical
