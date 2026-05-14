@@ -15,6 +15,7 @@
 
 use anyhow::Result;
 use serde_json::{json, Value};
+use std::collections::HashMap;
 use std::io::{BufRead, Write};
 use std::net::{SocketAddr, UdpSocket};
 use std::path::{Path, PathBuf};
@@ -31,9 +32,72 @@ pub struct McpOptions {
     pub default_target: SocketAddr,
 }
 
+/// One lightweight catalogue entry. The full `Device` is loaded on demand
+/// (per `get_device_docs` / `list_routes` call) — only this metadata is held
+/// resident.
+struct DeviceIndexEntry {
+    path: PathBuf,
+    slug: String,
+    name: String,
+    vendor: String,
+    kind: String,
+    revision: String,
+    tier: String,
+}
+
+/// Built once at startup. Without it, every device tool call would re-walk
+/// and re-parse the whole `devices/` tree (~900 files); with it, `list_devices`
+/// is a cheap serialize and slug lookup is O(1).
+struct DeviceIndex {
+    entries: Vec<DeviceIndexEntry>,
+    by_slug: HashMap<String, usize>,
+}
+
+impl DeviceIndex {
+    /// Walk `devices/` once, parsing each JSON just enough to capture the
+    /// catalogue metadata. When several files share an `osc_prefix` (the
+    /// per-variant convention), the first one walked wins the slug lookup.
+    fn build(dir: &Path) -> Self {
+        let mut entries: Vec<DeviceIndexEntry> = Vec::new();
+        let mut by_slug: HashMap<String, usize> = HashMap::new();
+        let _ = walk_json(dir, &mut |path, doc| {
+            let device = doc.get("device");
+            let get = |k: &str| device.and_then(|d| d.get(k)).and_then(Value::as_str);
+            let slug = get("osc_prefix").unwrap_or("").trim_start_matches('/').to_string();
+            let tier = doc.get("_sources").and_then(Value::as_array)
+                .and_then(|a| a.first())
+                .and_then(|s| s.get("type").and_then(Value::as_str))
+                .unwrap_or("unknown").to_string();
+            let idx = entries.len();
+            if !slug.is_empty() {
+                by_slug.entry(slug.clone()).or_insert(idx);
+            }
+            entries.push(DeviceIndexEntry {
+                path: path.to_path_buf(),
+                slug,
+                name: get("name").unwrap_or("?").to_string(),
+                vendor: get("vendor").unwrap_or("?").to_string(),
+                kind: get("kind").unwrap_or("hardware").to_string(),
+                revision: get("revision").unwrap_or("").to_string(),
+                tier,
+            });
+        });
+        Self { entries, by_slug }
+    }
+
+    fn find_path(&self, slug: &str) -> Option<&Path> {
+        self.by_slug.get(slug).map(|&i| self.entries[i].path.as_path())
+    }
+}
+
 pub fn run(opts: McpOptions) -> Result<()> {
     eprintln!("MCP server starting (devices_dir={}, default_target={})",
         opts.devices_dir.display(), opts.default_target);
+    // Build the catalogue index once — every device tool reads from it
+    // instead of re-walking the tree.
+    let index = DeviceIndex::build(&opts.devices_dir);
+    eprintln!("indexed {} device file(s)", index.entries.len());
+
     let stdin = std::io::stdin();
     let stdout = std::io::stdout();
     let mut out = stdout.lock();
@@ -51,7 +115,7 @@ pub fn run(opts: McpOptions) -> Result<()> {
                 continue;
             }
         };
-        if let Some(resp) = handle_request(&req, &opts) {
+        if let Some(resp) = handle_request(&req, &opts, &index) {
             let s = serde_json::to_string(&resp)?;
             writeln!(out, "{s}")?;
             out.flush()?;
@@ -60,7 +124,7 @@ pub fn run(opts: McpOptions) -> Result<()> {
     Ok(())
 }
 
-fn handle_request(req: &Value, opts: &McpOptions) -> Option<Value> {
+fn handle_request(req: &Value, opts: &McpOptions, index: &DeviceIndex) -> Option<Value> {
     let id = req.get("id").cloned();
     let method = req.get("method").and_then(Value::as_str).unwrap_or("");
 
@@ -74,7 +138,7 @@ fn handle_request(req: &Value, opts: &McpOptions) -> Option<Value> {
         "tools/list" => Ok(tools_list()),
         "tools/call" => match req.get("params").and_then(|p| Some((p.get("name")?.as_str()?, p.get("arguments").cloned().unwrap_or(json!({})))))
         {
-            Some((name, args)) => call_tool(name, &args, opts).map_err(|e| (-32602, e)),
+            Some((name, args)) => call_tool(name, &args, opts, index).map_err(|e| (-32602, e)),
             None => Err((-32602, "missing params.name".into())),
         },
         "ping" => Ok(json!({})),
@@ -170,16 +234,16 @@ fn tools_list() -> Value {
     })
 }
 
-fn call_tool(name: &str, args: &Value, opts: &McpOptions) -> Result<Value, String> {
+fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex) -> Result<Value, String> {
     match name {
-        "list_devices" => list_devices(&opts.devices_dir),
+        "list_devices" => list_devices(index),
         "get_device_docs" => {
             let slug = args.get("slug").and_then(Value::as_str).ok_or("missing slug")?;
-            get_device_docs(&opts.devices_dir, slug)
+            get_device_docs(index, slug)
         }
         "list_routes" => {
             let slug = args.get("slug").and_then(Value::as_str).ok_or("missing slug")?;
-            list_routes(&opts.devices_dir, slug)
+            list_routes(index, slug)
         }
         "send" => {
             let addr = args.get("addr").and_then(Value::as_str).ok_or("missing addr")?;
@@ -201,43 +265,36 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions) -> Result<Value, Strin
     }
 }
 
-fn list_devices(dir: &Path) -> Result<Value, String> {
-    let mut out = Vec::new();
-    walk_json(dir, &mut |path, doc| {
-        let device = doc.get("device").cloned().unwrap_or(json!({}));
-        let name = device.get("name").and_then(Value::as_str).unwrap_or("?");
-        let vendor = device.get("vendor").and_then(Value::as_str).unwrap_or("?");
-        let prefix = device.get("osc_prefix").and_then(Value::as_str).unwrap_or("");
-        let slug = prefix.trim_start_matches('/').to_string();
-        let kind = device.get("kind").and_then(Value::as_str).unwrap_or("hardware");
-        let revision = device.get("revision").and_then(Value::as_str).unwrap_or("");
-        let tier = doc.get("_sources").and_then(Value::as_array)
-            .and_then(|a| a.first())
-            .and_then(|s| s.get("type").and_then(Value::as_str))
-            .unwrap_or("unknown");
-        out.push(json!({
-            "name": name,
-            "vendor": vendor,
-            "slug": slug,
-            "kind": kind,
-            "revision": revision,
-            "source_tier": tier,
-            "file": path.display().to_string(),
-        }));
-    }).map_err(|e| e.to_string())?;
-    Ok(content_text(&format!("{} devices found.\n\n{}", out.len(), serde_json::to_string_pretty(&out).unwrap_or_default())))
+fn list_devices(index: &DeviceIndex) -> Result<Value, String> {
+    let out: Vec<Value> = index.entries.iter().map(|e| json!({
+        "name": e.name,
+        "vendor": e.vendor,
+        "slug": e.slug,
+        "kind": e.kind,
+        "revision": e.revision,
+        "source_tier": e.tier,
+        "file": e.path.display().to_string(),
+    })).collect();
+    Ok(content_text(&format!("{} devices found.\n\n{}", out.len(),
+        serde_json::to_string_pretty(&out).unwrap_or_default())))
 }
 
-fn get_device_docs(dir: &Path, slug: &str) -> Result<Value, String> {
-    let dev = find_device(dir, slug).map_err(|e| e.to_string())?;
+fn load_device_by_slug(index: &DeviceIndex, slug: &str) -> Result<Device, String> {
+    let path = index.find_path(slug)
+        .ok_or_else(|| format!("no device with slug '{slug}'"))?;
+    Device::load(path).map_err(|e| format!("load {}: {e}", path.display()))
+}
+
+fn get_device_docs(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
+    let dev = load_device_by_slug(index, slug)?;
     match dev.docs.as_deref() {
         Some(md) => Ok(content_text(md)),
         None => Ok(content_text(&format!("No companion .md found for device '{slug}'."))),
     }
 }
 
-fn list_routes(dir: &Path, slug: &str) -> Result<Value, String> {
-    let dev = find_device(dir, slug).map_err(|e| e.to_string())?;
+fn list_routes(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
+    let dev = load_device_by_slug(index, slug)?;
     let prefix = dev.device.osc_prefix.clone();
     let mut cmds: Vec<Value> = Vec::new();
     for c in &dev.commands {
@@ -388,24 +445,25 @@ fn walk_json<F: FnMut(&Path, &Value)>(dir: &Path, f: &mut F) -> std::io::Result<
     Ok(())
 }
 
-fn find_device(dir: &Path, slug: &str) -> Result<Device, String> {
-    let want = format!("/{slug}");
-    let mut found: Option<PathBuf> = None;
-    let _ = walk_json(dir, &mut |path, v| {
-        if found.is_some() { return; }
-        if let Some(pfx) = v.get("device").and_then(|d| d.get("osc_prefix")).and_then(Value::as_str) {
-            if pfx == want {
-                found = Some(path.to_path_buf());
-            }
-        }
-    });
-    let path = found.ok_or_else(|| format!("no device with slug '{slug}' under {}", dir.display()))?;
-    Device::load(&path).map_err(|e| format!("load {}: {e}", path.display()))
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// An empty index — these handshake/dispatch tests don't touch devices.
+    fn empty_index() -> DeviceIndex {
+        DeviceIndex { entries: Vec::new(), by_slug: HashMap::new() }
+    }
+
+    #[test]
+    fn device_index_builds_from_devices_dir() {
+        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        assert!(idx.entries.len() > 100, "expected the full catalogue, got {}", idx.entries.len());
+        // The Ableton driver has a stable slug — lookup must be O(1) and hit.
+        let p = idx.find_path("ableton").expect("/ableton slug should resolve");
+        assert!(p.to_string_lossy().contains("ableton"));
+        // Unknown slug resolves to nothing rather than walking the tree.
+        assert!(idx.find_path("does-not-exist").is_none());
+    }
 
     #[test]
     fn tools_list_has_five_tools() {
@@ -432,7 +490,7 @@ mod tests {
             devices_dir: PathBuf::from("devices"),
             default_target: "127.0.0.1:7777".parse().unwrap(),
         };
-        let resp = handle_request(&req, &opts).unwrap();
+        let resp = handle_request(&req, &opts, &empty_index()).unwrap();
         assert_eq!(resp.get("id"), Some(&json!(1)));
         assert!(resp.get("result").is_some());
     }
@@ -444,7 +502,7 @@ mod tests {
             devices_dir: PathBuf::from("devices"),
             default_target: "127.0.0.1:7777".parse().unwrap(),
         };
-        assert!(handle_request(&req, &opts).is_none());
+        assert!(handle_request(&req, &opts, &empty_index()).is_none());
     }
 
     #[test]
@@ -454,7 +512,7 @@ mod tests {
             devices_dir: PathBuf::from("devices"),
             default_target: "127.0.0.1:7777".parse().unwrap(),
         };
-        let resp = handle_request(&req, &opts).unwrap();
+        let resp = handle_request(&req, &opts, &empty_index()).unwrap();
         assert!(resp.get("error").is_some());
     }
 }
