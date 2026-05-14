@@ -25,7 +25,11 @@ Short-list of follow-ups. Move to an issue when picked up.
 
 ## Docs
 - [ ] Write the "How I wrote my first device JSON in 30 min" tutorial — referenced by README but doesn't exist yet.
-- [ ] Surface on the Pages site: author credit per device (data is there in `devices.json`, not displayed).
+- [x] Surface on the Pages site: author credit per device — `index.html` shows the Author column and includes it in search; `📡 OSC-API` filter chip added.
 
 ## Security
-- [ ] Re-check GitHub's secret-scanning status weekly until the orphan blob is GC'd (direct-SHA URL still returns the key as of 2026-04-13).
+- [x] Firebase web API key blob: resolved by the 2026-05-14 history squash —
+  no ref on the remote reaches the old commit anymore. The key was
+  public-by-design (it identifies the Firebase project, not a user); GitHub
+  may keep the orphaned object until internal GC, but it's unreachable via
+  normal git operations and carries no real exposure.
