@@ -9,21 +9,87 @@ additive minor bumps every time a new device class surfaces something
 the JSON can't yet express. Backwards-compat of existing device JSONs
 is tracked explicitly under each release.
 
-## [Unreleased]
+## [0.10.0] — 2026-05-14
+
+osc-bridge stops being a hardware-only tool. A new **OSC transport** lets a
+driver target a software endpoint — a DAW or a live-coding environment —
+behind the same named OSC surface as a synth. Eight software targets ship in
+this release. The multi-device **orchestrator** gains full dispatch and
+declarative inter-device routing. And the whole 849-device catalogue is now
+reachable from an LLM through a built-in **MCP server**.
+
+### Added — OSC transport (software targets)
+- `device.transport` block: `kind = "osc"` routes a driver to a UDP/OSC
+  endpoint instead of a MIDI port (`host` / `port` / `reply_port`).
+- `Command.forward` — emit a templated OSC message (typed args, `{name}`
+  placeholders) to the target; the OSC-mode counterpart of `frame`.
+- `subscriptions[]` — one-shot OSC emitted at startup, e.g. to subscribe to
+  a DAW's state changes.
+- `replies[]` extended with `match_osc` + `match_args` — decode an incoming
+  OSC message from the target back into the device's named surface.
+- `transport.passthrough_prefix` — passthrough mode for environments with a
+  user-defined OSC surface: forward everything under `/<prefix>/...`
+  verbatim, no per-command modelling.
+- New source tiers: `📡 vendor-osc-api`, `📡 third-party-osc`, and
+  `✅ software-verified` (tested end-to-end against a running instance of
+  the host software).
+
+### Added — software drivers
+- **Ableton Live** via AbletonOSC — ✅ software-verified on Live 12.2.7.
+- **Bitwig Studio** (DrivenByMoss) and **Reaper** (native OSC) — declarative.
+- **Sonic Pi**, **SuperCollider**, **Pure Data**, **TouchDesigner**,
+  **VCV Rack** — passthrough.
+- Each ships a companion `.md` documenting host-side setup, ports, conventions.
+
+### Added — orchestrator
+- Full dispatch: `osc-bridge orchestrate` now runs the same command / param /
+  cc_param / midi_out pipeline as single-device mode, not just perf-MIDI.
+- Loads OSC-transport (software) devices alongside hardware MIDI devices in
+  a single `bridge.toml`.
+- `[[routes]]` — declarative inter-device routing with optional linear value
+  remap (`map.from` / `map.to`). Routes fire on any event the bridge emits,
+  including MIDI-in knob turns and software replies.
+- `/bridge/docs` served in orchestrator mode (was single-device only).
+- `bridge.toml` device entries can override an OSC driver's
+  `host` / `port` / `reply_port`.
+
+### Added — MCP server
+- `osc-bridge mcp` — a Model Context Protocol server (JSON-RPC over stdio).
+  Five tools: `list_devices`, `get_device_docs`, `list_routes`, `send`,
+  `get_status`. Both a MIDI MCP (hardware over MIDI/SysEx) and an OSC MCP
+  (DAWs and live-coding environments).
+- Catalogue index built once at startup — device tools don't re-walk the
+  `devices/` tree on every call.
+
+### Added — distribution
+- `@roomi-fields/osc-bridge` npm wrapper: `npm install` downloads the
+  prebuilt native binary for the platform from the matching GitHub release.
+- `server.json` (Official MCP Registry) and `.claude-plugin/plugin.json`.
+- `scripts/sync_version.py` — `Cargo.toml` is the single version source of
+  truth, propagated to every manifest mirror; CI gate fails on drift.
+
+### Added — devices & docs
+- **Arturia MatrixBrute** promoted to hardware-verified-partial (fw
+  2.0.3.1411): 78 hierarchically-named CC params, 39 global options as a
+  `params` block (`0x42` / `0x43`), 2 SysEx preset commands, 2 reply patterns.
+- **Ableton Push 3** hardware-verified driver (Control Mode, USB-C).
+- `docs/TUTORIAL_FIRST_DEVICE.md` — a 30-minute hands-on "first device JSON".
+- Pages site: Author column added, `📡 OSC-API` filter chip.
 
 ### Changed
+- **Per-variant driver convention** — one source per JSON file, never
+  silently fused. Variants named `<device>.<source-tier>.fw-<version>.json`;
+  `regen_supported_devices.py` groups them under one catalogue entry.
+  Beetlecrab Tempera rewritten from the vendor doc (fw 2.2) as the reference.
+- `_sources[].type "electra-preset-private"` normalised to `electra-preset`
+  across 191 devices — a single Electra-preset tier; provenance still carried
+  per entry by `url` / `preset_id`.
 
-- **Arturia MatrixBrute device JSON** promoted from "working stub" to
-  hardware-verified-partial (fw 2.0.3.1411). All 78 CC params renamed
-  under explicit hierarchical paths (`/vco1/fine`, `/vcf_steiner/cutoff`,
-  `/env1/attack`, `/mixer/vco1_vol`, …) with section tags — duplicates
-  (`/fine`, `/adsr`, `/output`, `/course`, `/rate`) disambiguated by
-  their synth section. Added **39 global options** as a `params` block
-  using `0x42` / `0x43` (`/option/midi_channel_in`, `/option/local_control`,
-  `/option/aftertouch_curve`, …). Added **2 SysEx commands** for preset
-  metadata/body read (`/preset/metadata/get`, `/preset/body/dump`) and
-  2 reply patterns for state broadcasts. Run `osc-bridge inspect
-  devices/arturia/matrixbrute.json` to see the full surface.
+### Backwards compat
+All existing device JSONs load unchanged — every new field is optional
+(`device.kind`, `transport`, `forward`, `subscriptions`, `match_osc`,
+`passthrough_prefix`). The hardware MIDI drivers are byte-for-byte unaffected.
+Test suite: 131 passing.
 
 ## [0.9.0] — 2026-04-14
 
