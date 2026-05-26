@@ -52,7 +52,7 @@ Top-level:
 ```
 
 ### Control types (all hardware-validated)
-`fader`, `vfader`, `list`, `pad`, `adsr`, `adr`, `dx7envelope`.
+`fader`, `vfader`, `list`, `pad`, `adsr`, `adr`, `dx7envelope`, **`custom`**.
 
 - `fader` is the default vertical bar.
 - `list` requires an `overlays` entry (id-referenced from `values[].overlayId`)
@@ -61,6 +61,19 @@ Top-level:
   `onValue` / `offValue`.
 - `adsr` / `adr` / `dx7envelope` are multi-point visual envelopes. See § 6 for
   the envelope-segment-editing gesture — it's not what you'd guess.
+- **`custom`** is a Lua-painted tile (the canvas under your `setPaintCallback`).
+  Required for any widget whose visual is implemented in Lua rather than as one
+  of the firmware's built-in controls (step sequencers, custom meters, note-list
+  editors, etc.). The `values[]` array still drives the parameter wiring, but
+  the paint surface is entirely your code's responsibility.
+
+**Custom-tile pot dispatch quirk (firmware 4.1.4)**: when `type:"custom"`, the
+firmware dispatches pot events to the tile from **one pot only**, regardless of
+how many entries the control's `inputs[]` array declares. Multi-pot custom
+controls is forum thread [#4172](https://forum.electra.one/t/multi-pot-custom-control/4172)
+— acknowledged as a requested feature, not yet shipped. Design custom widgets
+around one-pot interaction (mode toggles, double-click variants, touchscreen
+gestures) rather than multiple physical encoders per tile.
 
 ### Required field: `inputs`
 **Every control must declare `"inputs": [{"potId": N, "valueId": "value"}]`.**
@@ -93,9 +106,13 @@ Each **control set** can contain up to **12 controls**, one per physical pot
 KNOB1..KNOB12. `controlSetId` on a control (1, 2, or 3) places it in a specific
 set. Only one set is visually active at a time.
 
-X/Y bounds are in pixel coordinates on the 1024×575 screen. Typical column
-layout for 6 columns: `x = 14, 181, 348, 515, 682, 849` with width 158. Typical
-two-row layout: `y = 40` (top) and `y = 320` (bottom).
+X/Y bounds are in pixel coordinates on the **1024×565 drawing area** (the
+physical panel is 1024×575 but the firmware's slot-bounds math caps at 565 —
+verified against `app.electra.one`'s `displayHeight` constant at offset
+~129500 in `0c61af0.js`). Typical column layout for 6 columns:
+`x = 14, 181, 348, 515, 682, 849` with width 158. Typical two-row layout:
+`y = 40` (top) and `y = 320` (bottom). Full slot-bounds math for any slotId
+is in §11 (Layout math reference).
 
 ### Upload targets the currently-selected slot
 `/preset/upload` writes to whatever slot was last selected on the device
@@ -156,8 +173,13 @@ The bridge forwards device-initiated events as they arrive:
 | `/electra1/preset/switched <bank> <slot>` | Loaded preset slot changed |
 | `/electra1/preset_bank/switched <bank>` | Bank changed |
 | `/electra1/pot/touch <pot_id> <control_lsb> <control_msb> <touched>` | Touch-sensitive pot began/ended contact |
-| `/electra1/preset_list/changed` | Presets list modified on device |
-| `/electra1/snapshot_list/changed` | Snapshot library modified |
+| `/electra1/preset_list/changed` | Presets list modified on device (`7E 05`) |
+| `/electra1/snapshot_list/changed` | Snapshot library modified (`7E 03`) |
+| `/electra1/snapshot_bank/switched <bank>` | User changed snapshot bank (`7E 04`) |
+| `/electra1/control_set/switched <set>` | User pressed SECTION button or tapped a tile of another set (`7E 07`) |
+| `/electra1/capture_list/changed` | MIDI capture library modified (`7E 31`) |
+| `/electra1/usb_host/changed` | USB Host port: a controller (re)connected on the device's USB-Host jack |
+| `/electra1/log <text>` | `print()` output and runtime Lua errors from device (`7F 00`) — *not yet emitted by osc-bridge; the SysEx arrives but the driver doesn't surface it as OSC. Easy add: one entry in `replies[]`* |
 
 ---
 
@@ -271,6 +293,73 @@ live dialogue — is ~1 KB of Lua.
 
 ---
 
+## 7b. Schema gotcha — `tiles` vs `controls`
+
+If you're generating preset JSON from a tool that uses the web-editor's
+internal "tiles" schema (the format `app.electra.one` saves into Firestore and
+that the [electraone-widgets](https://github.com/roomi-fields/electraone-widgets) repo
+uses), you must convert it before uploading via SysEx — the firmware does not
+parse it.
+
+Symptom: `/preset/upload` ACKs at the transport level, the device fires
+`7E 05` preset-list-change and `7E 02` preset-switch events as if everything
+worked, but the screen shows "no name - page 1" or stays empty, and
+`/preset/get` afterwards returns 0 bytes.
+
+| Schema | Top-level keys | Where it lives |
+|---|---|---|
+| **`tiles` (web-editor internal)** | `schemaVersion`, `id`, `name`, `targetDevice`, `lua`, `devices`, `tiles[]`, `pages`, `categories`, `firstPageId` | `app.electra.one` Firestore + the electraone-widgets repo + `osc-bridge` `.cache/electra-import/` |
+| **`controls` (device firmware)** | `version`, `name`, `projectId`, `pages`, `devices`, `overlays`, `groups`, `controls[]` | The official [Preset format spec](https://docs.electra.one/developers/presetformat.html) — what `/preset/upload` must send. |
+
+The web editor converts tiles → controls in JS (`projectToPreset` function,
+offset ~127000–131000 in bundle `0c61af0.js`) before calling its WebMIDI
+`output.send()`. If your osc-bridge client is generating presets from
+scratch following the `controls` schema described in §2, you're fine. If you're
+pulling JSON from Firestore or from the electraone-widgets repo, run it
+through the converter first.
+
+A Python port of `projectToPreset` (byte-identical to the web editor, verified
+against a live MIDI sniff) lives in the
+[electra-one-mcp plugin](https://github.com/roomi-fields/electra-one-mcp) at
+`server/preset_converter.py`. Translate to Rust as needed.
+
+The same plugin also ports `presetToProject` (the reverse direction) so you
+can pull a preset off the device and write it back in tiles form for
+`git diff`-style workflows.
+
+---
+
+## 7c. File Transfer API (for very large files / multi-file deploys)
+
+In addition to the simple uploads in §2 (`01 01 Upload Preset`, `01 0C Upload
+Lua`, `01 0F` devices, `01 12` data, `01 11` performance), the device exposes
+a transactional file-transfer API for large or multi-file deploys:
+
+| Step | SysEx | Purpose |
+|---|---|---|
+| 1 | `F0 00 21 45 01 2D F7` | Open cache (begin transaction) |
+| 2 | `F0 00 21 45 01 2E <fileId> <s0> <s1> <s2> <s3> F7` | Register a file + its size (4×7-bit LE) |
+| 3 | `F0 00 21 45 01 2F <fileId> <data> F7` | Send chunk (one SysEx per chunk; data must stay 7-bit) |
+| 4 | `F0 00 21 45 04 2D <commit-json> F7` | Commit + verify MD5 + move to final location |
+
+`type:` values supported: `firmware`, `bootloader`, `preset`, `lua`,
+`luaModule`, `ui`, `config`, `deviceList`, `datafile`, `performance`.
+`location:` values: `slots`, `updates`, `assets`, `modules`, `presets`, `root`.
+
+**Known limitation on firmware 4.1.4**: commit silently rolls back when
+`type:"preset"` is in the commit JSON. The web editor never uses FT for
+presets (only for `firmware`, `luaModule`, multi-file `slots` deploys with
+Lua + Devices + Performance + Persisted at once). Stick with the simple
+`01 01` + `01 0C` path for preset+lua and reserve FT for `luaModule`
+uploads (the only way to write to `/ctrlv2/lua/<namespace>/<file>.lua`
+without a host filesystem mount).
+
+Reference: [filetransfer.html](https://docs.electra.one/developers/filetransfer.html) +
+[forum #592](https://forum.electra.one/t/command-line-preset-file-upload-tool/592)
+(staff posts #9, #16 on chunk sizes and reliability).
+
+---
+
 ## 8. Hardware constraints
 
 - **Max preset size**: ~100 KB of JSON. Larger layouts must be split.
@@ -327,3 +416,113 @@ When writing new client code against this device:
 5. When generating a preset JSON, prefer existing template-mutation over
    building from scratch — the format has many cross-references (pageId,
    deviceId) that are easy to get subtly wrong.
+6. If you have a `tiles`-schema JSON (web editor's internal format), convert
+   to `controls` schema BEFORE upload (see §7b). The firmware silently
+   rejects tiles JSON.
+
+---
+
+## 11. Layout math reference (MK2)
+
+Extracted from `app.electra.one`'s bundle `0c61af0.js` (offsets ~129500
+defaults + ~159200 slot helpers + ~134272 reverse math). Verified against a
+live MIDI sniff: `slotId=1, span=1, vspan=0` → `bounds=[181, 6, 158, 16]`,
+`potId=8`, byte-identical to web editor output.
+
+### Constants
+
+```
+mk2:  numPages=12, slotsPerPage=72, slotsPerRow=6, rowsOnPage=6
+      slotsInSection=24, controlsInSection=12
+      displayWidth=1024, displayHeight=565
+      controlWidth=168, controlHeight=60
+      groupWidth=168, groupHeight=30, groupSpanHeight=97
+      maxVspan=6
+      rowY=[0, 30, 90, 120, 180, 210, 270, 300, 360, 390, 450, 480]
+```
+
+The 6×12 grid alternates rows: even-y rows (y=0,2,4,…) are label/group rows
+(h=30); odd-y rows are control rows (h=60). A "section" is one label + one
+control row pair; the device has 6 sections per page.
+
+### Forward (slotId → bounds + pot)
+
+```python
+def slot_to_bounds(slot, span=1, vspan=0):
+    x = slot % 6
+    y = (slot // 6) % 12
+    if y % 2 == 0:                           # label/group row
+        w = 146 * span + 21 * (span - 1) + 12
+        h = (90 * vspan - 9) if vspan > 0 else 16
+        px = 20 + 167 * x - 6
+    else:                                    # control row
+        w, h = 146, 56
+        px = 20 + 167 * x
+    py = 6 + 22 * ((y // 2) + (y % 2)) + 68 * (y // 2)
+    return [px, py, w, h]
+
+def slot_to_pot(slot):
+    x = slot % 6
+    return x + 1 if (slot // 6) % 4 == 1 else x + 7
+
+def slot_to_page_id(slot):    return slot // 72 + 1
+def slot_to_set(slot):        return ((slot // 6) % 12) // 4 + 1
+```
+
+### Reverse (bounds → slotId)
+
+```python
+def bounds_to_slot(bounds, page_id=1):
+    col = bounds[0] // 170
+    row_section = (bounds[1] - 6) // 90
+    row_offset = 0 if (bounds[1] - 6) % 90 == 0 else 1
+    return 72 * (page_id - 1) + 6 * (2 * row_section + row_offset) + col
+```
+
+For the Mini variant (4 cols × 6 rows, 24 slots/page, different constants) see
+the bundle around offset 157783, or the matching `_MiniLayout` class in the
+[electra-one-mcp plugin](https://github.com/roomi-fields/electra-one-mcp/blob/main/server/preset_converter.py).
+
+---
+
+## 12. Note on USB port routing
+
+§8 recommends Port 1 (`Electra Controller`) as the osc-bridge target for both
+SysEx config AND CC traffic. This holds for osc-bridge's mixed
+config-plus-runtime workflow, but for SysEx-only admin work (preset upload,
+file transfer, event subscription, executing Lua, querying state), the **CTRL
+port** is the conventional target:
+
+- **Port 1** — `Electra Controller` (no suffix). Carries CC/Note traffic to/from
+  the active preset's MIDI device assignments. The bundle routes `app.electra.one`'s
+  default MIDI here. Per-channel routing applies.
+- **Port 2** — `MIDIOUT2 / MIDIIN2`. Same as Port 1 but for the second MIDI
+  cable; pass-through to externally-connected gear via the device's MIDI
+  passthrough.
+- **Port 3 (CTRL)** — `MIDIOUT3 / MIDIIN3`. Admin / SysEx / events. The
+  `app.electra.one` bundle's auto-selection regex prefers names matching
+  `/Electra.*(CTRL|Port 3|MIDI 3)/i`. Every documented SysEx admin command in
+  §2 + §6 + §7 works here. All `7E XX` unsolicited events come out of this
+  port. CC sent here may light the device's USB LED but does not route to
+  controls.
+
+Practical guidance:
+- **osc-bridge default**: Port 1 (the existing recommendation). Carries both
+  CC and SysEx; the device's command interpreter accepts most SysEx admin
+  on any port.
+- **Pure SysEx admin / scripting clients** (preset push, Lua REPL, snapshot
+  management, file transfer): Port 3 (CTRL) is the conventional target —
+  guarantees no collision with active-preset CC traffic.
+
+---
+
+## 13. Cross-reference: complete SysEx catalog
+
+For the full 62-command SysEx vocabulary (every host→device command + every
+`7E XX` / `7F XX` event), see:
+
+- `electra-one.json` in this folder — what osc-bridge wraps as OSC routes
+- The [electra-one-mcp plugin](https://github.com/roomi-fields/electra-one-mcp)'s
+  `docs/structured/sysex_commands.json` — same catalog with payload-shape
+  metadata, queryable via its `get_sysex_command` MCP tool
+- [Official protocol doc](https://docs.electra.one/developers/midiimplementation.html)
