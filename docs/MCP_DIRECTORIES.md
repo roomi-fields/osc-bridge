@@ -29,7 +29,7 @@ and that the description/keywords landed correctly.
 
 | Directory | Status | Notes |
 |---|---|---|
-| Glama.ai | 🔄 | auto-discovers from the registry; verify the page + the A/A/A quality badges build |
+| Glama.ai | ✅ | listed at glama.ai/mcp/servers/roomi-fields/osc-bridge (2026-05-27) — score badge live; submission was manual via Add Server form (not auto-indexed) |
 | PulseMCP | 🔄 | auto-indexed from the registry |
 | mcpservers.org | 🔄 | auto-indexed |
 | LobeHub | 🔄 | auto-indexed |
@@ -40,8 +40,8 @@ and that the description/keywords landed correctly.
 | Directory | Status | Action |
 |---|---|---|
 | Smithery.ai | ✅ | `roomifields/osc-bridge` published 2026-05-14 as a stdio MCPB bundle; quality score 100% (output schemas + annotations shipped in v0.10.1); description + icon set via the registry API |
-| awesome-mcp-servers (punkpeye, ~80k★) | ⚠️ | PR #6342 open — entry under "Multimedia Process" |
-| awesome-mcp-servers (TensorBlock, ~680★) | ⚠️ | PR #543 open — entry under "Hardware & IoT" |
+| awesome-mcp-servers (punkpeye, ~80k★) | ⚠️ | PR #6342 — Glama badge added (2026-05-27) per maintainer request, awaiting re-review |
+| awesome-mcp-servers (TensorBlock, ~680★) | ⚠️ | PR #543 — docs/ mirror added per maintainer request, awaiting re-review |
 | Cline Marketplace | ⚠️ | issue #1561 open on cline/mcp-marketplace |
 | awesome-mcp-servers (wong2, ~4k★) | 🚫 | no PR / no issue — submit via web form at mcpservers.org/submit |
 | awesome-mcp-servers (appcypher, ~5.5k★) | 🚫 | submissions closed — PRs **and** issues both disabled, maintainer-only list |
