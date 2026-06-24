@@ -25,8 +25,13 @@ each control *expects* without guessing from the range alone.
   recommended vocabulary is documented in `DEVICE_JSON_SCHEMA.md`.
 - `list_routes` (MCP) now returns `expects` on every cc/sysex entry; the live
   `devices.json` index carries per-nature counts.
-- Annotated the first drivers where it is meaningful: Subsequent 37 (switches,
+- Catalogue-wide structural pass: 1363 entries across 96 drivers annotated from
+  unambiguous structure — binary `[0,1]` controls → `switch` (564), small-range
+  NRPN/SysEx steppers → `discrete` (799). Hand-annotated Subsequent 37 (switches,
   stepped selectors, arpeggiator/panic triggers) and Osmose (pedals → momentary).
+- `momentary` / `trigger` / `clock` are not auto-detected (name-based guessing
+  mislabels envelope sustain as a pedal, etc.) — they stay `continuous` until a
+  driver is reviewed by hand.
 
 ### Compatibility
 - Device JSONs: unchanged behaviour — every unannotated entry is `continuous`,
