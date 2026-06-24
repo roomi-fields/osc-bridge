@@ -30,11 +30,21 @@ def coverage(doc: dict) -> dict:
     cmds = doc.get("commands") or []
     n_14bit = sum(1 for e in cc if e.get("cc_lsb") is not None)
     n_nrpn = sum(1 for e in cc if e.get("nrpn_msb") is not None)
-    return {
+    # Count surface entries whose `expects` is annotated beyond the default
+    # "continuous" — informative only, lets the Pages UI surface typed controls.
+    typed = {}
+    for e in (*cc, *params):
+        nature = e.get("expects")
+        if nature and nature != "continuous":
+            typed[nature] = typed.get(nature, 0) + 1
+    cov = {
         "cc": len(cc), "sysex_params": len(params), "commands": len(cmds),
         "cc14": n_14bit, "nrpn": n_nrpn,
         "replies": len(doc.get("replies") or []),
     }
+    if typed:
+        cov["expects"] = dict(sorted(typed.items()))
+    return cov
 
 
 def main():

@@ -105,7 +105,18 @@ pub struct CcParamEntry {
     /// Free-form tag so JSON authors can group related CCs (e.g. engine name).
     #[serde(default)]
     pub section: String,
+    /// Device-side expectation for this control — purely informative metadata,
+    /// never the signal realization. Describes *what the control expects*
+    /// (a continuous range, an on/off switch, a clock…), not how a runtime
+    /// drives it (CV / Gate / Trig / Clock — that mapping belongs to the
+    /// caller, e.g. BPScript). Recommended vocabulary: "continuous" (default),
+    /// "switch", "momentary", "trigger", "clock", "discrete". Left open: any
+    /// string is accepted, the runtime owns the interpretation.
+    #[serde(default = "default_expects")]
+    pub expects: String,
 }
+
+fn default_expects() -> String { "continuous".to_string() }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct DeviceMeta {
@@ -282,6 +293,11 @@ pub struct ParamEntry {
     pub r: u8,
     #[serde(default = "default_range")]
     pub range: [i64; 2],
+    /// Device-side expectation for this control — see `CcParamEntry::expects`.
+    /// Purely informative; the signal realization (CV/Gate/Trig/Clock) belongs
+    /// to the caller, not osc-bridge.
+    #[serde(default = "default_expects")]
+    pub expects: String,
 }
 
 fn default_range() -> [i64; 2] {
@@ -384,5 +400,29 @@ impl Device {
         } else {
             format!("{}/{}", self.device.osc_prefix, rel)
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn cc_param_expects_defaults_to_continuous() {
+        let e: CcParamEntry = serde_json::from_str(r#"{"osc":"/cutoff","cc":74}"#).unwrap();
+        assert_eq!(e.expects, "continuous");
+    }
+
+    #[test]
+    fn cc_param_expects_is_carried_when_set() {
+        let e: CcParamEntry =
+            serde_json::from_str(r#"{"osc":"/arp/hold","cc":64,"expects":"switch"}"#).unwrap();
+        assert_eq!(e.expects, "switch");
+    }
+
+    #[test]
+    fn sysex_param_expects_defaults_to_continuous() {
+        let e: ParamEntry = serde_json::from_str(r#"{"osc":"/p","pr":1,"p":2}"#).unwrap();
+        assert_eq!(e.expects, "continuous");
     }
 }

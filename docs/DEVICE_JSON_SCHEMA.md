@@ -100,6 +100,45 @@ A second OSC argument can override the channel per call: `/<prefix>/filter/cutof
 
 The device's `sysex.header`/`footer` can be empty (`[]`) when there is no SysEx.
 
+## Control nature — `expects`
+
+Every surface entry (`cc_params.entries[]` and SysEx `params.entries[]`) may carry
+an **`expects`** field describing **what the control expects on the device side**.
+It is **purely informative**: osc-bridge does *not* change any byte it emits based
+on it, and adds no runtime behaviour (no timers, no held state). It just travels in
+the JSON so a caller can decide how to drive the control.
+
+> `expects` is **not** the signal. CV / Gate / Trig / Clock are *realizations* that
+> belong to the caller's runtime (e.g. a live-coding language). osc-bridge stays
+> universal and only states the device-side nature; the runtime maps nature →
+> signal. This keeps the surface free of any one signal model.
+
+The field is **open** (any string is accepted), defaults to **`continuous`**, and
+the recommended vocabulary is:
+
+| `expects`    | The device-side control is…                  | A runtime might realize it as |
+|--------------|----------------------------------------------|-------------------------------|
+| `continuous` | a value over a range (**default**)           | CV                            |
+| `switch`     | an on/off state, **latched**                 | Gate                          |
+| `momentary`  | active **only while held**                   | Gate (non-latching)           |
+| `trigger`    | a **one-shot** event                         | Trig                          |
+| `clock`      | a **steady pulse** (tempo)                   | Clock                         |
+| `discrete`   | a **stepped / enumerated** choice            | stepped selection             |
+
+```jsonc
+{
+  "cc_params": { "entries": [
+    { "osc":"/filter/cutoff", "cc":74, "range":[0,127] },               // expects "continuous" (default)
+    { "osc":"/arp/hold",      "cc":64, "range":[0,1], "expects":"switch"  },
+    { "osc":"/env/trig",      "cc":109,                "expects":"trigger" }
+  ] }
+}
+```
+
+The `range` / `values` already on an entry carry the bounds or enum data; `expects`
+adds only the *nature*. Unannotated entries (the vast majority) are `continuous`, so
+existing drivers are unchanged.
+
 ## Midi-out — performance MIDI (OSC → MIDI notes)
 
 When present, this section enables standard performance-MIDI OSC routes

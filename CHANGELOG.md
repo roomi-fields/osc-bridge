@@ -9,6 +9,30 @@ additive minor bumps every time a new device class surfaces something
 the JSON can't yet express. Backwards-compat of existing device JSONs
 is tracked explicitly under each release.
 
+## [0.11.0] — 2026-06-24
+
+Adds a control-nature hint to the device surface, so a caller can tell what
+each control *expects* without guessing from the range alone.
+
+### Added — surface schema
+- Every surface entry (`cc_params.entries[]` and SysEx `params.entries[]`) may
+  carry an **`expects`** field describing the device-side nature of the control:
+  `continuous` (default), `switch`, `momentary`, `trigger`, `clock`, `discrete`.
+- It is **purely informative**: osc-bridge emits the exact same bytes regardless
+  and adds no runtime behaviour. The signal realization (CV / Gate / Trig /
+  Clock) is the caller's concern — osc-bridge stays universal and only states the
+  device-side expectation. The field is open (any string is accepted) and the
+  recommended vocabulary is documented in `DEVICE_JSON_SCHEMA.md`.
+- `list_routes` (MCP) now returns `expects` on every cc/sysex entry; the live
+  `devices.json` index carries per-nature counts.
+- Annotated the first drivers where it is meaningful: Subsequent 37 (switches,
+  stepped selectors, arpeggiator/panic triggers) and Osmose (pedals → momentary).
+
+### Compatibility
+- Device JSONs: unchanged behaviour — every unannotated entry is `continuous`,
+  so all `0.10.x` drivers load and emit identically. The 849-driver catalogue is
+  byte-compatible at runtime.
+
 ## [0.10.1] — 2026-05-14
 
 A polish release for the MCP server. No device-JSON or runtime changes.
