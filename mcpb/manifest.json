@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "osc-bridge",
   "display_name": "osc-bridge",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "description": "OSC ↔ MIDI/SysEx bridge for 849 synths and DAWs — a MIDI MCP and OSC MCP.",
   "long_description": "osc-bridge is a declarative bridge between OSC and the music world: 849 hardware synthesizers over MIDI/SysEx, plus music software over OSC (Ableton, Bitwig, Reaper, Sonic Pi, SuperCollider, Pure Data, TouchDesigner, VCV Rack). Its MCP server exposes the whole catalogue to an LLM — list devices, read a device's named OSC surface, send OSC to synths and DAWs, and check a running bridge's status. Both a MIDI MCP (hardware over MIDI/SysEx) and an OSC MCP (DAWs and live-coding environments).",
   "author": {
@@ -121,8 +121,8 @@
           "osc_prefix": { "type": "string" },
           "kind": { "type": "string" },
           "commands": { "type": "array", "description": "Declarative OSC paths the device accepts, with typed args and mode.", "items": { "type": "object" } },
-          "cc_params": { "type": "array", "description": "CC / NRPN parameters, each mapped to an OSC address.", "items": { "type": "object" } },
-          "params": { "type": "array", "description": "SysEx parameters, each mapped to an OSC address.", "items": { "type": "object" } },
+          "cc_params": { "type": "array", "description": "CC / NRPN parameters, each mapped to an OSC address. Every entry carries an 'expects' field (continuous/switch/momentary/trigger/clock/discrete) describing the device-side nature of the control — informative only.", "items": { "type": "object" } },
+          "params": { "type": "array", "description": "SysEx parameters, each mapped to an OSC address. Each entry carries an 'expects' field — see cc_params.", "items": { "type": "object" } },
           "replies": { "type": "array", "description": "Reply patterns the device emits back onto the OSC surface.", "items": { "type": "object" } }
         },
         "required": ["device", "osc_prefix", "commands", "cc_params", "params", "replies"]

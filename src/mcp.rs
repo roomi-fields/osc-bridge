@@ -257,12 +257,12 @@ fn tools_list() -> Value {
                         },
                         "cc_params": {
                             "type": "array",
-                            "description": "CC / NRPN parameters, each mapped to an OSC address.",
+                            "description": "CC / NRPN parameters, each mapped to an OSC address. Every entry carries an 'expects' field (continuous/switch/momentary/trigger/clock/discrete) describing the device-side nature of the control — informative only, the signal realization is the caller's concern.",
                             "items": { "type": "object" }
                         },
                         "params": {
                             "type": "array",
-                            "description": "SysEx parameters, each mapped to an OSC address.",
+                            "description": "SysEx parameters, each mapped to an OSC address. Each entry carries an 'expects' field — see cc_params.",
                             "items": { "type": "object" }
                         },
                         "replies": {
@@ -439,10 +439,12 @@ fn list_routes(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
         "nrpn_msb": e.nrpn_msb,
         "nrpn_lsb": e.nrpn_lsb,
         "range": e.range,
+        "expects": e.expects,
     })).collect()).unwrap_or_default();
     let params: Vec<Value> = dev.params.as_ref().map(|t| t.entries.iter().map(|e| json!({
         "address": format!("{prefix}{}", e.osc),
         "range": e.range,
+        "expects": e.expects,
     })).collect()).unwrap_or_default();
     let replies: Vec<Value> = dev.replies.iter().map(|r| json!({
         "match_osc": r.match_osc,
@@ -642,6 +644,28 @@ mod tests {
         assert!(sc.get("devices").and_then(Value::as_array).unwrap().len() > 100);
         // The text fallback block is still there for non-structured clients.
         assert!(res.get("content").and_then(Value::as_array).is_some());
+    }
+
+    #[test]
+    fn list_routes_exposes_expects_on_surface_entries() {
+        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        // Find any device with a non-empty cc_params surface and check that
+        // every entry carries an `expects` string (defaulted to "continuous").
+        let mut checked = false;
+        for e in &idx.entries {
+            let res = match list_routes(&idx, &e.slug) { Ok(r) => r, Err(_) => continue };
+            let sc = res.get("structuredContent").unwrap();
+            let cc = sc.get("cc_params").and_then(Value::as_array).unwrap();
+            if cc.is_empty() { continue; }
+            for entry in cc {
+                let nature = entry.get("expects").and_then(Value::as_str);
+                assert!(nature.is_some(), "cc_param on {} missing expects", e.slug);
+                assert!(!nature.unwrap().is_empty());
+            }
+            checked = true;
+            break;
+        }
+        assert!(checked, "expected at least one device with cc_params");
     }
 
     #[test]
