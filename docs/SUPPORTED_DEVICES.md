@@ -9851,7 +9851,7 @@
 - **Revision**: VCV Rack 2.5 + OSC plugin (passthrough)
 - **Source**: [third-party OSC shim](https://library.vcvrack.com/?query=OSC)
 - **Coverage**: —
-- **Limitations**: Passthrough mode — VCV Rack itself has no built-in OSC; the user installs a community OSC In / OSC Out module from the VCV library (FormsAndShapes, Stoermelder pack, etc.
+- **Limitations**: Passthrough mode — VCV Rack itself has no built-in OSC.
 
 ## VCV Rack
 
