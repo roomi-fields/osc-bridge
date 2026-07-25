@@ -356,7 +356,7 @@ Currently supported:
 | SuperCollider sclang 3.13 | passthrough | 📡 vendor-osc-api |
 | Pure Data 0.55-x | passthrough | 📡 vendor-osc-api |
 | TouchDesigner 2023 | passthrough | 📡 vendor-osc-api |
-| VCV Rack 2.5 + community OSC plugin | passthrough | 📡 third-party-osc |
+| VCV Rack 2 + [vcv-osc](https://github.com/roomi-fields/vcv-osc) plugin | passthrough | 📡 third-party-osc |
 
 Each comes with a `.md` companion under `devices/<vendor>/` that documents the
 required setup on the host side (Remote Script installation, ports, conventions).
