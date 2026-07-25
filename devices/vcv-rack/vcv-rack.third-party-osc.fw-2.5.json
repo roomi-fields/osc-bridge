@@ -8,7 +8,7 @@
       "firmware": "VCV Rack 2.5"
     }
   ],
-  "_limitations": "Passthrough mode — VCV Rack itself has no built-in OSC; the user installs a community OSC In / OSC Out module from the VCV library (FormsAndShapes, Stoermelder pack, etc.) and configures its port. The bridge forwards `/vcv/...` (with `/vcv` stripped) to UDP 7770. Adjust the JSON port to match whatever your installed OSC module uses.",
+  "_limitations": "Passthrough mode — VCV Rack itself has no built-in OSC. Recommended: install the `vcv-osc` plugin (github.com/roomi-fields/vcv-osc), whose OSC Controller module controls the whole patch — params, cables, module add/remove, presets, full state dump, and change subscriptions — addressable by numeric id OR human name/brand. It defaults to listen 7770 / reply 7771, matching this JSON with zero config. The bridge forwards `/vcv/...` (with `/vcv` stripped) to UDP 7770 and re-prefixes replies from 7771. vcv-osc also serves an OSCQuery namespace on HTTP 7772 for controllers that auto-build a surface (TouchOSC, Open Stage Control) — that is a direct HTTP link, not through this bridge. CV-only community modules (FormsAndShapes, Stoermelder) also work for simple signal bridging; adjust the port to match.",
   "_coverage": {
     "mode": "passthrough",
     "host_software": "VCV Rack 2.5 + community OSC module"
