@@ -7,6 +7,9 @@ bind = "127.0.0.1:7777"
 # Outbound broadcast — every event is copied to all listed clients.
 # Leave empty for fire-and-forget setups that don't need feedback.
 clients = ["127.0.0.1:8888"]
+# Optional WebSocket listener for browser clients. Binary WS frames carry
+# raw OSC packets; each connected client acts as an extra `clients` entry.
+# ws_bind = "127.0.0.1:7890"
 
 [[devices]]
 spec          = "devices/moog/subsequent-37.json"

@@ -23,6 +23,10 @@ pub struct RuntimeOptions {
     /// Zero, one, or more outbound OSC destinations. Every MIDI-in event,
     /// SysEx reply, and `/bridge/status` response is broadcast to all of them.
     pub osc_clients: Vec<SocketAddr>,
+    /// Optional WebSocket listen address (e.g. `127.0.0.1:7890`). When set,
+    /// browser clients can connect; each one behaves like a dynamic
+    /// `--osc-client` (binary WS frames = raw OSC packets, both directions).
+    pub ws_bind: Option<String>,
 }
 
 pub struct Runtime;
@@ -53,16 +57,20 @@ impl Runtime {
         let rate = dev.device.rate_limit_hz.unwrap_or(0);
         std::thread::spawn(move || drain_midi_out(out_conn, rx, rate));
 
-        // Outbound OSC — broadcast to every configured client.
+        // Outbound OSC — broadcast to every configured client (UDP and WS).
+        let ws_clients = opts.ws_bind.as_ref().map(|_| crate::ws::WsClients::new());
         let osc_sock = Arc::new(UdpSocket::bind("0.0.0.0:0")?);
         let clients = opts.osc_clients.clone();
         let sock_cb = osc_sock.clone();
+        let ws_cb = ws_clients.clone();
         let send_osc: Arc<dyn Fn(OscMessage) + Send + Sync> = Arc::new(move |msg| {
-            if clients.is_empty() { return; }
+            let ws_active = ws_cb.as_ref().is_some_and(|w| w.has_clients());
+            if clients.is_empty() && !ws_active { return; }
             if let Ok(bytes) = rosc::encoder::encode(&OscPacket::Message(msg)) {
                 for tgt in &clients {
                     let _ = sock_cb.send_to(&bytes, tgt);
                 }
+                if let Some(w) = &ws_cb { w.broadcast(&bytes); }
             }
         });
 
@@ -112,10 +120,31 @@ impl Runtime {
         eprintln!("OSC IN   {}", opts.osc_bind);
         for c in &opts.osc_clients { eprintln!("OSC OUT  {c}"); }
 
-        // Build dispatcher maps
-        let cmds = build_command_map(&dev);
-        let params = build_param_map(&dev);
-        let cc_params = build_cc_param_map(&dev);
+        // Build dispatcher maps (Arc so WS connection threads share them).
+        let cmds = Arc::new(build_command_map(&dev));
+        let params = Arc::new(build_param_map(&dev));
+        let cc_params = Arc::new(build_cc_param_map(&dev));
+
+        // WebSocket transport — every connected browser client goes through
+        // the exact same dispatch as the UDP loop below.
+        if let (Some(bind), Some(wsc)) = (&opts.ws_bind, &ws_clients) {
+            let dispatch_cb: crate::ws::WsDispatch = {
+                let dev = dev.clone();
+                let cmds = cmds.clone();
+                let params = params.clone();
+                let cc_params = cc_params.clone();
+                let routes = routes.clone();
+                let scripts = script_engine.clone();
+                let tx = tx.clone();
+                let send_osc = send_osc.clone();
+                Arc::new(move |pkt, from| {
+                    dispatch(pkt, &dev, &cmds, &params, &cc_params, &routes,
+                             &scripts, &tx, &send_osc, from);
+                })
+            };
+            let local = crate::ws::serve(bind, wsc.clone(), dispatch_cb)?;
+            eprintln!("WS IN    {local}");
+        }
 
         let sock = UdpSocket::bind(&opts.osc_bind)
             .with_context(|| format!("bind {}", opts.osc_bind))?;
@@ -1153,14 +1182,18 @@ fn run_osc(opts: RuntimeOptions) -> Result<()> {
     // Bridge → OSC target (commands and subscriptions).
     let target_sock = Arc::new(UdpSocket::bind("0.0.0.0:0")?);
 
-    // Bridge → OSC clients (replies/events fanned out).
+    // Bridge → OSC clients (replies/events fanned out over UDP and WS).
+    let ws_clients = opts.ws_bind.as_ref().map(|_| crate::ws::WsClients::new());
     let osc_sock = Arc::new(UdpSocket::bind("0.0.0.0:0")?);
     let clients = opts.osc_clients.clone();
     let sock_cb = osc_sock.clone();
+    let ws_cb = ws_clients.clone();
     let send_osc: SendOsc = Arc::new(move |msg| {
-        if clients.is_empty() { return; }
+        let ws_active = ws_cb.as_ref().is_some_and(|w| w.has_clients());
+        if clients.is_empty() && !ws_active { return; }
         if let Ok(bytes) = rosc::encoder::encode(&OscPacket::Message(msg)) {
             for tgt in &clients { let _ = sock_cb.send_to(&bytes, tgt); }
+            if let Some(w) = &ws_cb { w.broadcast(&bytes); }
         }
     });
 
@@ -1192,7 +1225,23 @@ fn run_osc(opts: RuntimeOptions) -> Result<()> {
     eprintln!("OSC IN   {}", opts.osc_bind);
     for c in &opts.osc_clients { eprintln!("OSC CLI  {c}"); }
 
-    let cmds = build_command_map(&dev);
+    let cmds = Arc::new(build_command_map(&dev));
+
+    // WebSocket transport — same dispatch as the UDP loop below.
+    if let (Some(bind), Some(wsc)) = (&opts.ws_bind, &ws_clients) {
+        let dispatch_cb: crate::ws::WsDispatch = {
+            let dev = dev.clone();
+            let cmds = cmds.clone();
+            let target_sock = target_sock.clone();
+            let send_osc = send_osc.clone();
+            Arc::new(move |pkt, from| {
+                dispatch_osc(pkt, &dev, &cmds, &target_sock, target_addr, &send_osc, from);
+            })
+        };
+        let local = crate::ws::serve(bind, wsc.clone(), dispatch_cb)?;
+        eprintln!("WS IN    {local}");
+    }
+
     let sock = UdpSocket::bind(&opts.osc_bind)
         .with_context(|| format!("bind {}", opts.osc_bind))?;
     eprintln!("Ready. Ctrl-C to stop.");

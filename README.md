@@ -238,6 +238,25 @@ are forwarded to `--osc-client` as OSC:
 /minilab3/param/value 0 7 0 0 1   ← reply from a /param/get
 ```
 
+### Browser clients (OSC over WebSocket)
+
+Browsers can't speak UDP. Pass `--ws-bind` to expose the same OSC surface
+over WebSocket:
+
+```bash
+osc-bridge run --device devices/arturia/minilab3.json \
+  --out-port 4 --in-port 0 --ws-bind 127.0.0.1:7890
+```
+
+Binary WS frames carry raw OSC packets — the exact bytes the UDP transport
+uses, so a minimal dependency-free OSC encoder/decoder in JS covers both
+directions. Every connected WS client behaves like an extra `--osc-client`:
+it receives all outbound events (decoded MIDI-in, SysEx replies,
+`/bridge/status`) and its frames go through the same dispatch as UDP.
+Under `orchestrate`, set `ws_bind = "127.0.0.1:7890"` in the `[osc]`
+section of `bridge.toml`. Disabled by default; keep it on `127.0.0.1`
+unless you really want LAN clients.
+
 ### Device not showing up? (Windows 11 24H2+)
 
 Since the March 2026 cumulative update (KB5079473), Windows 11 ships
@@ -371,6 +390,7 @@ code:
 [osc]
 bind = "127.0.0.1:7777"
 clients = ["127.0.0.1:8888"]
+# ws_bind = "127.0.0.1:7890"   # optional — browser clients over WebSocket
 
 [[devices]]
 spec = "devices/arturia/minilab3.json"

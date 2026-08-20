@@ -8,6 +8,7 @@
 //! [osc]
 //! bind = "127.0.0.1:7777"
 //! clients = ["127.0.0.1:8888"]
+//! # ws_bind = "127.0.0.1:7890"   # optional — browser clients over WebSocket
 //!
 //! # Hardware (MIDI/SysEx) device.
 //! [[devices]]
@@ -199,6 +200,12 @@ pub struct OscConfig {
     pub bind: String,
     #[serde(default)]
     pub clients: Vec<String>,
+    /// Optional WebSocket listen address (e.g. "127.0.0.1:7890") for browser
+    /// clients. Binary WS frames carry raw OSC packets; each connected client
+    /// acts as an extra entry in `clients` and dispatches through the same
+    /// prefix-routing as UDP.
+    #[serde(default)]
+    pub ws_bind: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -290,14 +297,18 @@ impl Orchestrator {
                 .with_context(|| format!("parse osc.clients entry {s}")))
             .collect::<Result<Vec<_>>>()?;
 
-        // raw_send: broadcast to OSC clients only (no routing).
+        // raw_send: broadcast to OSC clients only (no routing) — UDP and WS.
+        let ws_clients = cfg.osc.ws_bind.as_ref().map(|_| crate::ws::WsClients::new());
         let osc_sock = Arc::new(UdpSocket::bind("0.0.0.0:0")?);
         let clients = client_addrs.clone();
         let sock_cb = osc_sock.clone();
+        let ws_cb = ws_clients.clone();
         let raw_send: SendOsc = Arc::new(move |msg| {
-            if clients.is_empty() { return; }
+            let ws_active = ws_cb.as_ref().is_some_and(|w| w.has_clients());
+            if clients.is_empty() && !ws_active { return; }
             if let Ok(bytes) = rosc::encoder::encode(&OscPacket::Message(msg)) {
                 for tgt in &clients { let _ = sock_cb.send_to(&bytes, tgt); }
+                if let Some(w) = &ws_cb { w.broadcast(&bytes); }
             }
         });
 
@@ -412,6 +423,22 @@ impl Orchestrator {
             })
         };
         let _ = routed_holder.set(routed_send.clone());
+
+        // WebSocket transport — browser clients dispatch through the same
+        // prefix-routing (and inter-device routes) as the UDP loop below.
+        if let (Some(bind), Some(wsc)) = (&cfg.osc.ws_bind, &ws_clients) {
+            let dispatch_cb: crate::ws::WsDispatch = {
+                let devices = devices.clone();
+                let prefix_map = prefix_map.clone();
+                let routes = routes.clone();
+                let send = routed_send.clone();
+                Arc::new(move |pkt, from| {
+                    orch_dispatch(pkt, &devices, &prefix_map, &routes, &send, from);
+                })
+            };
+            let local = crate::ws::serve(bind, wsc.clone(), dispatch_cb)?;
+            eprintln!("WS IN    {local}");
+        }
 
         // --- Deferred wiring: MIDI-IN connections (kept alive for the process
         // lifetime in `keepalive`) ---

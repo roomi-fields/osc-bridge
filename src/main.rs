@@ -41,6 +41,12 @@ enum Cmd {
         /// `/bridge/status` response.
         #[arg(long = "osc-client")]
         osc_clients: Vec<String>,
+        /// Optional WebSocket listen address (e.g. 127.0.0.1:7890) for
+        /// browser clients. Binary WS frames carry raw OSC packets (same
+        /// bytes as UDP); each connected client acts as an extra
+        /// --osc-client and can send commands through the same dispatch.
+        #[arg(long = "ws-bind")]
+        ws_bind: Option<String>,
     },
     /// Send one OSC message to a local bridge for quick testing.
     OscSend {
@@ -86,8 +92,8 @@ fn main() -> Result<()> {
     match Cli::parse().cmd {
         Cmd::List => cmd_list(),
         Cmd::Inspect { device } => cmd_inspect(device),
-        Cmd::Run { device, out_port, in_port, bind, osc_clients } =>
-            cmd_run(device, out_port, in_port, bind, osc_clients),
+        Cmd::Run { device, out_port, in_port, bind, osc_clients, ws_bind } =>
+            cmd_run(device, out_port, in_port, bind, osc_clients, ws_bind),
         Cmd::OscSend { target, addr, args, from_file } => cmd_osc_send(target, addr, args, from_file),
         Cmd::OscListen { bind } => cmd_osc_listen(bind),
         Cmd::Lint { device } => cmd_lint(device),
@@ -185,7 +191,7 @@ fn hex_vec(v: &[u8]) -> String {
     v.iter().map(|b| format!("{:02X}", b)).collect::<Vec<_>>().join(" ")
 }
 
-fn cmd_run(path: PathBuf, out_port: Option<usize>, in_port: Option<usize>, bind: String, clients: Vec<String>) -> Result<()> {
+fn cmd_run(path: PathBuf, out_port: Option<usize>, in_port: Option<usize>, bind: String, clients: Vec<String>, ws_bind: Option<String>) -> Result<()> {
     let dev = Device::load(&path)?;
     let is_osc = dev.device.transport.as_ref().map(|t| t.kind.as_str()) == Some("osc");
     let out_port = match (out_port, is_osc) {
@@ -208,6 +214,7 @@ fn cmd_run(path: PathBuf, out_port: Option<usize>, in_port: Option<usize>, bind:
         midi_in_port_idx: if is_osc { None } else { in_port },
         osc_bind: bind,
         osc_clients: client_addrs,
+        ws_bind,
     })
 }
 
