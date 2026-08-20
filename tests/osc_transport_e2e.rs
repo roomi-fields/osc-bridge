@@ -135,6 +135,7 @@ fn osc_passthrough_roundtrip() {
         midi_in_port_idx: None,
         osc_bind: format!("127.0.0.1:{bridge_in_port}"),
         osc_clients: vec![client_addr],
+        ws_bind: None,
     };
 
     std::thread::spawn(move || { let _ = Runtime::run(opts); });
@@ -207,6 +208,7 @@ fn osc_transport_full_roundtrip() {
         midi_in_port_idx: None,
         osc_bind: format!("127.0.0.1:{bridge_in_port}"),
         osc_clients: vec![client_addr],
+        ws_bind: None,
     };
 
     std::thread::spawn(move || { let _ = Runtime::run(opts); });

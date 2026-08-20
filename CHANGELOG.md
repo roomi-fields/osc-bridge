@@ -9,6 +9,38 @@ additive minor bumps every time a new device class surfaces something
 the JSON can't yet express. Backwards-compat of existing device JSONs
 is tracked explicitly under each release.
 
+## [0.12.0] — 2026-08-20
+
+Browser clients join the bridge: a WebSocket transport carries OSC to and
+from web pages, which cannot speak UDP.
+
+### Added — WebSocket transport
+- `run --ws-bind <ADDR:PORT>` and, for the orchestrator, `ws_bind` in the
+  `[osc]` section of `bridge.toml`: an optional WebSocket listener,
+  disabled by default.
+- **Binary WS frames are raw OSC packets** — byte-identical to the UDP
+  transport (rosc encoding), no JSON envelope, so one OSC codec serves both
+  transports. Text frames are ignored with a warning.
+- A connected WS client is equivalent to a dynamic `--osc-client`: it
+  receives every outbound message (decoded MIDI-in, SysEx replies,
+  `/bridge/status` responses) and its frames go through the exact same
+  dispatch as OSC over UDP — on all three loops (`run` for MIDI devices,
+  `run` for OSC-transport devices, `orchestrate` incl. inter-device routes).
+- Synchronous `tungstenite` (one accept thread, one thread per connection) —
+  no async runtime, matching the existing thread-based architecture. A slow
+  client drops frames past a 256-message backlog instead of stalling the
+  bridge; disconnected clients are pruned silently.
+- First consumer: browser-based Web Audio instruments driven by hardware
+  controllers through the bridge ([#1]).
+
+[#1]: https://github.com/roomi-fields/osc-bridge/issues/1
+
+### Compatibility
+- Device JSONs: unchanged — every `0.11.x` driver loads and emits
+  identically; the catalogue is untouched.
+- CLI / config: purely additive. Without `--ws-bind` / `ws_bind`, behaviour
+  is byte-for-byte identical to `0.11.0`.
+
 ## [0.11.0] — 2026-06-24
 
 Adds a control-nature hint to the device surface, so a caller can tell what

@@ -81,6 +81,7 @@ fn runtime_options_accepts_multiple_clients() {
             "127.0.0.1:8888".parse::<SocketAddr>().unwrap(),
             "127.0.0.1:9999".parse::<SocketAddr>().unwrap(),
         ],
+        ws_bind: None,
     };
     assert_eq!(opts.osc_clients.len(), 2);
 }
@@ -106,6 +107,7 @@ fn runtime_options_accepts_zero_clients() {
         midi_in_port_idx: None,
         osc_bind: "127.0.0.1:0".into(),
         osc_clients: vec![],
+        ws_bind: None,
     };
     assert!(opts.osc_clients.is_empty());
 }

@@ -14,6 +14,7 @@ pub mod scripting;
 pub mod orchestrator;
 pub mod routing;
 pub mod mcp;
+pub mod ws;
 
 pub use device::Device;
 pub use runtime::{Runtime, RuntimeOptions};
