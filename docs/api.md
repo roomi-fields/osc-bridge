@@ -104,6 +104,19 @@ agent. With it:
 | `relay_send` | Sends one driver address with its arguments (`/filter/cutoff`, `[64]`), turned into the right CC, NRPN, note or SysEx by the server — or raw MIDI bytes |
 | `relay_listen` | Collects what the hardware sends for a few seconds, decoded; with a driver, each CC or NRPN that moved is matched to its addresses |
 
+#### Learning what controls really send
+
+Drivers can be wrong for a given device or firmware. To check one control,
+the agent asks the user to move it while `relay_listen` runs, then records
+what it saw with `report_mapping`: the driver address (or, for a control the
+driver lacks, its panel label) and the CC, NRPN or note it sent, with the
+firmware and the device's Identity Reply. When 3 accounts or more observe the
+same message for a control on one firmware, more than any other, the mapping
+is learned. `get_trust` lists a driver's learned mappings with what the
+driver says and whether they differ; all of them are public at
+[`/v1/learned`](https://mcp.osc-bridge.roomi-fields.com/v1/learned).
+Observations of suspect accounts are not counted.
+
 Any program can be a relay door: it opens a WebSocket to
 `wss://mcp.osc-bridge.roomi-fields.com/relay` (add `?user=<id>` to keep its
 account), receives `{"type":"hello","code","user"}`, then exchanges JSON text

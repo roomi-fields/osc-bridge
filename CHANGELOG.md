@@ -59,6 +59,10 @@ addressable by sound name — and its community data is now properly licensed.
   `osc-bridge connect` is the command-line door (all ports, rescanned every
   3 s, account kept in `~/.config/osc-bridge/user`). The first agent account
   to use a code owns the door; 64 doors at most, 4 per address.
+- Learned mappings (`report_mapping`, `GET /v1/learned`, `mappings` in
+  `get_trust`): which CC / NRPN / note a control really sends, observed
+  while the user moves it; learned per control and firmware when 3 accounts
+  agree, compared with the driver.
 - Hosted instance: https://mcp.osc-bridge.roomi-fields.com/mcp.
 - The site publishes a static JSON API: `/api/v1/index.json` (every driver
   with source, firmware and coverage) and each driver file under

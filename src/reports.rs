@@ -31,7 +31,15 @@
 //! reports and clears or suspects accounts (`Decision`); an approved report
 //! is never rolled back automatically.
 //!
-//! Everything — accounts issued, reports, decisions — is one append-only
+//! Learned mappings. While a control is moved on the device, an agent
+//! observes which MIDI message it sends (`Observation`): this driver address
+//! — or a control the driver lacks, by its panel label — sends CC 74. Per
+//! control and firmware, the message that at least `MIN_CONCORDANT` accounts
+//! observed, more than any other, is learned (`Ledger::learned`); suspect
+//! accounts are not counted. Learned mappings that differ from a driver are
+//! what corrections of that driver are made from.
+//!
+//! Everything — accounts issued, reports, observations, decisions — is one append-only
 //! ledger (JSON lines) replayed in order at startup, so the outcome is the
 //! same after a restart.
 
@@ -347,12 +355,48 @@ pub enum Decision {
     Clear,
 }
 
+/// The MIDI message a control sends.
+#[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "lowercase")]
+pub enum Sends {
+    Cc { cc: u8 },
+    Nrpn { msb: u8, lsb: u8 },
+    Note { note: u8 },
+}
+
+/// What one account saw a control send.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Observation {
+    pub ts: String,
+    pub user: String,
+    /// Driver id.
+    pub device: String,
+    /// The driver's OSC address for the control, or `label:<panel label>`
+    /// for a control the driver does not map.
+    pub control: String,
+    pub sends: Sends,
+    pub channel: Option<u8>,
+    pub firmware: Option<String>,
+    pub identity: Option<DeviceIdentity>,
+}
+
+impl Observation {
+    fn firmware_key(&self) -> String {
+        match (&self.firmware, &self.identity) {
+            (Some(f), _) => f.clone(),
+            (None, Some(id)) => format!("identity {}", id.version),
+            (None, None) => UNKNOWN_FIRMWARE.to_string(),
+        }
+    }
+}
+
 /// One line of the ledger.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(tag = "event", rename_all = "snake_case")]
 enum Event {
     Account { ts: String, user: String },
     Report(Report),
+    Observation(Observation),
     Decision { ts: String, decision: Decision, report: Option<u64>, user: Option<String> },
 }
 
@@ -373,6 +417,7 @@ struct State {
     suspect: HashSet<String>,
     entries: Vec<Entry>,
     by_device: HashMap<String, Vec<usize>>,
+    observations: Vec<Observation>,
     bytes: u64,
 }
 
@@ -389,6 +434,7 @@ impl State {
                 self.by_device.entry(r.device.clone()).or_default().push(idx);
                 self.review(vec![r.device.clone()]);
             }
+            Event::Observation(o) => self.observations.push(o.clone()),
             Event::Decision { decision, report, user, .. } => {
                 let mut touched = Vec::new();
                 if let Some(e) = report.and_then(|id| self.entries.get_mut(id as usize)) {
@@ -574,6 +620,43 @@ impl Ledger {
         Ok(json!({ "applied": true }))
     }
 
+    /// Record what an account saw a control send.
+    pub fn observe(&self, o: Observation) -> std::result::Result<(), String> {
+        let mut state = self.state.lock().map_err(|_| "ledger unavailable")?;
+        if !state.accounts.contains(&o.user) {
+            return Err("unknown account: start a session with the server to get one".into());
+        }
+        self.record(&mut state, Event::Observation(o))
+    }
+
+    /// Per control and firmware of one driver (all drivers with None): the
+    /// observed messages, by how many accounts (latest observation of each,
+    /// suspect accounts left out), and the learned one, if any.
+    pub fn learned(&self, device: Option<&str>) -> Vec<Value> {
+        let Ok(state) = self.state.lock() else { return Vec::new() };
+        let mut latest: BTreeMap<(String, String, String), BTreeMap<String, &Observation>> = BTreeMap::new();
+        for o in state.observations.iter().filter(|o| device.is_none_or(|d| o.device == d)) {
+            if state.suspect.contains(&o.user) { continue; }
+            latest.entry((o.device.clone(), o.control.clone(), o.firmware_key())).or_default().insert(o.user.clone(), o);
+        }
+        latest.into_iter().map(|((device, control, firmware), by_user)| {
+            let mut counts: BTreeMap<&Sends, usize> = BTreeMap::new();
+            for o in by_user.values() { *counts.entry(&o.sends).or_default() += 1; }
+            let mut ranked: Vec<(&Sends, usize)> = counts.into_iter().collect();
+            ranked.sort_by_key(|(_, n)| std::cmp::Reverse(*n));
+            let learned = match ranked.as_slice() {
+                [(s, n), rest @ ..] if *n >= MIN_CONCORDANT && rest.first().is_none_or(|(_, m)| m < n) => Some((*s).clone()),
+                _ => None,
+            };
+            json!({
+                "device": device, "control": control, "firmware": firmware,
+                "observed": ranked.iter().map(|(s, n)| json!({ "sends": s, "accounts": n })).collect::<Vec<_>>(),
+                "learned": learned,
+                "identified": by_user.values().any(|o| o.identity.is_some()),
+            })
+        }).collect()
+    }
+
     /// What waits for an administrator: pending reports and suspect accounts.
     pub fn pending(&self) -> Value {
         let Ok(state) = self.state.lock() else { return json!(null) };
@@ -755,6 +838,27 @@ mod tests {
         assert_eq!(o["needs_firmware"], false);
         assert_eq!(o["status"], "firmware-dependent");
         assert_eq!(o["firmwares"]["identity 01000000"]["status"], "failing");
+    }
+
+    #[test]
+    fn three_concordant_observations_teach_a_mapping_and_suspects_do_not_count() {
+        let (l, u) = ledger(5);
+        let obs = |user: &str, cc: u8| Observation {
+            ts: "2026-10-22T12:00:00Z".into(), user: user.into(), device: "korg/minilogue".into(),
+            control: "/minilogue/filter/cutoff".into(), sends: Sends::Cc { cc }, channel: Some(1),
+            firmware: Some("2.1".into()), identity: None,
+        };
+        l.observe(obs(&u[0], 43)).unwrap();
+        l.observe(obs(&u[1], 43)).unwrap();
+        l.observe(obs(&u[2], 74)).unwrap();
+        assert_eq!(l.learned(Some("korg/minilogue"))[0]["learned"], Value::Null, "two agreeing is not enough");
+        l.observe(obs(&u[3], 43)).unwrap();
+        let learned = l.learned(None);
+        assert_eq!(learned[0]["learned"], json!({"kind": "cc", "cc": 43}));
+        assert_eq!(learned[0]["observed"][0]["accounts"], 3);
+        l.decide(Decision::Suspect, None, Some(&u[3])).unwrap();
+        assert_eq!(l.learned(None)[0]["learned"], Value::Null, "a suspect account's observations do not count");
+        assert!(l.observe(obs(&"f".repeat(32), 43)).is_err(), "only issued accounts observe");
     }
 
     #[test]

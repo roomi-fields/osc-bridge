@@ -328,9 +328,19 @@ fn door(stream: TcpStream, relays: &Relays, accounts: &dyn Accounts, allowed: &[
         }
         Ok(resp)
     };
+    // A plain HTTP request (a crawler, a browser opening the URL) gets a
+    // proper answer instead of a closed connection.
+    let mut plain = stream.try_clone()?;
     let mut ws: WebSocket<TcpStream> = match tungstenite::accept_hdr(stream, check) {
         Ok(ws) => ws,
         Err(HandshakeError::Interrupted(_)) => anyhow::bail!("handshake timeout"),
+        Err(HandshakeError::Failure(tungstenite::Error::Protocol(e))) => {
+            let body = "This is the osc-bridge relay: connect with a WebSocket. See https://osc-bridge.roomi-fields.com/connect/\n";
+            let _ = std::io::Write::write_all(&mut plain, format!(
+                "HTTP/1.1 426 Upgrade Required\r\nUpgrade: websocket\r\nConnection: close\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{body}",
+                body.len()).as_bytes());
+            anyhow::bail!("not a WebSocket request: {e}");
+        }
         Err(HandshakeError::Failure(e)) => anyhow::bail!("handshake: {e}"),
     };
     ws.get_ref().set_read_timeout(Some(READ_TIMEOUT))?;
@@ -437,6 +447,17 @@ mod tests {
             tungstenite::connect(format!("ws://{addr}/relay")).is_ok()
         });
         assert!(freed, "closing doors frees the address");
+    }
+
+    #[test]
+    fn a_plain_http_request_gets_426() {
+        use std::io::{Read, Write};
+        let addr = serve("127.0.0.1:0", Arc::new(Relays::default()), Arc::new(AnyAccount), vec![], false).unwrap();
+        let mut s = TcpStream::connect(addr).unwrap();
+        s.write_all(b"GET /relay HTTP/1.1\r\nHost: x\r\n\r\n").unwrap();
+        let mut reply = String::new();
+        s.read_to_string(&mut reply).unwrap();
+        assert!(reply.starts_with("HTTP/1.1 426"), "{reply}");
     }
 
     #[test]
