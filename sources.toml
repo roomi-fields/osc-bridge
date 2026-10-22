@@ -12,13 +12,13 @@
 
 [[source]]
 name        = "pencilresearch"
-description = "Canonical MIDI CC/NRPN tables (community, MIT)"
+description = "MIDI Guide CC/NRPN tables and drum maps (community, CC BY-SA 4.0 — https://midi.guide)"
 type        = "git"
 repo        = "https://github.com/pencilresearch/midi"
 cache_dir   = ".cache/pencilresearch-midi"
 # How to turn the cached clone into device JSONs
 importer    = "scripts/import_pencilresearch.py"
-importer_bulk_args = ["--bulk", "{cache_dir}"]
+importer_bulk_args = ["--sync", "{cache_dir}"]
 update_args        = ["--update", "{json}", "--from", "{csv}"]
 
 [[source]]

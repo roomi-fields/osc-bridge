@@ -23,6 +23,7 @@ The `osc-bridge` engine reads this file, registers OSC routes, and builds MIDI/S
   "commands":   [ ...Command... ],
   "params":     [ ...Param... ],
   "midi_in":    { ...MidiInMap... },
+  "triggers":   { "entries": [ ...Trigger... ] },
   "replies":    [ ...ReplyPattern... ]
 }
 ```
@@ -168,6 +169,43 @@ Enabled routes (the trailing `{channel}` is optional; omit to use
 
 Omit the `midi_out` section entirely for pure-configuration devices
 (controllers, hosts) that should not accept performance routes.
+
+## Triggers — named drum sounds (OSC → MIDI note)
+
+Drum machines and samplers fire sounds from MIDI **notes**, not CCs. A
+`triggers` block names each sound, so `/tr8s/drum/kick` plays the kick
+without the caller knowing it is note 36 on channel 10.
+
+```jsonc
+"triggers": {
+  "entries": [
+    { "osc": "/drum/kick", "sound": "Kick", "section": "General",
+      "channel": 9,                 // 0-15; omit when the channel is user-set
+      "note_range": [36, 36], "note": 36,
+      "velocity_usage": "1~127: Accent level" },
+    { "osc": "/drum/chromatic", "sound": "Chromatic",
+      "channel_mode": "auto",       // "fixed" (default) | "basic" | "omni" | "auto"
+      "note_range": [12, 59] }      // no natural note: the caller passes one
+  ]
+}
+```
+
+| OSC in                                     | MIDI out                                   |
+|--------------------------------------------|--------------------------------------------|
+| `<osc> [{velocity}] [{note}] [{channel}]`  | `0x90\|ch, note, velocity`                  |
+
+- `velocity` defaults to 100 and is clamped to 1-127 (velocity 0 would be
+  read as Note Off).
+- `note` defaults to the entry's natural `note`; it must stay inside
+  `note_range`, and is required when the entry has no `note`.
+- `channel` defaults to the entry's `channel`, else to
+  `midi_out.default_channel` (devices listening on a user-set basic channel,
+  in omni, or on the active track).
+- Only Note On is sent: drum voices are one-shots. Use `/note/off` (with
+  `midi_out`) when a device gates on note length.
+
+Drivers imported from MIDI Guide carry the device's drum map here, adapted
+from its `<Device>.triggers.csv`.
 
 ## Midi-in map — inbound MIDI → OSC
 
