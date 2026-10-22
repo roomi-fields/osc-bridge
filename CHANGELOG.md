@@ -71,6 +71,13 @@ addressable by sound name — and its community data is now properly licensed.
   machine; non-browser clients are unaffected. `--ws-allow-origin` /
   `ws_allow_origins` add trusted origins (`null` for `file://`, `*` for any).
 
+### Changed — MCP
+- A tool that fails now answers with `isError: true` and the reason in its
+  content, as the MCP spec asks, so the model can read it and react; only
+  an unknown tool name is a protocol error.
+- A `Dockerfile` (and `glama.json`) runs the MCP server in a container with
+  the catalogue, for directories that evaluate servers by running them.
+
 ### Fixed — licensing
 - MIDI Guide data is CC BY-SA 4.0 (it was declared MIT in `sources.toml`).
   Every MIDI Guide source entry now records `license` and `attribution`, and

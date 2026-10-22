@@ -5,8 +5,8 @@ Per the PLAYBOOK, the growth engine is **MCP directories + Google SEO**, not
 social. This file tracks the directory half.
 
 **Package**: `@roomi-fields/osc-bridge` (npm) · `io.github.roomi-fields/osc-bridge` (registry)
-**Positioning everywhere**: *OSC ↔ MIDI bridge for 849 synths and DAWs — a MIDI MCP and OSC MCP.*
-**Last sync**: 2026-05-14
+**Positioning everywhere**: *OSC ↔ MIDI bridge for 963 synths and DAWs — a MIDI MCP and OSC MCP.*
+**Last sync**: 2026-10-22
 
 Legend: ✅ live · ⚠️ submitted, pending · 🔄 auto-indexing in progress · ❌ to do · 🚫 out of scope
 
@@ -16,11 +16,11 @@ Legend: ✅ live · ⚠️ submitted, pending · 🔄 auto-indexing in progress 
 
 | Channel | Status | Notes |
 |---|---|---|
-| npm — `@roomi-fields/osc-bridge` | ✅ | v0.10.1 published 2026-05-14 |
+| npm — `@roomi-fields/osc-bridge` | ⚠️ | v0.10.1 (2026-05-14) is stale and ships no catalogue: `npx … mcp` sees 0 devices. Fixed in 0.13.0 (catalogue bundled) — **publish a release before any new submission** |
 | Official MCP Registry — `io.github.roomi-fields/osc-bridge` | ✅ | v0.10.1 published 2026-05-14, status `active`, `isLatest` |
 | GitHub repo metadata | ✅ | public; About description + homepage (Pages site) set to the 3-strata framing; topics include `mcp`, `mcp-server`, `model-context-protocol`, `midi`, `osc`, `claude`, `ableton`, `bitwig`, `reaper`, `daw`, `live-coding` (20-topic cap reached — dropped the long-tail vendor topics) |
 | `roomi-fields/claude-plugins` marketplace | ✅ | entry added 2026-05-14 |
-| Pages site (GitHub Pages) | ✅ | device browser + SEO/JSON-LD live |
+| Pages site (GitHub Pages) | ✅ | MkDocs site since 2026-10-22: 981 device pages, 10 articles, JSON-LD per page, llms.txt |
 
 ## Tier 1 — auto-indexed (verify, fix metadata if wrong)
 
@@ -29,7 +29,7 @@ and that the description/keywords landed correctly.
 
 | Directory | Status | Notes |
 |---|---|---|
-| Glama.ai | ✅ | listed at glama.ai/mcp/servers/roomi-fields/osc-bridge (2026-05-27) — score badge live; submission was manual via Add Server form (not auto-indexed) |
+| Glama.ai | ⚠️ | listed, but **no quality score** ("cannot be deployed") — blocks punkpeye. `Dockerfile` + `glama.json` added 2026-10-22: claim the server in Glama's Admin tab and request an evaluation |
 | PulseMCP | 🔄 | auto-indexed from the registry |
 | mcpservers.org | 🔄 | auto-indexed |
 | LobeHub | 🔄 | auto-indexed |
@@ -40,9 +40,10 @@ and that the description/keywords landed correctly.
 | Directory | Status | Action |
 |---|---|---|
 | Smithery.ai | ✅ | `roomifields/osc-bridge` published 2026-05-14 as a stdio MCPB bundle; quality score 100% (output schemas + annotations shipped in v0.10.1); description + icon set via the registry API |
-| awesome-mcp-servers (punkpeye, ~80k★) | ⚠️ | PR #6342 — Glama badge added (2026-05-27) per maintainer request, awaiting re-review |
-| awesome-mcp-servers (TensorBlock, ~680★) | ⚠️ | PR #543 — docs/ mirror added per maintainer request, awaiting re-review |
-| Cline Marketplace | ⚠️ | issue #1561 open on cline/mcp-marketplace |
+| awesome-mcp-servers (punkpeye, ~80k★) | ❌ | PR #6342 closed for inactivity — only missing a Glama quality score. Reopen once Glama has scored the server |
+| awesome-mcp-servers (TensorBlock, ~680★) | ✅ | PR #543 merged 2026-05-18 |
+| Cline Marketplace | ⚠️ | issue #1561 open, no answer since May |
+| ChatForest review (music MCP servers) | ❌ | says only one hardware synth MCP exists; suggest osc-bridge via an issue on thunderrabbit/chatforest.com after the release |
 | awesome-mcp-servers (wong2, ~4k★) | 🚫 | no PR / no issue — submit via web form at mcpservers.org/submit |
 | awesome-mcp-servers (appcypher, ~5.5k★) | 🚫 | submissions closed — PRs **and** issues both disabled, maintainer-only list |
 | Cursor Directory | ❌ | web form (~2 min) |
