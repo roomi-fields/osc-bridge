@@ -149,6 +149,11 @@ enum Cmd {
         /// in memory only. `/admin/*` needs OSC_BRIDGE_ADMIN_TOKEN.
         #[arg(long, requires = "http")]
         data_dir: Option<PathBuf>,
+        /// With --http: also accept relay doors (the /connect page,
+        /// `osc-bridge connect`) as WebSockets on this address, so agents can
+        /// reach MIDI devices on the user's machine through the relay tools.
+        #[arg(long, requires = "http")]
+        relay_bind: Option<String>,
     },
 }
 
@@ -172,12 +177,12 @@ fn main() -> Result<()> {
         Cmd::OscListen { bind } => cmd_osc_listen(bind),
         Cmd::Lint { device } => cmd_lint(device),
         Cmd::Orchestrate { config } => osc_bridge::orchestrator::Orchestrator::run(&config),
-        Cmd::Mcp { devices_dir, default_target, http, behind_proxy, data_dir } => {
+        Cmd::Mcp { devices_dir, default_target, http, behind_proxy, data_dir, relay_bind } => {
             let default_target = default_target.parse::<std::net::SocketAddr>()
                 .with_context(|| format!("parse --default-target {default_target}"))?;
             let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, hosted: false };
             match http {
-                Some(bind) => osc_bridge::mcp::run_http(opts, &bind, behind_proxy, data_dir.as_deref()),
+                Some(bind) => osc_bridge::mcp::run_http(opts, &bind, behind_proxy, data_dir.as_deref(), relay_bind.as_deref()),
                 None => osc_bridge::mcp::run(opts),
             }
         }

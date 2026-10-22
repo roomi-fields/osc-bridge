@@ -24,7 +24,7 @@
 
 use anyhow::Result;
 use serde_json::{json, Value};
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::io::{BufRead, Write};
 use std::net::{SocketAddr, UdpSocket};
 use std::path::{Path, PathBuf};
@@ -45,22 +45,47 @@ pub struct McpOptions {
 
 /// The tools of a server reached over the network: reading the catalogue
 /// and reporting on it. None touches the host's MIDI ports.
-const HOSTED_TOOLS: [&str; 5] = ["list_devices", "get_device_docs", "list_routes", "report_result", "get_trust"];
+const HOSTED_TOOLS: [&str; 9] = ["list_devices", "get_device_docs", "list_routes", "report_result", "get_trust",
+    "relay_status", "relay_detect", "relay_send", "relay_listen"];
 
 /// Who is calling, as far as the hosted server knows: the account (an id
-/// the server issued) and the ledger. Both are absent on stdio.
+/// the server issued), the ledger, the relay doors and the usage log. All
+/// absent on stdio.
 #[derive(Clone, Copy, Default)]
 pub struct Caller<'a> {
     pub user: Option<&'a str>,
     pub ledger: Option<&'a crate::reports::Ledger>,
+    pub relays: Option<&'a crate::relay::Relays>,
+    usage: Option<&'a UsageLog>,
 }
 
-/// What only the hosted server has: the ledger, and the administrator's
-/// token (`OSC_BRIDGE_ADMIN_TOKEN`) guarding `/admin/*`; without a token
-/// those endpoints answer 404.
+/// What only the hosted server has: the ledger, the relay doors, the usage
+/// log, and the administrator's token (`OSC_BRIDGE_ADMIN_TOKEN`) guarding
+/// `/admin/*`; without a token those endpoints answer 404.
 pub struct Hosted {
-    pub ledger: crate::reports::Ledger,
+    pub ledger: std::sync::Arc<crate::reports::Ledger>,
+    pub relays: std::sync::Arc<crate::relay::Relays>,
+    usage: UsageLog,
     pub admin_token: Option<String>,
+}
+
+impl Hosted {
+    fn caller<'a>(&'a self, user: Option<&'a str>) -> Caller<'a> {
+        Caller { user, ledger: Some(&self.ledger), relays: Some(&self.relays), usage: Some(&self.usage) }
+    }
+}
+
+/// Relay doors keep their account: a known id stays, anything else gets a
+/// new account.
+struct LedgerAccounts(std::sync::Arc<crate::reports::Ledger>);
+
+impl crate::relay::Accounts for LedgerAccounts {
+    fn resolve(&self, presented: Option<&str>) -> Option<String> {
+        match presented.map(str::to_ascii_lowercase) {
+            Some(id) if self.0.knows(&id) => Some(id),
+            _ => self.0.issue_account().ok(),
+        }
+    }
 }
 
 /// One lightweight catalogue entry. The full `Device` is loaded on demand
@@ -201,13 +226,18 @@ pub fn run(opts: McpOptions) -> Result<()> {
     Ok(())
 }
 
+/// Web pages allowed to open a relay door, besides localhost: the site's
+/// `/connect` page.
+const RELAY_ORIGINS: [&str; 1] = ["https://osc-bridge.roomi-fields.com"];
+
 /// Largest request body accepted over HTTP. A tool call is a few hundred
 /// bytes; this only stops a client from making the server buffer garbage.
 const MAX_HTTP_BODY: usize = 64 * 1024;
 
-/// Worker threads answering HTTP requests. Calls are short reads of the
-/// in-memory index and of one driver file.
-const HTTP_WORKERS: usize = 4;
+/// Worker threads answering HTTP requests. Most calls are short reads of the
+/// in-memory index and of one driver file; relay calls wait up to a few
+/// seconds for the hardware to answer.
+const HTTP_WORKERS: usize = 16;
 
 /// Requests one client may make per `RATE_WINDOW` before getting 429.
 const RATE_LIMIT: u32 = 120;
@@ -262,24 +292,30 @@ fn proxy_seen_address(header: &str) -> Option<String> {
 /// overwrites that header is the sole way in. `data_dir` holds
 /// `usage.jsonl` and the ledger `ledger.jsonl` (accounts, reports,
 /// decisions); without it they live in memory only.
-pub fn run_http(opts: McpOptions, bind: &str, behind_proxy: bool, data_dir: Option<&Path>) -> Result<()> {
+pub fn run_http(opts: McpOptions, bind: &str, behind_proxy: bool, data_dir: Option<&Path>, relay_bind: Option<&str>) -> Result<()> {
     let opts = McpOptions { hosted: true, ..opts };
-    let usage = UsageLog::open(data_dir.map(|d| d.join("usage.jsonl")).as_deref())?;
     let hosted = Hosted {
-        ledger: crate::reports::Ledger::open(data_dir.map(|d| d.join("ledger.jsonl")).as_deref())?,
+        ledger: std::sync::Arc::new(crate::reports::Ledger::open(data_dir.map(|d| d.join("ledger.jsonl")).as_deref())?),
+        relays: std::sync::Arc::new(crate::relay::Relays::default()),
+        usage: UsageLog::open(data_dir.map(|d| d.join("usage.jsonl")).as_deref())?,
         admin_token: std::env::var("OSC_BRIDGE_ADMIN_TOKEN").ok().filter(|t| t.len() >= 16),
     };
+    if let Some(rb) = relay_bind {
+        let addr = crate::relay::serve(rb, hosted.relays.clone(),
+            std::sync::Arc::new(LedgerAccounts(hosted.ledger.clone())), RELAY_ORIGINS.iter().map(|o| o.to_string()).collect())?;
+        eprintln!("relay doors on ws://{addr}");
+    }
     if hosted.admin_token.is_none() {
         eprintln!("no OSC_BRIDGE_ADMIN_TOKEN (16+ characters): /admin endpoints disabled");
     }
     let index = build_index(&opts);
     let server = tiny_http::Server::http(bind).map_err(|e| anyhow::anyhow!("bind HTTP {bind}: {e}"))?;
     eprintln!("MCP over HTTP on http://{}/mcp ({})", server.server_addr(), HOSTED_TOOLS.join(", "));
-    let shared = std::sync::Arc::new((server, opts, index, RateLimiter::default(), usage, hosted));
+    let shared = std::sync::Arc::new((server, opts, index, RateLimiter::default(), hosted));
     let workers: Vec<_> = (0..HTTP_WORKERS).map(|_| {
         let shared = shared.clone();
         std::thread::spawn(move || {
-            let (server, opts, index, limiter, usage, hosted) = &*shared;
+            let (server, opts, index, limiter, hosted) = &*shared;
             for mut req in server.incoming_requests() {
                 if !limiter.allow(&client_key(&req, behind_proxy)) {
                     respond(req, HttpReply::new(429, Some("rate limit: 120 requests per minute\n".into())));
@@ -287,7 +323,7 @@ pub fn run_http(opts: McpOptions, bind: &str, behind_proxy: bool, data_dir: Opti
                 }
                 let reply = http_exchange(&read_request(&mut req), opts, index, hosted);
                 if let Some(line) = &reply.usage {
-                    usage.write(line);
+                    hosted.usage.write(line);
                 }
                 respond(req, reply);
             }
@@ -485,7 +521,7 @@ fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex, host
             };
             let usage = (method == "tools/call").then(|| usage_record(user.as_deref(), &msg));
             let session = if method == "initialize" { user.clone() } else { None };
-            match handle_request(&msg, opts, index, Caller { user: user.as_deref(), ledger: Some(ledger) }) {
+            match handle_request(&msg, opts, index, hosted.caller(user.as_deref())) {
                 Some(mut resp) => {
                     if let (Some(id), Some(result)) = (&session, resp.get_mut("result")) {
                         result["instructions"] = json!(keep_id_instructions(id));
@@ -979,6 +1015,41 @@ fn all_tools() -> Value {
                     "idempotentHint": true,
                     "openWorldHint": false
                 }
+            },
+            {
+                "name": "relay_status",
+                "description": "Check a relay: the user opened https://osc-bridge.roomi-fields.com/connect/ (or ran osc-bridge connect) and gave you its pairing code. Returns the MIDI output and input ports of their machine. Nothing is sent to the hardware.",
+                "inputSchema": { "type": "object", "properties": { "code": { "type": "string", "description": "The pairing code the relay page or program shows (e.g. 'K7QM-2XPA')." } }, "required": ["code"], "additionalProperties": false },
+                "annotations": { "title": "Relay status", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": true }
+            },
+            {
+                "name": "relay_detect",
+                "description": "Find which devices are connected to the user's machine through a relay: sends the MIDI Identity Request (F0 7E 7F 06 01 F7, changes nothing on the device) to every output and matches the answers — manufacturer, model, firmware version — against the catalogue. Returns the best driver ids and identity_hex to pass to report_result. Devices that do not answer are only listed by port name.",
+                "inputSchema": { "type": "object", "properties": { "code": { "type": "string", "description": "The pairing code the relay page or program shows (e.g. 'K7QM-2XPA')." },
+                    "timeout_ms": { "type": "integer", "minimum": 100, "maximum": 5000, "description": "How long to wait for answers (default 1000)." } },
+                    "required": ["code"], "additionalProperties": false },
+                "annotations": { "title": "Detect devices through a relay", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": true }
+            },
+            {
+                "name": "relay_send",
+                "description": "Play or set something on the user's hardware through a relay: give a driver (id or slug) and one of its OSC addresses from list_routes with its arguments (e.g. address '/filter/cutoff', args [64]; '/note/on', args [60, 100]) — the server turns it into the right CC, NRPN, note or SysEx message. Or give raw MIDI bytes as hex. Values are the device's own numbers, clamped to the parameter's range. Sending a patch store or memory-writing SysEx overwrites the device: ask the user first.",
+                "inputSchema": { "type": "object", "properties": { "code": { "type": "string", "description": "The pairing code the relay page or program shows (e.g. 'K7QM-2XPA')." },
+                    "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or slug." },
+                    "address": { "type": "string", "description": "OSC address of the driver, with or without its prefix." },
+                    "args": { "type": "array", "items": {}, "description": "OSC arguments (numbers, strings, booleans)." },
+                    "hex": { "type": "string", "description": "Raw MIDI messages instead of device/address, e.g. 'B0 2B 40'." },
+                    "port": { "type": "string", "description": "Output port name (or part of it); needed when the relay has several." } },
+                    "required": ["code"], "additionalProperties": false },
+                "annotations": { "title": "Send through a relay", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
+            },
+            {
+                "name": "relay_listen",
+                "description": "Listen to what the user's hardware sends through a relay for a few seconds: notes, CC, NRPN, SysEx, decoded. With a device, each CC or NRPN that moved is matched to the driver's OSC addresses — ask the user to move one control on the device while listening to learn which address it is, or to check that the driver's map is right (if a control sends a number the driver does not map, report it with report_result).",
+                "inputSchema": { "type": "object", "properties": { "code": { "type": "string", "description": "The pairing code the relay page or program shows (e.g. 'K7QM-2XPA')." },
+                    "seconds": { "type": "integer", "minimum": 1, "maximum": 15, "description": "How long to listen (default 3)." },
+                    "device": { "type": "string", "description": "Driver id or slug, to match what moved to its addresses." } },
+                    "required": ["code"], "additionalProperties": false },
+                "annotations": { "title": "Listen through a relay", "readOnlyHint": true, "idempotentHint": false, "openWorldHint": true }
             }
         ]
     })
@@ -996,6 +1067,18 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, c
     match name {
         "list_devices" => list_devices(index, &DeviceFilter::from_args(args), caller.ledger),
         "report_result" => report_result(index, args, caller),
+        "relay_status" | "relay_detect" | "relay_send" | "relay_listen" => {
+            let relays = caller.relays.ok_or("the relay runs on the hosted server only")?;
+            let code = args.get("code").and_then(Value::as_str).ok_or("missing code (the pairing code shown by the door)")?;
+            let session = relays.get(code).ok_or_else(|| format!(
+                "no relay with code '{code}': open https://osc-bridge.roomi-fields.com/connect/ and read the code it shows"))?;
+            match name {
+                "relay_status" => Ok(relay_status(&session)),
+                "relay_detect" => relay_detect(index, &session, args, caller),
+                "relay_send" => relay_send(index, &session, args),
+                _ => relay_listen(index, &session, args),
+            }
+        }
         "get_trust" => {
             let ledger = caller.ledger.ok_or("trust is kept by the hosted server only")?;
             let device = args.get("device").and_then(Value::as_str).ok_or("missing device")?;
@@ -1278,6 +1361,230 @@ fn report_result(index: &DeviceIndex, args: &Value, caller: Caller) -> Result<Va
     Ok(content_structured(&text, json!({ "recorded": true, "report": id, "status": status, "trust": trust })))
 }
 
+fn relay_status(session: &crate::relay::Session) -> Value {
+    let v = json!({
+        "code": crate::relay::display_code(&session.code),
+        "outputs": session.outputs(),
+        "inputs": session.inputs(),
+    });
+    let text = format!("Relay {} connected. Outputs: {}. Inputs: {}.", v["code"].as_str().unwrap_or(""),
+        session.outputs().join(", "), session.inputs().join(", "));
+    content_structured(&text, v)
+}
+
+/// How long a relay call may wait for the hardware, in milliseconds.
+fn wait_ms(args: &Value, key: &str, default: u64, max: u64) -> std::time::Duration {
+    std::time::Duration::from_millis(args.get(key).and_then(Value::as_u64).unwrap_or(default).clamp(100, max))
+}
+
+fn hex(bytes: &[u8]) -> String {
+    bytes.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ")
+}
+
+/// Ask every output of the door who is there (MIDI Identity Request), and
+/// match each answer, with the name of the port it came on, against the
+/// catalogue.
+fn relay_detect(index: &DeviceIndex, session: &crate::relay::Session, args: &Value, caller: Caller) -> Result<Value, String> {
+    use crate::detect::{parse_identity_reply, rank, IDENTITY_REQUEST};
+    let outputs = session.outputs();
+    if outputs.is_empty() {
+        return Err("the relay has no MIDI output: plug the device in, or allow MIDI access on the page".into());
+    }
+    let since = std::time::Instant::now();
+    for out in &outputs {
+        session.send(out, &[IDENTITY_REQUEST.to_vec()])?;
+    }
+    std::thread::sleep(wait_ms(args, "timeout_ms", 1000, 5000));
+    let candidates = hardware_candidates(index);
+    let mut seen = std::collections::HashSet::new();
+    let mut found: Vec<Value> = Vec::new();
+    for msg in session.received_since(since) {
+        let Some(id) = parse_identity_reply(&msg.data) else { continue };
+        if !seen.insert((msg.port.clone(), msg.data.clone())) { continue; }
+        let matches: Vec<Value> = rank(&msg.port, Some(&id), &candidates, 3).into_iter().filter_map(|(score, i)| {
+            let entry = index.entries.iter().find(|e| e.path.display().to_string() == candidates[i].file)?;
+            Some(json!({ "id": entry.id, "name": entry.name, "vendor": entry.vendor, "source_tier": entry.tier, "score": score }))
+        }).collect();
+        let identity = json!({
+            "manufacturer": id.manufacturer_hex(),
+            "vendor": crate::detect::manufacturer_name(&id.manufacturer),
+            "family": id.family, "model": id.model, "version": hex(&id.version),
+        });
+        if session.shares() {
+            if let Some(usage) = caller.usage {
+                usage.write(&json!({
+                    "event": "relay_identity",
+                    "ts": chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
+                    "user": caller.user,
+                    "identity": identity,
+                    "best": matches.first().map(|m| m["id"].clone()),
+                }).to_string());
+            }
+        }
+        found.push(json!({
+            "input": msg.port,
+            "output": outputs.iter().find(|o| **o == msg.port).cloned(),
+            "identity": identity,
+            "identity_hex": hex(&msg.data),
+            "matches": matches,
+        }));
+    }
+    let text = if found.is_empty() {
+        format!("No device answered the Identity Request on {} (many older devices do not). Ports: {}.",
+            outputs.join(", "), session.inputs().join(", "))
+    } else {
+        format!("{} device(s) answered. Pass identity_hex to report_result after testing.\n\n{}",
+            found.len(), serde_json::to_string_pretty(&found).unwrap_or_default())
+    };
+    Ok(content_structured(&text, json!({ "devices": found, "outputs": outputs, "inputs": session.inputs() })))
+}
+
+/// Send one named OSC address of a driver — or raw MIDI bytes — through the
+/// door to the hardware.
+fn relay_send(index: &DeviceIndex, session: &crate::relay::Session, args: &Value) -> Result<Value, String> {
+    let port = session.output(args.get("port").and_then(Value::as_str))?;
+    let (messages, what) = match args.get("hex").and_then(Value::as_str) {
+        Some(raw) => {
+            let bytes = crate::librarian::parse_hex(raw).map_err(|e| format!("hex: {e}"))?;
+            (split_midi(&bytes)?, "raw MIDI".to_string())
+        }
+        None => {
+            let device = args.get("device").and_then(Value::as_str).ok_or("give device and address, or hex")?;
+            let entry = index.find(device).ok_or_else(|| format!("no device '{device}' (use the id or slug from list_devices)"))?;
+            let dev = Device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.id))?;
+            let address = args.get("address").and_then(Value::as_str).ok_or("missing address (from list_routes)")?;
+            let prefix = dev.device.osc_prefix.clone();
+            let full = if address.starts_with(&format!("{prefix}/")) { address.to_string() } else { format!("{prefix}{address}") };
+            let osc_args = args.get("args").and_then(Value::as_array).map(|a| a.iter().map(json_to_osc).collect()).unwrap_or_default();
+            let encoded = crate::runtime::encode(dev, rosc::OscMessage { addr: full.clone(), args: osc_args });
+            if encoded.is_empty() {
+                return Err(format!("{full} sends nothing on {}: check the address and its arguments with list_routes", entry.id));
+            }
+            (encoded, full)
+        }
+    };
+    session.send(&port, &messages)?;
+    let sent: Vec<String> = messages.iter().map(|m| hex(m)).collect();
+    let text = format!("Sent {what} to {port}: {}", sent.join(" | "));
+    Ok(content_structured(&text, json!({ "port": port, "messages": sent })))
+}
+
+/// Split raw bytes into MIDI messages, each starting with its status byte
+/// (no running status): channel messages by their length, SysEx up to F7.
+fn split_midi(bytes: &[u8]) -> Result<Vec<Vec<u8>>, String> {
+    let mut out = Vec::new();
+    let mut i = 0;
+    while i < bytes.len() {
+        let status = bytes[i];
+        let len = match status {
+            0xF0 => bytes[i..].iter().position(|&b| b == 0xF7).map(|p| p + 1)
+                .ok_or("SysEx without its closing F7")?,
+            0x80..=0xBF | 0xE0..=0xEF | 0xF2 => 3,
+            0xC0..=0xDF | 0xF1 | 0xF3 => 2,
+            0xF4..=0xFF => 1,
+            _ => return Err(format!("byte {status:02X} at {i} is not a status byte")),
+        };
+        let msg = bytes.get(i..i + len).ok_or("message cut short")?;
+        if msg[1..].iter().any(|&b| b >= 0x80 && b != 0xF7) {
+            return Err(format!("data byte out of range in {}", hex(msg)));
+        }
+        out.push(msg.to_vec());
+        i += len;
+    }
+    if out.is_empty() {
+        return Err("no MIDI message".into());
+    }
+    Ok(out)
+}
+
+/// One MIDI message in words: what it is, on which channel, which numbers.
+fn describe_midi(data: &[u8]) -> Value {
+    let status = data.first().copied().unwrap_or(0);
+    let ch = (status & 0x0F) + 1;
+    let at = |i: usize| data.get(i).copied().unwrap_or(0);
+    match status & 0xF0 {
+        0x80 => json!({ "kind": "note_off", "channel": ch, "note": at(1), "velocity": at(2) }),
+        0x90 if at(2) == 0 => json!({ "kind": "note_off", "channel": ch, "note": at(1), "velocity": 0 }),
+        0x90 => json!({ "kind": "note_on", "channel": ch, "note": at(1), "velocity": at(2) }),
+        0xA0 => json!({ "kind": "poly_aftertouch", "channel": ch, "note": at(1), "value": at(2) }),
+        0xB0 => json!({ "kind": "cc", "channel": ch, "cc": at(1), "value": at(2) }),
+        0xC0 => json!({ "kind": "program_change", "channel": ch, "program": at(1) }),
+        0xD0 => json!({ "kind": "aftertouch", "channel": ch, "value": at(1) }),
+        0xE0 => json!({ "kind": "pitchbend", "channel": ch, "value": (at(1) as u16) | ((at(2) as u16) << 7) }),
+        _ if status == 0xF0 => json!({ "kind": "sysex", "length": data.len() }),
+        _ => json!({ "kind": "system", "status": status }),
+    }
+}
+
+/// Collect what the hardware sends through the door for a few seconds. With
+/// a device, CC and NRPN numbers are matched to the driver's addresses —
+/// ask the user to move one control, and see which address it is.
+fn relay_listen(index: &DeviceIndex, session: &crate::relay::Session, args: &Value) -> Result<Value, String> {
+    let since = std::time::Instant::now();
+    let seconds = args.get("seconds").and_then(Value::as_u64).unwrap_or(3).clamp(1, 15);
+    std::thread::sleep(std::time::Duration::from_secs(seconds));
+    let device = match args.get("device").and_then(Value::as_str) {
+        Some(d) => {
+            let entry = index.find(d).ok_or_else(|| format!("no device '{d}'"))?;
+            Some(Device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.id))?)
+        }
+        None => None,
+    };
+    let received = session.received_since(since);
+    let messages: Vec<Value> = received.iter().filter(|m| m.data.first() != Some(&0xF8) && m.data.first() != Some(&0xFE))
+        .take(500).map(|m| {
+            let mut d = describe_midi(&m.data);
+            d["port"] = json!(m.port);
+            d["hex"] = json!(hex(&m.data));
+            d
+        }).collect();
+    let mut controls: BTreeMap<u8, (u8, u8, u8, usize)> = BTreeMap::new();
+    for m in &messages {
+        if m["kind"] == "cc" {
+            let (cc, v) = (m["cc"].as_u64().unwrap_or(0) as u8, m["value"].as_u64().unwrap_or(0) as u8);
+            let e = controls.entry(cc).or_insert((m["channel"].as_u64().unwrap_or(1) as u8, v, v, 0));
+            e.1 = e.1.min(v); e.2 = e.2.max(v); e.3 += 1;
+        }
+    }
+    let nrpn = nrpn_numbers(&received);
+    let mapped = |cc: Option<u8>, nrpn: Option<(u8, u8)>| -> Vec<String> {
+        let Some(dev) = &device else { return Vec::new() };
+        dev.cc_params.iter().flat_map(|t| t.entries.iter()).filter(|e| match nrpn {
+            Some((m, l)) => e.nrpn_msb == Some(m) && e.nrpn_lsb == Some(l),
+            None => e.cc == cc && e.nrpn_msb.is_none(),
+        }).map(|e| format!("{}{}", dev.device.osc_prefix, e.osc)).collect()
+    };
+    let moved: Vec<Value> = controls.iter().filter(|(cc, _)| ![6u8, 38, 98, 99].contains(cc) || nrpn.is_empty())
+        .map(|(cc, (ch, lo, hi, n))| json!({
+            "cc": cc, "channel": ch, "min": lo, "max": hi, "messages": n,
+            "driver_addresses": mapped(Some(*cc), None),
+        }))
+        .chain(nrpn.iter().map(|(m, l)| json!({ "nrpn": [m, l], "driver_addresses": mapped(None, Some((*m, *l))) })))
+        .collect();
+    let text = format!("{} message(s) received. Controls moved: {}",
+        messages.len(), serde_json::to_string_pretty(&moved).unwrap_or_default());
+    Ok(content_structured(&text, json!({ "messages": messages, "controls": moved })))
+}
+
+/// NRPN parameter numbers selected in a stream of messages (CC 99 then 98).
+fn nrpn_numbers(received: &[crate::relay::Inbound]) -> Vec<(u8, u8)> {
+    let mut out: Vec<(u8, u8)> = Vec::new();
+    let mut msb: Option<u8> = None;
+    for m in received {
+        if let [s, cc, v] = m.data[..] {
+            if s & 0xF0 != 0xB0 { continue; }
+            match cc {
+                99 => msb = Some(v),
+                98 => if let Some(hi) = msb {
+                    if !out.contains(&(hi, v)) { out.push((hi, v)); }
+                },
+                _ => {}
+            }
+        }
+    }
+    out
+}
+
 fn load_device_by_slug(index: &DeviceIndex, slug: &str) -> Result<Device, String> {
     let path = index.find_path(slug)
         .ok_or_else(|| format!("no device with slug '{slug}'"))?;
@@ -1484,7 +1791,12 @@ mod tests {
     }
 
     fn hosted_for_tests() -> Hosted {
-        Hosted { ledger: crate::reports::Ledger::open(None).unwrap(), admin_token: Some("x".repeat(16)) }
+        Hosted {
+            ledger: std::sync::Arc::new(crate::reports::Ledger::open(None).unwrap()),
+            relays: std::sync::Arc::new(crate::relay::Relays::default()),
+            usage: UsageLog::open(None).unwrap(),
+            admin_token: Some("x".repeat(16)),
+        }
     }
 
     fn test_opts() -> McpOptions {
@@ -1629,8 +1941,75 @@ mod tests {
         assert_eq!(exchange(&opts, &idx, &hosted, "POST", "/admin/decide", None, Some(&token), &clear).status, 200);
         let nonsense = json!({"decision": "approve", "user": users[3]}).to_string();
         assert_eq!(exchange(&opts, &idx, &hosted, "POST", "/admin/decide", None, Some(&token), &nonsense).status, 400);
-        let off = Hosted { ledger: crate::reports::Ledger::open(None).unwrap(), admin_token: None };
+        let off = Hosted { admin_token: None, ..hosted_for_tests() };
         assert_eq!(exchange(&opts, &idx, &off, "GET", "/admin/pending", None, Some(&token), "").status, 404);
+    }
+
+    #[test]
+    fn an_agent_detects_plays_and_listens_through_a_relay_door() {
+        use tungstenite::Message;
+        let opts = McpOptions { hosted: true, ..test_opts() };
+        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let hosted = hosted_for_tests();
+        let addr = crate::relay::serve("127.0.0.1:0", hosted.relays.clone(),
+            std::sync::Arc::new(LedgerAccounts(hosted.ledger.clone())), vec![]).unwrap();
+        // A door that owns a minilogue: answers the Identity Request, and
+        // turns the cutoff knob when asked to play anything.
+        let (mut ws, _) = tungstenite::connect(format!("ws://{addr}/relay")).unwrap();
+        let hello: Value = match ws.read().unwrap() { Message::Text(t) => serde_json::from_str(&t).unwrap(), m => panic!("{m:?}") };
+        let code = hello["code"].as_str().unwrap().to_string();
+        assert!(hosted.ledger.knows(hello["user"].as_str().unwrap()), "the door gets an issued account");
+        ws.send(Message::Text(json!({"type": "ports", "outputs": ["minilogue SOUND"], "inputs": ["minilogue SOUND"]}).to_string().into())).unwrap();
+        let door = std::thread::spawn(move || {
+            let mut played = Vec::new();
+            while let Ok(m) = ws.read() {
+                let Message::Text(t) = m else { continue };
+                let v: Value = serde_json::from_str(&t).unwrap();
+                let data: Vec<u8> = v["data"].as_array().unwrap().iter().map(|b| b.as_u64().unwrap() as u8).collect();
+                let reply = if data == crate::detect::IDENTITY_REQUEST {
+                    vec![0xF0, 0x7E, 0x00, 0x06, 0x02, 0x42, 0x2C, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0xF7]
+                } else {
+                    played.push(data);
+                    vec![0xB0, 43, 90]
+                };
+                ws.send(Message::Text(json!({"type": "midi_in", "port": "minilogue SOUND", "data": reply}).to_string().into())).unwrap();
+                if played.len() == 2 { return played; }
+            }
+            played
+        });
+        let user = hosted.ledger.issue_account().unwrap();
+        let call = |tool: &str, args: Value| {
+            let body = json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": tool, "arguments": args}});
+            let r = exchange(&opts, &idx, &hosted, "POST", "/mcp", Some(&user), None, &body.to_string());
+            serde_json::from_str::<Value>(&r.body.unwrap()).unwrap()["result"].clone()
+        };
+        let status = (0..300).find_map(|_| {
+            std::thread::sleep(std::time::Duration::from_millis(10));
+            let r = call("relay_status", json!({"code": code.to_lowercase()}));
+            (r["structuredContent"]["outputs"][0] == "minilogue SOUND").then_some(r)
+        }).expect("the door's ports reach the server");
+        assert_eq!(status["structuredContent"]["inputs"][0], "minilogue SOUND");
+        let found = call("relay_detect", json!({"code": code, "timeout_ms": 300}));
+        let device = &found["structuredContent"]["devices"][0];
+        assert_eq!(device["identity"]["version"], "02 01 00 00", "{found}");
+        assert_eq!(device["matches"][0]["id"], "korg/minilogue", "{found}");
+        let sent = call("relay_send", json!({"code": code, "device": "korg/minilogue", "address": "/filter/cutoff", "args": [45]}));
+        assert_eq!(sent["structuredContent"]["messages"][0], "B0 2B 2D", "{sent}");
+        let listen_args = json!({"code": code, "seconds": 1, "device": "korg/minilogue"});
+        let listening = std::thread::scope(|s| {
+            let h = s.spawn(|| call("relay_listen", listen_args));
+            std::thread::sleep(std::time::Duration::from_millis(200));
+            call("relay_send", json!({"code": code, "hex": "90 3C 64"}));
+            h.join().unwrap()
+        });
+        let moved = &listening["structuredContent"]["controls"][0];
+        assert_eq!(moved["cc"], 43, "{listening}");
+        assert_eq!(moved["driver_addresses"][0], "/minilogue/filter/cutoff");
+        assert_eq!(door.join().unwrap(), vec![vec![0xB0, 43, 45], vec![0x90, 0x3C, 0x64]]);
+        let gone = call("relay_status", json!({"code": "ZZZZ-ZZZZ"}));
+        assert_eq!(gone["isError"], true);
+        assert!(split_midi(&[0xB0, 0x2B]).is_err());
+        assert_eq!(split_midi(&[0xF0, 0x7E, 0xF7, 0xC0, 5]).unwrap(), vec![vec![0xF0, 0x7E, 0xF7], vec![0xC0, 5]]);
     }
 
     #[test]

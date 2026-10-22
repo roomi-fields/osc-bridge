@@ -845,6 +845,18 @@ impl DeviceDispatch {
     }
 }
 
+/// The MIDI messages `msg` would send to `device`, without opening a port:
+/// the full dispatch pipeline (commands, params, CC/NRPN, triggers, scripts)
+/// writing into a queue that is read back. Used by the relay, where the
+/// hardware is on another machine.
+pub fn encode(device: Device, msg: OscMessage) -> Vec<Vec<u8>> {
+    let (tx, rx): (Sender<Vec<u8>>, Receiver<Vec<u8>>) = bounded(1024);
+    let state = DeviceDispatch::build(device, tx);
+    let discard: SendOsc = Arc::new(|_| {});
+    dispatch_to_device(&state, msg, &discard, SocketAddr::from(([0, 0, 0, 0], 0)));
+    rx.try_iter().collect()
+}
+
 /// Public dispatch entry point used by the orchestrator. For MIDI/SysEx
 /// devices: runs the full command / param / cc_param / midi_out pipeline
 /// just like the single-device runtime.

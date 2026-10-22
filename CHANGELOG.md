@@ -51,6 +51,11 @@ addressable by sound name — and its community data is now properly licensed.
   accounts, reports and decisions (`ledger.jsonl`) on disk.
 - `list_devices` returns each driver's `id` (its path in the catalogue) and,
   on the hosted server, its `usage_status`.
+- Relay (`--relay-bind`, `relay_status`, `relay_detect`, `relay_send`,
+  `relay_listen`): a door — the site's `/connect` page with Web MIDI, or any
+  program speaking the WebSocket protocol — pairs the user's MIDI ports
+  with a code; agents detect, play and listen to that hardware through the
+  hosted server, which encodes driver addresses into MIDI itself.
 - Hosted instance: https://mcp.osc-bridge.roomi-fields.com/mcp.
 - The site publishes a static JSON API: `/api/v1/index.json` (every driver
   with source, firmware and coverage) and each driver file under
