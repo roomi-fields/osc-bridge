@@ -138,6 +138,10 @@ enum Cmd {
         /// offered: the others would act on this machine's MIDI ports.
         #[arg(long)]
         http: Option<String>,
+        /// With --http behind a reverse proxy: identify clients by
+        /// X-Forwarded-For for the per-client rate limit.
+        #[arg(long, requires = "http")]
+        behind_proxy: bool,
     },
 }
 
@@ -161,12 +165,12 @@ fn main() -> Result<()> {
         Cmd::OscListen { bind } => cmd_osc_listen(bind),
         Cmd::Lint { device } => cmd_lint(device),
         Cmd::Orchestrate { config } => osc_bridge::orchestrator::Orchestrator::run(&config),
-        Cmd::Mcp { devices_dir, default_target, http } => {
+        Cmd::Mcp { devices_dir, default_target, http, behind_proxy } => {
             let default_target = default_target.parse::<std::net::SocketAddr>()
                 .with_context(|| format!("parse --default-target {default_target}"))?;
             let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, catalogue_only: false };
             match http {
-                Some(bind) => osc_bridge::mcp::run_http(opts, &bind),
+                Some(bind) => osc_bridge::mcp::run_http(opts, &bind, behind_proxy),
                 None => osc_bridge::mcp::run(opts),
             }
         }
