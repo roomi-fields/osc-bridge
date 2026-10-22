@@ -1,0 +1,886 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Squarp instruments/Rample.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 77,
+    "cc_entries": 77,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Rample",
+    "vendor": "Squarp instruments",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/rample",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/sp1_voice_parameters/pitch",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP1 Voice Parameters",
+        "_usage": "0~62: Pitch down; 63: Base pitch; 64~127: Pitch up"
+      },
+      {
+        "osc": "/sp1_voice_parameters/bits",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP1 Voice Parameters",
+        "_usage": "0~62: Algo 1 depth; 63: Dry; 64~127: Algo 2 depth"
+      },
+      {
+        "osc": "/sp1_voice_parameters/filter",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP1 Voice Parameters",
+        "_usage": "0~62: Lowpass; 63: Unfiltered; 64~127: Highpass"
+      },
+      {
+        "osc": "/sp1_voice_parameters/freeze",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP1 Voice Parameters",
+        "_usage": "0~62: Algo 1 depth; 63: Dry; 64~127: Algo 2 depth"
+      },
+      {
+        "osc": "/sp1_voice_parameters/start_point",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "SP1 Voice Parameters",
+        "_usage": "0~127: Playback start point"
+      },
+      {
+        "osc": "/sp1_voice_parameters/length",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "SP1 Voice Parameters",
+        "_usage": "0~127: Sample playback length"
+      },
+      {
+        "osc": "/sp1_voice_parameters/envelope",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP1 Voice Parameters",
+        "_usage": "0~62: Attack time; 63: Unenveloped; 64~127: Decay time"
+      },
+      {
+        "osc": "/sp1_voice_parameters/run_mode",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP1 Voice Parameters",
+        "_usage": "0-62: Toggle loop; 63: One shot; 64-127: Gate high only"
+      },
+      {
+        "osc": "/sp1_voice_parameters/level",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP1 Voice Parameters",
+        "_usage": "0~63: Clean gain; 64~127: Driven gain"
+      },
+      {
+        "osc": "/sp1_voice_parameters/layer",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "SP1 Voice Parameters",
+        "_usage": "0~127: Layer select"
+      },
+      {
+        "osc": "/sp2_voice_parameters/pitch",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP2 Voice Parameters",
+        "_usage": "0~62: Pitch down; 63: Base pitch; 64~127: Pitch up"
+      },
+      {
+        "osc": "/sp2_voice_parameters/bits",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP2 Voice Parameters",
+        "_usage": "0~62: Algo 1 depth; 63: Dry; 64~127: Algo 2 depth"
+      },
+      {
+        "osc": "/sp2_voice_parameters/filter",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP2 Voice Parameters",
+        "_usage": "0~62: Lowpass; 63: Unfiltered; 64~127: Highpass"
+      },
+      {
+        "osc": "/sp2_voice_parameters/freeze",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP2 Voice Parameters",
+        "_usage": "0~62: Algo 1 depth; 63: Dry; 64~127: Algo 2 depth"
+      },
+      {
+        "osc": "/sp2_voice_parameters/start_point",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "SP2 Voice Parameters",
+        "_usage": "0~127: Playback start point"
+      },
+      {
+        "osc": "/sp2_voice_parameters/length",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "SP2 Voice Parameters",
+        "_usage": "0~127: Sample playback length"
+      },
+      {
+        "osc": "/sp2_voice_parameters/envelope",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP2 Voice Parameters",
+        "_usage": "0~62: Attack time; 63: Unenveloped; 64~127: Decay time"
+      },
+      {
+        "osc": "/sp2_voice_parameters/run_mode",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP2 Voice Parameters",
+        "_usage": "0-62: Toggle loop; 63: One shot; 64-127: Gate high only"
+      },
+      {
+        "osc": "/sp2_voice_parameters/level",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP2 Voice Parameters",
+        "_usage": "0~63: Clean gain; 64~127: Driven gain"
+      },
+      {
+        "osc": "/sp2_voice_parameters/layer",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "SP2 Voice Parameters",
+        "_usage": "0~127: Layer select"
+      },
+      {
+        "osc": "/sp3_voice_parameters/pitch",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP3 Voice Parameters",
+        "_usage": "0~62: Pitch down; 63: Base pitch; 64~127: Pitch up"
+      },
+      {
+        "osc": "/sp3_voice_parameters/bits",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP3 Voice Parameters",
+        "_usage": "0~62: Algo 1 depth; 63: Dry; 64~127: Algo 2 depth"
+      },
+      {
+        "osc": "/sp3_voice_parameters/filter",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP3 Voice Parameters",
+        "_usage": "0~62: Lowpass; 63: Unfiltered; 64~127: Highpass"
+      },
+      {
+        "osc": "/sp3_voice_parameters/freeze",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP3 Voice Parameters",
+        "_usage": "0~62: Algo 1 depth; 63: Dry; 64~127: Algo 2 depth"
+      },
+      {
+        "osc": "/sp3_voice_parameters/start_point",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "SP3 Voice Parameters",
+        "_usage": "0~127: Playback start point"
+      },
+      {
+        "osc": "/sp3_voice_parameters/length",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "SP3 Voice Parameters",
+        "_usage": "0~127: Sample playback length"
+      },
+      {
+        "osc": "/sp3_voice_parameters/envelope",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP3 Voice Parameters",
+        "_usage": "0~62: Attack time; 63: Unenveloped; 64~127: Decay time"
+      },
+      {
+        "osc": "/sp3_voice_parameters/run_mode",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP3 Voice Parameters",
+        "_usage": "0-62: Toggle loop; 63: One shot; 64-127: Gate high only"
+      },
+      {
+        "osc": "/sp3_voice_parameters/level",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP3 Voice Parameters",
+        "_usage": "0~63: Clean gain; 64~127: Driven gain"
+      },
+      {
+        "osc": "/sp3_voice_parameters/layer",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "SP3 Voice Parameters",
+        "_usage": "0~127: Layer select"
+      },
+      {
+        "osc": "/sp4_voice_parameters/pitch",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP4 Voice Parameters",
+        "_usage": "0~62: Pitch down; 63: Base pitch; 64~127: Pitch up"
+      },
+      {
+        "osc": "/sp4_voice_parameters/bits",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP4 Voice Parameters",
+        "_usage": "0~62: Algo 1 depth; 63: Dry; 64~127: Algo 2 depth"
+      },
+      {
+        "osc": "/sp4_voice_parameters/filter",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP4 Voice Parameters",
+        "_usage": "0~62: Lowpass; 63: Unfiltered; 64~127: Highpass"
+      },
+      {
+        "osc": "/sp4_voice_parameters/freeze",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP4 Voice Parameters",
+        "_usage": "0~62: Algo 1 depth; 63: Dry; 64~127: Algo 2 depth"
+      },
+      {
+        "osc": "/sp4_voice_parameters/start_point",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "SP4 Voice Parameters",
+        "_usage": "0~127: Playback start point"
+      },
+      {
+        "osc": "/sp4_voice_parameters/length",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "SP4 Voice Parameters",
+        "_usage": "0~127: Sample playback length"
+      },
+      {
+        "osc": "/sp4_voice_parameters/envelope",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP4 Voice Parameters",
+        "_usage": "0~62: Attack time; 63: Unenveloped; 64~127: Decay time"
+      },
+      {
+        "osc": "/sp4_voice_parameters/run_mode",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP4 Voice Parameters",
+        "_usage": "0-62: Toggle loop; 63: One shot; 64-127: Gate high only"
+      },
+      {
+        "osc": "/sp4_voice_parameters/level",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "SP4 Voice Parameters",
+        "_usage": "0~63: Clean gain; 64~127: Driven gain"
+      },
+      {
+        "osc": "/sp4_voice_parameters/layer",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "SP4 Voice Parameters",
+        "_usage": "0~127: Layer select"
+      },
+      {
+        "osc": "/all_channel_voice_parameters/pitch",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "All Channel Voice Parameters",
+        "_usage": "0~62: Pitch down; 63: Base pitch; 64~127: Pitch up"
+      },
+      {
+        "osc": "/all_channel_voice_parameters/bits",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "All Channel Voice Parameters",
+        "_usage": "0~62: Algo 1 depth; 63: Dry; 64~127: Algo 2 depth"
+      },
+      {
+        "osc": "/all_channel_voice_parameters/filter",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "All Channel Voice Parameters",
+        "_usage": "0~62: Lowpass; 63: Unfiltered; 64~127: Highpass"
+      },
+      {
+        "osc": "/all_channel_voice_parameters/freeze",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "All Channel Voice Parameters",
+        "_usage": "0~62: Algo 1 depth; 63: Dry; 64~127: Algo 2 depth"
+      },
+      {
+        "osc": "/all_channel_voice_parameters/start_point",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "All Channel Voice Parameters",
+        "_usage": "0~127: Playback start point"
+      },
+      {
+        "osc": "/all_channel_voice_parameters/length",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "All Channel Voice Parameters",
+        "_usage": "0~127: Sample playback length"
+      },
+      {
+        "osc": "/all_channel_voice_parameters/envelope",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "All Channel Voice Parameters",
+        "_usage": "0~62: Attack time; 63: Unenveloped; 64~127: Decay time"
+      },
+      {
+        "osc": "/all_channel_voice_parameters/run_mode",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "All Channel Voice Parameters",
+        "_usage": "0-62: Toggle loop; 63: One shot; 64-127: Gate high only"
+      },
+      {
+        "osc": "/all_channel_voice_parameters/level",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "All Channel Voice Parameters",
+        "_usage": "0~63: Clean gain; 64~127: Driven gain"
+      },
+      {
+        "osc": "/all_channel_voice_parameters/layer",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "All Channel Voice Parameters",
+        "_usage": "0~127: Layer select"
+      },
+      {
+        "osc": "/layer_mode_controls/all_chan_layer_mode",
+        "cc": 60,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Layer Mode Controls",
+        "_usage": "0: Manual; 1: Random; 2: Cyclic; 3: Reverse Cyclic; 4:Velocity"
+      },
+      {
+        "osc": "/layer_mode_controls/sp1_layer_mode",
+        "cc": 61,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Layer Mode Controls",
+        "_usage": "0: Manual; 1: Random; 2: Cyclic; 3: Reverse Cyclic; 4:Velocity"
+      },
+      {
+        "osc": "/layer_mode_controls/sp2_layer_mode",
+        "cc": 62,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Layer Mode Controls",
+        "_usage": "0: Manual; 1: Random; 2: Cyclic; 3: Reverse Cyclic; 4:Velocity"
+      },
+      {
+        "osc": "/layer_mode_controls/sp3_layer_mode",
+        "cc": 63,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Layer Mode Controls",
+        "_usage": "0: Manual; 1: Random; 2: Cyclic; 3: Reverse Cyclic; 4:Velocity"
+      },
+      {
+        "osc": "/layer_mode_controls/sp4_layer_mode",
+        "cc": 64,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Layer Mode Controls",
+        "_usage": "0: Manual; 1: Random; 2: Cyclic; 3: Reverse Cyclic; 4:Velocity"
+      },
+      {
+        "osc": "/parameter_randomisation/all_chan_randomise_params",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Parameter Randomisation"
+      },
+      {
+        "osc": "/parameter_randomisation/sp1_randomise_params",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Parameter Randomisation"
+      },
+      {
+        "osc": "/parameter_randomisation/sp2_randomise_params",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Parameter Randomisation"
+      },
+      {
+        "osc": "/parameter_randomisation/sp3_randomise_params",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Parameter Randomisation"
+      },
+      {
+        "osc": "/parameter_randomisation/sp4_randomise_params",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Parameter Randomisation"
+      },
+      {
+        "osc": "/parameter_reset/all_chan_reset_params",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Parameter Reset"
+      },
+      {
+        "osc": "/parameter_reset/sp1_reset_params",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Parameter Reset"
+      },
+      {
+        "osc": "/parameter_reset/sp2_reset_params",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Parameter Reset"
+      },
+      {
+        "osc": "/parameter_reset/sp3_reset_params",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Parameter Reset"
+      },
+      {
+        "osc": "/parameter_reset/sp4_reset_params",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Parameter Reset"
+      },
+      {
+        "osc": "/punch_fx/sp1_punch_fx",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Punch FX",
+        "_usage": "0: Disabled; 1-127: Enabled"
+      },
+      {
+        "osc": "/punch_fx/sp2_punch_fx",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Punch FX",
+        "_usage": "0: Disabled; 1-127: Enabled"
+      },
+      {
+        "osc": "/punch_fx/sp3_punch_fx",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Punch FX",
+        "_usage": "0: Disabled; 1-127: Enabled"
+      },
+      {
+        "osc": "/punch_fx/sp4_punch_fx",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Punch FX",
+        "_usage": "0: Disabled; 1-127: Enabled"
+      },
+      {
+        "osc": "/master_fx/tape_amount",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master FX",
+        "_usage": "0: Disabled; 1~127: Tape Amount"
+      },
+      {
+        "osc": "/master_fx/compressor_preset",
+        "cc": 111,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Master FX",
+        "_usage": "0: Disabled; 1: Glue; 2: Peak Limiter; 3: Slow Opto; 4: Drum Transient; 5: Punchy VCA; 6: Leveling amp; 7: Parallel; 8: Agressive Limiter FET; 9: Mast"
+      },
+      {
+        "osc": "/master_fx/compressor_amount",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master FX",
+        "_usage": "0: Disabled; 1~127: Compression Depth"
+      },
+      {
+        "osc": "/kit_select/instant",
+        "cc": 98,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Kit Select",
+        "_usage": "0~99: Select Kit Number"
+      },
+      {
+        "osc": "/kit_select/select_bank",
+        "cc": 99,
+        "range": [
+          0,
+          25
+        ],
+        "orientation": "0-based",
+        "section": "Kit Select",
+        "_usage": "0~25: Bank A~Z"
+      },
+      {
+        "osc": "/kit_select/other_bank",
+        "cc": 0,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Kit Select",
+        "_usage": "0~99: Select Kit Number"
+      },
+      {
+        "osc": "/kit_select/prev_kit",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kit Select"
+      },
+      {
+        "osc": "/kit_select/next_kit",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kit Select"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

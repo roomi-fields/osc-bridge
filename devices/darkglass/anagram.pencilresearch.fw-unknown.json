@@ -1,0 +1,360 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Darkglass/Anagram.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 29,
+    "cc_entries": 29,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Anagram",
+    "vendor": "Darkglass",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/anagram",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/banks_and_presets/bank_select",
+        "cc": 102,
+        "range": [
+          1,
+          42
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "1~42: Bank"
+      },
+      {
+        "osc": "/banks_and_presets/bank_increment",
+        "cc": 103,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "1-127: Next bank"
+      },
+      {
+        "osc": "/banks_and_presets/bank_decrement",
+        "cc": 104,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "1-127: Previous bank"
+      },
+      {
+        "osc": "/banks_and_presets/preset_increment",
+        "cc": 105,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "1-127: Next preset"
+      },
+      {
+        "osc": "/banks_and_presets/preset_decrement",
+        "cc": 106,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "1-127: Previous preset"
+      },
+      {
+        "osc": "/scenes/scene_select",
+        "cc": 107,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Scenes",
+        "_usage": "1~126: Activate scene (01A-42C); 127: Activate default scene"
+      },
+      {
+        "osc": "/scenes/scene_increment",
+        "cc": 108,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Scenes",
+        "_usage": "1-127: Next scene"
+      },
+      {
+        "osc": "/scenes/scene_decrement",
+        "cc": 109,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Scenes",
+        "_usage": "1-127: Previous scene"
+      },
+      {
+        "osc": "/global_controls/mode_select",
+        "cc": 85,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Global controls",
+        "_usage": "1: Preset Mode; 2: Stomp Mode; 3: Scene Mode"
+      },
+      {
+        "osc": "/global_controls/tuner_enter_exit",
+        "cc": 86,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global controls",
+        "_usage": "1-127: Enter/Exit tuner screen"
+      },
+      {
+        "osc": "/looper/enter_exit",
+        "cc": 110,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "1-127: Enter/Exit looper screen"
+      },
+      {
+        "osc": "/looper/play_stop",
+        "cc": 111,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "1-127: Play/Stop"
+      },
+      {
+        "osc": "/looper/record_overdub",
+        "cc": 112,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "1-127: Record/Overdub"
+      },
+      {
+        "osc": "/looper/clear_slot",
+        "cc": 113,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "1-127: Clear slot"
+      },
+      {
+        "osc": "/looper/undo",
+        "cc": 114,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "1-127: Undo"
+      },
+      {
+        "osc": "/looper/redo",
+        "cc": 115,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "1-127: Redo"
+      },
+      {
+        "osc": "/looper/select_slot",
+        "cc": 116,
+        "range": [
+          1,
+          126
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "1~126: Load looper slot"
+      },
+      {
+        "osc": "/looper/next_slot",
+        "cc": 117,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "1-127: Next slot"
+      },
+      {
+        "osc": "/looper/previous_slot",
+        "cc": 118,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "1-127: Previous slot"
+      },
+      {
+        "osc": "/bindings/binding_stomp_mode_foot_a",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bindings"
+      },
+      {
+        "osc": "/bindings/binding_stomp_mode_foot_b",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bindings"
+      },
+      {
+        "osc": "/bindings/binding_stomp_mode_foot_c",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bindings"
+      },
+      {
+        "osc": "/bindings/binding_knob_1",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bindings"
+      },
+      {
+        "osc": "/bindings/binding_knob_2",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bindings"
+      },
+      {
+        "osc": "/bindings/binding_knob_3",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bindings"
+      },
+      {
+        "osc": "/bindings/binding_knob_4",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bindings"
+      },
+      {
+        "osc": "/bindings/binding_knob_5",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bindings"
+      },
+      {
+        "osc": "/bindings/binding_knob_6",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bindings"
+      },
+      {
+        "osc": "/bindings/binding_expression_pedal",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bindings"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

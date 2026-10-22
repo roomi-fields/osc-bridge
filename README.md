@@ -6,7 +6,7 @@
 
 **Declarative OSC bridge for music hardware *and* software — and an MCP server to drive it from an LLM.**
 
-849 hardware synthesizers over MIDI / SysEx, plus DAWs and live-coding
+963 hardware synthesizers over MIDI / SysEx, plus DAWs and live-coding
 environments over OSC (Ableton, Bitwig, Reaper, Sonic Pi, SuperCollider, Pure
 Data, TouchDesigner, VCV Rack). Every device gets a clean, named OSC surface
 described by one JSON file. Drive it from a live-coding client, a DAW, a
@@ -58,7 +58,7 @@ Each synth is described by one JSON file. No Rust recompile required to add a de
 ## What makes it different
 
 - **One JSON = one driver.** Adding a synth is ~30 lines of declarative JSON — CC numbers, SysEx frame templates, optional parameter tables. No Rust, no bindings, no build step. Ship a PR, `osc-bridge run` picks it up.
-- **849 devices out of the box.** Every Prophet, every Oberheim, every Yamaha DX-family, MatrixBrute, Hydrasynth, Virus TI, Digitone, Matrix-1000… most of the catalogue is usable today. Fully searchable at [roomi-fields.github.io/osc-bridge](https://roomi-fields.github.io/osc-bridge/).
+- **963 devices out of the box.** Every Prophet, every Oberheim, every Yamaha DX-family, MatrixBrute, Hydrasynth, Virus TI, Digitone, Matrix-1000… most of the catalogue is usable today. Fully searchable at [roomi-fields.github.io/osc-bridge](https://roomi-fields.github.io/osc-bridge/).
 - **Hardware *and* software.** The same named OSC surface drives a hardware synth over MIDI/SysEx *or* a DAW / live-coding environment over OSC — Ableton, Bitwig, Reaper, Sonic Pi, SuperCollider, Pure Data, TouchDesigner, VCV Rack. See [§ Software targets](#software-targets--daws-and-live-coding-environments).
 - **An MCP server built in.** `osc-bridge mcp` exposes the whole catalogue to Claude (or any MCP client) — a MIDI MCP *and* OSC MCP. Discover devices, read a device's OSC surface, send OSC to synths and DAWs. See [`docs/MCP.md`](docs/MCP.md).
 - **Honest provenance.** Each device declares its source in `_sources[]`: `✅ hardware-verified`, `✅ software-verified`, `📘 vendor-doc`, `📡 vendor-osc-api` / `📡 third-party-osc`, `🎛️ electra-preset`, `📦 pencilresearch`. You always know whether a mapping was tested on the device or lifted from a spec sheet.
@@ -70,16 +70,15 @@ Each synth is described by one JSON file. No Rust recompile required to add a de
 
 ## Supported devices
 
-**849 devices across 187 vendors** — Moog · Arturia · Novation · Korg · Sequential · Dave Smith Instruments · Roland · Yamaha · Elektron · Waldorf · Behringer · Dreadbox · Erica Synths · Polyend · Modal · Expressive E · Bastl · Chase Bliss · Make Noise · Electra One · Tasty Chips · Oberheim · Access · ASM · Black Corporation · Hologram · Strymon · Empress · Meris · Eventide · Ensoniq · Rhodes · Haken · Tubbutec · **Ableton · Bitwig · Cockos (Reaper) · Sonic Pi · SuperCollider · Pure Data · TouchDesigner · VCV Rack** · and ~85 more.
+**963 devices across 212 vendors** (981 driver files) — Moog · Arturia · Novation · Korg · Sequential · Dave Smith Instruments · Roland · Yamaha · Elektron · Waldorf · Behringer · Dreadbox · Erica Synths · Polyend · Modal · Expressive E · Bastl · Chase Bliss · Make Noise · Electra One · Tasty Chips · Oberheim · Access · ASM · Black Corporation · Hologram · Strymon · Empress · Meris · Eventide · Ensoniq · Rhodes · Haken · Tubbutec · **Ableton · Bitwig · Cockos (Reaper) · Sonic Pi · SuperCollider · Pure Data · TouchDesigner · VCV Rack** · and ~85 more.
 
 | Status | Count | Highlight |
 |---|---|---|
-| ✅ **Hardware-verified** (tested on the physical device — scope varies per driver, see `_sources` in each JSON) | **4** | Arturia MiniLab 3 · Electra One MK2 · Ableton Push 3 · Arturia MatrixBrute (firmware-RE partial) |
-| ✅ **Software-verified** (tested end-to-end against a running instance of the host software) | **1** | Ableton Live 12.2.7 (via AbletonOSC) |
-| 📘 **Vendor-doc derived** (from manufacturer programmer's references — bytes match the spec) | **193** | Novation Launch Control XL 3 · Polyend Synth · … |
+| ✅ **Verified** (tested on the physical device or against a running instance of the host software — scope varies per driver, see `_sources` in each JSON) | **5** | Arturia MiniLab 3 · Electra One MK2 · Ableton Push 3 · Arturia MatrixBrute (firmware-RE partial) · Ableton Live 12.2.7 (via AbletonOSC) |
+| 📘 **Vendor-doc derived** (from manufacturer programmer's references — bytes match the spec) | **3** | Novation Launch Control XL 3 · Polyend Synth · … |
 | 📡 **OSC-API (software targets)** — DAWs and live coding environments, declarative or passthrough | **7** | Bitwig Studio · Reaper · Sonic Pi · SuperCollider · Pure Data · TouchDesigner · VCV Rack |
-| 🎛️ **Electra-preset derived** (from the [Electra One community preset library](https://app.electra.one/) — covers SysEx + CC/NRPN, author's editorial choices) | **398** | Prophet 5/10 · Prophet 6 · OB-6 · OB-X8 · Matriarch · Hydrasynth · Virus TI · Digitone · … |
-| 📦 **Pencilresearch derived** (from [pencilresearch/midi](https://github.com/pencilresearch/midi) — CC/NRPN only) | **244** | Moog · Sequential · DSI · Roland · Yamaha · Waldorf · Behringer · Dreadbox · … |
+| 🎛️ **Electra-preset derived** (from the [Electra One community preset library](https://app.electra.one/) — covers SysEx + CC/NRPN, author's editorial choices) | **588** | Prophet 5/10 · Prophet 6 · OB-6 · OB-X8 · Matriarch · Hydrasynth · Virus TI · Digitone · … |
+| 📦 **MIDI Guide derived** (from [MIDI Guide](https://midi.guide) / [pencilresearch/midi](https://github.com/pencilresearch/midi), CC BY-SA 4.0 — CC/NRPN, plus named drum sounds on 15 drum machines) | **376** | Moog · Sequential · DSI · Roland · Yamaha · Waldorf · Behringer · Dreadbox · Elektron · … |
 | 🚧 **WIP / 📝 stub** | **2** | GR Mega (placeholder) |
 
 **Searching for your device?**
@@ -408,7 +407,7 @@ map.to = [0, 1]
 
 osc-bridge ships a [Model Context Protocol](https://modelcontextprotocol.io)
 server — a **MIDI MCP** *and* **OSC MCP**. Point any MCP client at it and the
-model can browse the 849-device catalogue, read a device's OSC surface, and
+model can browse the 963-device catalogue, read a device's OSC surface, and
 send OSC to synths and DAWs.
 
 ```jsonc
@@ -441,3 +440,15 @@ protocol family became clear.
 
 GPL-3.0-or-later. Inherits GPL obligations from the `sysex-controls` reverse
 engineering that seeded our MiniLab 3 parameter table.
+
+### Third-party device data
+
+Drivers whose `_sources[]` entry has `"type": "pencilresearch"` are adapted
+from [MIDI Guide](https://midi.guide) by Pencil Research and contributors,
+licensed [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+(source: [pencilresearch/midi](https://github.com/pencilresearch/midi)). Each
+of those entries records the licence, the attribution and the exact upstream
+CSV and commit. Changes made here: CSV rows converted to the osc-bridge JSON
+schema (OSC paths, ranges, `expects` hints, named note triggers).
+CC BY-SA 4.0 is one-way compatible with GPL-3.0, under which these adapted
+files are distributed.

@@ -1,0 +1,2302 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Octatrack.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 222,
+    "cc_entries": 222,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Octatrack",
+    "vendor": "Elektron",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/octatrack",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/track/level",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track"
+      },
+      {
+        "osc": "/track/balance",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Track"
+      },
+      {
+        "osc": "/playback/pitch",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Playback"
+      },
+      {
+        "osc": "/playback/start",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Playback"
+      },
+      {
+        "osc": "/playback/length",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Playback"
+      },
+      {
+        "osc": "/playback/rate",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Playback"
+      },
+      {
+        "osc": "/playback/retrig",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Playback"
+      },
+      {
+        "osc": "/playback/retrig_time",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Playback"
+      },
+      {
+        "osc": "/amp/attack",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/hold",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/release",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/volume",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Amp"
+      },
+      {
+        "osc": "/amp/balance",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Amp"
+      },
+      {
+        "osc": "/lfo/lfo1_speed",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo2_speed",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo3_speed",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo1_depth",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo2_depth",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/lfo3_depth",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/fx/fx1_parameter_1",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/fx1_parameter_2",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/fx1_parameter_3",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/fx1_parameter_4",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/fx1_parameter_5",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/fx1_parameter_6",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/fx2_parameter_1",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/fx2_parameter_2",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/fx2_parameter_3",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/fx2_parameter_4",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/fx2_parameter_5",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/fx2_parameter_6",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx_filter/fx1_filter_base",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Filter"
+      },
+      {
+        "osc": "/fx_filter/fx1_filter_width",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Filter"
+      },
+      {
+        "osc": "/fx_filter/fx1_filter_q",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Filter"
+      },
+      {
+        "osc": "/fx_filter/fx1_filter_depth",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX Filter"
+      },
+      {
+        "osc": "/fx_filter/fx1_filter_attack",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Filter"
+      },
+      {
+        "osc": "/fx_filter/fx1_filter_decay",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Filter"
+      },
+      {
+        "osc": "/fx_filter/fx2_filter_base",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Filter"
+      },
+      {
+        "osc": "/fx_filter/fx2_filter_width",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Filter"
+      },
+      {
+        "osc": "/fx_filter/fx2_filter_q",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Filter"
+      },
+      {
+        "osc": "/fx_filter/fx2_filter_depth",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX Filter"
+      },
+      {
+        "osc": "/fx_filter/fx2_filter_attack",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Filter"
+      },
+      {
+        "osc": "/fx_filter/fx2_filter_decay",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Filter"
+      },
+      {
+        "osc": "/fx_equalizer/fx1_eq_freq_1",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Equalizer"
+      },
+      {
+        "osc": "/fx_equalizer/fx1_eq_gain_1",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX Equalizer"
+      },
+      {
+        "osc": "/fx_equalizer/fx1_eq_q_1",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Equalizer"
+      },
+      {
+        "osc": "/fx_equalizer/fx1_eq_freq_2",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Equalizer"
+      },
+      {
+        "osc": "/fx_equalizer/fx1_eq_gain_2",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX Equalizer"
+      },
+      {
+        "osc": "/fx_equalizer/fx1_eq_q_2",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Equalizer"
+      },
+      {
+        "osc": "/fx_equalizer/fx2_eq_freq_1",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Equalizer"
+      },
+      {
+        "osc": "/fx_equalizer/fx2_eq_gain_1",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX Equalizer"
+      },
+      {
+        "osc": "/fx_equalizer/fx2_eq_q_1",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Equalizer"
+      },
+      {
+        "osc": "/fx_equalizer/fx2_eq_freq_2",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Equalizer"
+      },
+      {
+        "osc": "/fx_equalizer/fx2_eq_gain_2",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX Equalizer"
+      },
+      {
+        "osc": "/fx_equalizer/fx2_eq_q_2",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Equalizer"
+      },
+      {
+        "osc": "/fx_dj_equalizer/fx1_dj_eq_lsf_freq",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX DJ Equalizer"
+      },
+      {
+        "osc": "/fx_dj_equalizer/fx1_dj_eq_hsf_freq",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX DJ Equalizer"
+      },
+      {
+        "osc": "/fx_dj_equalizer/fx1_dj_eq_low_gain",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX DJ Equalizer"
+      },
+      {
+        "osc": "/fx_dj_equalizer/fx1_dj_eq_mid_gain",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX DJ Equalizer"
+      },
+      {
+        "osc": "/fx_dj_equalizer/fx1_dj_eq_high_gain",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX DJ Equalizer"
+      },
+      {
+        "osc": "/fx_dj_equalizer/fx2_dj_eq_lsf_freq",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX DJ Equalizer"
+      },
+      {
+        "osc": "/fx_dj_equalizer/fx2_dj_eq_hsf_freq",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX DJ Equalizer"
+      },
+      {
+        "osc": "/fx_dj_equalizer/fx2_dj_eq_low_gain",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX DJ Equalizer"
+      },
+      {
+        "osc": "/fx_dj_equalizer/fx2_dj_eq_mid_gain",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX DJ Equalizer"
+      },
+      {
+        "osc": "/fx_dj_equalizer/fx2_dj_eq_high_gain",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX DJ Equalizer"
+      },
+      {
+        "osc": "/fx_phaser/fx1_phaser_center",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX Phaser"
+      },
+      {
+        "osc": "/fx_phaser/fx1_phaser_depth",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Phaser"
+      },
+      {
+        "osc": "/fx_phaser/fx1_phaser_speed",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Phaser"
+      },
+      {
+        "osc": "/fx_phaser/fx1_phaser_feedback",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX Phaser"
+      },
+      {
+        "osc": "/fx_phaser/fx1_phaser_width",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Phaser"
+      },
+      {
+        "osc": "/fx_phaser/fx1_phaser_mix",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Phaser"
+      },
+      {
+        "osc": "/fx_phaser/fx2_phaser_center",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX Phaser"
+      },
+      {
+        "osc": "/fx_phaser/fx2_phaser_depth",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Phaser"
+      },
+      {
+        "osc": "/fx_phaser/fx2_phaser_speed",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Phaser"
+      },
+      {
+        "osc": "/fx_phaser/fx2_phaser_feedback",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX Phaser"
+      },
+      {
+        "osc": "/fx_phaser/fx2_phaser_width",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Phaser"
+      },
+      {
+        "osc": "/fx_phaser/fx2_phaser_mix",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Phaser"
+      },
+      {
+        "osc": "/fx_flanger/fx1_flanger_delay",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Flanger"
+      },
+      {
+        "osc": "/fx_flanger/fx1_flanger_depth",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Flanger"
+      },
+      {
+        "osc": "/fx_flanger/fx1_flanger_speed",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Flanger"
+      },
+      {
+        "osc": "/fx_flanger/fx1_flanger_feedback",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX Flanger"
+      },
+      {
+        "osc": "/fx_flanger/fx1_flanger_width",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Flanger"
+      },
+      {
+        "osc": "/fx_flanger/fx1_flanger_mix",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Flanger"
+      },
+      {
+        "osc": "/fx_flanger/fx2_flanger_delay",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Flanger"
+      },
+      {
+        "osc": "/fx_flanger/fx2_flanger_depth",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Flanger"
+      },
+      {
+        "osc": "/fx_flanger/fx2_flanger_speed",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Flanger"
+      },
+      {
+        "osc": "/fx_flanger/fx2_flanger_feedback",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX Flanger"
+      },
+      {
+        "osc": "/fx_flanger/fx2_flanger_width",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Flanger"
+      },
+      {
+        "osc": "/fx_flanger/fx2_flanger_mix",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Flanger"
+      },
+      {
+        "osc": "/fx_chorus/fx1_chorus_delay",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Chorus"
+      },
+      {
+        "osc": "/fx_chorus/fx1_chorus_depth",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Chorus"
+      },
+      {
+        "osc": "/fx_chorus/fx1_chorus_speed",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Chorus"
+      },
+      {
+        "osc": "/fx_chorus/fx1_chorus_feedback",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Chorus"
+      },
+      {
+        "osc": "/fx_chorus/fx1_chorus_width",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Chorus"
+      },
+      {
+        "osc": "/fx_chorus/fx1_chorus_mix",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Chorus"
+      },
+      {
+        "osc": "/fx_chorus/fx2_chorus_delay",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Chorus"
+      },
+      {
+        "osc": "/fx_chorus/fx2_chorus_depth",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Chorus"
+      },
+      {
+        "osc": "/fx_chorus/fx2_chorus_speed",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Chorus"
+      },
+      {
+        "osc": "/fx_chorus/fx2_chorus_feedback",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Chorus"
+      },
+      {
+        "osc": "/fx_chorus/fx2_chorus_width",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Chorus"
+      },
+      {
+        "osc": "/fx_chorus/fx2_chorus_mix",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Chorus"
+      },
+      {
+        "osc": "/fx_spatializer/fx1_spatializer_input",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Spatializer"
+      },
+      {
+        "osc": "/fx_spatializer/fx1_spatializer_depth",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Spatializer"
+      },
+      {
+        "osc": "/fx_spatializer/fx1_spatializer_width",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Spatializer"
+      },
+      {
+        "osc": "/fx_spatializer/fx1_spatializer_hp",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Spatializer"
+      },
+      {
+        "osc": "/fx_spatializer/fx1_spatializer_lp",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Spatializer"
+      },
+      {
+        "osc": "/fx_spatializer/fx1_spatializer_send",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Spatializer"
+      },
+      {
+        "osc": "/fx_spatializer/fx2_spatializer_input",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Spatializer"
+      },
+      {
+        "osc": "/fx_spatializer/fx2_spatializer_depth",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Spatializer"
+      },
+      {
+        "osc": "/fx_spatializer/fx2_spatializer_width",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Spatializer"
+      },
+      {
+        "osc": "/fx_spatializer/fx2_spatializer_hp",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Spatializer"
+      },
+      {
+        "osc": "/fx_spatializer/fx2_spatializer_lp",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Spatializer"
+      },
+      {
+        "osc": "/fx_spatializer/fx2_spatializer_send",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Spatializer"
+      },
+      {
+        "osc": "/fx_comp_filter/fx1_comp_filter_pitch",
+        "cc": 34,
+        "range": [
+          0,
+          107
+        ],
+        "orientation": "0-based",
+        "section": "FX Comp Filter",
+        "_usage": "0: A#0; 1: B0; 2: C1; 3: C#1; 4: D1; 5: D#1; 6: E1; 7: F1; 8: F#1; 9: G1; 10: G#1; 11: A1; 12: A#1; 13: B1; 14: C2; 15: C#2; 16: D2; 17: D#2; 18: E2; "
+      },
+      {
+        "osc": "/fx_comp_filter/fx1_comp_filter_tune",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX Comp Filter"
+      },
+      {
+        "osc": "/fx_comp_filter/fx1_comp_filter_lp",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Comp Filter"
+      },
+      {
+        "osc": "/fx_comp_filter/fx1_comp_filter_fb",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX Comp Filter"
+      },
+      {
+        "osc": "/fx_comp_filter/fx1_comp_filter_mix",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Comp Filter"
+      },
+      {
+        "osc": "/fx_comp_filter/fx2_comp_filter_pitch",
+        "cc": 40,
+        "range": [
+          0,
+          107
+        ],
+        "orientation": "0-based",
+        "section": "FX Comp Filter",
+        "_usage": "0: A#0; 1: B0; 2: C1; 3: C#1; 4: D1; 5: D#1; 6: E1; 7: F1; 8: F#1; 9: G1; 10: G#1; 11: A1; 12: A#1; 13: B1; 14: C2; 15: C#2; 16: D2; 17: D#2; 18: E2; "
+      },
+      {
+        "osc": "/fx_comp_filter/fx2_comp_filter_tune",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX Comp Filter"
+      },
+      {
+        "osc": "/fx_comp_filter/fx2_comp_filter_lp",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Comp Filter"
+      },
+      {
+        "osc": "/fx_comp_filter/fx2_comp_filter_fb",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FX Comp Filter"
+      },
+      {
+        "osc": "/fx_comp_filter/fx2_comp_filter_mix",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Comp Filter"
+      },
+      {
+        "osc": "/fx_compressor/fx1_compressor_attack",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Compressor"
+      },
+      {
+        "osc": "/fx_compressor/fx1_compressor_release",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Compressor"
+      },
+      {
+        "osc": "/fx_compressor/fx1_compressor_threshold",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Compressor"
+      },
+      {
+        "osc": "/fx_compressor/fx1_compressor_ratio",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Compressor"
+      },
+      {
+        "osc": "/fx_compressor/fx1_compressor_gain",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Compressor"
+      },
+      {
+        "osc": "/fx_compressor/fx1_compressor_mix",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Compressor"
+      },
+      {
+        "osc": "/fx_compressor/fx2_compressor_attack",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Compressor"
+      },
+      {
+        "osc": "/fx_compressor/fx2_compressor_release",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Compressor"
+      },
+      {
+        "osc": "/fx_compressor/fx2_compressor_threshold",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Compressor"
+      },
+      {
+        "osc": "/fx_compressor/fx2_compressor_ratio",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Compressor"
+      },
+      {
+        "osc": "/fx_compressor/fx2_compressor_gain",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Compressor"
+      },
+      {
+        "osc": "/fx_compressor/fx2_compressor_mix",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Compressor"
+      },
+      {
+        "osc": "/fx_lo_fi/fx1_lo_fi_distortion",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Lo-Fi"
+      },
+      {
+        "osc": "/fx_lo_fi/fx1_lo_fi_amf",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Lo-Fi"
+      },
+      {
+        "osc": "/fx_lo_fi/fx1_lo_fi_srr",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Lo-Fi"
+      },
+      {
+        "osc": "/fx_lo_fi/fx1_lo_fi_brr",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Lo-Fi"
+      },
+      {
+        "osc": "/fx_lo_fi/fx1_lo_fi_amd",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Lo-Fi"
+      },
+      {
+        "osc": "/fx_lo_fi/fx2_lo_fi_distortion",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Lo-Fi"
+      },
+      {
+        "osc": "/fx_lo_fi/fx2_lo_fi_amf",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Lo-Fi"
+      },
+      {
+        "osc": "/fx_lo_fi/fx2_lo_fi_srr",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Lo-Fi"
+      },
+      {
+        "osc": "/fx_lo_fi/fx2_lo_fi_brr",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Lo-Fi"
+      },
+      {
+        "osc": "/fx_lo_fi/fx2_lo_fi_amd",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Lo-Fi"
+      },
+      {
+        "osc": "/fx_delay/fx2_delay_time",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay",
+        "_usage": "0: 1/128; 1: 1/64; 2: 1/64.; 3-4: 1/32; 5-6: 1/32.; 7-10: 1/16; 11-14: 1/16.; 15-22: 1/8; 23-30: 1/8.; 31-46: 1/4; 47-62: 1/4.; 63-94: 1/2; 95-126: 1/"
+      },
+      {
+        "osc": "/fx_delay/fx2_delay_feedback",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay"
+      },
+      {
+        "osc": "/fx_delay/fx2_delay_volume",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay"
+      },
+      {
+        "osc": "/fx_delay/fx2_delay_base",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay"
+      },
+      {
+        "osc": "/fx_delay/fx2_delay_width",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay"
+      },
+      {
+        "osc": "/fx_delay/fx2_delay_send",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay"
+      },
+      {
+        "osc": "/fx_plate_reverb/fx2_plate_reverb_time",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Plate Reverb"
+      },
+      {
+        "osc": "/fx_plate_reverb/fx2_plate_reverb_damp",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Plate Reverb"
+      },
+      {
+        "osc": "/fx_plate_reverb/fx2_plate_reverb_gate",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Plate Reverb"
+      },
+      {
+        "osc": "/fx_plate_reverb/fx2_plate_reverb_hp",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Plate Reverb"
+      },
+      {
+        "osc": "/fx_plate_reverb/fx2_plate_reverb_lp",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Plate Reverb"
+      },
+      {
+        "osc": "/fx_plate_reverb/fx2_plate_reverb_mix",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Plate Reverb"
+      },
+      {
+        "osc": "/fx_spring_reverb/fx2_spring_reverb_time",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Spring Reverb"
+      },
+      {
+        "osc": "/fx_spring_reverb/fx2_spring_reverb_hp",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Spring Reverb"
+      },
+      {
+        "osc": "/fx_spring_reverb/fx2_spring_reverb_lp",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Spring Reverb"
+      },
+      {
+        "osc": "/fx_spring_reverb/fx2_spring_reverb_mix",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Spring Reverb"
+      },
+      {
+        "osc": "/fx_dark_reverb/fx2_dark_reverb_time",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Dark Reverb"
+      },
+      {
+        "osc": "/fx_dark_reverb/fx2_dark_reverb_shvg",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Dark Reverb"
+      },
+      {
+        "osc": "/fx_dark_reverb/fx2_dark_reverb_shvf",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Dark Reverb"
+      },
+      {
+        "osc": "/fx_dark_reverb/fx2_dark_reverb_hp",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Dark Reverb"
+      },
+      {
+        "osc": "/fx_dark_reverb/fx2_dark_reverb_lp",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Dark Reverb"
+      },
+      {
+        "osc": "/fx_dark_reverb/fx2_dark_reverb_mix",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Dark Reverb"
+      },
+      {
+        "osc": "/track/cue_level",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track"
+      },
+      {
+        "osc": "/track/mute",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track",
+        "_usage": "0: Unmuted; 1-127: Muted"
+      },
+      {
+        "osc": "/track/solo",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track",
+        "_usage": "0: No Solo; 1-127: Soloed"
+      },
+      {
+        "osc": "/track/cue",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track",
+        "_usage": "0: Not Cued; 1-127: Cued"
+      },
+      {
+        "osc": "/track/arm",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track",
+        "_usage": "0: Trk Disarm; 1-127: Arm"
+      },
+      {
+        "osc": "/track/recorder_arm",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track",
+        "_usage": "0: Rec Disarm; 1-127: Arm"
+      },
+      {
+        "osc": "/track/all_arm",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track",
+        "_usage": "0: All Disarm; 1-127: Arm"
+      },
+      {
+        "osc": "/scene/crossfader",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Scene"
+      },
+      {
+        "osc": "/scene/a_select",
+        "cc": 55,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Scene"
+      },
+      {
+        "osc": "/scene/b_select",
+        "cc": 56,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Scene"
+      },
+      {
+        "osc": "/track/pickup_src_ab_level",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track"
+      },
+      {
+        "osc": "/track/pickup_src_cd_level",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track"
+      },
+      {
+        "osc": "/track/note_on",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track",
+        "_usage": "0: C-1; 1: C#-1; 2: D-1; 3: D#-1; 4: E-1; 5: F-1; 6: F#-1; 7: G-1; 8: G#-1; 9: A-1; 10: A#-1; 11: B-1; 12: C0; 13: C#0; 14: D0; 15: D#0; 16: E0; 17: F"
+      },
+      {
+        "osc": "/track/note_off",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Track",
+        "_usage": "0: C-1; 1: C#-1; 2: D-1; 3: D#-1; 4: E-1; 5: F-1; 6: F#-1; 7: G-1; 8: G#-1; 9: A-1; 10: A#-1; 11: B-1; 12: C0; 13: C#0; 14: D0; 15: D#0; 16: E0; 17: F"
+      },
+      {
+        "osc": "/track/send_request",
+        "cc": 61,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Track",
+        "_usage": "0: All Audio CC"
+      },
+      {
+        "osc": "/midi/track_1_mute",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0: Unmute; 1-127: Mute"
+      },
+      {
+        "osc": "/midi/track_2_mute",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0: Unmute; 1-127: Mute"
+      },
+      {
+        "osc": "/midi/track_3_mute",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0: Unmute; 1-127: Mute"
+      },
+      {
+        "osc": "/midi/track_4_mute",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0: Unmute; 1-127: Mute"
+      },
+      {
+        "osc": "/midi/track_5_mute",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0: Unmute; 1-127: Mute"
+      },
+      {
+        "osc": "/midi/track_6_mute",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0: Unmute; 1-127: Mute"
+      },
+      {
+        "osc": "/midi/track_7_mute",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0: Unmute; 1-127: Mute"
+      },
+      {
+        "osc": "/midi/track_8_mute",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0: Unmute; 1-127: Mute"
+      },
+      {
+        "osc": "/midi/track_1_solo",
+        "cc": 120,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0: Unsolo; 1-127: Solo"
+      },
+      {
+        "osc": "/midi/track_2_solo",
+        "cc": 121,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0: Unsolo; 1-127: Solo"
+      },
+      {
+        "osc": "/midi/track_3_solo",
+        "cc": 122,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0: Unsolo; 1-127: Solo"
+      },
+      {
+        "osc": "/midi/track_4_solo",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0: Unsolo; 1-127: Solo"
+      },
+      {
+        "osc": "/midi/track_5_solo",
+        "cc": 124,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0: Unsolo; 1-127: Solo"
+      },
+      {
+        "osc": "/midi/track_6_solo",
+        "cc": 125,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0: Unsolo; 1-127: Solo"
+      },
+      {
+        "osc": "/midi/track_7_solo",
+        "cc": 126,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0: Unsolo; 1-127: Solo"
+      },
+      {
+        "osc": "/midi/track_8_solo",
+        "cc": 127,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0: Unsolo; 1-127: Solo"
+      },
+      {
+        "osc": "/midi_note/note",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI Note",
+        "_usage": "0: C-1; 1: C#-1; 2: D-1; 3: D#-1; 4: E-1; 5: F-1; 6: F#-1; 7: G-1; 8: G#-1; 9: A-1; 10: A#-1; 11: B-1; 12: C0; 13: C#0; 14: D0; 15: D#0; 16: E0; 17: F"
+      },
+      {
+        "osc": "/midi_note/note_velocity",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI Note"
+      },
+      {
+        "osc": "/midi_note/note_length",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI Note"
+      },
+      {
+        "osc": "/midi_note/note_2",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "MIDI Note"
+      },
+      {
+        "osc": "/midi_note/note_3",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "MIDI Note"
+      },
+      {
+        "osc": "/midi_note/note_4",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "MIDI Note"
+      },
+      {
+        "osc": "/midi_arp/arp_transpose",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "MIDI Arp"
+      },
+      {
+        "osc": "/midi_arp/arp_legato",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI Arp",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/midi_arp/arp_mode",
+        "cc": 24,
+        "range": [
+          0,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "MIDI Arp",
+        "_usage": "0: Off; 1: True; 2: Up; 3: Down; 4: Cycle; 5: Shuffle; 6: Random"
+      },
+      {
+        "osc": "/midi_arp/arp_speed",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI Arp"
+      },
+      {
+        "osc": "/midi_arp/arp_octave_range",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI Arp"
+      },
+      {
+        "osc": "/midi_arp/arp_note_length",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI Arp"
+      },
+      {
+        "osc": "/midi_cc/pitch_bend",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "MIDI CC"
+      },
+      {
+        "osc": "/midi_cc/aftertouch",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI CC"
+      },
+      {
+        "osc": "/midi_cc/cc_1",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI CC"
+      },
+      {
+        "osc": "/midi_cc/cc_2",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI CC"
+      },
+      {
+        "osc": "/midi_cc/cc_3",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI CC"
+      },
+      {
+        "osc": "/midi_cc/cc_4",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI CC"
+      },
+      {
+        "osc": "/midi_cc/cc_5",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI CC"
+      },
+      {
+        "osc": "/midi_cc/cc_6",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI CC"
+      },
+      {
+        "osc": "/midi_cc/cc_7",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI CC"
+      },
+      {
+        "osc": "/midi_cc/cc_8",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI CC"
+      },
+      {
+        "osc": "/midi_cc/cc_9",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI CC"
+      },
+      {
+        "osc": "/midi_cc/cc_10",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI CC"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

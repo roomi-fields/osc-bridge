@@ -1,0 +1,1283 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/discoDSP/Discovery Pro.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 112,
+    "cc_entries": 112,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Discovery Pro",
+    "vendor": "discoDSP",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/discovery_pro",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/global/mod_wheel",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~127: No modulation to full modulation"
+      },
+      {
+        "osc": "/global/portamento",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~127: Instant to slowest glide"
+      },
+      {
+        "osc": "/amp/gain",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Silence to full output"
+      },
+      {
+        "osc": "/oscillator/osc_mix",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator",
+        "_usage": "0~127: Osc 1 only to Osc 2 only"
+      },
+      {
+        "osc": "/global/master_volume",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~127: Silence to full output"
+      },
+      {
+        "osc": "/global/morph_assign",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/global/play_mode",
+        "cc": 15,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Monophonic; 1: Legato; 2: Polyphonic"
+      },
+      {
+        "osc": "/global/unison",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Off; 1-127: On (4-voice unison)"
+      },
+      {
+        "osc": "/global/octave_shift",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Global",
+        "_usage": "0: -2 oct; 1: -1 oct; 2: 0; 3: +1 oct; 4-127: +2 oct"
+      },
+      {
+        "osc": "/global/wheel_mode",
+        "cc": 18,
+        "range": [
+          0,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Filter; 1: FM; 2: Osc 2; 3: LFO 1; 4: Morph; 5: Off"
+      },
+      {
+        "osc": "/lfo_1/lfo1_rate",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1",
+        "_usage": "0~127: Slowest to fastest"
+      },
+      {
+        "osc": "/lfo_1/lfo1_waveform",
+        "cc": 20,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1",
+        "_usage": "0: Random; 1: Saw; 2: Triangle; 3: Square; 4: LF Filtered Noise; 5: Random (Retrig); 6: Saw (Retrig); 7: Triangle (Retrig); 8: Square (Retrig); 9: LF "
+      },
+      {
+        "osc": "/lfo_1/lfo1_destination",
+        "cc": 21,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1",
+        "_usage": "0: Pulse Width; 1: Filter; 2: Oscillator 2; 3: Oscillator 1+2; 4: FM"
+      },
+      {
+        "osc": "/lfo_1/lfo1_amount",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1",
+        "_usage": "0~127: No modulation to maximum"
+      },
+      {
+        "osc": "/lfo_2/lfo2_rate",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2",
+        "_usage": "0~127: Slowest to fastest"
+      },
+      {
+        "osc": "/global/layer_apply_midi_cc_1",
+        "cc": 24,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Arp Down (Hold On); 1: Arp Up (Hold On); 2: Arp Up&Down (Hold On); 3: Dest Filter (Hold Off); 4: Dest Amplitude (Hold Off); 5: Arp Random (Hold On)"
+      },
+      {
+        "osc": "/lfo_2/lfo2_amount",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2",
+        "_usage": "0~127: No modulation to maximum"
+      },
+      {
+        "osc": "/mod_envelope/mod_env_attack",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod Envelope",
+        "_usage": "0~127: Near-instant to slowest"
+      },
+      {
+        "osc": "/mod_envelope/mod_env_decay",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod Envelope",
+        "_usage": "0~127: Near-instant to slowest"
+      },
+      {
+        "osc": "/mod_envelope/mod_env_destination",
+        "cc": 28,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Mod Envelope",
+        "_usage": "0: Oscillator 2; 1: FM; 2: Pulse Width; 3: Disabled; 4: Oscillator 2 + Wave"
+      },
+      {
+        "osc": "/mod_envelope/mod_env_amount",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Envelope",
+        "_usage": "0~63: Negative; 64: None; 65~127: Positive"
+      },
+      {
+        "osc": "/oscillator/osc_1_waveform",
+        "cc": 30,
+        "range": [
+          0,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator",
+        "_usage": "0: Pulse Width Modulation; 1: Saw; 2: Triangle; 3: Sine; 4: Pulse; 5: Parabolic; 6: Super 7"
+      },
+      {
+        "osc": "/oscillator/osc_2_waveform",
+        "cc": 31,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator",
+        "_usage": "0: Pulse Width Modulation; 1: Saw; 2: Triangle; 3: Noise; 4: Pulse; 5: Parabolic; 6: Pink Noise; 7: Super 7"
+      },
+      {
+        "osc": "/oscillator/osc_2_finetune",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator",
+        "_usage": "0~127: -50 to +50 cents"
+      },
+      {
+        "osc": "/oscillator/osc_2_kbd_track",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/oscillator/osc_mode",
+        "cc": 35,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator",
+        "_usage": "0: Off; 1: Sync; 2: Ring Modulation; 3: FM via Osc 2"
+      },
+      {
+        "osc": "/amp_envelope/amp_decay",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp Envelope",
+        "_usage": "0~127: Near-instant to slowest"
+      },
+      {
+        "osc": "/amp_envelope/amp_sustain",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp Envelope",
+        "_usage": "0~127: No sustain to full sustain"
+      },
+      {
+        "osc": "/filter_envelope/filter_decay",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter Envelope",
+        "_usage": "0~127: Near-instant to slowest"
+      },
+      {
+        "osc": "/filter_envelope/filter_sustain",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter Envelope",
+        "_usage": "0~127: No sustain to full sustain"
+      },
+      {
+        "osc": "/filter_envelope/filter_release",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter Envelope",
+        "_usage": "0~127: Near-instant to slowest"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~127: No resonance to maximum Q"
+      },
+      {
+        "osc": "/filter/env_amount",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter",
+        "_usage": "0~63: Inverted env; 64: None; 65~127: Positive env"
+      },
+      {
+        "osc": "/filter/type",
+        "cc": 44,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: LP12; 1: LP24; 2: HP24; 3: BP24; 4: BR24; 5: HP12; 6: Formant; 7: Phaser; 8: XFilter12; 9: XFilter24; 10: YFilter12; 11: YFilter24; 12: Ladder24; 1"
+      },
+      {
+        "osc": "/filter/velocity",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/filter/kbd_track",
+        "cc": 46,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Off; 1: 2/3; 2: 1/3; 3: Full"
+      },
+      {
+        "osc": "/wave/layer_apply_midi_cc_2_wave_set",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Wave",
+        "_usage": "0~127: Wave preset index"
+      },
+      {
+        "osc": "/wave/layer_apply_midi_cc_3_wave_bank",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Wave",
+        "_usage": "0~127: Wave bank index"
+      },
+      {
+        "osc": "/oscillator/osc_enable",
+        "cc": 49,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator",
+        "_usage": "0: Off; 1: On (Free Phase); 2: On (Retrigger Phase)"
+      },
+      {
+        "osc": "/global/unison_mode_alt",
+        "cc": 50,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: All Off; 1: Phaser; 2: Chorus; 3: Phaser+Chorus; 4: Unison; 5: Unison+Phaser; 6: Unison+Chorus; 7: All On"
+      },
+      {
+        "osc": "/global/portamento_auto",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Off; 1-127: Auto"
+      },
+      {
+        "osc": "/oscillator/osc_1_fm_amount",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator",
+        "_usage": "0~127: No FM to maximum FM depth"
+      },
+      {
+        "osc": "/global/click_style_midi_cc",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Off (continuous mode); 1-127: On (button mode)"
+      },
+      {
+        "osc": "/amp_envelope/amp_release",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp Envelope",
+        "_usage": "0~127: Near-instant to slowest"
+      },
+      {
+        "osc": "/amp_envelope/amp_attack",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp Envelope",
+        "_usage": "0~127: Near-instant to slowest"
+      },
+      {
+        "osc": "/filter/frequency",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~127: Fully closed to fully open"
+      },
+      {
+        "osc": "/oscillator/osc_2_semitones",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator",
+        "_usage": "0~127: -64 to +63 semitones"
+      },
+      {
+        "osc": "/oscillator/osc_pulse_width",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator",
+        "_usage": "0~63: Narrow; 64: Square; 65~127: Wide"
+      },
+      {
+        "osc": "/filter/distortion",
+        "cc": 80,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Off; 1: Asymmetric 1; 2: Symmetric; 3: Asymmetric 2; 4: Tube Warmth"
+      },
+      {
+        "osc": "/delay/level",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay",
+        "_usage": "0~127: Dry only to fully wet delay"
+      },
+      {
+        "osc": "/delay/left_time",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay",
+        "_usage": "0~127: Shortest to longest"
+      },
+      {
+        "osc": "/delay/right_time",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay",
+        "_usage": "0~127: Shortest to longest"
+      },
+      {
+        "osc": "/delay/feedback_left",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay",
+        "_usage": "0~127: No feedback to near-infinite sustain"
+      },
+      {
+        "osc": "/delay/feedback_right",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay",
+        "_usage": "0~127: No feedback to near-infinite sustain"
+      },
+      {
+        "osc": "/pan/position",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Pan",
+        "_usage": "0~63: Left; 64: Center; 65~127: Right"
+      },
+      {
+        "osc": "/pan/mod_rate",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pan",
+        "_usage": "0~127: Slowest to fastest"
+      },
+      {
+        "osc": "/pan/mod_amount",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pan",
+        "_usage": "0~127: No movement to full stereo width"
+      },
+      {
+        "osc": "/filter_envelope/filter_attack",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter Envelope",
+        "_usage": "0~127: Near-instant to slowest"
+      },
+      {
+        "osc": "/lfo_1/lfo1_sync",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1",
+        "_usage": "0: Free; 1-127: Synced to host tempo"
+      },
+      {
+        "osc": "/lfo_2/lfo2_sync",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2",
+        "_usage": "0: Free; 1-127: Synced to host tempo"
+      },
+      {
+        "osc": "/pan/mod_sync",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pan",
+        "_usage": "0: Free; 1-127: Synced to host tempo"
+      },
+      {
+        "osc": "/amp/limiter",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/filter/soft_filter",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/delay/cross",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/delay/sync",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay",
+        "_usage": "0: Free; 1-127: Synced to host tempo"
+      },
+      {
+        "osc": "/amp/shape_1",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0: Bit cleared; 1-127: Bit set"
+      },
+      {
+        "osc": "/amp/shape_2",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0: Bit cleared; 1-127: Bit set"
+      },
+      {
+        "osc": "/amp/shape_3",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0: Bit cleared; 1-127: Bit set"
+      },
+      {
+        "osc": "/global/midi_to_velocity_swap",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/gate/level",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Gate",
+        "_usage": "0~127: Silent to full level"
+      },
+      {
+        "osc": "/mod/level",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod",
+        "_usage": "0~127: No modulation to maximum"
+      },
+      {
+        "osc": "/mod/destination",
+        "cc": 109,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Mod",
+        "_usage": "0: Osc 2 / Wave; 1: FM; 2: Pulse Width; 3: Filter"
+      },
+      {
+        "osc": "/wave/level",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Wave",
+        "_usage": "0~127: Silent to full level"
+      },
+      {
+        "osc": "/layer/a_active",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/layer/b_active",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/layer/c_active",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/layer/d_active",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/wave/semitones",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Wave",
+        "_usage": "0~127: -64 to +63 semitones"
+      },
+      {
+        "osc": "/wave/finetune",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Wave",
+        "_usage": "0~127: -50 to +50 cents"
+      },
+      {
+        "osc": "/wave/kbd_track",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Wave",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/wave/mode",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Wave",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/pad/mode",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pad",
+        "_usage": "0: Off; 1-127: On"
+      },
+      {
+        "osc": "/button_mode/assign_morph_button",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Single click toggles morph assign"
+      },
+      {
+        "osc": "/button_mode/lfo1_waveform_button",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Cycle next waveform. Order: 0: Random; 1: Saw; 2: Triangle; 3: Square; 4: LF Filtered Noise; 5: Random (Retrig); 6: Saw (Retrig); 7"
+      },
+      {
+        "osc": "/button_mode/lfo1_destination_button",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Cycle next destination. Order: 0: Pulse Width; 1: Filter; 2: Oscillator 2; 3: Oscillator 1+2; 4: FM"
+      },
+      {
+        "osc": "/button_mode/lfo2_arp_hold_button",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Toggle ARP Hold (Off / On)"
+      },
+      {
+        "osc": "/button_mode/lfo2_arp_mode_destination_button",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Cycle next. Hold On (arp mode): 0: Down; 1: Up&Down; 2: Up; 3: Random; 4: Random 2; 5: Random Markov. Hold Off (destination): 0: Fi"
+      },
+      {
+        "osc": "/button_mode/mod_env_destination_button",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Cycle next destination. Order: 0: Oscillator 2; 1: FM; 2: Pulse Width; 3: Disabled; 4: Oscillator 2 + Wave"
+      },
+      {
+        "osc": "/button_mode/osc_1_waveform_button",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Cycle next waveform. Order: 0: Pulse Width Modulation; 1: Saw; 2: Triangle; 3: Sine; 4: Pulse; 5: Parabolic; 6: Super 7"
+      },
+      {
+        "osc": "/button_mode/osc_2_waveform_button",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Cycle next waveform. Order: 0: Pulse Width Modulation; 1: Saw; 2: Triangle; 3: Noise; 4: Pulse; 5: Parabolic; 6: Pink Noise; 7: Sup"
+      },
+      {
+        "osc": "/button_mode/amp_limiter_button",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Toggle (Off / On)"
+      },
+      {
+        "osc": "/button_mode/osc_2_kbd_track_button",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Toggle (Off / On)"
+      },
+      {
+        "osc": "/button_mode/osc_mode_button",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Cycle next mode. Order: 0: Off; 1: Sync; 2: Ring Modulation; 3: FM via Osc 2"
+      },
+      {
+        "osc": "/button_mode/filter_type_prev_button",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Step previous in GUI order: 0: LP24; 1: LP12; 2: Ladder24; 3: Ladder12; 4: XFilter24; 5: XFilter12; 6: YFilter24; 7: YFilter12; 8: "
+      },
+      {
+        "osc": "/button_mode/filter_type_next_button",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Step next in GUI order: 0: LP24; 1: LP12; 2: Ladder24; 3: Ladder12; 4: XFilter24; 5: XFilter12; 6: YFilter24; 7: YFilter12; 8: SEM "
+      },
+      {
+        "osc": "/button_mode/filter_velocity_button",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Toggle (Off / On)"
+      },
+      {
+        "osc": "/button_mode/filter_kbd_track_button",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Cycle next amount. Order: 0: Off; 1: 2/3; 2: 1/3; 3: Full"
+      },
+      {
+        "osc": "/button_mode/filter_distortion_button",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Cycle next algorithm. Order: 0: Off; 1: Asymmetric 1; 2: Symmetric; 3: Asymmetric 2; 4: Tube Warmth"
+      },
+      {
+        "osc": "/button_mode/wave_kbd_track_button",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Toggle (Off / On)"
+      },
+      {
+        "osc": "/button_mode/octave_down_button",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Step octave -1"
+      },
+      {
+        "osc": "/button_mode/octave_up_button",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Step octave +1"
+      },
+      {
+        "osc": "/button_mode/wheel_mode_button",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Cycle next destination. Order: 0: Filter; 1: FM; 2: Osc 2; 3: LFO 1; 4: Morph; 5: Off"
+      },
+      {
+        "osc": "/button_mode/program_up_button",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Step program +1"
+      },
+      {
+        "osc": "/button_mode/program_down_button",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Step program -1"
+      },
+      {
+        "osc": "/button_mode/play_mode_button",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Cycle next mode. Order: 0: Monophonic; 1: Legato; 2: Polyphonic"
+      },
+      {
+        "osc": "/button_mode/portamento_auto_button",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Toggle (Off / On)"
+      },
+      {
+        "osc": "/button_mode/layer_a_select_button",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Click Layer A"
+      },
+      {
+        "osc": "/button_mode/layer_b_select_button",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Click Layer B"
+      },
+      {
+        "osc": "/button_mode/layer_c_select_button",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Click Layer C"
+      },
+      {
+        "osc": "/button_mode/layer_d_select_button",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Click Layer D"
+      },
+      {
+        "osc": "/button_mode/unison_button",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Toggle Unison (Off / On)"
+      },
+      {
+        "osc": "/button_mode/phaser_chorus_button",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Button Mode",
+        "_usage": "0: Ignored; 1-127: Cycle next combination. Order: 0: Off; 1: Phaser; 2: Chorus; 3: Phaser+Chorus"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

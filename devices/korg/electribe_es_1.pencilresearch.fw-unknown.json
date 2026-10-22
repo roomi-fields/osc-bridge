@@ -1,0 +1,1245 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/KORG/Electribe ES-1.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 100,
+    "cc_entries": 2,
+    "nrpn_entries": 98,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Electribe ES-1",
+    "vendor": "KORG",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/electribe_es_1",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/part_1/pitch",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 1"
+      },
+      {
+        "osc": "/part_1/level",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 1"
+      },
+      {
+        "osc": "/part_1/filter",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 1"
+      },
+      {
+        "osc": "/part_1/pan",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 1"
+      },
+      {
+        "osc": "/part_1/effect_send",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 1",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_1/roll",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 1",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_1/reverse",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 1",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_1/motion_sequence_type",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Part 1",
+        "_usage": "0: Off; 1: Smooth; 2: Trig hold",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/part_2/pitch",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 2"
+      },
+      {
+        "osc": "/part_2/level",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 2"
+      },
+      {
+        "osc": "/part_2/filter",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 2"
+      },
+      {
+        "osc": "/part_2/pan",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 2"
+      },
+      {
+        "osc": "/part_2/effect_send",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 12,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 2",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_2/roll",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 2",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_2/reverse",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 2",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_2/motion_sequence_type",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Part 2",
+        "_usage": "0: Off; 1: Smooth; 2: Trig hold",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/part_3/pitch",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 3"
+      },
+      {
+        "osc": "/part_3/level",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 3"
+      },
+      {
+        "osc": "/part_3/filter",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 3"
+      },
+      {
+        "osc": "/part_3/pan",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 3"
+      },
+      {
+        "osc": "/part_3/effect_send",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 3",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_3/roll",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 21,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 3",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_3/reverse",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 22,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 3",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_3/motion_sequence_type",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 23,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Part 3",
+        "_usage": "0: Off; 1: Smooth; 2: Trig hold",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/part_4/pitch",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 4"
+      },
+      {
+        "osc": "/part_4/level",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 4"
+      },
+      {
+        "osc": "/part_4/filter",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 4"
+      },
+      {
+        "osc": "/part_4/pan",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 4"
+      },
+      {
+        "osc": "/part_4/effect_send",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 28,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 4",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_4/roll",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 29,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 4",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_4/reverse",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 30,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 4",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_4/motion_sequence_type",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 31,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Part 4",
+        "_usage": "0: Off; 1: Smooth; 2: Trig hold",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/part_5/pitch",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 5"
+      },
+      {
+        "osc": "/part_5/level",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 5"
+      },
+      {
+        "osc": "/part_5/filter",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 5"
+      },
+      {
+        "osc": "/part_5/pan",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 5"
+      },
+      {
+        "osc": "/part_5/effect_send",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 36,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 5",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_5/roll",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 37,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 5",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_5/reverse",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 38,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 5",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_5/motion_sequence_type",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 39,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Part 5",
+        "_usage": "0: Off; 1: Smooth; 2: Trig hold",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/part_6a/pitch",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 6A"
+      },
+      {
+        "osc": "/part_6a/level",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 6A"
+      },
+      {
+        "osc": "/part_6a/filter",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 6A"
+      },
+      {
+        "osc": "/part_6a/pan",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 6A"
+      },
+      {
+        "osc": "/part_6a/effect_send",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 44,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 6A",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_6a/roll",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 6A",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_6a/reverse",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 46,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 6A",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_6a/motion_sequence_type",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Part 6A",
+        "_usage": "0: Off; 1: Smooth; 2: Trig hold",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/part_6b/pitch",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 6B"
+      },
+      {
+        "osc": "/part_6b/level",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 6B"
+      },
+      {
+        "osc": "/part_6b/filter",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 6B"
+      },
+      {
+        "osc": "/part_6b/pan",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 6B"
+      },
+      {
+        "osc": "/part_6b/effect_send",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 6B",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_6b/roll",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 53,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 6B",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_6b/reverse",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 54,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 6B",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_6b/motion_sequence_type",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 55,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Part 6B",
+        "_usage": "0: Off; 1: Smooth; 2: Trig hold",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/part_7a/pitch",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 7A"
+      },
+      {
+        "osc": "/part_7a/level",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 7A"
+      },
+      {
+        "osc": "/part_7a/filter",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 7A"
+      },
+      {
+        "osc": "/part_7a/pan",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 7A"
+      },
+      {
+        "osc": "/part_7a/effect_send",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 60,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 7A",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_7a/roll",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 61,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 7A",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_7a/reverse",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 62,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 7A",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_7a/motion_sequence_type",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 63,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Part 7A",
+        "_usage": "0: Off; 1: Smooth; 2: Trig hold",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/part_7b/pitch",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 7B"
+      },
+      {
+        "osc": "/part_7b/level",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 7B"
+      },
+      {
+        "osc": "/part_7b/filter",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Part 7B"
+      },
+      {
+        "osc": "/part_7b/pan",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Part 7B"
+      },
+      {
+        "osc": "/part_7b/effect_send",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 68,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 7B",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_7b/roll",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 69,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 7B",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_7b/reverse",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 70,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Part 7B",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/part_7b/motion_sequence_type",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Part 7B",
+        "_usage": "0: Off; 1: Smooth; 2: Trig hold",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/slice/pitch",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Slice"
+      },
+      {
+        "osc": "/slice/level",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Slice"
+      },
+      {
+        "osc": "/slice/filter",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Slice"
+      },
+      {
+        "osc": "/slice/pan",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Slice"
+      },
+      {
+        "osc": "/slice/effect_send",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 76,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Slice",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/slice/roll",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 77,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Slice",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/slice/reverse",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 78,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Slice",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/slice/motion_sequence_type",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 79,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Slice",
+        "_usage": "0: Off; 1: Smooth; 2: Trig hold",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/audio_in/speed",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 80,
+        "range": [
+          0,
+          63
+        ],
+        "orientation": "0-based",
+        "section": "Audio In"
+      },
+      {
+        "osc": "/audio_in/level",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Audio In"
+      },
+      {
+        "osc": "/audio_in/filter",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Audio In"
+      },
+      {
+        "osc": "/audio_in/pan",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Audio In"
+      },
+      {
+        "osc": "/audio_in/effect_send",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 84,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Audio In",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/audio_in/roll",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 85,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Audio In",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/audio_in/motion_sequence_type",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 87,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Audio In",
+        "_usage": "0: Off; 1: Smooth; 2: Trig hold",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/delay/depth",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/time",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/bpm_sync",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 101,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Delay",
+        "_usage": "0: Off; 1: Tempo delay",
+        "expects": "switch"
+      },
+      {
+        "osc": "/delay/motion_sequence_switch",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 102,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Delay",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/effect/type",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 98,
+        "range": [
+          0,
+          10
+        ],
+        "orientation": "0-based",
+        "section": "Effect",
+        "_usage": "0: Reverb; 1: Flanger/Chorus; 2: Phaser; 3: Ring modulation; 4: Pitch shifter; 5: Compressor; 6: Distortion; 7: Decimator; 8: Isolator; 9: Resonance f",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/effect/edit_1",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect"
+      },
+      {
+        "osc": "/effect/edit_2",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect"
+      },
+      {
+        "osc": "/effect/motion_sequence_switch",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 103,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Effect",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/accent/level",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Accent"
+      },
+      {
+        "osc": "/mute/1",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mute"
+      },
+      {
+        "osc": "/mute/2",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mute"
+      },
+      {
+        "osc": "/global/reset_all_controllers",
+        "cc": 121,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Reset all controllers"
+      },
+      {
+        "osc": "/global/all_note_off",
+        "cc": 123,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: All note off"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

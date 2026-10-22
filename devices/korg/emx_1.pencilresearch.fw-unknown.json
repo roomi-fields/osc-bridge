@@ -1,0 +1,2142 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/KORG/EMX-1.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 184,
+    "cc_entries": 39,
+    "nrpn_entries": 145,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "EMX-1",
+    "vendor": "KORG",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/emx_1",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/synth_osc/osc_type",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth OSC",
+        "_usage": "0-7: Wave form; 8-15: Dual OSC; 16-23: Chord OSC; 24-31: Unison OSC; 32-39: Ring mod; 40-47: OSC sync; 48-55: Cross mod; 56-63: VPM OSC; 64-71: WS; 72"
+      },
+      {
+        "osc": "/synth_osc/osc_edit_1",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth OSC"
+      },
+      {
+        "osc": "/synth_osc/osc_edit_2",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth OSC"
+      },
+      {
+        "osc": "/synth_osc/synth_wave",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          75
+        ],
+        "orientation": "0-based",
+        "section": "Synth OSC"
+      },
+      {
+        "osc": "/synth_osc/synth_tune",
+        "nrpn_msb": 8,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Synth OSC"
+      },
+      {
+        "osc": "/synth_modulation/mod_speed",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth Modulation"
+      },
+      {
+        "osc": "/synth_modulation/mod_depth",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Synth Modulation",
+        "_usage": "0~63: Negative depth; 64: Zero; 65~127: Positive depth"
+      },
+      {
+        "osc": "/synth_modulation/mod_type",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth Modulation",
+        "_usage": "0-15: Saw; 16-31: Square; 32-47: Triangle; 48-63: S&H; 64-127: EG"
+      },
+      {
+        "osc": "/synth_modulation/mod_destination",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth Modulation",
+        "_usage": "0-15: Pitch; 16-31: OSC edit 1; 32-47: OSC edit 2; 48-63: Cutoff; 64-79: Amp; 80-127: Pan"
+      },
+      {
+        "osc": "/synth_modulation/mod_bpm_sync",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth Modulation",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/synth_filter/filter_type",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth Filter",
+        "_usage": "0-31: LPF; 32-63: HPF; 64-95: BPF; 96-127: BPF+"
+      },
+      {
+        "osc": "/synth_filter/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth Filter"
+      },
+      {
+        "osc": "/synth_filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth Filter"
+      },
+      {
+        "osc": "/synth_filter/eg_intensity",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Synth Filter",
+        "_usage": "0~63: Negative EG; 64: Zero; 65~127: Positive EG"
+      },
+      {
+        "osc": "/synth_filter/drive",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth Filter"
+      },
+      {
+        "osc": "/synth_common/glide",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth Common",
+        "_usage": "0: Off; 1~127: Glide amount"
+      },
+      {
+        "osc": "/synth_common/pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Synth Common"
+      },
+      {
+        "osc": "/synth_common/eg_time",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth Common"
+      },
+      {
+        "osc": "/synth_common/level",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth Common"
+      },
+      {
+        "osc": "/synth_common/amp_eg",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth Common",
+        "_usage": "0-63: Gate; 64-127: EG"
+      },
+      {
+        "osc": "/synth_common/roll",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth Common",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/synth_common/fx_send",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth Common",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/synth_common/fx_select",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth Common",
+        "_usage": "0-42: FX1; 43-85: FX2; 86-127: FX3"
+      },
+      {
+        "osc": "/synth_common/motion_sequence_switch",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth Common",
+        "_usage": "0-42: Off; 43-85: Smooth; 86-127: Trig hold"
+      },
+      {
+        "osc": "/fx1/type",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX1",
+        "_usage": "0-7: Reverb; 8-15: BPM sync delay; 16-23: Short delay; 24-31: Mod delay; 32-39: Grain shifter; 40-47: Chorus/Flanger; 48-55: Phaser; 56-63: Ring mod; "
+      },
+      {
+        "osc": "/fx1/edit_1",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX1"
+      },
+      {
+        "osc": "/fx1/edit_2",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX1"
+      },
+      {
+        "osc": "/fx1/motion_sequence_switch",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX1",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/fx2/type",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX2",
+        "_usage": "0-7: Reverb; 8-15: BPM sync delay; 16-23: Short delay; 24-31: Mod delay; 32-39: Grain shifter; 40-47: Chorus/Flanger; 48-55: Phaser; 56-63: Ring mod; "
+      },
+      {
+        "osc": "/fx2/edit_1",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX2"
+      },
+      {
+        "osc": "/fx2/edit_2",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX2"
+      },
+      {
+        "osc": "/fx2/motion_sequence_switch",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX2",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/fx3/type",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX3",
+        "_usage": "0-7: Reverb; 8-15: BPM sync delay; 16-23: Short delay; 24-31: Mod delay; 32-39: Grain shifter; 40-47: Chorus/Flanger; 48-55: Phaser; 56-63: Ring mod; "
+      },
+      {
+        "osc": "/fx3/edit_1",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX3"
+      },
+      {
+        "osc": "/fx3/edit_2",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX3"
+      },
+      {
+        "osc": "/fx3/motion_sequence_switch",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX3",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/fx/chain",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX",
+        "_usage": "0-31: None; 32-63: FX1-FX2; 64-95: FX2-FX3; 96-127: FX1-FX2-FX3"
+      },
+      {
+        "osc": "/drum_1/wave",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 32,
+        "range": [
+          0,
+          143
+        ],
+        "orientation": "0-based",
+        "section": "Drum 1"
+      },
+      {
+        "osc": "/drum_1/pitch",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 1"
+      },
+      {
+        "osc": "/drum_1/level",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 1"
+      },
+      {
+        "osc": "/drum_1/pan",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 1"
+      },
+      {
+        "osc": "/drum_1/eg_time",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 1"
+      },
+      {
+        "osc": "/drum_1/amp_eg",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 1",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_1/roll",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 1",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_1/fx_send",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 1",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_1/fx_select",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 1",
+        "_usage": "0-42: FX1; 43-85: FX2; 86-127: FX3"
+      },
+      {
+        "osc": "/drum_1/mod_type",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 1",
+        "_usage": "0-15: Saw; 16-31: Square; 32-47: Triangle; 48-63: S&H; 64-127: EG"
+      },
+      {
+        "osc": "/drum_1/mod_depth",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 1",
+        "_usage": "0~63: Negative depth; 64: Zero; 65~127: Positive depth"
+      },
+      {
+        "osc": "/drum_1/mod_speed",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 1"
+      },
+      {
+        "osc": "/drum_1/mod_destination",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 1",
+        "_usage": "0-15: Pitch; 16-79: Amp; 80-127: Pan"
+      },
+      {
+        "osc": "/drum_1/mod_bpm_sync",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 1",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_1/motion_sequence_type",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 1",
+        "_usage": "0-42: Off; 43-85: Smooth; 86-127: Trig hold"
+      },
+      {
+        "osc": "/drum_2/wave",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 64,
+        "range": [
+          0,
+          143
+        ],
+        "orientation": "0-based",
+        "section": "Drum 2"
+      },
+      {
+        "osc": "/drum_2/pitch",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 2"
+      },
+      {
+        "osc": "/drum_2/level",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 2"
+      },
+      {
+        "osc": "/drum_2/pan",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 2"
+      },
+      {
+        "osc": "/drum_2/eg_time",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 2"
+      },
+      {
+        "osc": "/drum_2/amp_eg",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 2",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_2/roll",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 2",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_2/fx_send",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 2",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_2/fx_select",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 2",
+        "_usage": "0-42: FX1; 43-85: FX2; 86-127: FX3"
+      },
+      {
+        "osc": "/drum_2/mod_type",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 2",
+        "_usage": "0-15: Saw; 16-31: Square; 32-47: Triangle; 48-63: S&H; 64-127: EG"
+      },
+      {
+        "osc": "/drum_2/mod_depth",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 2",
+        "_usage": "0-63: Negative depth; 64: Zero; 65-127: Positive depth"
+      },
+      {
+        "osc": "/drum_2/mod_speed",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 2"
+      },
+      {
+        "osc": "/drum_2/mod_destination",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 2",
+        "_usage": "0-15: Pitch; 16-79: Amp; 80-127: Pan"
+      },
+      {
+        "osc": "/drum_2/mod_bpm_sync",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 2",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_2/motion_sequence_type",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 2",
+        "_usage": "0-42: Off; 43-85: Smooth; 86-127: Trig hold"
+      },
+      {
+        "osc": "/drum_3/wave",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 96,
+        "range": [
+          0,
+          143
+        ],
+        "orientation": "0-based",
+        "section": "Drum 3"
+      },
+      {
+        "osc": "/drum_3/pitch",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 3"
+      },
+      {
+        "osc": "/drum_3/level",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 3"
+      },
+      {
+        "osc": "/drum_3/pan",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 3"
+      },
+      {
+        "osc": "/drum_3/eg_time",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 3"
+      },
+      {
+        "osc": "/drum_3/amp_eg",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 3",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_3/roll",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 3",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_3/fx_send",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 3",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_3/fx_select",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 3",
+        "_usage": "0-42: FX1; 43-85: FX2; 86-127: FX3"
+      },
+      {
+        "osc": "/drum_3/mod_type",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 3",
+        "_usage": "0-15: Saw; 16-31: Square; 32-47: Triangle; 48-63: S&H; 64-127: EG"
+      },
+      {
+        "osc": "/drum_3/mod_depth",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 3",
+        "_usage": "0-63: Negative depth; 64: Zero; 65-127: Positive depth"
+      },
+      {
+        "osc": "/drum_3/mod_speed",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 3"
+      },
+      {
+        "osc": "/drum_3/mod_destination",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 3",
+        "_usage": "0-15: Pitch; 16-79: Amp; 80-127: Pan"
+      },
+      {
+        "osc": "/drum_3/mod_bpm_sync",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 3",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_3/motion_sequence_type",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 3",
+        "_usage": "0-42: Off; 43-85: Smooth; 86-127: Trig hold"
+      },
+      {
+        "osc": "/drum_4/wave",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          143
+        ],
+        "orientation": "0-based",
+        "section": "Drum 4"
+      },
+      {
+        "osc": "/drum_4/pitch",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 4"
+      },
+      {
+        "osc": "/drum_4/level",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 4"
+      },
+      {
+        "osc": "/drum_4/pan",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 4"
+      },
+      {
+        "osc": "/drum_4/eg_time",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 4"
+      },
+      {
+        "osc": "/drum_4/amp_eg",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 4",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_4/roll",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 4",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_4/fx_send",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 4",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_4/fx_select",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 4",
+        "_usage": "0-42: FX1; 43-85: FX2; 86-127: FX3"
+      },
+      {
+        "osc": "/drum_4/mod_type",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 4",
+        "_usage": "0-15: Saw; 16-31: Square; 32-47: Triangle; 48-63: S&H; 64-127: EG"
+      },
+      {
+        "osc": "/drum_4/mod_depth",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 4",
+        "_usage": "0-63: Negative depth; 64: Zero; 65-127: Positive depth"
+      },
+      {
+        "osc": "/drum_4/mod_speed",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 4"
+      },
+      {
+        "osc": "/drum_4/mod_destination",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 4",
+        "_usage": "0-15: Pitch; 16-79: Amp; 80-127: Pan"
+      },
+      {
+        "osc": "/drum_4/mod_bpm_sync",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 4",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_4/motion_sequence_type",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 4",
+        "_usage": "0-42: Off; 43-85: Smooth; 86-127: Trig hold"
+      },
+      {
+        "osc": "/drum_5/wave",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 32,
+        "range": [
+          0,
+          143
+        ],
+        "orientation": "0-based",
+        "section": "Drum 5"
+      },
+      {
+        "osc": "/drum_5/pitch",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 5"
+      },
+      {
+        "osc": "/drum_5/level",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 5"
+      },
+      {
+        "osc": "/drum_5/pan",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 5"
+      },
+      {
+        "osc": "/drum_5/eg_time",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 5"
+      },
+      {
+        "osc": "/drum_5/amp_eg",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 5",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_5/roll",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 5",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_5/fx_send",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 5",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_5/fx_select",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 5",
+        "_usage": "0-42: FX1; 43-85: FX2; 86-127: FX3"
+      },
+      {
+        "osc": "/drum_5/mod_type",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 5",
+        "_usage": "0-15: Saw; 16-31: Square; 32-47: Triangle; 48-63: S&H; 64-127: EG"
+      },
+      {
+        "osc": "/drum_5/mod_depth",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 5",
+        "_usage": "0-63: Negative depth; 64: Zero; 65-127: Positive depth"
+      },
+      {
+        "osc": "/drum_5/mod_speed",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 5"
+      },
+      {
+        "osc": "/drum_5/mod_destination",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 5",
+        "_usage": "0-15: Pitch; 16-79: Amp; 80-127: Pan"
+      },
+      {
+        "osc": "/drum_5/mod_bpm_sync",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 5",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_5/motion_sequence_type",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 5",
+        "_usage": "0-42: Off; 43-85: Smooth; 86-127: Trig hold"
+      },
+      {
+        "osc": "/drum_6a/wave",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 64,
+        "range": [
+          0,
+          143
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6A"
+      },
+      {
+        "osc": "/drum_6a/pitch",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 6A"
+      },
+      {
+        "osc": "/drum_6a/level",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6A"
+      },
+      {
+        "osc": "/drum_6a/pan",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 6A"
+      },
+      {
+        "osc": "/drum_6a/eg_time",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6A"
+      },
+      {
+        "osc": "/drum_6a/amp_eg",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6A",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_6a/roll",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6A",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_6a/fx_send",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6A",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_6a/fx_select",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6A",
+        "_usage": "0-42: FX1; 43-85: FX2; 86-127: FX3"
+      },
+      {
+        "osc": "/drum_6a/mod_type",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6A",
+        "_usage": "0-15: Saw; 16-31: Square; 32-47: Triangle; 48-63: S&H; 64-127: EG"
+      },
+      {
+        "osc": "/drum_6a/mod_depth",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 6A",
+        "_usage": "0-63: Negative depth; 64: Zero; 65-127: Positive depth"
+      },
+      {
+        "osc": "/drum_6a/mod_speed",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6A"
+      },
+      {
+        "osc": "/drum_6a/mod_destination",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6A",
+        "_usage": "0-15: Pitch; 16-79: Amp; 80-127: Pan"
+      },
+      {
+        "osc": "/drum_6a/mod_bpm_sync",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6A",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_6a/motion_sequence_type",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6A",
+        "_usage": "0-42: Off; 43-85: Smooth; 86-127: Trig hold"
+      },
+      {
+        "osc": "/drum_6b/wave",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 96,
+        "range": [
+          0,
+          143
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6B"
+      },
+      {
+        "osc": "/drum_6b/pitch",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 6B"
+      },
+      {
+        "osc": "/drum_6b/level",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6B"
+      },
+      {
+        "osc": "/drum_6b/pan",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 6B"
+      },
+      {
+        "osc": "/drum_6b/eg_time",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6B"
+      },
+      {
+        "osc": "/drum_6b/amp_eg",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6B",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_6b/roll",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6B",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_6b/fx_send",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6B",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_6b/fx_select",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6B",
+        "_usage": "0-42: FX1; 43-85: FX2; 86-127: FX3"
+      },
+      {
+        "osc": "/drum_6b/mod_type",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6B",
+        "_usage": "0-15: Saw; 16-31: Square; 32-47: Triangle; 48-63: S&H; 64-127: EG"
+      },
+      {
+        "osc": "/drum_6b/mod_depth",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 6B",
+        "_usage": "0-63: Negative depth; 64: Zero; 65-127: Positive depth"
+      },
+      {
+        "osc": "/drum_6b/mod_speed",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6B"
+      },
+      {
+        "osc": "/drum_6b/mod_destination",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6B",
+        "_usage": "0-15: Pitch; 16-79: Amp; 80-127: Pan"
+      },
+      {
+        "osc": "/drum_6b/mod_bpm_sync",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6B",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_6b/motion_sequence_type",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 6B",
+        "_usage": "0-42: Off; 43-85: Smooth; 86-127: Trig hold"
+      },
+      {
+        "osc": "/drum_7a/wave",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          143
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7A"
+      },
+      {
+        "osc": "/drum_7a/pitch",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 7A"
+      },
+      {
+        "osc": "/drum_7a/level",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7A"
+      },
+      {
+        "osc": "/drum_7a/pan",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 7A"
+      },
+      {
+        "osc": "/drum_7a/eg_time",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7A"
+      },
+      {
+        "osc": "/drum_7a/amp_eg",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7A",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_7a/roll",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7A",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_7a/fx_send",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7A",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_7a/fx_select",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7A",
+        "_usage": "0-42: FX1; 43-85: FX2; 86-127: FX3"
+      },
+      {
+        "osc": "/drum_7a/mod_type",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7A",
+        "_usage": "0-15: Saw; 16-31: Square; 32-47: Triangle; 48-63: S&H; 64-127: EG"
+      },
+      {
+        "osc": "/drum_7a/mod_depth",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 7A",
+        "_usage": "0-63: Negative depth; 64: Zero; 65-127: Positive depth"
+      },
+      {
+        "osc": "/drum_7a/mod_speed",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7A"
+      },
+      {
+        "osc": "/drum_7a/mod_destination",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7A",
+        "_usage": "0-15: Pitch; 16-79: Amp; 80-127: Pan"
+      },
+      {
+        "osc": "/drum_7a/mod_bpm_sync",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7A",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_7a/motion_sequence_type",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7A",
+        "_usage": "0-42: Off; 43-85: Smooth; 86-127: Trig hold"
+      },
+      {
+        "osc": "/drum_7b/wave",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 32,
+        "range": [
+          0,
+          143
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7B"
+      },
+      {
+        "osc": "/drum_7b/pitch",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 7B"
+      },
+      {
+        "osc": "/drum_7b/level",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7B"
+      },
+      {
+        "osc": "/drum_7b/pan",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 7B"
+      },
+      {
+        "osc": "/drum_7b/eg_time",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7B"
+      },
+      {
+        "osc": "/drum_7b/amp_eg",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7B",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_7b/roll",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7B",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_7b/fx_send",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7B",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_7b/fx_select",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7B",
+        "_usage": "0-42: FX1; 43-85: FX2; 86-127: FX3"
+      },
+      {
+        "osc": "/drum_7b/mod_type",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7B",
+        "_usage": "0-15: Saw; 16-31: Square; 32-47: Triangle; 48-63: S&H; 64-127: EG"
+      },
+      {
+        "osc": "/drum_7b/mod_depth",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Drum 7B",
+        "_usage": "0-63: Negative depth; 64: Zero; 65-127: Positive depth"
+      },
+      {
+        "osc": "/drum_7b/mod_speed",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7B"
+      },
+      {
+        "osc": "/drum_7b/mod_destination",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7B",
+        "_usage": "0-15: Pitch; 16-79: Amp; 80-127: Pan"
+      },
+      {
+        "osc": "/drum_7b/mod_bpm_sync",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7B",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/drum_7b/motion_sequence_type",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum 7B",
+        "_usage": "0-42: Off; 43-85: Smooth; 86-127: Trig hold"
+      },
+      {
+        "osc": "/accent/synth_accent_level",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Accent"
+      },
+      {
+        "osc": "/accent/synth_accent_motion_sequence_switch",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Accent",
+        "_usage": "0-42: Off; 43-127: Trig hold"
+      },
+      {
+        "osc": "/accent/drum_accent_level",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Accent"
+      },
+      {
+        "osc": "/accent/drum_accent_motion_sequence_switch",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Accent",
+        "_usage": "0-42: Off; 43-127: Trig hold"
+      },
+      {
+        "osc": "/global/swing",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/roll_type",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0-42: 2; 43-85: 3; 86-127: 4"
+      },
+      {
+        "osc": "/global/synth_mute_solo",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/drum_mute",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 120,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/bank_select_msb",
+        "cc": 0,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/bank_select_lsb",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/reset_all_controllers",
+        "cc": 121,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Reset all controllers"
+      },
+      {
+        "osc": "/global/all_note_off",
+        "cc": 123,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: All note off"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

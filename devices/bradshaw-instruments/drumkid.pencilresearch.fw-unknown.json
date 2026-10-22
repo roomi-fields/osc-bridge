@@ -1,0 +1,226 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Bradshaw Instruments/Drumkid.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 16,
+    "cc_entries": 16,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Drumkid",
+    "vendor": "Bradshaw Instruments",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/drumkid",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/group_a_randomness/chance",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Group A (randomness)",
+        "_usage": "0~127: Chance amount"
+      },
+      {
+        "osc": "/group_a_randomness/zoom",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Group A (randomness)",
+        "_usage": "0~127: Zoom value"
+      },
+      {
+        "osc": "/group_a_randomness/range",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Group A (randomness)",
+        "_usage": "0~127: Range of velocities"
+      },
+      {
+        "osc": "/group_a_randomness/midpoint",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Group A (randomness)",
+        "_usage": "0~127: Midpoint value"
+      },
+      {
+        "osc": "/group_b_effects/pitch",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Group B (effects)",
+        "_usage": "0~63: Backwards; 64: Unchanged; 65~127: Forwards"
+      },
+      {
+        "osc": "/group_b_effects/crush",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Group B (effects)",
+        "_usage": "0: Clean; 127: Distorted"
+      },
+      {
+        "osc": "/group_b_effects/crop",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Group B (effects)",
+        "_usage": "0: More cropped; 127: Less cropped"
+      },
+      {
+        "osc": "/group_b_effects/drop",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Group B (effects)"
+      },
+      {
+        "osc": "/group_c_drone/drone",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Group C (drone)",
+        "_usage": "0~63: Single drone; 64: Muted; 65~127: Two drones (5ths)"
+      },
+      {
+        "osc": "/group_c_drone/modulate",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Group C (drone)",
+        "_usage": "0~63: 1 Modulator; 64: No effect; 65~127: 2 Modoulators"
+      },
+      {
+        "osc": "/group_c_drone/tuning",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Group C (drone)",
+        "_usage": "0~127: Drone tuning"
+      },
+      {
+        "osc": "/group_c_drone/note",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Group C (drone)",
+        "_usage": "0~127: Drone root"
+      },
+      {
+        "osc": "/group_d_rhythm/beat",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Group D (rhythm)",
+        "_usage": "0-127: Cycle beat presets"
+      },
+      {
+        "osc": "/group_d_rhythm/beats_bar",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Group D (rhythm)",
+        "_usage": "0-127: Cycle beats per bar"
+      },
+      {
+        "osc": "/group_d_rhythm/swing",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Group D (rhythm)",
+        "_usage": "0~42: straight; 43~85: partial swing; 86~127: full (triplet) swing"
+      },
+      {
+        "osc": "/group_d_rhythm/tempo",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Group D (rhythm)",
+        "_usage": "0~127: Tempo (BPM)"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

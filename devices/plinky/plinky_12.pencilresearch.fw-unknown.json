@@ -1,0 +1,1013 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Plinky/Plinky 12.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 86,
+    "cc_entries": 70,
+    "nrpn_entries": 16,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Plinky 12",
+    "vendor": "Plinky",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/plinky_12",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/xy_pad/x_position",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "XY pad",
+        "_usage": "0~127: X position"
+      },
+      {
+        "osc": "/xy_pad/y_position",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "XY pad",
+        "_usage": "0~127: Y position"
+      },
+      {
+        "osc": "/filter/high_pass_cutoff",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~127: Cutoff"
+      },
+      {
+        "osc": "/filter/low_pass_cutoff",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~127: Cutoff"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~127: Resonance"
+      },
+      {
+        "osc": "/envelope/attack",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope",
+        "_usage": "0~127: Attack time"
+      },
+      {
+        "osc": "/envelope/decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope",
+        "_usage": "0~127: Decay time"
+      },
+      {
+        "osc": "/envelope/sustain",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope",
+        "_usage": "0~127: Sustain level"
+      },
+      {
+        "osc": "/envelope/release",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope",
+        "_usage": "0~127: Release time"
+      },
+      {
+        "osc": "/pitch/glide",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pitch",
+        "_usage": "0~127: Glide time"
+      },
+      {
+        "osc": "/pitch/pitch",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Pitch",
+        "_usage": "0~63: Tune down; 64: Centre; 65~127: Tune up"
+      },
+      {
+        "osc": "/pitch/octave",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Pitch",
+        "_usage": "0~63: Octaves down; 64: Centre; 65~127: Octaves up"
+      },
+      {
+        "osc": "/sound/sub_oscillator_noise",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Sound",
+        "_usage": "0~63: Noise; 64: Off; 65~127: Sub oscillator"
+      },
+      {
+        "osc": "/sound/wavefold_saturation",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Sound",
+        "_usage": "0~63: Saturation; 64: Off; 65~127: Wavefold"
+      },
+      {
+        "osc": "/voice_mix/stereo_spread",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice mix",
+        "_usage": "0~127: Stereo spread"
+      },
+      {
+        "osc": "/voice_mix/delay_send",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice mix",
+        "_usage": "0~127: Send amount"
+      },
+      {
+        "osc": "/voice_mix/reverb_send",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice mix",
+        "_usage": "0~127: Send amount"
+      },
+      {
+        "osc": "/voice_mix/toad_factor",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/voice_mix/volume",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Voice mix",
+        "_usage": "0~127: Level"
+      },
+      {
+        "osc": "/sound/timestretch",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Sound",
+        "_usage": "0~63: Shorter; 64: Centre; 65~127: Longer"
+      },
+      {
+        "osc": "/sound/sample_start",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0~127: Start position"
+      },
+      {
+        "osc": "/sound/sample_length",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sound",
+        "_usage": "0~127: Length"
+      },
+      {
+        "osc": "/sound/chorus_wobble",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Sound",
+        "_usage": "0~63: Wobble; 64: Off; 65~127: Chorus"
+      },
+      {
+        "osc": "/voice_mix/sidechain_amount",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Voice mix",
+        "_usage": "0~63: Duck receive; 64: Off; 65~127: Sidechain send"
+      },
+      {
+        "osc": "/random_range/high_pass_cutoff_range",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/low_pass_cutoff_range",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/resonance_range",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/attack_range",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/decay_range",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/sustain_range",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/release_range",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/glide_range",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/pitch_range",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/octave_range",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/sub_oscillator_noise_range",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/wavefold_saturation_range",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/stereo_spread_range",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/delay_send_range",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/reverb_send_range",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/toad_factor_range",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/volume_range",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/timestretch_range",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/sample_start_range",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/sample_length_range",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/chorus_wobble_range",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/random_range/sidechain_amount_range",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/mix/bass_eq_compressor",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/mid_eq_compressor",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/treble_eq_compressor",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/tape_dry",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/audio_in_dry",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/tape_delay_send",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/tape_reverb_send",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/audio_in_delay_send",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/audio_in_reverb_send",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/reverb_shimmer",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/reverb_feedback",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/delay_time",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/delay_feedback",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/reverb_return",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/delay_return",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/output_level",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/audio_in_sidechain",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/reverb_sidechain",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix/delay_sidechain",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0~127: Amount"
+      },
+      {
+        "osc": "/mix_random_range/bass_eq_compressor_range",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/mix_random_range/mid_eq_compressor_range",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/mix_random_range/treble_eq_compressor_range",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/mix_random_range/tape_dry_range",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/mix_random_range/audio_in_dry_range",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix random range",
+        "_usage": "0~127: Range width"
+      },
+      {
+        "osc": "/global/tempo",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 120,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~16383: BPM times 24"
+      },
+      {
+        "osc": "/global/raw_xy_position_x",
+        "nrpn_msb": 32,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~127: X position"
+      },
+      {
+        "osc": "/global/raw_xy_position_y",
+        "nrpn_msb": 32,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~127: Y position"
+      },
+      {
+        "osc": "/global/state_dump_request",
+        "nrpn_msb": 32,
+        "nrpn_lsb": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: No effect; 1-127: Request full state dump"
+      },
+      {
+        "osc": "/global/panel_page_select",
+        "nrpn_msb": 34,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~127: Page index"
+      },
+      {
+        "osc": "/musical_state/key_root",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Musical state",
+        "_usage": "0~127: MIDI note"
+      },
+      {
+        "osc": "/musical_state/scale_mask",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 77,
+        "range": [
+          0,
+          4095
+        ],
+        "orientation": "0-based",
+        "section": "Musical state",
+        "_usage": "0~4095: Pitch-class mask"
+      },
+      {
+        "osc": "/musical_state/chord_root",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Musical state",
+        "_usage": "0~127: MIDI note"
+      },
+      {
+        "osc": "/musical_state/chord_note_mask",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 79,
+        "range": [
+          0,
+          4095
+        ],
+        "orientation": "0-based",
+        "section": "Musical state",
+        "_usage": "0~4095: Pitch-class mask"
+      },
+      {
+        "osc": "/musical_state/chord_scale_mask",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 80,
+        "range": [
+          0,
+          4095
+        ],
+        "orientation": "0-based",
+        "section": "Musical state",
+        "_usage": "0~4095: Pitch-class mask"
+      },
+      {
+        "osc": "/musical_state/voicing_note_1",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Musical state",
+        "_usage": "0: Terminator; 1~127: MIDI note"
+      },
+      {
+        "osc": "/musical_state/voicing_note_2",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Musical state",
+        "_usage": "0: Terminator; 1~127: MIDI note"
+      },
+      {
+        "osc": "/musical_state/voicing_note_3",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Musical state",
+        "_usage": "0: Terminator; 1~127: MIDI note"
+      },
+      {
+        "osc": "/musical_state/voicing_note_4",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Musical state",
+        "_usage": "0: Terminator; 1~127: MIDI note"
+      },
+      {
+        "osc": "/musical_state/voicing_note_5",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Musical state",
+        "_usage": "0: Terminator; 1~127: MIDI note"
+      },
+      {
+        "osc": "/musical_state/voicing_note_6",
+        "nrpn_msb": 33,
+        "nrpn_lsb": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Musical state",
+        "_usage": "0: Terminator; 1~127: MIDI note"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

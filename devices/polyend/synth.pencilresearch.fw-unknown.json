@@ -1,0 +1,1061 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Polyend/Synth.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 101,
+    "cc_entries": 101,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Synth",
+    "vendor": "Polyend",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/synth",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/acd_engine/saw_mix",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD engine"
+      },
+      {
+        "osc": "/acd_engine/square_mix",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD engine"
+      },
+      {
+        "osc": "/acd_engine/sub_mix",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD engine"
+      },
+      {
+        "osc": "/acd_engine/noise",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "ACD engine"
+      },
+      {
+        "osc": "/acd_engine/pulse_width",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD engine"
+      },
+      {
+        "osc": "/acd_engine/pulse_width_lfo",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "ACD engine"
+      },
+      {
+        "osc": "/acd_engine/pulse_width_envelope",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD engine"
+      },
+      {
+        "osc": "/acd_engine/pitch_lfo",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "ACD engine"
+      },
+      {
+        "osc": "/fat_engine/timbre",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT engine"
+      },
+      {
+        "osc": "/fat_engine/noise",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT engine"
+      },
+      {
+        "osc": "/fat_engine/brightness",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "FAT engine"
+      },
+      {
+        "osc": "/fat_engine/fatness",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT engine"
+      },
+      {
+        "osc": "/fat_engine/fatness_lfo",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FAT engine"
+      },
+      {
+        "osc": "/wavs_engine_p1/position_1",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS engine P1"
+      },
+      {
+        "osc": "/wavs_engine_p1/position_2",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS engine P1"
+      },
+      {
+        "osc": "/wavs_engine_p1/mix",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "WAVS engine P1"
+      },
+      {
+        "osc": "/wavs_engine_p1/warp_1",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "WAVS engine P1"
+      },
+      {
+        "osc": "/wavs_engine_p1/warp_2",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "WAVS engine P1"
+      },
+      {
+        "osc": "/wavs_engine_p1/noise",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS engine P1"
+      },
+      {
+        "osc": "/wavs_engine_p2/tune_1",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "WAVS engine P2"
+      },
+      {
+        "osc": "/wavs_engine_p2/tune_2",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "WAVS engine P2"
+      },
+      {
+        "osc": "/wavs_engine_p2/detune",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WAVS engine P2"
+      },
+      {
+        "osc": "/wavs_engine_p3/finetune",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "WAVS engine P3"
+      },
+      {
+        "osc": "/vap_engine_p1/shape_1",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP engine P1"
+      },
+      {
+        "osc": "/vap_engine_p1/shape_2",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP engine P1"
+      },
+      {
+        "osc": "/vap_engine_p1/mix",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "VAP engine P1"
+      },
+      {
+        "osc": "/vap_engine_p1/pulse_width_1",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "VAP engine P1"
+      },
+      {
+        "osc": "/vap_engine_p1/pulse_width_2",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "VAP engine P1"
+      },
+      {
+        "osc": "/vap_engine_p1/tune_1",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "VAP engine P1"
+      },
+      {
+        "osc": "/vap_engine_p1/tune_2",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "VAP engine P1"
+      },
+      {
+        "osc": "/vap_engine_p1/detune",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP engine P1"
+      },
+      {
+        "osc": "/vap_engine_p2/noise",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VAP engine P2"
+      },
+      {
+        "osc": "/vap_engine_p2/finetune",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "VAP engine P2"
+      },
+      {
+        "osc": "/wtfm_engine_p1/ratio_1",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM engine P1"
+      },
+      {
+        "osc": "/wtfm_engine_p1/ratio_2",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM engine P1"
+      },
+      {
+        "osc": "/wtfm_engine_p1/frequency_modulation",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM engine P1"
+      },
+      {
+        "osc": "/wtfm_engine_p1/shape_1",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM engine P1"
+      },
+      {
+        "osc": "/wtfm_engine_p1/shape_2",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM engine P1"
+      },
+      {
+        "osc": "/wtfm_engine_p1/feedback_1",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM engine P1"
+      },
+      {
+        "osc": "/wtfm_engine_p1/feedback_2",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM engine P1"
+      },
+      {
+        "osc": "/wtfm_engine_p1/feedback_2_to_1",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "WTFM engine P1"
+      },
+      {
+        "osc": "/wtfm_engine_p2/finetune_1",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "WTFM engine P2"
+      },
+      {
+        "osc": "/wtfm_engine_p2/finetune_2",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "WTFM engine P2"
+      },
+      {
+        "osc": "/pmd_exciter/bow_level",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD exciter"
+      },
+      {
+        "osc": "/pmd_exciter/bow_timbre",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD exciter"
+      },
+      {
+        "osc": "/pmd_exciter/air_level",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD exciter"
+      },
+      {
+        "osc": "/pmd_exciter/air_flow",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD exciter"
+      },
+      {
+        "osc": "/pmd_exciter/air_timbre",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD exciter"
+      },
+      {
+        "osc": "/pmd_exciter/strike_level",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD exciter"
+      },
+      {
+        "osc": "/pmd_exciter/strike_mallet",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD exciter"
+      },
+      {
+        "osc": "/pmd_exciter/strike_timbre",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD exciter"
+      },
+      {
+        "osc": "/pmd_exciter_envelope/attack",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD exciter envelope"
+      },
+      {
+        "osc": "/pmd_exciter_envelope/decay",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD exciter envelope"
+      },
+      {
+        "osc": "/pmd_exciter_envelope/sustain",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD exciter envelope"
+      },
+      {
+        "osc": "/pmd_exciter_envelope/release",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD exciter envelope"
+      },
+      {
+        "osc": "/pmd_resonator/form",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD resonator"
+      },
+      {
+        "osc": "/pmd_resonator/damping",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD resonator"
+      },
+      {
+        "osc": "/pmd_resonator/brightness",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD resonator"
+      },
+      {
+        "osc": "/pmd_resonator/position",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD resonator"
+      },
+      {
+        "osc": "/pmd_resonator/space",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PMD resonator"
+      },
+      {
+        "osc": "/phz_engine_p1/shape_1",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ engine P1"
+      },
+      {
+        "osc": "/phz_engine_p1/shape_2",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ engine P1"
+      },
+      {
+        "osc": "/phz_engine_p1/mix",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ engine P1"
+      },
+      {
+        "osc": "/phz_engine_p1/oscillator_1_x_modulation",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ engine P1"
+      },
+      {
+        "osc": "/phz_engine_p1/oscillator_2_x_modulation",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ engine P1"
+      },
+      {
+        "osc": "/phz_engine_p1/oscillator_1_y_modulation",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ engine P1"
+      },
+      {
+        "osc": "/phz_engine_p1/oscillator_2_y_modulation",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ engine P1"
+      },
+      {
+        "osc": "/phz_engine_p2/detune",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "PHZ engine P2"
+      },
+      {
+        "osc": "/phz_engine_p2/tune_1",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "PHZ engine P2"
+      },
+      {
+        "osc": "/phz_engine_p2/tune_2",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "PHZ engine P2"
+      },
+      {
+        "osc": "/phz_engine_p2/finetune",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "PHZ engine P2"
+      },
+      {
+        "osc": "/grain_engine_p1/position",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN engine P1"
+      },
+      {
+        "osc": "/grain_engine_p1/position_spread",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN engine P1"
+      },
+      {
+        "osc": "/grain_engine_p1/grain_size",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN engine P1"
+      },
+      {
+        "osc": "/grain_engine_p1/density",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN engine P1"
+      },
+      {
+        "osc": "/grain_engine_p1/time_spread",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN engine P1"
+      },
+      {
+        "osc": "/grain_engine_p1/grain_shape",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "GRAIN engine P1"
+      },
+      {
+        "osc": "/grain_engine_p1/pan_spread",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN engine P1"
+      },
+      {
+        "osc": "/grain_engine_p2/tune",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "GRAIN engine P2"
+      },
+      {
+        "osc": "/grain_engine_p2/detune_spread",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN engine P2"
+      },
+      {
+        "osc": "/grain_engine_p2/finetune",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "GRAIN engine P2"
+      },
+      {
+        "osc": "/grain_engine_p2/size_spread",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN engine P2"
+      },
+      {
+        "osc": "/grain_engine_p2/direction",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "GRAIN engine P2"
+      },
+      {
+        "osc": "/grain_engine_p2/space",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "GRAIN engine P2"
+      },
+      {
+        "osc": "/filter/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/envelope_amount",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/lfo",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter"
+      },
+      {
+        "osc": "/lfo/frequency",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/amplifier_envelope/attack",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier envelope"
+      },
+      {
+        "osc": "/amplifier_envelope/decay",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier envelope"
+      },
+      {
+        "osc": "/amplifier_envelope/sustain",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier envelope"
+      },
+      {
+        "osc": "/amplifier_envelope/release",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier envelope"
+      },
+      {
+        "osc": "/filter_envelope/attack",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter envelope"
+      },
+      {
+        "osc": "/filter_envelope/decay",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter envelope"
+      },
+      {
+        "osc": "/filter_envelope/sustain",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter envelope"
+      },
+      {
+        "osc": "/filter_envelope/release",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter envelope"
+      },
+      {
+        "osc": "/auxiliary_envelope/attack",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Auxiliary envelope"
+      },
+      {
+        "osc": "/auxiliary_envelope/decay",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Auxiliary envelope"
+      },
+      {
+        "osc": "/auxiliary_envelope/sustain",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Auxiliary envelope"
+      },
+      {
+        "osc": "/auxiliary_envelope/release",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Auxiliary envelope"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

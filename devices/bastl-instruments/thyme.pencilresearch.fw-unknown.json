@@ -1,0 +1,1026 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Bastl Instruments/Thyme+.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 92,
+    "cc_entries": 92,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Thyme+",
+    "vendor": "Bastl Instruments",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/thyme",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/volume/knob_value",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume"
+      },
+      {
+        "osc": "/volume/robot_amount",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume"
+      },
+      {
+        "osc": "/volume/robot_rate",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume"
+      },
+      {
+        "osc": "/volume/robot_shape",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume"
+      },
+      {
+        "osc": "/volume/robot_waveform",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume",
+        "_usage": "0-15: Triangle; 16-31: Stepped Triangle; 32-47: XOR'd Flopping Triangle; 48-63: Stepped Ramp; 64-79: Stepped Random; 80-95: One Shot Decay; 96-111: EN"
+      },
+      {
+        "osc": "/volume/robot_phase",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume",
+        "_usage": "0-31: 0 degrees; 32-63: 90 degrees; 64-95: 180 degrees; 96-127: 270 degrees"
+      },
+      {
+        "osc": "/volume/robot_polarity",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume",
+        "_usage": "0-42: Negative; 43-85: Bipolar; 86-127: Positive"
+      },
+      {
+        "osc": "/volume/robot_stereo",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/volume/robot_sync",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/mix/knob_value",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/mix/robot_amount",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/mix/robot_rate",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/mix/robot_shape",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix"
+      },
+      {
+        "osc": "/mix/robot_waveform",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0-15: Triangle; 16-31: Stepped Triangle; 32-47: XOR'd Flopping Triangle; 48-63: Stepped Ramp; 64-79: Stepped Random; 80-95: One Shot Decay; 96-111: EN"
+      },
+      {
+        "osc": "/mix/robot_phase",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0-31: 0 degrees; 32-63: 90 degrees; 64-95: 180 degrees; 96-127: 270 degrees"
+      },
+      {
+        "osc": "/mix/robot_polarity",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0-42: Negative; 43-85: Bipolar; 86-127: Positive"
+      },
+      {
+        "osc": "/mix/robot_stereo",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/mix/robot_sync",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mix",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/tape_speed/knob_value",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape Speed"
+      },
+      {
+        "osc": "/tape_speed/robot_amount",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape Speed"
+      },
+      {
+        "osc": "/tape_speed/robot_rate",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape Speed"
+      },
+      {
+        "osc": "/tape_speed/robot_shape",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape Speed"
+      },
+      {
+        "osc": "/tape_speed/robot_waveform",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape Speed",
+        "_usage": "0-15: Triangle; 16-31: Stepped Triangle; 32-47: XOR'd Flopping Triangle; 48-63: Stepped Ramp; 64-79: Stepped Random; 80-95: One Shot Decay; 96-111: EN"
+      },
+      {
+        "osc": "/tape_speed/robot_phase",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape Speed",
+        "_usage": "0-31: 0 degrees; 32-63: 90 degrees; 64-95: 180 degrees; 96-127: 270 degrees"
+      },
+      {
+        "osc": "/tape_speed/robot_polarity",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape Speed",
+        "_usage": "0-42: Negative; 43-85: Bipolar; 86-127: Positive"
+      },
+      {
+        "osc": "/tape_speed/robot_stereo",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape Speed",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/tape_speed/robot_sync",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape Speed",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/feedback/knob_value",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Feedback"
+      },
+      {
+        "osc": "/feedback/robot_amount",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Feedback"
+      },
+      {
+        "osc": "/feedback/robot_rate",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Feedback"
+      },
+      {
+        "osc": "/feedback/robot_shape",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Feedback"
+      },
+      {
+        "osc": "/feedback/robot_waveform",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Feedback",
+        "_usage": "0-15: Triangle; 16-31: Stepped Triangle; 32-47: XOR'd Flopping Triangle; 48-63: Stepped Ramp; 64-79: Stepped Random; 80-95: One Shot Decay; 96-111: EN"
+      },
+      {
+        "osc": "/feedback/robot_phase",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Feedback",
+        "_usage": "0-31: 0 degrees; 32-63: 90 degrees; 64-95: 180 degrees; 96-127: 270 degrees"
+      },
+      {
+        "osc": "/feedback/robot_polarity",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Feedback",
+        "_usage": "0-42: Negative; 43-85: Bipolar; 86-127: Positive"
+      },
+      {
+        "osc": "/feedback/robot_stereo",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Feedback",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/feedback/robot_sync",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Feedback",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/filter/knob_value",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/robot_amount",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/robot_rate",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/robot_shape",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/robot_waveform",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0-15: Triangle; 16-31: Stepped Triangle; 32-47: XOR'd Flopping Triangle; 48-63: Stepped Ramp; 64-79: Stepped Random; 80-95: One Shot Decay; 96-111: EN"
+      },
+      {
+        "osc": "/filter/robot_phase",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0-31: 0 degrees; 32-63: 90 degrees; 64-95: 180 degrees; 96-127: 270 degrees"
+      },
+      {
+        "osc": "/filter/robot_polarity",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0-42: Negative; 43-85: Bipolar; 86-127: Positive"
+      },
+      {
+        "osc": "/filter/robot_stereo",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/filter/robot_sync",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/coarse/knob_value",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Coarse"
+      },
+      {
+        "osc": "/coarse/robot_amount",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Coarse"
+      },
+      {
+        "osc": "/coarse/robot_rate",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Coarse"
+      },
+      {
+        "osc": "/coarse/robot_shape",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Coarse"
+      },
+      {
+        "osc": "/coarse/robot_waveform",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Coarse",
+        "_usage": "0-15: Triangle; 16-31: Stepped Triangle; 32-47: XOR'd Flopping Triangle; 48-63: Stepped Ramp; 64-79: Stepped Random; 80-95: One Shot Decay; 96-111: EN"
+      },
+      {
+        "osc": "/coarse/robot_phase",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Coarse",
+        "_usage": "0-31: 0 degrees; 32-63: 90 degrees; 64-95: 180 degrees; 96-127: 270 degrees"
+      },
+      {
+        "osc": "/coarse/robot_polarity",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Coarse",
+        "_usage": "0-42: Negative; 43-85: Bipolar; 86-127: Positive"
+      },
+      {
+        "osc": "/coarse/robot_stereo",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Coarse",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/coarse/robot_sync",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Coarse",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/fine/knob_value",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Fine"
+      },
+      {
+        "osc": "/fine/robot_amount",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Fine"
+      },
+      {
+        "osc": "/fine/robot_rate",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Fine"
+      },
+      {
+        "osc": "/fine/robot_shape",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Fine"
+      },
+      {
+        "osc": "/fine/robot_waveform",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Fine",
+        "_usage": "0-15: Triangle; 16-31: Stepped Triangle; 32-47: XOR'd Flopping Triangle; 48-63: Stepped Ramp; 64-79: Stepped Random; 80-95: One Shot Decay; 96-111: EN"
+      },
+      {
+        "osc": "/fine/robot_phase",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Fine",
+        "_usage": "0-31: 0 degrees; 32-63: 90 degrees; 64-95: 180 degrees; 96-127: 270 degrees"
+      },
+      {
+        "osc": "/fine/robot_polarity",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Fine",
+        "_usage": "0-42: Negative; 43-85: Bipolar; 86-127: Positive"
+      },
+      {
+        "osc": "/fine/robot_stereo",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Fine",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/fine/robot_sync",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Fine",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/levels/knob_value",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Levels"
+      },
+      {
+        "osc": "/levels/robot_amount",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Levels"
+      },
+      {
+        "osc": "/levels/robot_rate",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Levels"
+      },
+      {
+        "osc": "/levels/robot_shape",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Levels"
+      },
+      {
+        "osc": "/levels/robot_waveform",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Levels",
+        "_usage": "0-15: Triangle; 16-31: Stepped Triangle; 32-47: XOR'd Flopping Triangle; 48-63: Stepped Ramp; 64-79: Stepped Random; 80-95: One Shot Decay; 96-111: EN"
+      },
+      {
+        "osc": "/levels/robot_phase",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Levels",
+        "_usage": "0-31: 0 degrees; 32-63: 90 degrees; 64-95: 180 degrees; 96-127: 270 degrees"
+      },
+      {
+        "osc": "/levels/robot_polarity",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Levels",
+        "_usage": "0-42: Negative; 43-85: Bipolar; 86-127: Positive"
+      },
+      {
+        "osc": "/levels/robot_stereo",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Levels",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/levels/robot_sync",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Levels",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/spacing/knob_value",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Spacing"
+      },
+      {
+        "osc": "/spacing/robot_amount",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Spacing"
+      },
+      {
+        "osc": "/spacing/robot_rate",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Spacing"
+      },
+      {
+        "osc": "/spacing/robot_shape",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Spacing"
+      },
+      {
+        "osc": "/spacing/robot_waveform",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Spacing",
+        "_usage": "0-15: Triangle; 16-31: Stepped Triangle; 32-47: XOR'd Flopping Triangle; 48-63: Stepped Ramp; 64-79: Stepped Random; 80-95: One Shot Decay; 96-111: EN"
+      },
+      {
+        "osc": "/spacing/robot_phase",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Spacing",
+        "_usage": "0-31: 0 degrees; 32-63: 90 degrees; 64-95: 180 degrees; 96-127: 270 degrees"
+      },
+      {
+        "osc": "/spacing/robot_polarity",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Spacing",
+        "_usage": "0-42: Negative; 43-85: Bipolar; 86-127: Positive"
+      },
+      {
+        "osc": "/spacing/robot_stereo",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Spacing",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/spacing/robot_sync",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Spacing",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/global/scale_change_bank",
+        "cc": 0,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/controls/footswitch",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/controls/randomize_tape_machine",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "64-127: Trigger"
+      },
+      {
+        "osc": "/controls/randomize_robots",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "64-127: Trigger"
+      },
+      {
+        "osc": "/controls/randomize_robots_tape_machine",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "64-127: Trigger"
+      },
+      {
+        "osc": "/controls/freeze",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/controls/link",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/controls/delay_sync",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/synthesis/karplus_strong_decay_time_compensation",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synthesis",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/controls/change_pattern",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "0-31: Pattern A; 32-63: Pattern B; 64-95: Pattern C; 96-127: Pattern D"
+      },
+      {
+        "osc": "/controls/activate_bypass",
+        "cc": 120,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "0-63: Off; 64-127: On"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

@@ -1,0 +1,420 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Hologram/Microcosm.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 35,
+    "cc_entries": 35,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Microcosm",
+    "vendor": "Hologram",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/microcosm",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/time/subdivision",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Time",
+        "_usage": "0: 1/4; 1: 1/2; 2: TAP; 3: 2x; 4: 4x; 5: 8x"
+      },
+      {
+        "osc": "/special_sauce/activity",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Special Sauce"
+      },
+      {
+        "osc": "/modulation/shape",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Modulation",
+        "_usage": "0-31: Square; 32-63: Ramp; 64-95: Triangle; 96-127: Saw"
+      },
+      {
+        "osc": "/filter/cutoff",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/effect/mix",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect"
+      },
+      {
+        "osc": "/time/time",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Time"
+      },
+      {
+        "osc": "/special_sauce/repeats",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Special Sauce"
+      },
+      {
+        "osc": "/reverb/space",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/looper/loop_level",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper"
+      },
+      {
+        "osc": "/modulation/frequency",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Modulation"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/effect/volume",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect"
+      },
+      {
+        "osc": "/looper/playback_speed",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper"
+      },
+      {
+        "osc": "/looper/playback_stepped",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0: 1/4; 1: 1/2; 2: TAP; 3: 2x; 4: 4x; 5: 8x"
+      },
+      {
+        "osc": "/modulation/depth",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Modulation"
+      },
+      {
+        "osc": "/reverb/time",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb",
+        "_usage": "0~31: Bright room; 32~63: Dark medium; 64~95: Large hall; 96~127: Ambient"
+      },
+      {
+        "osc": "/looper/fade_time",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper"
+      },
+      {
+        "osc": "/looper/on_off",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/looper/playback_direction",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-63: Forward; 64-127: Reverse"
+      },
+      {
+        "osc": "/looper/routing",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-63: Post-FX; 64-127: Pre-FX"
+      },
+      {
+        "osc": "/looper/only",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-63: Looper & Effects; 64-127: Looper Only"
+      },
+      {
+        "osc": "/looper/burst",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-63: Default; 64-127: Burst"
+      },
+      {
+        "osc": "/looper/quantized",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-63: Free; 64-127: Quantize"
+      },
+      {
+        "osc": "/looper/record",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper"
+      },
+      {
+        "osc": "/looper/play",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper"
+      },
+      {
+        "osc": "/looper/overdub",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper"
+      },
+      {
+        "osc": "/looper/stop",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-127: Stop"
+      },
+      {
+        "osc": "/looper/erase",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-127: Erase"
+      },
+      {
+        "osc": "/looper/undo",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-127: Undo"
+      },
+      {
+        "osc": "/preset/copy",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Preset",
+        "_usage": "0-127: Copy"
+      },
+      {
+        "osc": "/preset/save",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Preset",
+        "_usage": "0-127: Save"
+      },
+      {
+        "osc": "/effect/reverse_effect",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect",
+        "_usage": "0-127: Reverse effect"
+      },
+      {
+        "osc": "/time/hold_sampler",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Time",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/time/tap_tempo",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Time",
+        "_usage": "0-127: Tap"
+      },
+      {
+        "osc": "/effect/bypass",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect",
+        "_usage": "0-63: Bypass; 64-127: Engage"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

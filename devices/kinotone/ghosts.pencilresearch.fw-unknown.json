@@ -1,0 +1,334 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Kinotone/Ghosts.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 27,
+    "cc_entries": 27,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Ghosts",
+    "vendor": "Kinotone",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/ghosts",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/main_controls/mix",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Main controls"
+      },
+      {
+        "osc": "/main_controls/volume",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Main controls"
+      },
+      {
+        "osc": "/main_controls/root",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Main controls"
+      },
+      {
+        "osc": "/main_controls/chord",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Main controls"
+      },
+      {
+        "osc": "/main_controls/tone",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Main controls"
+      },
+      {
+        "osc": "/main_controls/decay",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Main controls"
+      },
+      {
+        "osc": "/touch_controls/touch_1",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Touch controls"
+      },
+      {
+        "osc": "/touch_controls/touch_2",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Touch controls"
+      },
+      {
+        "osc": "/main_controls/position",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Main controls"
+      },
+      {
+        "osc": "/main_controls/voicing",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Main controls"
+      },
+      {
+        "osc": "/reverb/mix_and_placement",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb",
+        "_usage": "0-63: Pre resonator mix; 64-127: Post resonator mix"
+      },
+      {
+        "osc": "/reverb/time_reverb_decay",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/touch_controls/touch_pre_post",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Touch controls",
+        "_usage": "0-63: Pre; 64-127: Post"
+      },
+      {
+        "osc": "/touch_controls/touch_3",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Touch controls"
+      },
+      {
+        "osc": "/hidden_controls/limiter_threshold",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden controls"
+      },
+      {
+        "osc": "/hidden_controls/mic_level",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden controls"
+      },
+      {
+        "osc": "/hidden_controls/input_filter",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden controls",
+        "_usage": "0-63: High pass; 64-127: Low pass"
+      },
+      {
+        "osc": "/hidden_controls/exciter_type",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hidden controls",
+        "_usage": "0-31: Pluck / strike; 32-63: Air; 64-95: Vocoder; 96-127: Vocoder hold"
+      },
+      {
+        "osc": "/touch_controls/touch_mode",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Touch controls",
+        "_usage": "0-31: Endless loop; 32-63: Rhythm generator; 64-95: Shepard shifter; 96-127: Terrazzo"
+      },
+      {
+        "osc": "/model/model",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Model",
+        "_usage": "0-42: Strings; 43-85: Tubes; 86-127: Bars"
+      },
+      {
+        "osc": "/microphone/mic_on_off",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Microphone",
+        "_usage": "0-64: Off; 65-127: On"
+      },
+      {
+        "osc": "/other/ignore_midi_clock",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Ignore MIDI clock; 1-127: Listen to MIDI clock"
+      },
+      {
+        "osc": "/other/ignore_midi_transport_start_stop",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Other",
+        "_usage": "0: Ignore MIDI transport; 1-127: Listen to MIDI transport"
+      },
+      {
+        "osc": "/endless_loop/clear_endless_loop",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Endless Loop",
+        "_usage": "0-64: False; 65-127: True"
+      },
+      {
+        "osc": "/footswitches/touch_footswitch_endless_loop",
+        "cc": 80,
+        "range": [
+          127,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "127: Advance state"
+      },
+      {
+        "osc": "/footswitches/touch_footswitch_all_other_touch_modes",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0-64: Off; 65-127: On"
+      },
+      {
+        "osc": "/footswitches/bypass_footswitch",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0-64: Off; 65-127: On"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

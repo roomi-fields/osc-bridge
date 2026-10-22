@@ -1,0 +1,739 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Enjoy Electronics/The GodFather.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 66,
+    "cc_entries": 66,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "The GodFather",
+    "vendor": "Enjoy Electronics",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/the_godfather",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/channel_1_trigger/trigger",
+        "cc": 32,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Channel 1, trigger",
+        "_usage": "0: Off; 1: Trigger",
+        "expects": "switch"
+      },
+      {
+        "osc": "/channel_1_saturator/saturator",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 1, saturator"
+      },
+      {
+        "osc": "/channel_1_filter/filter",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Channel 1, filter",
+        "_usage": "0~63: Low-pass cutoff; 64: No filter; 65~127: High-pass cutoff"
+      },
+      {
+        "osc": "/channel_1_filter/fdp_filter",
+        "cc": 104,
+        "range": [
+          0,
+          21
+        ],
+        "orientation": "0-based",
+        "section": "Channel 1, filter",
+        "_usage": "0~10: Low-pass cutoff; 11~20: High-pass cutoff; 21: No filtering"
+      },
+      {
+        "osc": "/channel_1_delay/delay_amount",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 1, delay"
+      },
+      {
+        "osc": "/channel_1_delay/delay_time",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 1, delay"
+      },
+      {
+        "osc": "/channel_1_delay/delay_offset",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 1, delay"
+      },
+      {
+        "osc": "/channel_1_delay/delay_feedback",
+        "cc": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 1, delay"
+      },
+      {
+        "osc": "/channel_1_double_pulse_delay/double_pulse_delay_level",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 1, double pulse delay"
+      },
+      {
+        "osc": "/channel_1_double_pulse_delay/double_pulse_delay_line_1_position",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 1, double pulse delay",
+        "_usage": "0-16: Position 0; 17-33: Position 1; 34-49: Position 2; 50-66: Position 3; 67-83: Position 4; 84-99: Position 5; 100-116: Position 6; 117-127: Positio"
+      },
+      {
+        "osc": "/channel_1_double_pulse_delay/double_pulse_delay_line_2_position",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 1, double pulse delay",
+        "_usage": "0-16: Position 0; 17-33: Position 1; 34-49: Position 2; 50-66: Position 3; 67-83: Position 4; 84-99: Position 5; 100-116: Position 6; 117-127: Positio"
+      },
+      {
+        "osc": "/channel_1_reverb/reverb_send",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 1, reverb"
+      },
+      {
+        "osc": "/channel_1_mixer/volume_level",
+        "cc": 70,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Channel 1, mixer"
+      },
+      {
+        "osc": "/channel_1_mixer/pan",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Channel 1, mixer",
+        "_usage": "0~63: Left; 64: Centre; 65~127: Right"
+      },
+      {
+        "osc": "/channel_1_mixer/width",
+        "cc": 78,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Channel 1, mixer"
+      },
+      {
+        "osc": "/channel_2_trigger/trigger",
+        "cc": 33,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Channel 2, trigger",
+        "_usage": "0: Off; 1: Trigger",
+        "expects": "switch"
+      },
+      {
+        "osc": "/channel_2_saturator/saturator",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 2, saturator"
+      },
+      {
+        "osc": "/channel_2_filter/filter",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Channel 2, filter",
+        "_usage": "0~63: Low-pass cutoff; 64: No filter; 65~127: High-pass cutoff"
+      },
+      {
+        "osc": "/channel_2_filter/fdp_filter",
+        "cc": 105,
+        "range": [
+          0,
+          21
+        ],
+        "orientation": "0-based",
+        "section": "Channel 2, filter",
+        "_usage": "0~10: Low-pass cutoff; 11~20: High-pass cutoff; 21: No filtering"
+      },
+      {
+        "osc": "/channel_2_delay/delay_amount",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 2, delay"
+      },
+      {
+        "osc": "/channel_2_delay/delay_time",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 2, delay"
+      },
+      {
+        "osc": "/channel_2_delay/delay_offset",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 2, delay"
+      },
+      {
+        "osc": "/channel_2_delay/delay_feedback",
+        "cc": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 2, delay"
+      },
+      {
+        "osc": "/channel_2_double_pulse_delay/double_pulse_delay_level",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 2, double pulse delay"
+      },
+      {
+        "osc": "/channel_2_double_pulse_delay/double_pulse_delay_line_1_position",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 2, double pulse delay",
+        "_usage": "0-16: Position 0; 17-33: Position 1; 34-49: Position 2; 50-66: Position 3; 67-83: Position 4; 84-99: Position 5; 100-116: Position 6; 117-127: Positio"
+      },
+      {
+        "osc": "/channel_2_double_pulse_delay/double_pulse_delay_line_2_position",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 2, double pulse delay",
+        "_usage": "0-16: Position 0; 17-33: Position 1; 34-49: Position 2; 50-66: Position 3; 67-83: Position 4; 84-99: Position 5; 100-116: Position 6; 117-127: Positio"
+      },
+      {
+        "osc": "/channel_2_reverb/reverb_send",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 2, reverb"
+      },
+      {
+        "osc": "/channel_2_mixer/volume_level",
+        "cc": 71,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Channel 2, mixer"
+      },
+      {
+        "osc": "/channel_2_mixer/pan",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Channel 2, mixer",
+        "_usage": "0~63: Left; 64: Centre; 65~127: Right"
+      },
+      {
+        "osc": "/channel_2_mixer/width",
+        "cc": 79,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Channel 2, mixer"
+      },
+      {
+        "osc": "/channel_3_trigger/trigger",
+        "cc": 34,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Channel 3, trigger",
+        "_usage": "0: Off; 1: Trigger",
+        "expects": "switch"
+      },
+      {
+        "osc": "/channel_3_saturator/saturator",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 3, saturator"
+      },
+      {
+        "osc": "/channel_3_filter/filter",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Channel 3, filter",
+        "_usage": "0~63: Low-pass cutoff; 64: No filter; 65~127: High-pass cutoff"
+      },
+      {
+        "osc": "/channel_3_filter/fdp_filter",
+        "cc": 106,
+        "range": [
+          0,
+          21
+        ],
+        "orientation": "0-based",
+        "section": "Channel 3, filter",
+        "_usage": "0~10: Low-pass cutoff; 11~20: High-pass cutoff; 21: No filtering"
+      },
+      {
+        "osc": "/channel_3_delay/delay_amount",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 3, delay"
+      },
+      {
+        "osc": "/channel_3_delay/delay_time",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 3, delay"
+      },
+      {
+        "osc": "/channel_3_delay/delay_offset",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 3, delay"
+      },
+      {
+        "osc": "/channel_3_delay/delay_feedback",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 3, delay"
+      },
+      {
+        "osc": "/channel_3_double_pulse_delay/double_pulse_delay_level",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 3, double pulse delay"
+      },
+      {
+        "osc": "/channel_3_double_pulse_delay/double_pulse_delay_line_1_position",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 3, double pulse delay",
+        "_usage": "0-16: Position 0; 17-33: Position 1; 34-49: Position 2; 50-66: Position 3; 67-83: Position 4; 84-99: Position 5; 100-116: Position 6; 117-127: Positio"
+      },
+      {
+        "osc": "/channel_3_double_pulse_delay/double_pulse_delay_line_2_position",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 3, double pulse delay",
+        "_usage": "0-16: Position 0; 17-33: Position 1; 34-49: Position 2; 50-66: Position 3; 67-83: Position 4; 84-99: Position 5; 100-116: Position 6; 117-127: Positio"
+      },
+      {
+        "osc": "/channel_3_reverb/reverb_send",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 3, reverb"
+      },
+      {
+        "osc": "/channel_3_mixer/volume_level",
+        "cc": 72,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Channel 3, mixer"
+      },
+      {
+        "osc": "/channel_3_mixer/pan",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Channel 3, mixer",
+        "_usage": "0~63: Left; 64: Centre; 65~127: Right"
+      },
+      {
+        "osc": "/channel_3_mixer/width",
+        "cc": 80,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Channel 3, mixer"
+      },
+      {
+        "osc": "/channel_4_trigger/trigger",
+        "cc": 35,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Channel 4, trigger",
+        "_usage": "0: Off; 1: Trigger",
+        "expects": "switch"
+      },
+      {
+        "osc": "/channel_4_saturator/saturator",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 4, saturator"
+      },
+      {
+        "osc": "/channel_4_filter/filter",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Channel 4, filter",
+        "_usage": "0~63: Low-pass cutoff; 64: No filter; 65~127: High-pass cutoff"
+      },
+      {
+        "osc": "/channel_4_filter/fdp_filter",
+        "cc": 107,
+        "range": [
+          0,
+          21
+        ],
+        "orientation": "0-based",
+        "section": "Channel 4, filter",
+        "_usage": "0~10: Low-pass cutoff; 11~20: High-pass cutoff; 21: No filtering"
+      },
+      {
+        "osc": "/channel_4_delay/delay_amount",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 4, delay"
+      },
+      {
+        "osc": "/channel_4_delay/delay_time",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 4, delay"
+      },
+      {
+        "osc": "/channel_4_delay/delay_offset",
+        "cc": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 4, delay"
+      },
+      {
+        "osc": "/channel_4_delay/delay_feedback",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 4, delay"
+      },
+      {
+        "osc": "/channel_4_double_pulse_delay/double_pulse_delay_level",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 4, double pulse delay"
+      },
+      {
+        "osc": "/channel_4_double_pulse_delay/double_pulse_delay_line_1_position",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 4, double pulse delay",
+        "_usage": "0-16: Position 0; 17-33: Position 1; 34-49: Position 2; 50-66: Position 3; 67-83: Position 4; 84-99: Position 5; 100-116: Position 6; 117-127: Positio"
+      },
+      {
+        "osc": "/channel_4_double_pulse_delay/double_pulse_delay_line_2_position",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 4, double pulse delay",
+        "_usage": "0-16: Position 0; 17-33: Position 1; 34-49: Position 2; 50-66: Position 3; 67-83: Position 4; 84-99: Position 5; 100-116: Position 6; 117-127: Positio"
+      },
+      {
+        "osc": "/channel_4_reverb/reverb_send",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel 4, reverb"
+      },
+      {
+        "osc": "/channel_4_mixer/volume_level",
+        "cc": 73,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Channel 4, mixer"
+      },
+      {
+        "osc": "/channel_4_mixer/pan",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Channel 4, mixer",
+        "_usage": "0~63: Left; 64: Centre; 65~127: Right"
+      },
+      {
+        "osc": "/channel_4_mixer/width",
+        "cc": 81,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Channel 4, mixer"
+      },
+      {
+        "osc": "/global/reverb_size",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/reverb_amount",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/reverb_filter",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/lfo_1_amount",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/lfo_2_amount",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      },
+      {
+        "osc": "/global/master",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

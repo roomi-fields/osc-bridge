@@ -1,0 +1,578 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Roland/SP-404MKII.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 51,
+    "cc_entries": 51,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "SP-404MKII",
+    "vendor": "Roland",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/sp_404mkii",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/bus_1_effects/effect_switch",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 1, Effects",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/bus_1_effects/effect_number",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 1, Effects",
+        "_usage": "0: Off; 1: Direct FX1; 2: Direct FX2; 3: Direct FX3; 4: Direct FX4; 5: Direct FX5; 6: Scatter; 7: Downer; 8: Ha-Dou; 9: Ko-Da-Ma; 10: Zan-Zou; 11: To-"
+      },
+      {
+        "osc": "/bus_1_effects/control_1",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 1, Effects"
+      },
+      {
+        "osc": "/bus_1_effects/control_2",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 1, Effects"
+      },
+      {
+        "osc": "/bus_1_effects/control_3",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 1, Effects"
+      },
+      {
+        "osc": "/bus_1_effects/control_4",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 1, Effects"
+      },
+      {
+        "osc": "/bus_1_effects/control_5",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 1, Effects"
+      },
+      {
+        "osc": "/bus_1_effects/control_6",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 1, Effects"
+      },
+      {
+        "osc": "/bus_2_effects/effect_switch",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 2, Effects",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/bus_2_effects/effect_number",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 2, Effects",
+        "_usage": "0: Off; 1: Direct FX1; 2: Direct FX2; 3: Direct FX3; 4: Direct FX4; 5: Direct FX5; 6: Scatter; 7: Downer; 8: Ha-Dou; 9: Ko-Da-Ma; 10: Zan-Zou; 11: To-"
+      },
+      {
+        "osc": "/bus_2_effects/control_1",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 2, Effects"
+      },
+      {
+        "osc": "/bus_2_effects/control_2",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 2, Effects"
+      },
+      {
+        "osc": "/bus_2_effects/control_3",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 2, Effects"
+      },
+      {
+        "osc": "/bus_2_effects/control_4",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 2, Effects"
+      },
+      {
+        "osc": "/bus_2_effects/control_5",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 2, Effects"
+      },
+      {
+        "osc": "/bus_2_effects/control_6",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 2, Effects"
+      },
+      {
+        "osc": "/bus_3_effects/effect_switch",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 3, Effects",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/bus_3_effects/effect_number",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 3, Effects",
+        "_usage": "0: Off; 1: 303 VinylSim; 2: 404 VinylSim; 3: Cassette Sim; 4: Lo-fi; 5: Downer; 6: Compressor; 7: Equalizer; 8: Isolator; 9: Super Filter; 10: Filter+"
+      },
+      {
+        "osc": "/bus_3_effects/control_1",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 3, Effects"
+      },
+      {
+        "osc": "/bus_3_effects/control_2",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 3, Effects"
+      },
+      {
+        "osc": "/bus_3_effects/control_3",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 3, Effects"
+      },
+      {
+        "osc": "/bus_3_effects/control_4",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 3, Effects"
+      },
+      {
+        "osc": "/bus_3_effects/control_5",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 3, Effects"
+      },
+      {
+        "osc": "/bus_3_effects/control_6",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 3, Effects"
+      },
+      {
+        "osc": "/bus_4_effects/effect_switch",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 4, Effects",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/bus_4_effects/effect_number",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 4, Effects",
+        "_usage": "0: Off; 1: 303 VinylSim; 2: 404 VinylSim; 3: Cassette Sim; 4: Lo-fi; 5: Downer; 6: Compressor; 7: Equalizer; 8: Isolator; 9: Super Filter; 10: Filter+"
+      },
+      {
+        "osc": "/bus_4_effects/control_1",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 4, Effects"
+      },
+      {
+        "osc": "/bus_4_effects/control_2",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 4, Effects"
+      },
+      {
+        "osc": "/bus_4_effects/control_3",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 4, Effects"
+      },
+      {
+        "osc": "/bus_4_effects/control_4",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 4, Effects"
+      },
+      {
+        "osc": "/bus_4_effects/control_5",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 4, Effects"
+      },
+      {
+        "osc": "/bus_4_effects/control_6",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bus 4, Effects"
+      },
+      {
+        "osc": "/input_effects/effect_switch",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Input, Effects",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/input_effects/effect_number",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Input, Effects",
+        "_usage": "0: Off; 1: Auto Pitch; 2: Vocoder; 3: Harmony; 4: Gt Amp Sim; 5: Chorus; 6: JUNO Chorus; 7: Reverb; 8: TimeCtrlDly; 9: Chromatic PS; 10: Downer; 11: W"
+      },
+      {
+        "osc": "/input_effects/control_1",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Input, Effects"
+      },
+      {
+        "osc": "/input_effects/control_2",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Input, Effects"
+      },
+      {
+        "osc": "/input_effects/control_3",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Input, Effects"
+      },
+      {
+        "osc": "/input_effects/control_4",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Input, Effects"
+      },
+      {
+        "osc": "/input_effects/control_5",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Input, Effects"
+      },
+      {
+        "osc": "/input_effects/control_6",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Input, Effects"
+      },
+      {
+        "osc": "/dj_mode/channel_1_volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DJ mode"
+      },
+      {
+        "osc": "/dj_mode/channel_2_volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DJ mode"
+      },
+      {
+        "osc": "/dj_mode/pattern_sequencer_volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "DJ mode"
+      },
+      {
+        "osc": "/dj_mode/crossfader",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "DJ mode",
+        "_usage": "0~127: Crossfade between channel 1 and channel 2"
+      },
+      {
+        "osc": "/looper/stop_all_samples",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "127: Stop all samples"
+      },
+      {
+        "osc": "/looper/reset_tempo",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "127: Reset tempo"
+      },
+      {
+        "osc": "/looper/delete",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "127: Delete sampled content"
+      },
+      {
+        "osc": "/looper/record",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0: Stop sampling; 127: Start sampling"
+      },
+      {
+        "osc": "/looper/overdub",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "127: Activate overdubbing"
+      },
+      {
+        "osc": "/looper/bpm_play_rate",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper"
+      },
+      {
+        "osc": "/looper/undo_redo",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0: Redo; 127: Undo"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

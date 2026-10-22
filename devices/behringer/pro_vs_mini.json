@@ -2,15 +2,18 @@
   "_sources": [
     {
       "type": "pencilresearch",
-      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Behringer/Pro VS Mini.csv",
-      "imported_at": "2026-04-13",
-      "commit": "deb41f2"
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Behringer/Pro VS Mini.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
     }
   ],
   "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
   "_coverage": {
-    "entries_total": 15,
-    "cc_entries": 15,
+    "entries_total": 35,
+    "cc_entries": 35,
     "nrpn_entries": 0,
     "fourteen_bit_cc_pairs": 0
   },
@@ -63,6 +66,26 @@
         "_usage": "0~42: Chorus; 43~84: Ensemble; 85~127: Reverb"
       },
       {
+        "osc": "/fx/depth",
+        "cc": 91,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/rate",
+        "cc": 92,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
         "osc": "/voice_wave/voice_a_wave",
         "cc": 24,
         "range": [
@@ -107,6 +130,166 @@
         "_usage": "0: Twang; 1: Clav; 2: Xylophone; 3: Slippery Slope; 4: Enharmonic Square; 5: Xylophone 2; 6: Mellow Square; 7: Chaos 1; 8: Chaos 2; 9: Chaos 3; 10: Ch"
       },
       {
+        "osc": "/voice_tuning/voice_a_fine_tuning",
+        "cc": 111,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Voice Tuning"
+      },
+      {
+        "osc": "/voice_tuning/voice_b_fine_tuning",
+        "cc": 112,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Voice Tuning"
+      },
+      {
+        "osc": "/voice_tuning/voice_c_fine_tuning",
+        "cc": 113,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Voice Tuning"
+      },
+      {
+        "osc": "/voice_tuning/voice_d_fine_tuning",
+        "cc": 114,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Voice Tuning"
+      },
+      {
+        "osc": "/voice_tuning/voice_a_coarse_tuning",
+        "cc": 115,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Voice Tuning"
+      },
+      {
+        "osc": "/voice_tuning/voice_b_coarse_tuning",
+        "cc": 116,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Voice Tuning"
+      },
+      {
+        "osc": "/voice_tuning/voice_c_coarse_tuning",
+        "cc": 117,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Voice Tuning"
+      },
+      {
+        "osc": "/voice_tuning/voice_d_coarse_tuning",
+        "cc": 118,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Voice Tuning"
+      },
+      {
+        "osc": "/envelope/amp_envelope_attack",
+        "cc": 81,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/amp_envelope_decay",
+        "cc": 82,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/amp_envelope_sustain",
+        "cc": 83,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/amp_envelope_release",
+        "cc": 84,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/filter_envelope_attack",
+        "cc": 85,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/filter_envelope_decay",
+        "cc": 86,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/filter_envelope_sustain",
+        "cc": 87,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/filter_envelope_release",
+        "cc": 88,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
         "osc": "/filter/env_amount",
         "cc": 47,
         "range": [
@@ -121,7 +304,17 @@
         "cc": 71,
         "range": [
           0,
-          127
+          99
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          99
         ],
         "orientation": "0-based",
         "section": "Filter"
@@ -134,14 +327,15 @@
           127
         ],
         "orientation": "0-based",
-        "section": "LFO"
+        "section": "LFO",
+        "_usage": "0~25: Triangle; 26~50: Square; 51~76: Saw; 77~101: Ramp; 102~127: S&H"
       },
       {
         "osc": "/lfo/1_amount",
         "cc": 70,
         "range": [
           0,
-          127
+          99
         ],
         "orientation": "0-based",
         "section": "LFO"
@@ -149,6 +343,16 @@
       {
         "osc": "/lfo/1_rate",
         "cc": 72,
+        "range": [
+          0,
+          99
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/1_destination_vcf_osc",
+        "cc": 56,
         "range": [
           0,
           127
@@ -164,14 +368,15 @@
           127
         ],
         "orientation": "0-based",
-        "section": "LFO"
+        "section": "LFO",
+        "_usage": "0~25: Triangle; 26~50: Square; 51~76: Saw; 77~101: Ramp; 102~127: S&H"
       },
       {
         "osc": "/lfo/2_amount",
         "cc": 28,
         "range": [
           0,
-          127
+          99
         ],
         "orientation": "0-based",
         "section": "LFO"
@@ -181,7 +386,7 @@
         "cc": 73,
         "range": [
           0,
-          127
+          99
         ],
         "orientation": "0-based",
         "section": "LFO"

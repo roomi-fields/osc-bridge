@@ -1,0 +1,546 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Moog/Voyager.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 45,
+    "cc_entries": 45,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 29
+  },
+  "device": {
+    "name": "Voyager",
+    "vendor": "Moog",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/voyager",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/volume/master_volume",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Volume"
+      },
+      {
+        "osc": "/performance_controls/mod_wheel",
+        "cc": 1,
+        "cc_lsb": 33,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Performance Controls"
+      },
+      {
+        "osc": "/performance_controls/glide_rate",
+        "cc": 5,
+        "cc_lsb": 37,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Performance Controls"
+      },
+      {
+        "osc": "/performance_controls/glide_switch",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance Controls",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/performance_controls/release_switch",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Performance Controls",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/performance_controls/mod_1",
+        "cc": 2,
+        "cc_lsb": 34,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Performance Controls"
+      },
+      {
+        "osc": "/performance_controls/mod_2",
+        "cc": 4,
+        "cc_lsb": 36,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Performance Controls"
+      },
+      {
+        "osc": "/lfo/rate",
+        "cc": 3,
+        "cc_lsb": 35,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0-31: Off; 32-63: MIDI; 64-95: KB; 96-127: Env Gate"
+      },
+      {
+        "osc": "/lfo/sync",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/oscillators/osc_1_octave",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-15: 32'; 16-31: 16'; 32-47: 8'; 48-63: 4'; 64-79: 2'; 80-127: 1'"
+      },
+      {
+        "osc": "/oscillators/osc_1_wave",
+        "cc": 9,
+        "cc_lsb": 41,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc_2_freq",
+        "cc": 10,
+        "cc_lsb": 42,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc_2_octave",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-15: 32'; 16-31: 16'; 32-47: 8'; 48-63: 4'; 64-79: 2'; 80-127: 1'"
+      },
+      {
+        "osc": "/oscillators/osc_2_wave",
+        "cc": 11,
+        "cc_lsb": 43,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc_3_freq",
+        "cc": 12,
+        "cc_lsb": 45,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/osc_3_octave",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-15: 32'; 16-31: 16'; 32-47: 8'; 48-63: 4'; 64-79: 2'; 80-127: 1'"
+      },
+      {
+        "osc": "/oscillators/osc_3_wave",
+        "cc": 13,
+        "cc_lsb": 45,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators"
+      },
+      {
+        "osc": "/oscillators/1_2_sync",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/oscillators/3_1_fm",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/oscillators/3_kb_cont",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/oscillators/3_freq",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillators",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/mixer/external_level",
+        "cc": 14,
+        "cc_lsb": 46,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/external_switch",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/mixer/oscillator_1",
+        "cc": 15,
+        "cc_lsb": 47,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/oscillator_1_switch",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/mixer/oscillator_2",
+        "cc": 16,
+        "cc_lsb": 48,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/oscillator_3_switch",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/mixer/oscillator_3",
+        "cc": 17,
+        "cc_lsb": 49,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/noise",
+        "cc": 18,
+        "cc_lsb": 50,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/noise_switch",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/filter/cutoff",
+        "cc": 19,
+        "cc_lsb": 51,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/spacing",
+        "cc": 20,
+        "cc_lsb": 52,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 21,
+        "cc_lsb": 53,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/kb_amount",
+        "cc": 22,
+        "cc_lsb": 54,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/mode",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/envelope_generator/filter_env_attack",
+        "cc": 23,
+        "cc_lsb": 55,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope Generator"
+      },
+      {
+        "osc": "/envelope_generator/filter_env_decay",
+        "cc": 24,
+        "cc_lsb": 56,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope Generator"
+      },
+      {
+        "osc": "/envelope_generator/filter_env_sustain",
+        "cc": 25,
+        "cc_lsb": 57,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope Generator"
+      },
+      {
+        "osc": "/envelope_generator/filter_env_release",
+        "cc": 26,
+        "cc_lsb": 58,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope Generator"
+      },
+      {
+        "osc": "/envelope_generator/amount_to_filter",
+        "cc": 27,
+        "cc_lsb": 59,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope Generator"
+      },
+      {
+        "osc": "/envelope_generator/volume_env_attack",
+        "cc": 28,
+        "cc_lsb": 60,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope Generator"
+      },
+      {
+        "osc": "/envelope_generator/volume_env_decay",
+        "cc": 29,
+        "cc_lsb": 61,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope Generator"
+      },
+      {
+        "osc": "/envelope_generator/volume_env_sustain",
+        "cc": 30,
+        "cc_lsb": 62,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope Generator"
+      },
+      {
+        "osc": "/envelope_generator/volume_env_release",
+        "cc": 31,
+        "cc_lsb": 63,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope Generator"
+      },
+      {
+        "osc": "/envelope_generator/env_gate_switch",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope Generator",
+        "_usage": "0-63: Off; 64-127: On"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

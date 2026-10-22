@@ -1,0 +1,159 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Teenage Engineering/EP-133 K.O. II.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 5,
+    "cc_entries": 5,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 1,
+    "triggers": 4
+  },
+  "device": {
+    "name": "EP-133 K.O. II",
+    "vendor": "Teenage Engineering",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/ep_133_k_o_ii",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/general/bank_select",
+        "cc": 0,
+        "cc_lsb": 32,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/vibrato",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0~127: Vibrato amount"
+      },
+      {
+        "osc": "/general/sustain_pedal",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/effects/fx_knob_x",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0~127: Effect X parameter"
+      },
+      {
+        "osc": "/effects/fx_knob_y",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0~127: Effect Y parameter"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": [],
+  "triggers": {
+    "entries": [
+      {
+        "osc": "/drum/group_a_pads",
+        "sound": "Group A pads",
+        "section": "Pads",
+        "channel_mode": "omni",
+        "note_range": [
+          36,
+          47
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the samples assigned to the twelve pads of group A; one pad per semitone Receives on all channels by default; a per-pad channel can be assigned in sound edit's MIDI page"
+      },
+      {
+        "osc": "/drum/group_b_pads",
+        "sound": "Group B pads",
+        "section": "Pads",
+        "channel_mode": "omni",
+        "note_range": [
+          48,
+          59
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the samples assigned to the twelve pads of group B; one pad per semitone Receives on all channels by default; a per-pad channel can be assigned in sound edit's MIDI page"
+      },
+      {
+        "osc": "/drum/group_c_pads",
+        "sound": "Group C pads",
+        "section": "Pads",
+        "channel_mode": "omni",
+        "note_range": [
+          60,
+          71
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the samples assigned to the twelve pads of group C; one pad per semitone Receives on all channels by default; a per-pad channel can be assigned in sound edit's MIDI page"
+      },
+      {
+        "osc": "/drum/group_d_pads",
+        "sound": "Group D pads",
+        "section": "Pads",
+        "channel_mode": "omni",
+        "note_range": [
+          72,
+          83
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the samples assigned to the twelve pads of group D; one pad per semitone Receives on all channels by default; a per-pad channel can be assigned in sound edit's MIDI page"
+      }
+    ]
+  }
+}

@@ -1,0 +1,222 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Universal Audio/Woodrow '55.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 15,
+    "cc_entries": 15,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Woodrow '55",
+    "vendor": "Universal Audio",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/woodrow_55",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/global_controls/bypass",
+        "cc": 19,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Global controls",
+        "_usage": "0: Bypass; 1: Unbypass Left Footswitch; 2: Unbypass Right Footswitch"
+      },
+      {
+        "osc": "/global_controls/store",
+        "cc": 16,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Global controls",
+        "_usage": "0: Off; 1: Hold",
+        "expects": "switch"
+      },
+      {
+        "osc": "/footswitches/footswitch_left",
+        "cc": 12,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "1: Toggle footswitch",
+        "expects": "switch"
+      },
+      {
+        "osc": "/footswitches/footswitch_right",
+        "cc": 13,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "1: Toggle footswitch",
+        "expects": "switch"
+      },
+      {
+        "osc": "/amp/instrument_volume",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Instrument volume"
+      },
+      {
+        "osc": "/amp/mic_volume",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Mic volume"
+      },
+      {
+        "osc": "/amp/tone",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Tone"
+      },
+      {
+        "osc": "/amp/output",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Output"
+      },
+      {
+        "osc": "/amp/room",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Room"
+      },
+      {
+        "osc": "/amp/boost_enable",
+        "cc": 40,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/amp/boost_level",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Boost level"
+      },
+      {
+        "osc": "/amp/boost_select",
+        "cc": 17,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0: KP-3K; 1: Stockl; 2: EP-III"
+      },
+      {
+        "osc": "/cabinet/cab_select",
+        "cc": 18,
+        "range": [
+          0,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "Cabinet",
+        "_usage": "0~5: Cab 1-6; 6: No Cab"
+      },
+      {
+        "osc": "/cabinet/cab_up",
+        "cc": 14,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Cabinet",
+        "_usage": "1: Toggle switch",
+        "expects": "switch"
+      },
+      {
+        "osc": "/cabinet/cab_down",
+        "cc": 15,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Cabinet",
+        "_usage": "1: Toggle switch",
+        "expects": "switch"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

@@ -1,0 +1,2393 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Tasty Chips/GR-Mega.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 199,
+    "cc_entries": 128,
+    "nrpn_entries": 149,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "GR-Mega",
+    "vendor": "Tasty Chips",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/gr_mega",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/midi/bank_change",
+        "cc": 0,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/mod_wheel_msb",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 1,
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/mod_wheel_lsb",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 33,
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/pitchbend_range",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 2,
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0~127: 0 to 48 semitones"
+      },
+      {
+        "osc": "/midi/nrpn_value_msb",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/nrpn_value_lsb",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/nrpn_parameter_lsb",
+        "cc": 98,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/nrpn_parameter_msb",
+        "cc": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/rpn_parameter_lsb",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/rpn_parameter_msb",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/mpe_timbre_msb",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 74,
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/mpe_timbre_lsb",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 106,
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/sustain_pedal",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 64,
+        "orientation": "0-based",
+        "section": "MIDI",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/midi/all_sound_off",
+        "cc": 120,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/reset_layer_controllers",
+        "cc": 121,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/local_keyboard_off",
+        "cc": 122,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/unnamed",
+        "cc": 125,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/mono_mode",
+        "cc": 126,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/midi/poly_mode",
+        "cc": 127,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MIDI"
+      },
+      {
+        "osc": "/layer/enable_and_focus_layer",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 3,
+        "orientation": "0-based",
+        "section": "Layer",
+        "_usage": "0: Disable; 1: Enable; 2: Enable and focus"
+      },
+      {
+        "osc": "/layer/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 7,
+        "orientation": "0-based",
+        "section": "Layer"
+      },
+      {
+        "osc": "/multitimbral/layer_1_preset",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multitimbral",
+        "_usage": "0~127: Preset 1 to preset 128"
+      },
+      {
+        "osc": "/multitimbral/layer_2_preset",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multitimbral",
+        "_usage": "0~127: Preset 1 to preset 128"
+      },
+      {
+        "osc": "/multitimbral/layer_3_preset",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multitimbral",
+        "_usage": "0~127: Preset 1 to preset 128"
+      },
+      {
+        "osc": "/multitimbral/layer_4_preset",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multitimbral",
+        "_usage": "0~127: Preset 1 to preset 128"
+      },
+      {
+        "osc": "/multitimbral/layer_1_midi_channel",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 30,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Multitimbral",
+        "_usage": "0~15: Channel 1 to channel 16",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/multitimbral/layer_2_midi_channel",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 31,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Multitimbral",
+        "_usage": "0~15: Channel 1 to channel 16",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/multitimbral/layer_3_midi_channel",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 32,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Multitimbral",
+        "_usage": "0~15: Channel 1 to channel 16",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/multitimbral/layer_4_midi_channel",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Multitimbral",
+        "_usage": "0~15: Channel 1 to channel 16",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/multitimbral/scan_layer_1",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 12,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multitimbral"
+      },
+      {
+        "osc": "/multitimbral/scan_layer_2",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multitimbral"
+      },
+      {
+        "osc": "/multitimbral/scan_layer_3",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multitimbral"
+      },
+      {
+        "osc": "/multitimbral/scan_layer_4",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multitimbral"
+      },
+      {
+        "osc": "/multitimbral/layer_bias",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 116,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multitimbral"
+      },
+      {
+        "osc": "/multitimbral/layer_spray",
+        "nrpn_msb": 3,
+        "nrpn_lsb": 117,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multitimbral"
+      },
+      {
+        "osc": "/sub_oscillator/pitch",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 4,
+        "orientation": "0-based",
+        "section": "Sub-oscillator"
+      },
+      {
+        "osc": "/sub_oscillator/amplitude",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 5,
+        "orientation": "0-based",
+        "section": "Sub-oscillator"
+      },
+      {
+        "osc": "/granular_engine/granular_mode",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0: Free; 1: Density-size; 2: Density-rate; 3: Scan-rate; 4: Scan-overlap"
+      },
+      {
+        "osc": "/granular_engine/rate_mode",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 35,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Granular engine"
+      },
+      {
+        "osc": "/granular_engine/window_type",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0: RaisedCosine; 1: PowAR"
+      },
+      {
+        "osc": "/granular_engine/grain_window_sides",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 44,
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0: No sides (square); 127: All sides (triangle)"
+      },
+      {
+        "osc": "/granular_engine/grain_window_tilt",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 45,
+        "orientation": "centered",
+        "section": "Granular engine",
+        "_usage": "0: Left; 64: Center; 127: Right"
+      },
+      {
+        "osc": "/granular_engine/grain_window_curve",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 46,
+        "orientation": "centered",
+        "section": "Granular engine",
+        "_usage": "0: Hollow; 64: Linear; 127: Bulging (square)"
+      },
+      {
+        "osc": "/granular_engine/grain_window_amplitude_modulation",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 47,
+        "orientation": "0-based",
+        "section": "Granular engine"
+      },
+      {
+        "osc": "/granular_engine/position",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 8,
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0~127: Sample start to sample end"
+      },
+      {
+        "osc": "/granular_engine/rate_or_density",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 9,
+        "orientation": "0-based",
+        "section": "Granular engine"
+      },
+      {
+        "osc": "/granular_engine/grain_rate",
+        "nrpn_msb": 7,
+        "nrpn_lsb": 110,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Granular engine"
+      },
+      {
+        "osc": "/granular_engine/grain_size",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 12,
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0~127: 0.1ms to 5s"
+      },
+      {
+        "osc": "/granular_engine/spray",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 13,
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0~127: 0s to full sample size"
+      },
+      {
+        "osc": "/granular_engine/pan_spray",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 11,
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0: No spray; 127: Full stereo field"
+      },
+      {
+        "osc": "/granular_engine/panning",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 10,
+        "orientation": "centered",
+        "section": "Granular engine",
+        "_usage": "0: 100% left; 64: Center; 127: 100% right"
+      },
+      {
+        "osc": "/granular_engine/mid_side",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 17,
+        "orientation": "centered",
+        "section": "Granular engine",
+        "_usage": "0: 100% left; 64: Center; 127: 100% right"
+      },
+      {
+        "osc": "/granular_engine/direction",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 14,
+        "orientation": "centered",
+        "section": "Granular engine",
+        "_usage": "0: 100% reverse; 64: 50% reverse / 50% forward; 127: 100% forward"
+      },
+      {
+        "osc": "/granular_engine/scan",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 15,
+        "orientation": "centered",
+        "section": "Granular engine",
+        "_usage": "0: -2x; 64: Stop; 127: +2x"
+      },
+      {
+        "osc": "/granular_engine/tune",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 16,
+        "orientation": "centered",
+        "section": "Granular engine",
+        "_usage": "0: -1 octave; 64: Center; 127: +1 octave"
+      },
+      {
+        "osc": "/granular_engine/start_position",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 28,
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0: Sample start; 127: Sample end"
+      },
+      {
+        "osc": "/granular_engine/stop_position",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 29,
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0: Sample start; 127: Sample end"
+      },
+      {
+        "osc": "/granular_engine/loop_start",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 30,
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0: Sample start; 127: Sample end"
+      },
+      {
+        "osc": "/granular_engine/loop_end",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 31,
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0: Sample start; 127: Sample end"
+      },
+      {
+        "osc": "/granular_engine/scan_mode",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0: Looping; 1: One-shot; 2: Ping-pong"
+      },
+      {
+        "osc": "/granular_engine/patch_polyphony",
+        "cc": 23,
+        "range": [
+          0,
+          19
+        ],
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0: 1 voice (monophonic); 19: 20 voices"
+      },
+      {
+        "osc": "/granular_engine/grain_arpeggiator_mode",
+        "cc": 27,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0: Up; 1: Down; 2: Up-down; 3: Down-up; 4: Random; 5: Shuffle; 6: Forward; 7: Reverse; 8: Forward-reverse; 9: Reverse-forward"
+      },
+      {
+        "osc": "/granular_engine/pitch_per_grain",
+        "cc": 26,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0: Same pitch for each grain in the voice; 1: New pitch per grain",
+        "expects": "switch"
+      },
+      {
+        "osc": "/granular_engine/grain_clock_sync",
+        "cc": 19,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "expects": "switch"
+      },
+      {
+        "osc": "/granular_engine/scan_clock_sync",
+        "cc": 20,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "expects": "switch"
+      },
+      {
+        "osc": "/granular_engine/grain_key_sync",
+        "cc": 21,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "expects": "switch"
+      },
+      {
+        "osc": "/granular_engine/scan_key_sync",
+        "cc": 22,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0: Off; 1: On; 2: Legato; 3: Poly"
+      },
+      {
+        "osc": "/granular_engine/glide_time",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 24,
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0~127: 0ms to 2000ms"
+      },
+      {
+        "osc": "/granular_engine/glide_always",
+        "cc": 25,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "expects": "switch"
+      },
+      {
+        "osc": "/granular_engine/glide_portamento",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 84,
+        "orientation": "0-based",
+        "section": "Granular engine",
+        "_usage": "0~127: 0ms to 2000ms"
+      },
+      {
+        "osc": "/granular_engine/reserved",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Granular engine"
+      },
+      {
+        "osc": "/sampling/dry_audio_input_volume",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 42,
+        "orientation": "0-based",
+        "section": "Sampling"
+      },
+      {
+        "osc": "/sampling/wet_granulated_volume",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 43,
+        "orientation": "0-based",
+        "section": "Sampling"
+      },
+      {
+        "osc": "/sampling/record_trigger_level",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 40,
+        "orientation": "0-based",
+        "section": "Sampling",
+        "_usage": "0: Off; 1~127: -80dB to 0dB"
+      },
+      {
+        "osc": "/sampling/record_sample",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sampling"
+      },
+      {
+        "osc": "/sampling/input_level",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 38,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Sampling"
+      },
+      {
+        "osc": "/sampling/anti_alias",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 82,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Sampling",
+        "expects": "switch"
+      },
+      {
+        "osc": "/sampling/tape_slew",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 83,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Sampling"
+      },
+      {
+        "osc": "/filter/low_pass_filter_cutoff",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 50,
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~127: 0Hz to 20kHz"
+      },
+      {
+        "osc": "/filter/low_pass_filter_resonance",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 51,
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/high_pass_filter_cutoff",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 52,
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0~127: 0Hz to 20kHz"
+      },
+      {
+        "osc": "/filter/high_pass_filter_resonance",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 53,
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/bypass_filter",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Filter active; 1: Filter bypassed",
+        "expects": "switch"
+      },
+      {
+        "osc": "/filter/routing",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 37,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: LPF only; 1: LPF and HPF; 2: HPF",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/pitch_envelope/amount",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 54,
+        "orientation": "centered",
+        "section": "Pitch envelope",
+        "_usage": "0~127: -1.0 to +1.0"
+      },
+      {
+        "osc": "/pitch_envelope/attack_time",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 55,
+        "orientation": "0-based",
+        "section": "Pitch envelope",
+        "_usage": "0~127: 0ms to 45s"
+      },
+      {
+        "osc": "/pitch_envelope/decay_time",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 56,
+        "orientation": "0-based",
+        "section": "Pitch envelope",
+        "_usage": "0~127: 0ms to 45s"
+      },
+      {
+        "osc": "/pitch_envelope/sustain_level",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 57,
+        "orientation": "0-based",
+        "section": "Pitch envelope"
+      },
+      {
+        "osc": "/pitch_envelope/release_time",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 58,
+        "orientation": "0-based",
+        "section": "Pitch envelope",
+        "_usage": "0~127: 0ms to 45s"
+      },
+      {
+        "osc": "/pitch_envelope/attack_curve",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 28,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Pitch envelope",
+        "_usage": "0~16383: Low flat to linear to high flat"
+      },
+      {
+        "osc": "/pitch_envelope/decay_curve",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 29,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Pitch envelope",
+        "_usage": "0~16383: Low flat to linear to high flat"
+      },
+      {
+        "osc": "/pitch_envelope/release_curve",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 30,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Pitch envelope",
+        "_usage": "0~16383: Low flat to linear to high flat"
+      },
+      {
+        "osc": "/pitch_envelope/invert",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 31,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Pitch envelope",
+        "expects": "switch"
+      },
+      {
+        "osc": "/filter_envelope/amount",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 59,
+        "orientation": "centered",
+        "section": "Filter envelope",
+        "_usage": "0~127: -1.0 to +1.0"
+      },
+      {
+        "osc": "/filter_envelope/attack_time",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 60,
+        "orientation": "0-based",
+        "section": "Filter envelope",
+        "_usage": "0~127: 0ms to 45s"
+      },
+      {
+        "osc": "/filter_envelope/decay_time",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 61,
+        "orientation": "0-based",
+        "section": "Filter envelope",
+        "_usage": "0~127: 0ms to 45s"
+      },
+      {
+        "osc": "/filter_envelope/sustain_level",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 62,
+        "orientation": "0-based",
+        "section": "Filter envelope"
+      },
+      {
+        "osc": "/filter_envelope/release_time",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 63,
+        "orientation": "0-based",
+        "section": "Filter envelope",
+        "_usage": "0~127: 0ms to 45s"
+      },
+      {
+        "osc": "/filter_envelope/attack_curve",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter envelope",
+        "_usage": "0~16383: Low flat to linear to high flat"
+      },
+      {
+        "osc": "/filter_envelope/decay_curve",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 34,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter envelope",
+        "_usage": "0~16383: Low flat to linear to high flat"
+      },
+      {
+        "osc": "/filter_envelope/release_curve",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 35,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter envelope",
+        "_usage": "0~16383: Low flat to linear to high flat"
+      },
+      {
+        "osc": "/filter_envelope/invert",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 36,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Filter envelope",
+        "expects": "switch"
+      },
+      {
+        "osc": "/amplifier_envelope/amount",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 65,
+        "orientation": "centered",
+        "section": "Amplifier envelope",
+        "_usage": "0~127: -1.0 to +1.0"
+      },
+      {
+        "osc": "/amplifier_envelope/attack_time",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 66,
+        "orientation": "0-based",
+        "section": "Amplifier envelope",
+        "_usage": "0~127: 0ms to 45s"
+      },
+      {
+        "osc": "/amplifier_envelope/decay_time",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 67,
+        "orientation": "0-based",
+        "section": "Amplifier envelope",
+        "_usage": "0~127: 0ms to 45s"
+      },
+      {
+        "osc": "/amplifier_envelope/sustain_level",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 68,
+        "orientation": "0-based",
+        "section": "Amplifier envelope"
+      },
+      {
+        "osc": "/amplifier_envelope/release_time",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 69,
+        "orientation": "0-based",
+        "section": "Amplifier envelope",
+        "_usage": "0~127: 0ms to 45s"
+      },
+      {
+        "osc": "/amplifier_envelope/attack_curve",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 38,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier envelope",
+        "_usage": "0~16383: Low flat to linear to high flat"
+      },
+      {
+        "osc": "/amplifier_envelope/decay_curve",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier envelope",
+        "_usage": "0~16383: Low flat to linear to high flat"
+      },
+      {
+        "osc": "/amplifier_envelope/release_curve",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier envelope",
+        "_usage": "0~16383: Low flat to linear to high flat"
+      },
+      {
+        "osc": "/aux_envelope/amount",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 70,
+        "orientation": "centered",
+        "section": "Aux envelope",
+        "_usage": "0~127: -1.0 to +1.0"
+      },
+      {
+        "osc": "/aux_envelope/attack_time",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 71,
+        "orientation": "0-based",
+        "section": "Aux envelope",
+        "_usage": "0~127: 0ms to 45s"
+      },
+      {
+        "osc": "/aux_envelope/decay_time",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 72,
+        "orientation": "0-based",
+        "section": "Aux envelope",
+        "_usage": "0~127: 0ms to 45s"
+      },
+      {
+        "osc": "/aux_envelope/sustain_level",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 73,
+        "orientation": "0-based",
+        "section": "Aux envelope"
+      },
+      {
+        "osc": "/aux_envelope/release_time",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 75,
+        "orientation": "0-based",
+        "section": "Aux envelope",
+        "_usage": "0~127: 0ms to 45s"
+      },
+      {
+        "osc": "/aux_envelope/attack_curve",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 43,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Aux envelope",
+        "_usage": "0~16383: Low flat to linear to high flat"
+      },
+      {
+        "osc": "/aux_envelope/decay_curve",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 44,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Aux envelope",
+        "_usage": "0~16383: Low flat to linear to high flat"
+      },
+      {
+        "osc": "/aux_envelope/release_curve",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Aux envelope",
+        "_usage": "0~16383: Low flat to linear to high flat"
+      },
+      {
+        "osc": "/aux_envelope/invert",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 46,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Aux envelope",
+        "expects": "switch"
+      },
+      {
+        "osc": "/lfo_1/clock_sync",
+        "cc": 88,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1",
+        "_usage": "0: Free; 1: MIDI; 2: Sequencer"
+      },
+      {
+        "osc": "/lfo_1/frequency",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 89,
+        "orientation": "0-based",
+        "section": "LFO 1",
+        "_usage": "0~127: Stopped to 50Hz"
+      },
+      {
+        "osc": "/lfo_1/waveform",
+        "cc": 90,
+        "range": [
+          0,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1",
+        "_usage": "0: Sine; 1: Triangle; 2: Saw; 3: Reverse saw; 4: Square; 5: Random"
+      },
+      {
+        "osc": "/lfo_1/amount",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 91,
+        "orientation": "centered",
+        "section": "LFO 1",
+        "_usage": "0~127: -1.0 to +1.0"
+      },
+      {
+        "osc": "/lfo_1/destination",
+        "cc": 92,
+        "range": [
+          0,
+          90
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1"
+      },
+      {
+        "osc": "/lfo_1/phase",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 60,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1"
+      },
+      {
+        "osc": "/lfo_1/amplitude_quantization",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 64,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1"
+      },
+      {
+        "osc": "/lfo_1/polarity",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 68,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1",
+        "_usage": "0: Unipolar +; 1: Unipolar -; 2: Bipolar +; 3: Bipolar -",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/lfo_1/key_sync",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 56,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1",
+        "expects": "switch"
+      },
+      {
+        "osc": "/lfo_2/clock_sync",
+        "cc": 93,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2",
+        "_usage": "0: Free; 1: MIDI; 2: Sequencer"
+      },
+      {
+        "osc": "/lfo_2/frequency",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 94,
+        "orientation": "0-based",
+        "section": "LFO 2",
+        "_usage": "0~127: Stopped to 50Hz"
+      },
+      {
+        "osc": "/lfo_2/waveform",
+        "cc": 95,
+        "range": [
+          0,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2",
+        "_usage": "0: Sine; 1: Triangle; 2: Saw; 3: Reverse saw; 4: Square; 5: Random"
+      },
+      {
+        "osc": "/lfo_2/amount",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 96,
+        "orientation": "centered",
+        "section": "LFO 2",
+        "_usage": "0~127: -1.0 to +1.0"
+      },
+      {
+        "osc": "/lfo_2/destination",
+        "cc": 97,
+        "range": [
+          0,
+          90
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2"
+      },
+      {
+        "osc": "/lfo_2/phase",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 61,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2"
+      },
+      {
+        "osc": "/lfo_2/amplitude_quantization",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 65,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2"
+      },
+      {
+        "osc": "/lfo_2/polarity",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 69,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2",
+        "_usage": "0: Unipolar +; 1: Unipolar -; 2: Bipolar +; 3: Bipolar -",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/lfo_2/key_sync",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 57,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2",
+        "expects": "switch"
+      },
+      {
+        "osc": "/lfo_3/clock_sync",
+        "cc": 102,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "LFO 3",
+        "_usage": "0: Free; 1: MIDI; 2: Sequencer"
+      },
+      {
+        "osc": "/lfo_3/frequency",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 103,
+        "orientation": "0-based",
+        "section": "LFO 3",
+        "_usage": "0~127: Stopped to 50Hz"
+      },
+      {
+        "osc": "/lfo_3/waveform",
+        "cc": 104,
+        "range": [
+          0,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "LFO 3",
+        "_usage": "0: Sine; 1: Triangle; 2: Saw; 3: Reverse saw; 4: Square; 5: Random"
+      },
+      {
+        "osc": "/lfo_3/amount",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 105,
+        "orientation": "centered",
+        "section": "LFO 3",
+        "_usage": "0~127: -1.0 to +1.0"
+      },
+      {
+        "osc": "/lfo_3/destination",
+        "cc": 107,
+        "range": [
+          0,
+          90
+        ],
+        "orientation": "0-based",
+        "section": "LFO 3"
+      },
+      {
+        "osc": "/lfo_3/phase",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 62,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 3"
+      },
+      {
+        "osc": "/lfo_3/amplitude_quantization",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 66,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 3"
+      },
+      {
+        "osc": "/lfo_3/polarity",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 70,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "LFO 3",
+        "_usage": "0: Unipolar +; 1: Unipolar -; 2: Bipolar +; 3: Bipolar -",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/lfo_3/key_sync",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 58,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO 3",
+        "expects": "switch"
+      },
+      {
+        "osc": "/lfo_3/clock_multiplier",
+        "nrpn_msb": 7,
+        "nrpn_lsb": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 3",
+        "_usage": "0~127: 1 to 128"
+      },
+      {
+        "osc": "/lfo_3/clock_divisor",
+        "nrpn_msb": 7,
+        "nrpn_lsb": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 3",
+        "_usage": "0~127: 1 to 128"
+      },
+      {
+        "osc": "/lfo_4/clock_sync",
+        "cc": 108,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "LFO 4",
+        "_usage": "0: Free; 1: MIDI; 2: Sequencer"
+      },
+      {
+        "osc": "/lfo_4/frequency",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 109,
+        "orientation": "0-based",
+        "section": "LFO 4",
+        "_usage": "0~127: Stopped to 50Hz"
+      },
+      {
+        "osc": "/lfo_4/waveform",
+        "cc": 110,
+        "range": [
+          0,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "LFO 4",
+        "_usage": "0: Sine; 1: Triangle; 2: Saw; 3: Reverse saw; 4: Square; 5: Random"
+      },
+      {
+        "osc": "/lfo_4/amount",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 111,
+        "orientation": "centered",
+        "section": "LFO 4",
+        "_usage": "0~127: -1.0 to +1.0"
+      },
+      {
+        "osc": "/lfo_4/destination",
+        "cc": 112,
+        "range": [
+          0,
+          90
+        ],
+        "orientation": "0-based",
+        "section": "LFO 4"
+      },
+      {
+        "osc": "/lfo_4/phase",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 63,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 4"
+      },
+      {
+        "osc": "/lfo_4/amplitude_quantization",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 67,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO 4"
+      },
+      {
+        "osc": "/lfo_4/polarity",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "LFO 4",
+        "_usage": "0: Unipolar +; 1: Unipolar -; 2: Bipolar +; 3: Bipolar -",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/lfo_4/key_sync",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 59,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO 4",
+        "expects": "switch"
+      },
+      {
+        "osc": "/lfo_4/clock_multiplier",
+        "nrpn_msb": 7,
+        "nrpn_lsb": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 4",
+        "_usage": "0~127: 1 to 128"
+      },
+      {
+        "osc": "/lfo_4/clock_divisor",
+        "nrpn_msb": 7,
+        "nrpn_lsb": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 4",
+        "_usage": "0~127: 1 to 128"
+      },
+      {
+        "osc": "/modulation_matrix/modulation_list_row",
+        "cc": 76,
+        "range": [
+          0,
+          49
+        ],
+        "orientation": "0-based",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/modulation_row_enable",
+        "cc": 77,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Modulation matrix",
+        "expects": "switch"
+      },
+      {
+        "osc": "/modulation_matrix/modulation_source",
+        "cc": 78,
+        "range": [
+          0,
+          18
+        ],
+        "orientation": "0-based",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/modulation_curve",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 79,
+        "orientation": "0-based",
+        "section": "Modulation matrix",
+        "_usage": "0: Low flatline; 64: Linear; 127: High flatline"
+      },
+      {
+        "osc": "/modulation_matrix/modulation_amount",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 80,
+        "orientation": "0-based",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/modulation_polarity",
+        "cc": 81,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Modulation matrix",
+        "_usage": "0: Unipolar +; 1: Unipolar -; 2: Bipolar +; 3: Bipolar -"
+      },
+      {
+        "osc": "/modulation_matrix/modulation_destination",
+        "cc": 82,
+        "range": [
+          0,
+          90
+        ],
+        "orientation": "0-based",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/control_voltage/cv1_destination",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 83,
+        "orientation": "0-based",
+        "section": "Control voltage"
+      },
+      {
+        "osc": "/control_voltage/cv1_amount",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 85,
+        "orientation": "0-based",
+        "section": "Control voltage"
+      },
+      {
+        "osc": "/control_voltage/cv2_destination",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 86,
+        "orientation": "0-based",
+        "section": "Control voltage"
+      },
+      {
+        "osc": "/control_voltage/cv2_amount",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 87,
+        "orientation": "0-based",
+        "section": "Control voltage"
+      },
+      {
+        "osc": "/sequencer/bpm",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 34,
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/rate",
+        "cc": 35,
+        "range": [
+          0,
+          21
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/position",
+        "cc": 36,
+        "range": [
+          0,
+          63
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/length",
+        "cc": 37,
+        "range": [
+          0,
+          63
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer"
+      },
+      {
+        "osc": "/sequencer/mode",
+        "cc": 39,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "0: Forward; 1: Reverse; 2: Ping-pong; 3: Random"
+      },
+      {
+        "osc": "/sequencer/record",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "expects": "switch"
+      },
+      {
+        "osc": "/sequencer/clock_multiplier",
+        "nrpn_msb": 7,
+        "nrpn_lsb": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "0~127: 1 to 128"
+      },
+      {
+        "osc": "/sequencer/clock_divisor",
+        "nrpn_msb": 7,
+        "nrpn_lsb": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sequencer",
+        "_usage": "0~127: 1 to 128"
+      },
+      {
+        "osc": "/effects/focus_layer_fx",
+        "cc": 113,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0: FX 1; 1: FX 2; 2: FX 3; 3: FX 4"
+      },
+      {
+        "osc": "/effects/set_layer_fx_type",
+        "cc": 114,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0: None; 1: Compressor; 2: Delay; 3: Ping-pong delay; 4: Distortion; 5: Large reverb; 6: Reducer; 7: Reverb"
+      },
+      {
+        "osc": "/effects/fx_dry",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 115,
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/fx_wet",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 116,
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/fx1_knob_assign",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 117,
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/fx1_value",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 118,
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/fx2_knob_assign",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 119,
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/fx2_value",
+        "cc": 124,
+        "range": [
+          0,
+          127
+        ],
+        "nrpn_msb": 0,
+        "nrpn_lsb": 124,
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/delay_time",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 122,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/delay_feedback",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 121,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/reverb_time",
+        "nrpn_msb": 1,
+        "nrpn_lsb": 125,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/reverb_width",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 23,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/reverb_dampening",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 24,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/distortion_level",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/reducer_bit",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/effects/reducer_rate",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Effects"
+      },
+      {
+        "osc": "/navigation/navigate_up",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 30,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Navigation"
+      },
+      {
+        "osc": "/navigation/navigate_down",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 28,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Navigation"
+      },
+      {
+        "osc": "/navigation/navigate_left",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 29,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Navigation"
+      },
+      {
+        "osc": "/navigation/navigate_right",
+        "nrpn_msb": 2,
+        "nrpn_lsb": 27,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Navigation"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

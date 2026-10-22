@@ -2,15 +2,18 @@
   "_sources": [
     {
       "type": "pencilresearch",
-      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Tonverk.csv",
-      "imported_at": "2026-04-13",
-      "commit": "deb41f2"
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Tonverk.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
     }
   ],
   "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
   "_coverage": {
-    "entries_total": 892,
-    "cc_entries": 470,
+    "entries_total": 896,
+    "cc_entries": 474,
     "nrpn_entries": 435,
     "fourteen_bit_cc_pairs": 0
   },
@@ -36,11 +39,11 @@
         "cc": 94,
         "range": [
           0,
-          1
+          127
         ],
         "orientation": "0-based",
         "section": "Track",
-        "_usage": "0: Unmuted; 1: Muted",
+        "_usage": "0-63: Unmuted; 64-127: Muted",
         "expects": "switch"
       },
       {
@@ -89,11 +92,11 @@
         "nrpn_lsb": 42,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Trig",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -133,11 +136,11 @@
         "cc": 65,
         "range": [
           0,
-          1
+          127
         ],
         "orientation": "0-based",
         "section": "Audio Track: Trig",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-63: Off; 64-127: On",
         "expects": "switch"
       },
       {
@@ -235,11 +238,11 @@
         "cc": 17,
         "range": [
           0,
-          3
+          127
         ],
         "orientation": "0-based",
         "section": "Machine: Single Player",
-        "_usage": "0: Reverse; 1: Reverse Loop; 2: Forward Loop; 3: Forward"
+        "_usage": "0-31: Reverse; 32-63: Reverse Loop; 64-95: Forward Loop; 96-127: Forward"
       },
       {
         "osc": "/machine_single_player/single_player_loop_crossfade",
@@ -476,11 +479,11 @@
         "cc": 30,
         "range": [
           0,
-          2
+          127
         ],
         "orientation": "0-based",
         "section": "Machine: Grainer",
-        "_usage": "0: Random; 1: Sync; 2: Osc"
+        "_usage": "0-42: Random; 43-85: Sync; 86-127: Osc"
       },
       {
         "osc": "/machine_wavefinder/wavefinder_osc_1_tune",
@@ -557,11 +560,11 @@
         "cc": 23,
         "range": [
           0,
-          11
+          127
         ],
         "orientation": "0-based",
         "section": "Machine: Wavefinder",
-        "_usage": "0: Exp Down; 1: Ramp Down; 2: Tri; 3: Ramp Up; 4: Exp Up; 5: Ramp Down Loop; 6: Tri Loop; 7: Square Loop; 8: Ramp Up Loop; 9: Random; 10: Sample and H"
+        "_usage": "0-10: Exp Down; 11-21: Ramp Down; 22-31: Tri; 32-42: Ramp Up; 43-53: Exp Up; 54-63: Ramp Down Loop; 64-74: Tri Loop; 75-85: Square Loop; 86-95: Ramp U"
       },
       {
         "osc": "/machine_wavefinder/wavefinder_osc_2_detune",
@@ -638,11 +641,11 @@
         "cc": 31,
         "range": [
           0,
-          11
+          127
         ],
         "orientation": "0-based",
         "section": "Machine: Wavefinder",
-        "_usage": "0: Exp Down; 1: Ramp Down; 2: Tri; 3: Ramp Up; 4: Exp Up; 5: Ramp Down Loop; 6: Tri Loop; 7: Square Loop; 8: Ramp Up Loop; 9: Random; 10: Sample and H"
+        "_usage": "0-10: Exp Down; 11-21: Ramp Down; 22-31: Tri; 32-42: Ramp Up; 43-53: Exp Up; 54-63: Ramp Down Loop; 64-74: Tri Loop; 75-85: Square Loop; 86-95: Ramp U"
       },
       {
         "osc": "/audio_track_filter/filter_parameter_a",
@@ -750,11 +753,11 @@
         "nrpn_lsb": 45,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Filter",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -763,7 +766,7 @@
         "nrpn_lsb": 46,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Filter"
@@ -774,7 +777,7 @@
         "nrpn_lsb": 47,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Filter"
@@ -866,11 +869,11 @@
         "nrpn_lsb": 48,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Amp",
-        "_usage": "0: AHD; 1: ADSR",
+        "_usage": "0-8191: AHD; 8192-16383: ADSR",
         "expects": "switch"
       },
       {
@@ -879,11 +882,11 @@
         "nrpn_lsb": 49,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Amp",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -921,11 +924,11 @@
         "cc": 47,
         "range": [
           0,
-          6
+          127
         ],
         "orientation": "0-based",
         "section": "Audio Track: FX",
-        "_usage": "0: Mix AB; 1: Out CD; 2: Out EF; 3: Bus 1; 4: Bus 2; 5: Bus 3; 6: Bus 4"
+        "_usage": "0-18: Mix AB; 19-36: Out CD; 37-54: Out EF; 55-73: Bus 1; 74-91: Bus 2; 92-109: Bus 3; 110-127: Bus 4"
       },
       {
         "osc": "/audio_track_fx/fx_1_parameter_a",
@@ -1104,13 +1107,13 @@
         "cc": 103,
         "range": [
           0,
-          23
+          127
         ],
         "nrpn_msb": 0,
         "nrpn_lsb": 2,
         "orientation": "0-based",
         "section": "Audio Track: Mod",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:"
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6"
       },
       {
         "osc": "/audio_track_mod/voice_lfo_1_fade",
@@ -1118,7 +1121,7 @@
         "nrpn_lsb": 3,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Mod"
@@ -1129,11 +1132,11 @@
         "nrpn_lsb": 5,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -1142,7 +1145,7 @@
         "nrpn_lsb": 6,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod"
@@ -1153,11 +1156,11 @@
         "nrpn_lsb": 7,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -1189,13 +1192,13 @@
         "cc": 106,
         "range": [
           0,
-          23
+          127
         ],
         "nrpn_msb": 0,
         "nrpn_lsb": 10,
         "orientation": "0-based",
         "section": "Audio Track: Mod",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:"
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6"
       },
       {
         "osc": "/audio_track_mod/voice_lfo_2_fade",
@@ -1203,7 +1206,7 @@
         "nrpn_lsb": 11,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Mod"
@@ -1214,11 +1217,11 @@
         "nrpn_lsb": 13,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -1227,7 +1230,7 @@
         "nrpn_lsb": 14,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod"
@@ -1238,11 +1241,11 @@
         "nrpn_lsb": 15,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -1263,7 +1266,7 @@
         "nrpn_lsb": 17,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod"
@@ -1274,7 +1277,7 @@
         "nrpn_lsb": 18,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod"
@@ -1285,7 +1288,7 @@
         "nrpn_lsb": 19,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod"
@@ -1296,7 +1299,7 @@
         "nrpn_lsb": 20,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod"
@@ -1307,11 +1310,11 @@
         "nrpn_lsb": 21,
         "range": [
           0,
-          2
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "discrete"
       },
       {
@@ -1320,7 +1323,7 @@
         "nrpn_lsb": 22,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod"
@@ -1354,13 +1357,13 @@
         "cc": 112,
         "range": [
           0,
-          23
+          127
         ],
         "nrpn_msb": 0,
         "nrpn_lsb": 27,
         "orientation": "0-based",
         "section": "Audio Track: Mod",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:"
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6"
       },
       {
         "osc": "/audio_track_mod/fx_lfo_1_fade",
@@ -1368,7 +1371,7 @@
         "nrpn_lsb": 28,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Mod"
@@ -1379,11 +1382,11 @@
         "nrpn_lsb": 30,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -1392,7 +1395,7 @@
         "nrpn_lsb": 31,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod"
@@ -1403,11 +1406,11 @@
         "nrpn_lsb": 32,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -1439,13 +1442,13 @@
         "cc": 115,
         "range": [
           0,
-          23
+          127
         ],
         "nrpn_msb": 0,
         "nrpn_lsb": 35,
         "orientation": "0-based",
         "section": "Audio Track: Mod",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:"
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6"
       },
       {
         "osc": "/audio_track_mod/fx_lfo_2_fade",
@@ -1453,7 +1456,7 @@
         "nrpn_lsb": 36,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Mod"
@@ -1464,11 +1467,11 @@
         "nrpn_lsb": 38,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -1477,7 +1480,7 @@
         "nrpn_lsb": 39,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod"
@@ -1488,11 +1491,11 @@
         "nrpn_lsb": 40,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Mod",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -1524,11 +1527,11 @@
         "nrpn_lsb": 17,
         "range": [
           0,
-          3
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1",
-        "_usage": "0: Reverse; 1: Reverse Loop; 2: Forward Loop; 3: Forward",
+        "_usage": "0-4095: Reverse; 4096-8191: Reverse Loop; 8192-12287: Forward Loop; 12288-16383: Forward",
         "expects": "discrete"
       },
       {
@@ -1570,7 +1573,7 @@
         "nrpn_lsb": 70,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -1581,7 +1584,7 @@
         "nrpn_lsb": 71,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -1592,7 +1595,7 @@
         "nrpn_lsb": 72,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -1603,7 +1606,7 @@
         "nrpn_lsb": 73,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -1625,7 +1628,7 @@
         "nrpn_lsb": 75,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -1636,7 +1639,7 @@
         "nrpn_lsb": 76,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -1647,7 +1650,7 @@
         "nrpn_lsb": 77,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 1"
@@ -1658,7 +1661,7 @@
         "nrpn_lsb": 46,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -1669,7 +1672,7 @@
         "nrpn_lsb": 78,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -1680,7 +1683,7 @@
         "nrpn_lsb": 79,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -1691,7 +1694,7 @@
         "nrpn_lsb": 80,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -1702,11 +1705,11 @@
         "nrpn_lsb": 45,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -1715,7 +1718,7 @@
         "nrpn_lsb": 83,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -1726,7 +1729,7 @@
         "nrpn_lsb": 84,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1",
@@ -1738,7 +1741,7 @@
         "nrpn_lsb": 85,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1",
@@ -1750,7 +1753,7 @@
         "nrpn_lsb": 86,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -1761,7 +1764,7 @@
         "nrpn_lsb": 87,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1",
@@ -1773,7 +1776,7 @@
         "nrpn_lsb": 88,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -1784,7 +1787,7 @@
         "nrpn_lsb": 10,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 1"
@@ -1795,7 +1798,7 @@
         "nrpn_lsb": 89,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -1806,11 +1809,11 @@
         "nrpn_lsb": 48,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1",
-        "_usage": "0: AHD; 1: ADSR",
+        "_usage": "0-8191: AHD; 8192-16383: ADSR",
         "expects": "switch"
       },
       {
@@ -1819,11 +1822,11 @@
         "nrpn_lsb": 49,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -1832,7 +1835,7 @@
         "nrpn_lsb": 102,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 1"
@@ -1843,11 +1846,11 @@
         "nrpn_lsb": 103,
         "range": [
           0,
-          23
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:",
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6",
         "expects": "discrete"
       },
       {
@@ -1856,7 +1859,7 @@
         "nrpn_lsb": 104,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 1"
@@ -1867,11 +1870,11 @@
         "nrpn_lsb": 106,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -1880,7 +1883,7 @@
         "nrpn_lsb": 107,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -1891,11 +1894,11 @@
         "nrpn_lsb": 108,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -1915,7 +1918,7 @@
         "nrpn_lsb": 110,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 1"
@@ -1926,11 +1929,11 @@
         "nrpn_lsb": 111,
         "range": [
           0,
-          23
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:",
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6",
         "expects": "discrete"
       },
       {
@@ -1939,7 +1942,7 @@
         "nrpn_lsb": 112,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 1"
@@ -1950,11 +1953,11 @@
         "nrpn_lsb": 114,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -1963,7 +1966,7 @@
         "nrpn_lsb": 115,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -1974,11 +1977,11 @@
         "nrpn_lsb": 116,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -1998,7 +2001,7 @@
         "nrpn_lsb": 118,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -2009,7 +2012,7 @@
         "nrpn_lsb": 119,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -2020,7 +2023,7 @@
         "nrpn_lsb": 120,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -2031,7 +2034,7 @@
         "nrpn_lsb": 121,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -2042,11 +2045,11 @@
         "nrpn_lsb": 122,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -2055,7 +2058,7 @@
         "nrpn_lsb": 123,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 1"
@@ -2088,11 +2091,11 @@
         "nrpn_lsb": 17,
         "range": [
           0,
-          3
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2",
-        "_usage": "0: Reverse; 1: Reverse Loop; 2: Forward Loop; 3: Forward",
+        "_usage": "0-4095: Reverse; 4096-8191: Reverse Loop; 8192-12287: Forward Loop; 12288-16383: Forward",
         "expects": "discrete"
       },
       {
@@ -2134,7 +2137,7 @@
         "nrpn_lsb": 70,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2145,7 +2148,7 @@
         "nrpn_lsb": 71,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2156,7 +2159,7 @@
         "nrpn_lsb": 72,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2167,7 +2170,7 @@
         "nrpn_lsb": 73,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2189,7 +2192,7 @@
         "nrpn_lsb": 75,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2200,7 +2203,7 @@
         "nrpn_lsb": 76,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2211,7 +2214,7 @@
         "nrpn_lsb": 77,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 2"
@@ -2222,7 +2225,7 @@
         "nrpn_lsb": 46,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2233,7 +2236,7 @@
         "nrpn_lsb": 78,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2244,7 +2247,7 @@
         "nrpn_lsb": 79,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2255,7 +2258,7 @@
         "nrpn_lsb": 80,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2266,11 +2269,11 @@
         "nrpn_lsb": 45,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -2279,7 +2282,7 @@
         "nrpn_lsb": 83,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2290,7 +2293,7 @@
         "nrpn_lsb": 84,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2",
@@ -2302,7 +2305,7 @@
         "nrpn_lsb": 85,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2",
@@ -2314,7 +2317,7 @@
         "nrpn_lsb": 86,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2325,7 +2328,7 @@
         "nrpn_lsb": 87,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2",
@@ -2337,7 +2340,7 @@
         "nrpn_lsb": 88,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2348,7 +2351,7 @@
         "nrpn_lsb": 10,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 2"
@@ -2359,7 +2362,7 @@
         "nrpn_lsb": 89,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2370,11 +2373,11 @@
         "nrpn_lsb": 48,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2",
-        "_usage": "0: AHD; 1: ADSR",
+        "_usage": "0-8191: AHD; 8192-16383: ADSR",
         "expects": "switch"
       },
       {
@@ -2383,11 +2386,11 @@
         "nrpn_lsb": 49,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -2396,7 +2399,7 @@
         "nrpn_lsb": 102,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 2"
@@ -2407,11 +2410,11 @@
         "nrpn_lsb": 103,
         "range": [
           0,
-          23
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:",
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6",
         "expects": "discrete"
       },
       {
@@ -2420,7 +2423,7 @@
         "nrpn_lsb": 104,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 2"
@@ -2431,11 +2434,11 @@
         "nrpn_lsb": 106,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -2444,7 +2447,7 @@
         "nrpn_lsb": 107,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2455,11 +2458,11 @@
         "nrpn_lsb": 108,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -2479,7 +2482,7 @@
         "nrpn_lsb": 110,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 2"
@@ -2490,11 +2493,11 @@
         "nrpn_lsb": 111,
         "range": [
           0,
-          23
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:",
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6",
         "expects": "discrete"
       },
       {
@@ -2503,7 +2506,7 @@
         "nrpn_lsb": 112,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 2"
@@ -2514,11 +2517,11 @@
         "nrpn_lsb": 114,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -2527,7 +2530,7 @@
         "nrpn_lsb": 115,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2538,11 +2541,11 @@
         "nrpn_lsb": 116,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -2562,7 +2565,7 @@
         "nrpn_lsb": 118,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2573,7 +2576,7 @@
         "nrpn_lsb": 119,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2584,7 +2587,7 @@
         "nrpn_lsb": 120,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2595,7 +2598,7 @@
         "nrpn_lsb": 121,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2606,11 +2609,11 @@
         "nrpn_lsb": 122,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -2619,7 +2622,7 @@
         "nrpn_lsb": 123,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 2"
@@ -2652,11 +2655,11 @@
         "nrpn_lsb": 17,
         "range": [
           0,
-          3
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3",
-        "_usage": "0: Reverse; 1: Reverse Loop; 2: Forward Loop; 3: Forward",
+        "_usage": "0-4095: Reverse; 4096-8191: Reverse Loop; 8192-12287: Forward Loop; 12288-16383: Forward",
         "expects": "discrete"
       },
       {
@@ -2698,7 +2701,7 @@
         "nrpn_lsb": 70,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -2709,7 +2712,7 @@
         "nrpn_lsb": 71,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -2720,7 +2723,7 @@
         "nrpn_lsb": 72,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -2731,7 +2734,7 @@
         "nrpn_lsb": 73,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -2753,7 +2756,7 @@
         "nrpn_lsb": 75,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -2764,7 +2767,7 @@
         "nrpn_lsb": 76,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -2775,7 +2778,7 @@
         "nrpn_lsb": 77,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 3"
@@ -2786,7 +2789,7 @@
         "nrpn_lsb": 46,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -2797,7 +2800,7 @@
         "nrpn_lsb": 78,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -2808,7 +2811,7 @@
         "nrpn_lsb": 79,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -2819,7 +2822,7 @@
         "nrpn_lsb": 80,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -2830,11 +2833,11 @@
         "nrpn_lsb": 45,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -2843,7 +2846,7 @@
         "nrpn_lsb": 83,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -2854,7 +2857,7 @@
         "nrpn_lsb": 84,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3",
@@ -2866,7 +2869,7 @@
         "nrpn_lsb": 85,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3",
@@ -2878,7 +2881,7 @@
         "nrpn_lsb": 86,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -2889,7 +2892,7 @@
         "nrpn_lsb": 87,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3",
@@ -2901,7 +2904,7 @@
         "nrpn_lsb": 88,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -2912,7 +2915,7 @@
         "nrpn_lsb": 10,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 3"
@@ -2923,7 +2926,7 @@
         "nrpn_lsb": 89,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -2934,11 +2937,11 @@
         "nrpn_lsb": 48,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3",
-        "_usage": "0: AHD; 1: ADSR",
+        "_usage": "0-8191: AHD; 8192-16383: ADSR",
         "expects": "switch"
       },
       {
@@ -2947,11 +2950,11 @@
         "nrpn_lsb": 49,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -2960,7 +2963,7 @@
         "nrpn_lsb": 102,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 3"
@@ -2971,11 +2974,11 @@
         "nrpn_lsb": 103,
         "range": [
           0,
-          23
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:",
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6",
         "expects": "discrete"
       },
       {
@@ -2984,7 +2987,7 @@
         "nrpn_lsb": 104,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 3"
@@ -2995,11 +2998,11 @@
         "nrpn_lsb": 106,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -3008,7 +3011,7 @@
         "nrpn_lsb": 107,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -3019,11 +3022,11 @@
         "nrpn_lsb": 108,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -3043,7 +3046,7 @@
         "nrpn_lsb": 110,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 3"
@@ -3054,11 +3057,11 @@
         "nrpn_lsb": 111,
         "range": [
           0,
-          23
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:",
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6",
         "expects": "discrete"
       },
       {
@@ -3067,7 +3070,7 @@
         "nrpn_lsb": 112,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 3"
@@ -3078,11 +3081,11 @@
         "nrpn_lsb": 114,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -3091,7 +3094,7 @@
         "nrpn_lsb": 115,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -3102,11 +3105,11 @@
         "nrpn_lsb": 116,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -3126,7 +3129,7 @@
         "nrpn_lsb": 118,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -3137,7 +3140,7 @@
         "nrpn_lsb": 119,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -3148,7 +3151,7 @@
         "nrpn_lsb": 120,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -3159,7 +3162,7 @@
         "nrpn_lsb": 121,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -3170,11 +3173,11 @@
         "nrpn_lsb": 122,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -3183,7 +3186,7 @@
         "nrpn_lsb": 123,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 3"
@@ -3216,11 +3219,11 @@
         "nrpn_lsb": 17,
         "range": [
           0,
-          3
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4",
-        "_usage": "0: Reverse; 1: Reverse Loop; 2: Forward Loop; 3: Forward",
+        "_usage": "0-4095: Reverse; 4096-8191: Reverse Loop; 8192-12287: Forward Loop; 12288-16383: Forward",
         "expects": "discrete"
       },
       {
@@ -3262,7 +3265,7 @@
         "nrpn_lsb": 70,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3273,7 +3276,7 @@
         "nrpn_lsb": 71,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3284,7 +3287,7 @@
         "nrpn_lsb": 72,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3295,7 +3298,7 @@
         "nrpn_lsb": 73,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3317,7 +3320,7 @@
         "nrpn_lsb": 75,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3328,7 +3331,7 @@
         "nrpn_lsb": 76,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3339,7 +3342,7 @@
         "nrpn_lsb": 77,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 4"
@@ -3350,7 +3353,7 @@
         "nrpn_lsb": 46,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3361,7 +3364,7 @@
         "nrpn_lsb": 78,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3372,7 +3375,7 @@
         "nrpn_lsb": 79,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3383,7 +3386,7 @@
         "nrpn_lsb": 80,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3394,11 +3397,11 @@
         "nrpn_lsb": 45,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -3407,7 +3410,7 @@
         "nrpn_lsb": 83,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3418,7 +3421,7 @@
         "nrpn_lsb": 84,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4",
@@ -3430,7 +3433,7 @@
         "nrpn_lsb": 85,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4",
@@ -3442,7 +3445,7 @@
         "nrpn_lsb": 86,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3453,7 +3456,7 @@
         "nrpn_lsb": 87,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4",
@@ -3465,7 +3468,7 @@
         "nrpn_lsb": 88,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3476,7 +3479,7 @@
         "nrpn_lsb": 10,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 4"
@@ -3487,7 +3490,7 @@
         "nrpn_lsb": 89,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3498,11 +3501,11 @@
         "nrpn_lsb": 48,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4",
-        "_usage": "0: AHD; 1: ADSR",
+        "_usage": "0-8191: AHD; 8192-16383: ADSR",
         "expects": "switch"
       },
       {
@@ -3511,11 +3514,11 @@
         "nrpn_lsb": 49,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -3524,7 +3527,7 @@
         "nrpn_lsb": 102,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 4"
@@ -3535,11 +3538,11 @@
         "nrpn_lsb": 103,
         "range": [
           0,
-          23
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:",
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6",
         "expects": "discrete"
       },
       {
@@ -3548,7 +3551,7 @@
         "nrpn_lsb": 104,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 4"
@@ -3559,11 +3562,11 @@
         "nrpn_lsb": 106,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -3572,7 +3575,7 @@
         "nrpn_lsb": 107,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3583,11 +3586,11 @@
         "nrpn_lsb": 108,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -3607,7 +3610,7 @@
         "nrpn_lsb": 110,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 4"
@@ -3618,11 +3621,11 @@
         "nrpn_lsb": 111,
         "range": [
           0,
-          23
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:",
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6",
         "expects": "discrete"
       },
       {
@@ -3631,7 +3634,7 @@
         "nrpn_lsb": 112,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 4"
@@ -3642,11 +3645,11 @@
         "nrpn_lsb": 114,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -3655,7 +3658,7 @@
         "nrpn_lsb": 115,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3666,11 +3669,11 @@
         "nrpn_lsb": 116,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -3690,7 +3693,7 @@
         "nrpn_lsb": 118,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3701,7 +3704,7 @@
         "nrpn_lsb": 119,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3712,7 +3715,7 @@
         "nrpn_lsb": 120,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3723,7 +3726,7 @@
         "nrpn_lsb": 121,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3734,11 +3737,11 @@
         "nrpn_lsb": 122,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -3747,7 +3750,7 @@
         "nrpn_lsb": 123,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 4"
@@ -3780,11 +3783,11 @@
         "nrpn_lsb": 17,
         "range": [
           0,
-          3
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5",
-        "_usage": "0: Reverse; 1: Reverse Loop; 2: Forward Loop; 3: Forward",
+        "_usage": "0-4095: Reverse; 4096-8191: Reverse Loop; 8192-12287: Forward Loop; 12288-16383: Forward",
         "expects": "discrete"
       },
       {
@@ -3826,7 +3829,7 @@
         "nrpn_lsb": 70,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -3837,7 +3840,7 @@
         "nrpn_lsb": 71,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -3848,7 +3851,7 @@
         "nrpn_lsb": 72,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -3859,7 +3862,7 @@
         "nrpn_lsb": 73,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -3881,7 +3884,7 @@
         "nrpn_lsb": 75,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -3892,7 +3895,7 @@
         "nrpn_lsb": 76,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -3903,7 +3906,7 @@
         "nrpn_lsb": 77,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 5"
@@ -3914,7 +3917,7 @@
         "nrpn_lsb": 46,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -3925,7 +3928,7 @@
         "nrpn_lsb": 78,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -3936,7 +3939,7 @@
         "nrpn_lsb": 79,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -3947,7 +3950,7 @@
         "nrpn_lsb": 80,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -3958,11 +3961,11 @@
         "nrpn_lsb": 45,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -3971,7 +3974,7 @@
         "nrpn_lsb": 83,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -3982,7 +3985,7 @@
         "nrpn_lsb": 84,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5",
@@ -3994,7 +3997,7 @@
         "nrpn_lsb": 85,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5",
@@ -4006,7 +4009,7 @@
         "nrpn_lsb": 86,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -4017,7 +4020,7 @@
         "nrpn_lsb": 87,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5",
@@ -4029,7 +4032,7 @@
         "nrpn_lsb": 88,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -4040,7 +4043,7 @@
         "nrpn_lsb": 10,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 5"
@@ -4051,7 +4054,7 @@
         "nrpn_lsb": 89,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -4062,11 +4065,11 @@
         "nrpn_lsb": 48,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5",
-        "_usage": "0: AHD; 1: ADSR",
+        "_usage": "0-8191: AHD; 8192-16383: ADSR",
         "expects": "switch"
       },
       {
@@ -4075,11 +4078,11 @@
         "nrpn_lsb": 49,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -4088,7 +4091,7 @@
         "nrpn_lsb": 102,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 5"
@@ -4099,11 +4102,11 @@
         "nrpn_lsb": 103,
         "range": [
           0,
-          23
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:",
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6",
         "expects": "discrete"
       },
       {
@@ -4112,7 +4115,7 @@
         "nrpn_lsb": 104,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 5"
@@ -4123,11 +4126,11 @@
         "nrpn_lsb": 106,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -4136,7 +4139,7 @@
         "nrpn_lsb": 107,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -4147,11 +4150,11 @@
         "nrpn_lsb": 108,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -4171,7 +4174,7 @@
         "nrpn_lsb": 110,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 5"
@@ -4182,11 +4185,11 @@
         "nrpn_lsb": 111,
         "range": [
           0,
-          23
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:",
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6",
         "expects": "discrete"
       },
       {
@@ -4195,7 +4198,7 @@
         "nrpn_lsb": 112,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 5"
@@ -4206,11 +4209,11 @@
         "nrpn_lsb": 114,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -4219,7 +4222,7 @@
         "nrpn_lsb": 115,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -4230,11 +4233,11 @@
         "nrpn_lsb": 116,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -4254,7 +4257,7 @@
         "nrpn_lsb": 118,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -4265,7 +4268,7 @@
         "nrpn_lsb": 119,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -4276,7 +4279,7 @@
         "nrpn_lsb": 120,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -4287,7 +4290,7 @@
         "nrpn_lsb": 121,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -4298,11 +4301,11 @@
         "nrpn_lsb": 122,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -4311,7 +4314,7 @@
         "nrpn_lsb": 123,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 5"
@@ -4344,11 +4347,11 @@
         "nrpn_lsb": 17,
         "range": [
           0,
-          3
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6",
-        "_usage": "0: Reverse; 1: Reverse Loop; 2: Forward Loop; 3: Forward",
+        "_usage": "0-4095: Reverse; 4096-8191: Reverse Loop; 8192-12287: Forward Loop; 12288-16383: Forward",
         "expects": "discrete"
       },
       {
@@ -4390,7 +4393,7 @@
         "nrpn_lsb": 70,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4401,7 +4404,7 @@
         "nrpn_lsb": 71,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4412,7 +4415,7 @@
         "nrpn_lsb": 72,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4423,7 +4426,7 @@
         "nrpn_lsb": 73,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4445,7 +4448,7 @@
         "nrpn_lsb": 75,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4456,7 +4459,7 @@
         "nrpn_lsb": 76,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4467,7 +4470,7 @@
         "nrpn_lsb": 77,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 6"
@@ -4478,7 +4481,7 @@
         "nrpn_lsb": 46,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4489,7 +4492,7 @@
         "nrpn_lsb": 78,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4500,7 +4503,7 @@
         "nrpn_lsb": 79,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4511,7 +4514,7 @@
         "nrpn_lsb": 80,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4522,11 +4525,11 @@
         "nrpn_lsb": 45,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -4535,7 +4538,7 @@
         "nrpn_lsb": 83,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4546,7 +4549,7 @@
         "nrpn_lsb": 84,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6",
@@ -4558,7 +4561,7 @@
         "nrpn_lsb": 85,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6",
@@ -4570,7 +4573,7 @@
         "nrpn_lsb": 86,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4581,7 +4584,7 @@
         "nrpn_lsb": 87,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6",
@@ -4593,7 +4596,7 @@
         "nrpn_lsb": 88,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4604,7 +4607,7 @@
         "nrpn_lsb": 10,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 6"
@@ -4615,7 +4618,7 @@
         "nrpn_lsb": 89,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4626,11 +4629,11 @@
         "nrpn_lsb": 48,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6",
-        "_usage": "0: AHD; 1: ADSR",
+        "_usage": "0-8191: AHD; 8192-16383: ADSR",
         "expects": "switch"
       },
       {
@@ -4639,11 +4642,11 @@
         "nrpn_lsb": 49,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -4652,7 +4655,7 @@
         "nrpn_lsb": 102,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 6"
@@ -4663,11 +4666,11 @@
         "nrpn_lsb": 103,
         "range": [
           0,
-          23
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:",
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6",
         "expects": "discrete"
       },
       {
@@ -4676,7 +4679,7 @@
         "nrpn_lsb": 104,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 6"
@@ -4687,11 +4690,11 @@
         "nrpn_lsb": 106,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -4700,7 +4703,7 @@
         "nrpn_lsb": 107,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4711,11 +4714,11 @@
         "nrpn_lsb": 108,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -4735,7 +4738,7 @@
         "nrpn_lsb": 110,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 6"
@@ -4746,11 +4749,11 @@
         "nrpn_lsb": 111,
         "range": [
           0,
-          23
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:",
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6",
         "expects": "discrete"
       },
       {
@@ -4759,7 +4762,7 @@
         "nrpn_lsb": 112,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 6"
@@ -4770,11 +4773,11 @@
         "nrpn_lsb": 114,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -4783,7 +4786,7 @@
         "nrpn_lsb": 115,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4794,11 +4797,11 @@
         "nrpn_lsb": 116,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -4818,7 +4821,7 @@
         "nrpn_lsb": 118,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4829,7 +4832,7 @@
         "nrpn_lsb": 119,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4840,7 +4843,7 @@
         "nrpn_lsb": 120,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4851,7 +4854,7 @@
         "nrpn_lsb": 121,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4862,11 +4865,11 @@
         "nrpn_lsb": 122,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -4875,7 +4878,7 @@
         "nrpn_lsb": 123,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 6"
@@ -4908,11 +4911,11 @@
         "nrpn_lsb": 17,
         "range": [
           0,
-          3
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7",
-        "_usage": "0: Reverse; 1: Reverse Loop; 2: Forward Loop; 3: Forward",
+        "_usage": "0-4095: Reverse; 4096-8191: Reverse Loop; 8192-12287: Forward Loop; 12288-16383: Forward",
         "expects": "discrete"
       },
       {
@@ -4954,7 +4957,7 @@
         "nrpn_lsb": 70,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -4965,7 +4968,7 @@
         "nrpn_lsb": 71,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -4976,7 +4979,7 @@
         "nrpn_lsb": 72,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -4987,7 +4990,7 @@
         "nrpn_lsb": 73,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5009,7 +5012,7 @@
         "nrpn_lsb": 75,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5020,7 +5023,7 @@
         "nrpn_lsb": 76,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5031,7 +5034,7 @@
         "nrpn_lsb": 77,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 7"
@@ -5042,7 +5045,7 @@
         "nrpn_lsb": 46,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5053,7 +5056,7 @@
         "nrpn_lsb": 78,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5064,7 +5067,7 @@
         "nrpn_lsb": 79,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5075,7 +5078,7 @@
         "nrpn_lsb": 80,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5086,11 +5089,11 @@
         "nrpn_lsb": 45,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -5099,7 +5102,7 @@
         "nrpn_lsb": 83,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5110,7 +5113,7 @@
         "nrpn_lsb": 84,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7",
@@ -5122,7 +5125,7 @@
         "nrpn_lsb": 85,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7",
@@ -5134,7 +5137,7 @@
         "nrpn_lsb": 86,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5145,7 +5148,7 @@
         "nrpn_lsb": 87,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7",
@@ -5157,7 +5160,7 @@
         "nrpn_lsb": 88,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5168,7 +5171,7 @@
         "nrpn_lsb": 10,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 7"
@@ -5179,7 +5182,7 @@
         "nrpn_lsb": 89,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5190,11 +5193,11 @@
         "nrpn_lsb": 48,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7",
-        "_usage": "0: AHD; 1: ADSR",
+        "_usage": "0-8191: AHD; 8192-16383: ADSR",
         "expects": "switch"
       },
       {
@@ -5203,11 +5206,11 @@
         "nrpn_lsb": 49,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -5216,7 +5219,7 @@
         "nrpn_lsb": 102,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 7"
@@ -5227,11 +5230,11 @@
         "nrpn_lsb": 103,
         "range": [
           0,
-          23
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:",
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6",
         "expects": "discrete"
       },
       {
@@ -5240,7 +5243,7 @@
         "nrpn_lsb": 104,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 7"
@@ -5251,11 +5254,11 @@
         "nrpn_lsb": 106,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -5264,7 +5267,7 @@
         "nrpn_lsb": 107,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5275,11 +5278,11 @@
         "nrpn_lsb": 108,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -5299,7 +5302,7 @@
         "nrpn_lsb": 110,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 7"
@@ -5310,11 +5313,11 @@
         "nrpn_lsb": 111,
         "range": [
           0,
-          23
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:",
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6",
         "expects": "discrete"
       },
       {
@@ -5323,7 +5326,7 @@
         "nrpn_lsb": 112,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 7"
@@ -5334,11 +5337,11 @@
         "nrpn_lsb": 114,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -5347,7 +5350,7 @@
         "nrpn_lsb": 115,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5358,11 +5361,11 @@
         "nrpn_lsb": 116,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -5382,7 +5385,7 @@
         "nrpn_lsb": 118,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5393,7 +5396,7 @@
         "nrpn_lsb": 119,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5404,7 +5407,7 @@
         "nrpn_lsb": 120,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5415,7 +5418,7 @@
         "nrpn_lsb": 121,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5426,11 +5429,11 @@
         "nrpn_lsb": 122,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -5439,7 +5442,7 @@
         "nrpn_lsb": 123,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 7"
@@ -5472,11 +5475,11 @@
         "nrpn_lsb": 17,
         "range": [
           0,
-          3
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8",
-        "_usage": "0: Reverse; 1: Reverse Loop; 2: Forward Loop; 3: Forward",
+        "_usage": "0-4095: Reverse; 4096-8191: Reverse Loop; 8192-12287: Forward Loop; 12288-16383: Forward",
         "expects": "discrete"
       },
       {
@@ -5518,7 +5521,7 @@
         "nrpn_lsb": 70,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5529,7 +5532,7 @@
         "nrpn_lsb": 71,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5540,7 +5543,7 @@
         "nrpn_lsb": 72,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5551,7 +5554,7 @@
         "nrpn_lsb": 73,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5573,7 +5576,7 @@
         "nrpn_lsb": 75,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5584,7 +5587,7 @@
         "nrpn_lsb": 76,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5595,7 +5598,7 @@
         "nrpn_lsb": 77,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 8"
@@ -5606,7 +5609,7 @@
         "nrpn_lsb": 46,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5617,7 +5620,7 @@
         "nrpn_lsb": 78,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5628,7 +5631,7 @@
         "nrpn_lsb": 79,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5639,7 +5642,7 @@
         "nrpn_lsb": 80,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5650,11 +5653,11 @@
         "nrpn_lsb": 45,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -5663,7 +5666,7 @@
         "nrpn_lsb": 83,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5674,7 +5677,7 @@
         "nrpn_lsb": 84,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8",
@@ -5686,7 +5689,7 @@
         "nrpn_lsb": 85,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8",
@@ -5698,7 +5701,7 @@
         "nrpn_lsb": 86,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5709,7 +5712,7 @@
         "nrpn_lsb": 87,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8",
@@ -5721,7 +5724,7 @@
         "nrpn_lsb": 88,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5732,7 +5735,7 @@
         "nrpn_lsb": 10,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 8"
@@ -5743,7 +5746,7 @@
         "nrpn_lsb": 89,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5754,11 +5757,11 @@
         "nrpn_lsb": 48,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8",
-        "_usage": "0: AHD; 1: ADSR",
+        "_usage": "0-8191: AHD; 8192-16383: ADSR",
         "expects": "switch"
       },
       {
@@ -5767,11 +5770,11 @@
         "nrpn_lsb": 49,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -5780,7 +5783,7 @@
         "nrpn_lsb": 102,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 8"
@@ -5791,11 +5794,11 @@
         "nrpn_lsb": 103,
         "range": [
           0,
-          23
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:",
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6",
         "expects": "discrete"
       },
       {
@@ -5804,7 +5807,7 @@
         "nrpn_lsb": 104,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 8"
@@ -5815,11 +5818,11 @@
         "nrpn_lsb": 106,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -5828,7 +5831,7 @@
         "nrpn_lsb": 107,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5839,11 +5842,11 @@
         "nrpn_lsb": 108,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -5863,7 +5866,7 @@
         "nrpn_lsb": 110,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 8"
@@ -5874,11 +5877,11 @@
         "nrpn_lsb": 111,
         "range": [
           0,
-          23
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:",
+        "_usage": "0-682: BPM 1; 683-1365: BPM 2; 1366-2047: BPM 4; 2048-2730: BPM 8; 2731-3413: BPM 16; 3414-4095: BPM 32; 4096-4778: BPM 64; 4779-5461: BPM 128; 5462-6",
         "expects": "discrete"
       },
       {
@@ -5887,7 +5890,7 @@
         "nrpn_lsb": 112,
         "range": [
           0,
-          128
+          16383
         ],
         "orientation": "centered",
         "section": "Audio Track: Subtrack 8"
@@ -5898,11 +5901,11 @@
         "nrpn_lsb": 114,
         "range": [
           0,
-          6
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8",
-        "_usage": "0: Triangle; 1: Sine; 2: Square; 3: Saw; 4: Exponential; 5: Ramp; 6: Random",
+        "_usage": "0-2340: Triangle; 2341-4681: Sine; 4682-7021: Square; 7022-9362: Saw; 9363-11702: Exponential; 11703-14043: Ramp; 14044-16383: Random",
         "expects": "discrete"
       },
       {
@@ -5911,7 +5914,7 @@
         "nrpn_lsb": 115,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5922,11 +5925,11 @@
         "nrpn_lsb": 116,
         "range": [
           0,
-          4
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8",
-        "_usage": "0: Free; 1: Trig; 2: Hold; 3: One; 4: Half",
+        "_usage": "0-3276: Free; 3277-6553: Trig; 6554-9830: Hold; 9831-13107: One; 13108-16383: Half",
         "expects": "discrete"
       },
       {
@@ -5946,7 +5949,7 @@
         "nrpn_lsb": 118,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5957,7 +5960,7 @@
         "nrpn_lsb": 119,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5968,7 +5971,7 @@
         "nrpn_lsb": 120,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5979,7 +5982,7 @@
         "nrpn_lsb": 121,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -5990,11 +5993,11 @@
         "nrpn_lsb": 122,
         "range": [
           0,
-          1
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-8191: Off; 8192-16383: On",
         "expects": "switch"
       },
       {
@@ -6003,7 +6006,7 @@
         "nrpn_lsb": 123,
         "range": [
           0,
-          127
+          16383
         ],
         "orientation": "0-based",
         "section": "Audio Track: Subtrack 8"
@@ -6024,11 +6027,11 @@
         "cc": 94,
         "range": [
           0,
-          1
+          127
         ],
         "orientation": "0-based",
         "section": "Bus Track",
-        "_usage": "0: Unmuted; 1: Muted",
+        "_usage": "0-63: Unmuted; 64-127: Muted",
         "expects": "switch"
       },
       {
@@ -6106,11 +6109,11 @@
         "cc": 47,
         "range": [
           0,
-          2
+          127
         ],
         "orientation": "0-based",
         "section": "Bus Track: FX",
-        "_usage": "0: Mix AB; 1: Out CD; 2: Out EF"
+        "_usage": "0-42: Mix AB; 43-85: Out CD; 86-127: Out EF"
       },
       {
         "osc": "/bus_track_fx/fx_1_parameter_a",
@@ -6287,11 +6290,11 @@
         "cc": 112,
         "range": [
           0,
-          23
+          127
         ],
         "orientation": "0-based",
         "section": "Bus Track: Mod",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:"
+        "_usage": "0-5: BPM 1; 6-10: BPM 2; 11-15: BPM 4; 16-21: BPM 8; 22-26: BPM 16; 27-31: BPM 32; 32-37: BPM 64; 38-42: BPM 128; 43-47: BPM 256; 48-53: BPM 512; 54-5"
       },
       {
         "osc": "/bus_track_mod/lfo_1_depth",
@@ -6318,11 +6321,11 @@
         "cc": 115,
         "range": [
           0,
-          23
+          127
         ],
         "orientation": "0-based",
         "section": "Bus Track: Mod",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:"
+        "_usage": "0-5: BPM 1; 6-10: BPM 2; 11-15: BPM 4; 16-21: BPM 8; 22-26: BPM 16; 27-31: BPM 32; 32-37: BPM 64; 38-42: BPM 128; 43-47: BPM 256; 48-53: BPM 512; 54-5"
       },
       {
         "osc": "/bus_track_mod/lfo_2_depth",
@@ -6339,11 +6342,11 @@
         "cc": 94,
         "range": [
           0,
-          1
+          127
         ],
         "orientation": "0-based",
         "section": "Send Track",
-        "_usage": "0: Unmuted; 1: Muted",
+        "_usage": "0-63: Unmuted; 64-127: Muted",
         "expects": "switch"
       },
       {
@@ -6391,11 +6394,11 @@
         "cc": 47,
         "range": [
           0,
-          2
+          127
         ],
         "orientation": "0-based",
         "section": "Send Track: FX",
-        "_usage": "0: Mix AB; 1: Out CD; 2: Out EF"
+        "_usage": "0-42: Mix AB; 43-85: Out CD; 86-127: Out EF"
       },
       {
         "osc": "/send_track_fx/fx_1_parameter_a",
@@ -6492,11 +6495,11 @@
         "cc": 112,
         "range": [
           0,
-          23
+          127
         ],
         "orientation": "0-based",
         "section": "Send Track: Mod",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:"
+        "_usage": "0-5: BPM 1; 6-10: BPM 2; 11-15: BPM 4; 16-21: BPM 8; 22-26: BPM 16; 27-31: BPM 32; 32-37: BPM 64; 38-42: BPM 128; 43-47: BPM 256; 48-53: BPM 512; 54-5"
       },
       {
         "osc": "/send_track_mod/lfo_1_depth",
@@ -6523,11 +6526,11 @@
         "cc": 115,
         "range": [
           0,
-          23
+          127
         ],
         "orientation": "0-based",
         "section": "Send Track: Mod",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:"
+        "_usage": "0-5: BPM 1; 6-10: BPM 2; 11-15: BPM 4; 16-21: BPM 8; 22-26: BPM 16; 27-31: BPM 32; 32-37: BPM 64; 38-42: BPM 128; 43-47: BPM 256; 48-53: BPM 512; 54-5"
       },
       {
         "osc": "/send_track_mod/lfo_2_depth",
@@ -6544,11 +6547,11 @@
         "cc": 94,
         "range": [
           0,
-          1
+          127
         ],
         "orientation": "0-based",
         "section": "Mix Track",
-        "_usage": "0: Unmuted; 1: Muted",
+        "_usage": "0-63: Unmuted; 64-127: Muted",
         "expects": "switch"
       },
       {
@@ -6616,11 +6619,11 @@
         "cc": 18,
         "range": [
           0,
-          15
+          127
         ],
         "orientation": "0-based",
         "section": "Mix Track: Source",
-        "_usage": "0: Mix AB; 1: Out AB; 2: Out CD; 3: Out EF; 4: Bus 1; 5: Bus 2; 6: Bus 3; 7: Bus 4; 8: Track 1; 9: Track 2; 10: Track 3; 11: Track 4; 12: Track 5; 13:"
+        "_usage": "0-7: Mix AB; 8-15: Out AB; 16-23: Out CD; 24-31: Out EF; 32-39: Bus 1; 40-47: Bus 2; 48-55: Bus 3; 56-63: Bus 4; 64-71: Track 1; 72-79: Track 2; 80-87"
       },
       {
         "osc": "/mix_track_source/in_b_level",
@@ -6647,11 +6650,11 @@
         "cc": 22,
         "range": [
           0,
-          15
+          127
         ],
         "orientation": "0-based",
         "section": "Mix Track: Source",
-        "_usage": "0: Mix AB; 1: Out AB; 2: Out CD; 3: Out EF; 4: Bus 1; 5: Bus 2; 6: Bus 3; 7: Bus 4; 8: Track 1; 9: Track 2; 10: Track 3; 11: Track 4; 12: Track 5; 13:"
+        "_usage": "0-7: Mix AB; 8-15: Out AB; 16-23: Out CD; 24-31: Out EF; 32-39: Bus 1; 40-47: Bus 2; 48-55: Bus 3; 56-63: Bus 4; 64-71: Track 1; 72-79: Track 2; 80-87"
       },
       {
         "osc": "/mix_track_levels/track_1_level",
@@ -6848,11 +6851,11 @@
         "cc": 112,
         "range": [
           0,
-          23
+          127
         ],
         "orientation": "0-based",
         "section": "Mix Track: Mod",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:"
+        "_usage": "0-5: BPM 1; 6-10: BPM 2; 11-15: BPM 4; 16-21: BPM 8; 22-26: BPM 16; 27-31: BPM 32; 32-37: BPM 64; 38-42: BPM 128; 43-47: BPM 256; 48-53: BPM 512; 54-5"
       },
       {
         "osc": "/mix_track_mod/lfo_1_depth",
@@ -6879,11 +6882,11 @@
         "cc": 115,
         "range": [
           0,
-          23
+          127
         ],
         "orientation": "0-based",
         "section": "Mix Track: Mod",
-        "_usage": "0: BPM 1; 1: BPM 2; 2: BPM 4; 3: BPM 8; 4: BPM 16; 5: BPM 32; 6: BPM 64; 7: BPM 128; 8: BPM 256; 9: BPM 512; 10: BPM 1K; 11: BPM 2K; 12: 1; 13: 2; 14:"
+        "_usage": "0-5: BPM 1; 6-10: BPM 2; 11-15: BPM 4; 16-21: BPM 8; 22-26: BPM 16; 27-31: BPM 32; 32-37: BPM 64; 38-42: BPM 128; 43-47: BPM 256; 48-53: BPM 512; 54-5"
       },
       {
         "osc": "/mix_track_mod/lfo_2_depth",
@@ -7083,7 +7086,8 @@
           127
         ],
         "orientation": "0-based",
-        "section": "FX: Comb \u00b1 Filter"
+        "section": "FX: Comb \u00b1 Filter",
+        "_usage": "0: Off"
       },
       {
         "osc": "/fx_comb_filter/fx_1_detune",
@@ -7163,7 +7167,8 @@
           127
         ],
         "orientation": "0-based",
-        "section": "FX: Comb \u00b1 Filter"
+        "section": "FX: Comb \u00b1 Filter",
+        "_usage": "0: Off"
       },
       {
         "osc": "/fx_comb_filter/fx_2_detune",
@@ -7264,18 +7269,7 @@
         ],
         "orientation": "0-based",
         "section": "FX: Compressor",
-        "_usage": "0: 1.50; 1: 2.00; 2: 3.00; 3: 4.00; 4: 6.00; 5: 8.00; 6: 16.00; 7: 20.00"
-      },
-      {
-        "osc": "/fx_compressor/fx_1_sidechain_source",
-        "cc": 53,
-        "range": [
-          0,
-          14
-        ],
-        "orientation": "0-based",
-        "section": "FX: Compressor",
-        "_usage": "0: Track 1; 1: Track 2; 2: Track 3; 3: Track 4; 4: Track 5; 5: Track 6; 6: Track 7; 7: Track 8; 8: Bus In 1; 9: Bus In 2; 10: Bus In 3; 11: Bus In 4; "
+        "_usage": "0-15: 1.50; 16-31: 2.00; 32-47: 3.00; 48-63: 4.00; 64-79: 6.00; 80-95: 8.00; 96-111: 16.00; 112-127: 20.00"
       },
       {
         "osc": "/fx_compressor/fx_1_sidechain_filter",
@@ -7346,18 +7340,7 @@
         ],
         "orientation": "0-based",
         "section": "FX: Compressor",
-        "_usage": "0: 1.50; 1: 2.00; 2: 3.00; 3: 4.00; 4: 6.00; 5: 8.00; 6: 16.00; 7: 20.00"
-      },
-      {
-        "osc": "/fx_compressor/fx_2_sidechain_source",
-        "cc": 61,
-        "range": [
-          0,
-          14
-        ],
-        "orientation": "0-based",
-        "section": "FX: Compressor",
-        "_usage": "0: Track 1; 1: Track 2; 2: Track 3; 3: Track 4; 4: Track 5; 5: Track 6; 6: Track 7; 7: Track 8; 8: Bus In 1; 9: Bus In 2; 10: Bus In 3; 11: Bus In 4; "
+        "_usage": "0-15: 1.50; 16-31: 2.00; 32-47: 3.00; 48-63: 4.00; 64-79: 6.00; 80-95: 8.00; 96-111: 16.00; 112-127: 20.00"
       },
       {
         "osc": "/fx_compressor/fx_2_sidechain_filter",
@@ -7924,11 +7907,11 @@
         "cc": 54,
         "range": [
           0,
-          7
+          127
         ],
         "orientation": "0-based",
         "section": "FX: Filter Folder",
-        "_usage": "0: LP4; 1: LP2; 2: BP2; 3: HP2; 4: LP.N; 5: NCH1; 6: NCH2; 7: OFF"
+        "_usage": "0-15: LP4; 16-31: LP2; 32-47: BP2; 48-63: HP2; 64-79: LP.N; 80-95: NCH1; 96-111: NCH2; 112-127: OFF"
       },
       {
         "osc": "/fx_filter_folder/fx_1_post_distortion",
@@ -8005,11 +7988,11 @@
         "cc": 62,
         "range": [
           0,
-          7
+          127
         ],
         "orientation": "0-based",
         "section": "FX: Filter Folder",
-        "_usage": "0: LP4; 1: LP2; 2: BP2; 3: HP2; 4: LP.N; 5: NCH1; 6: NCH2; 7: OFF"
+        "_usage": "0-15: LP4; 16-31: LP2; 32-47: BP2; 48-63: HP2; 64-79: LP.N; 80-95: NCH1; 96-111: NCH2; 112-127: OFF"
       },
       {
         "osc": "/fx_filter_folder/fx_2_post_distortion",
@@ -8209,7 +8192,8 @@
           127
         ],
         "orientation": "0-based",
-        "section": "FX: Frequency Warper"
+        "section": "FX: Frequency Warper",
+        "_usage": "0: Off"
       },
       {
         "osc": "/fx_frequency_warper/fx_1_lfo_phase_offset",
@@ -8219,8 +8203,7 @@
           127
         ],
         "orientation": "0-based",
-        "section": "FX: Frequency Warper",
-        "_usage": "0:Off"
+        "section": "FX: Frequency Warper"
       },
       {
         "osc": "/fx_frequency_warper/fx_1_shift_amount",
@@ -8291,7 +8274,7 @@
         ],
         "orientation": "0-based",
         "section": "FX: Frequency Warper",
-        "_usage": "0:Off"
+        "_usage": "0: Off"
       },
       {
         "osc": "/fx_frequency_warper/fx_2_lfo_phase_offset",
@@ -9140,11 +9123,11 @@
         "cc": 49,
         "range": [
           0,
-          1
+          127
         ],
         "orientation": "0-based",
         "section": "FX: Saturator Delay",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-63: Off; 64-127: On",
         "expects": "switch"
       },
       {
@@ -9188,6 +9171,16 @@
         "section": "FX: Saturator Delay"
       },
       {
+        "osc": "/fx_saturator_delay/fx_1_mix",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX: Saturator Delay"
+      },
+      {
         "osc": "/fx_saturator_delay/fx_2_delay_time",
         "cc": 56,
         "range": [
@@ -9202,11 +9195,11 @@
         "cc": 57,
         "range": [
           0,
-          1
+          127
         ],
         "orientation": "0-based",
         "section": "FX: Saturator Delay",
-        "_usage": "0: Off; 1: On",
+        "_usage": "0-63: Off; 64-127: On",
         "expects": "switch"
       },
       {
@@ -9242,6 +9235,16 @@
       {
         "osc": "/fx_saturator_delay/fx_2_feedback_lpf",
         "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX: Saturator Delay"
+      },
+      {
+        "osc": "/fx_saturator_delay/fx_2_mix",
+        "cc": 63,
         "range": [
           0,
           127
@@ -9320,6 +9323,16 @@
         "section": "FX: Steel Box Reverb"
       },
       {
+        "osc": "/fx_steel_box_reverb/fx_1_mix",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX: Steel Box Reverb"
+      },
+      {
         "osc": "/fx_steel_box_reverb/fx_2_pre_delay",
         "cc": 56,
         "range": [
@@ -9390,6 +9403,16 @@
         "section": "FX: Steel Box Reverb"
       },
       {
+        "osc": "/fx_steel_box_reverb/fx_2_mix",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX: Steel Box Reverb"
+      },
+      {
         "osc": "/fx_supervoid_reverb/fx_1_pre_delay",
         "cc": 48,
         "range": [
@@ -9450,6 +9473,16 @@
         "section": "FX: Supervoid Reverb"
       },
       {
+        "osc": "/fx_supervoid_reverb/fx_1_mix",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX: Supervoid Reverb"
+      },
+      {
         "osc": "/fx_supervoid_reverb/fx_2_pre_delay",
         "cc": 56,
         "range": [
@@ -9502,6 +9535,16 @@
       {
         "osc": "/fx_supervoid_reverb/fx_2_lowpass",
         "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX: Supervoid Reverb"
+      },
+      {
+        "osc": "/fx_supervoid_reverb/fx_2_mix",
+        "cc": 63,
         "range": [
           0,
           127

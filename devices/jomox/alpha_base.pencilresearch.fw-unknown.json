@@ -1,0 +1,1813 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Jomox/Alpha Base.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 160,
+    "cc_entries": 160,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Alpha Base",
+    "vendor": "Jomox",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/alpha_base",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/kick_drum/tune",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: Pitch sweep amount"
+      },
+      {
+        "osc": "/kick_drum/pitch",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: Base pitch"
+      },
+      {
+        "osc": "/kick_drum/decay",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: Decay time"
+      },
+      {
+        "osc": "/kick_drum/harmonics",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: Harmonic shaping"
+      },
+      {
+        "osc": "/kick_drum/pulse",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: Pulse attack level"
+      },
+      {
+        "osc": "/kick_drum/noise",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: Noise attack level"
+      },
+      {
+        "osc": "/kick_drum/attack",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: Attack mix depth"
+      },
+      {
+        "osc": "/kick_drum/eq",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: Output EQ amount"
+      },
+      {
+        "osc": "/kick_drum/compression",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: Decay envelope compression"
+      },
+      {
+        "osc": "/kick_drum/gate_time",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: Trigger gate length"
+      },
+      {
+        "osc": "/kick_drum/metallic_noise",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: Metallic noise mode"
+      },
+      {
+        "osc": "/kick_drum/lfo_wave",
+        "cc": 119,
+        "range": [
+          0,
+          63
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~63: LFO waveform select"
+      },
+      {
+        "osc": "/kick_drum/lfo_intensity",
+        "cc": 121,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: LFO depth"
+      },
+      {
+        "osc": "/kick_drum/lfo_rate",
+        "cc": 122,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: LFO speed"
+      },
+      {
+        "osc": "/kick_drum/envelope_attack",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: Envelope attack time"
+      },
+      {
+        "osc": "/kick_drum/envelope_decay",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: Envelope decay time"
+      },
+      {
+        "osc": "/kick_drum/envelope_amount",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: Envelope depth"
+      },
+      {
+        "osc": "/kick_drum/select_instrument_for_multi_kit",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: Instrument select"
+      },
+      {
+        "osc": "/kick_drum/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Kick Drum",
+        "_usage": "0~127: Output level"
+      },
+      {
+        "osc": "/mbrane/pitch_1",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Resonator 1 pitch"
+      },
+      {
+        "osc": "/mbrane/dampen_1",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Resonator 1 damping"
+      },
+      {
+        "osc": "/mbrane/pitch_2",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Resonator 2 pitch"
+      },
+      {
+        "osc": "/mbrane/dampen_2",
+        "cc": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Resonator 2 damping"
+      },
+      {
+        "osc": "/mbrane/coupling_1_to_2",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Coupling 1 into 2"
+      },
+      {
+        "osc": "/mbrane/coupling_2_to_1",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "MBrane",
+        "_usage": "0~127: Coupling 2 into 1"
+      },
+      {
+        "osc": "/mbrane/noise_level",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Noise level"
+      },
+      {
+        "osc": "/mbrane/decay",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Decay time"
+      },
+      {
+        "osc": "/mbrane/metallic_noise_1",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Metallic noise 1 mode"
+      },
+      {
+        "osc": "/mbrane/metallic_noise_2",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Metallic noise 2 mode"
+      },
+      {
+        "osc": "/mbrane/gate_time",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Trigger gate length"
+      },
+      {
+        "osc": "/mbrane/lfo_1_wave",
+        "cc": 119,
+        "range": [
+          0,
+          63
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~63: LFO 1 waveform select"
+      },
+      {
+        "osc": "/mbrane/lfo_1_intensity",
+        "cc": 121,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: LFO 1 depth"
+      },
+      {
+        "osc": "/mbrane/lfo_1_rate",
+        "cc": 122,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: LFO 1 speed"
+      },
+      {
+        "osc": "/mbrane/lfo_2_wave",
+        "cc": 123,
+        "range": [
+          0,
+          63
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~63: LFO 2 waveform select"
+      },
+      {
+        "osc": "/mbrane/lfo_2_intensity",
+        "cc": 124,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: LFO 2 depth"
+      },
+      {
+        "osc": "/mbrane/lfo_2_rate",
+        "cc": 125,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: LFO 2 speed"
+      },
+      {
+        "osc": "/mbrane/envelope_1_attack",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Envelope 1 attack time"
+      },
+      {
+        "osc": "/mbrane/envelope_1_decay",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Envelope 1 decay time"
+      },
+      {
+        "osc": "/mbrane/envelope_1_amount",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Envelope 1 depth"
+      },
+      {
+        "osc": "/mbrane/envelope_2_attack",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Envelope 2 attack time"
+      },
+      {
+        "osc": "/mbrane/envelope_2_decay",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Envelope 2 decay time"
+      },
+      {
+        "osc": "/mbrane/envelope_2_amount",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Envelope 2 depth"
+      },
+      {
+        "osc": "/mbrane/select_instrument_for_multi_kit",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Instrument select"
+      },
+      {
+        "osc": "/mbrane/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "MBrane",
+        "_usage": "0~127: Output level"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/sample_tune",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: Sample coarse tune"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/sample_cents",
+        "cc": 99,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: Sample fine tune"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/sample_start",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: Sample start position"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/sample_stop",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: Sample stop position"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/sample_loop",
+        "cc": 97,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: Sample loop position"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/sample_select",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: Sample select"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/vca_envelope_attack",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: VCA envelope attack"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/filter_envelope_attack",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: Filter envelope attack"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/vca_envelope_decay",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: VCA envelope decay"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/filter_envelope_decay",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: Filter envelope decay"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/vca_envelope_sustain",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: VCA envelope sustain"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/filter_envelope_sustain",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: Filter envelope sustain"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/vca_envelope_release",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: VCA envelope release"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/filter_envelope_release",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: Filter envelope release"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/filter_cutoff",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: Filter cutoff"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/filter_resonance",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: Filter resonance"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/filter_hi_pass",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: High pass amount"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/filter_envelope_amount",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: Filter envelope depth"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/filter_mode",
+        "cc": 116,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~3: Filter mode"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/lfo_synchronization",
+        "cc": 96,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0-1: LFO sync",
+        "expects": "switch"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/lfo_wave",
+        "cc": 119,
+        "range": [
+          0,
+          63
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~63: LFO waveform select"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/lfo_rate",
+        "cc": 122,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: LFO speed"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/lfo_tune_amount",
+        "cc": 121,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: LFO to tune depth"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/lfo_vca_amount",
+        "cc": 124,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: LFO to VCA depth"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/lfo_filter_amount",
+        "cc": 125,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: LFO to filter depth"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/metallic_noise",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: Metallic noise mode"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/switch_cc",
+        "cc": 65,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "1-0: Reverse on/off; 3-2: Loop on/off"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/select_instrument_for_multi_kit",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: Instrument select"
+      },
+      {
+        "osc": "/sample_ch_oh_clp_rim_crh_rid_x1_x2/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample (CH/OH/CLP/RIM/CRH/RID/X1/X2)",
+        "_usage": "0~127: Output level"
+      },
+      {
+        "osc": "/fm_synth/op1_tune",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: Operator 1 tune"
+      },
+      {
+        "osc": "/fm_synth/op2_tune",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: Operator 2 tune"
+      },
+      {
+        "osc": "/fm_synth/op3_tune",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: Operator 3 tune"
+      },
+      {
+        "osc": "/fm_synth/op4_tune",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: Operator 4 tune"
+      },
+      {
+        "osc": "/fm_synth/fm_amount_1_to_2",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: FM 1 into 2"
+      },
+      {
+        "osc": "/fm_synth/fm_amount_1_to_3",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: FM 1 into 3"
+      },
+      {
+        "osc": "/fm_synth/fm_amount_1_to_4",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: FM 1 into 4"
+      },
+      {
+        "osc": "/fm_synth/fm_amount_2_to_1",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: FM 2 into 1"
+      },
+      {
+        "osc": "/fm_synth/fm_amount_2_to_3",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: FM 2 into 3"
+      },
+      {
+        "osc": "/fm_synth/fm_amount_2_to_4",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: FM 2 into 4"
+      },
+      {
+        "osc": "/fm_synth/fm_amount_3_to_1",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: FM 3 into 1"
+      },
+      {
+        "osc": "/fm_synth/fm_amount_3_to_2",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: FM 3 into 2"
+      },
+      {
+        "osc": "/fm_synth/fm_amount_3_to_4",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: FM 3 into 4"
+      },
+      {
+        "osc": "/fm_synth/fm_amount_4_to_1",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: FM 4 into 1"
+      },
+      {
+        "osc": "/fm_synth/fm_amount_4_to_2",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: FM 4 into 2"
+      },
+      {
+        "osc": "/fm_synth/fm_amount_4_to_3",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: FM 4 into 3"
+      },
+      {
+        "osc": "/fm_synth/op1_env_attack",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: Operator 1 attack"
+      },
+      {
+        "osc": "/fm_synth/op2_env_attack",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: Operator 2 attack"
+      },
+      {
+        "osc": "/fm_synth/op3_env_attack",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: Operator 3 attack"
+      },
+      {
+        "osc": "/fm_synth/op4_env_attack",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: Operator 4 attack"
+      },
+      {
+        "osc": "/fm_synth/op1_env_decay",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: Operator 1 decay"
+      },
+      {
+        "osc": "/fm_synth/op2_env_decay",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: Operator 2 decay"
+      },
+      {
+        "osc": "/fm_synth/op3_env_decay",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: Operator 3 decay"
+      },
+      {
+        "osc": "/fm_synth/op4_env_decay",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: Operator 4 decay"
+      },
+      {
+        "osc": "/fm_synth/op1_eg_to_vca_amount",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: OP1 EG to VCA"
+      },
+      {
+        "osc": "/fm_synth/op2_eg_to_vca_amount",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: OP2 EG to VCA"
+      },
+      {
+        "osc": "/fm_synth/op3_eg_to_vca_amount",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: OP3 EG to VCA"
+      },
+      {
+        "osc": "/fm_synth/op4_eg_to_vca_amount",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: OP4 EG to VCA"
+      },
+      {
+        "osc": "/fm_synth/op1_eg_to_fm_amount",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: OP1 EG to FM"
+      },
+      {
+        "osc": "/fm_synth/op2_eg_to_fm_amount",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: OP2 EG to FM"
+      },
+      {
+        "osc": "/fm_synth/op3_eg_to_fm_amount",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: OP3 EG to FM"
+      },
+      {
+        "osc": "/fm_synth/op4_eg_to_fm_amount",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: OP4 EG to FM"
+      },
+      {
+        "osc": "/fm_synth/select_instrument_for_multi_kit",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: Instrument select"
+      },
+      {
+        "osc": "/fm_synth/max_voices",
+        "cc": 30,
+        "range": [
+          0,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0-5: Voice count"
+      },
+      {
+        "osc": "/fm_synth/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FM Synth",
+        "_usage": "0~127: Output level"
+      },
+      {
+        "osc": "/fx_reverb/room_size",
+        "cc": 100,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Reverb",
+        "_usage": "0~127: Room size"
+      },
+      {
+        "osc": "/fx_reverb/low_pass_reflections",
+        "cc": 101,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Reverb",
+        "_usage": "0~127: Low pass reflections"
+      },
+      {
+        "osc": "/fx_reverb/hi_pass_reflections",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Reverb",
+        "_usage": "0~127: High pass reflections"
+      },
+      {
+        "osc": "/fx_reverb/reverb_level",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Reverb",
+        "_usage": "0~127: Reverb level"
+      },
+      {
+        "osc": "/fx_reverb/kd_reverb_amount",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Reverb",
+        "_usage": "0~127: Kick reverb send"
+      },
+      {
+        "osc": "/fx_reverb/mb_reverb_amount",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Reverb",
+        "_usage": "0~127: MBrane reverb send"
+      },
+      {
+        "osc": "/fx_reverb/ch_reverb_amount",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Reverb",
+        "_usage": "0~127: Closed hat reverb send"
+      },
+      {
+        "osc": "/fx_reverb/oh_reverb_amount",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Reverb",
+        "_usage": "0~127: Open hat reverb send"
+      },
+      {
+        "osc": "/fx_reverb/clp_reverb_amount",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Reverb",
+        "_usage": "0~127: Clap reverb send"
+      },
+      {
+        "osc": "/fx_reverb/rim_reverb_amount",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Reverb",
+        "_usage": "0~127: Rim reverb send"
+      },
+      {
+        "osc": "/fx_reverb/crh_reverb_amount",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Reverb",
+        "_usage": "0~127: Crash reverb send"
+      },
+      {
+        "osc": "/fx_reverb/rid_reverb_amount",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Reverb",
+        "_usage": "0~127: Ride reverb send"
+      },
+      {
+        "osc": "/fx_reverb/x1_reverb_amount",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Reverb",
+        "_usage": "0~127: X1 reverb send"
+      },
+      {
+        "osc": "/fx_reverb/x2_reverb_amount",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Reverb",
+        "_usage": "0~127: X2 reverb send"
+      },
+      {
+        "osc": "/fx_reverb/fm_reverb_amount",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Reverb",
+        "_usage": "0~127: FM reverb send"
+      },
+      {
+        "osc": "/fx_delay/delay_time",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay",
+        "_usage": "0~127: Delay time"
+      },
+      {
+        "osc": "/fx_delay/delay_feedback",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay",
+        "_usage": "0~127: Delay feedback"
+      },
+      {
+        "osc": "/fx_delay/delay_spatial",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay",
+        "_usage": "0~127: Delay spatial width"
+      },
+      {
+        "osc": "/fx_delay/delay_level",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay",
+        "_usage": "0~127: Delay level"
+      },
+      {
+        "osc": "/fx_delay/kd_delay_amount",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay",
+        "_usage": "0~127: Kick delay send"
+      },
+      {
+        "osc": "/fx_delay/mb_delay_amount",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay",
+        "_usage": "0~127: MBrane delay send"
+      },
+      {
+        "osc": "/fx_delay/ch_delay_amount",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay",
+        "_usage": "0~127: Closed hat delay send"
+      },
+      {
+        "osc": "/fx_delay/oh_delay_amount",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay",
+        "_usage": "0~127: Open hat delay send"
+      },
+      {
+        "osc": "/fx_delay/clp_delay_amount",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay",
+        "_usage": "0~127: Clap delay send"
+      },
+      {
+        "osc": "/fx_delay/rim_delay_amount",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay",
+        "_usage": "0~127: Rim delay send"
+      },
+      {
+        "osc": "/fx_delay/crh_delay_amount",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay",
+        "_usage": "0~127: Crash delay send"
+      },
+      {
+        "osc": "/fx_delay/rid_delay_amount",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay",
+        "_usage": "0~127: Ride delay send"
+      },
+      {
+        "osc": "/fx_delay/x1_delay_amount",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay",
+        "_usage": "0~127: X1 delay send"
+      },
+      {
+        "osc": "/fx_delay/x2_delay_amount",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay",
+        "_usage": "0~127: X2 delay send"
+      },
+      {
+        "osc": "/fx_delay/fm_delay_amount",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX Delay",
+        "_usage": "0~127: FM delay send"
+      },
+      {
+        "osc": "/mute/kd_mute",
+        "cc": 93,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Mute",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/mute/mb_mute",
+        "cc": 93,
+        "range": [
+          2,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Mute",
+        "_usage": "2: Off; 3: On"
+      },
+      {
+        "osc": "/mute/ch_mute",
+        "cc": 93,
+        "range": [
+          4,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "Mute",
+        "_usage": "4: Off; 5: On"
+      },
+      {
+        "osc": "/mute/oh_mute",
+        "cc": 93,
+        "range": [
+          6,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Mute",
+        "_usage": "6: Off; 7: On"
+      },
+      {
+        "osc": "/mute/clap_mute",
+        "cc": 93,
+        "range": [
+          8,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Mute",
+        "_usage": "8: Off; 9: On"
+      },
+      {
+        "osc": "/mute/rim_mute",
+        "cc": 93,
+        "range": [
+          10,
+          11
+        ],
+        "orientation": "0-based",
+        "section": "Mute",
+        "_usage": "10: Off; 11: On"
+      },
+      {
+        "osc": "/mute/crash_mute",
+        "cc": 93,
+        "range": [
+          12,
+          13
+        ],
+        "orientation": "0-based",
+        "section": "Mute",
+        "_usage": "12: Off; 13: On"
+      },
+      {
+        "osc": "/mute/ride_mute",
+        "cc": 93,
+        "range": [
+          14,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "Mute",
+        "_usage": "14: Off; 15: On"
+      },
+      {
+        "osc": "/mute/x1_mute",
+        "cc": 93,
+        "range": [
+          16,
+          17
+        ],
+        "orientation": "0-based",
+        "section": "Mute",
+        "_usage": "16: Off; 17: On"
+      },
+      {
+        "osc": "/mute/x2_mute",
+        "cc": 93,
+        "range": [
+          18,
+          19
+        ],
+        "orientation": "0-based",
+        "section": "Mute",
+        "_usage": "18: Off; 19: On"
+      },
+      {
+        "osc": "/mute/fm_mute",
+        "cc": 93,
+        "range": [
+          20,
+          21
+        ],
+        "orientation": "0-based",
+        "section": "Mute",
+        "_usage": "20: Off; 21: On"
+      },
+      {
+        "osc": "/stereo_pan/mb_pan",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Stereo Pan",
+        "_usage": "0~127: Pan (64=Center)"
+      },
+      {
+        "osc": "/stereo_pan/ch_pan",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Stereo Pan",
+        "_usage": "0~127: Pan (64=Center)"
+      },
+      {
+        "osc": "/stereo_pan/oh_pan",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Stereo Pan",
+        "_usage": "0~127: Pan (64=Center)"
+      },
+      {
+        "osc": "/stereo_pan/clap_pan",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Stereo Pan",
+        "_usage": "0~127: Pan (64=Center)"
+      },
+      {
+        "osc": "/stereo_pan/rim_pan",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Stereo Pan",
+        "_usage": "0~127: Pan (64=Center)"
+      },
+      {
+        "osc": "/stereo_pan/crash_pan",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Stereo Pan",
+        "_usage": "0~127: Pan (64=Center)"
+      },
+      {
+        "osc": "/stereo_pan/ride_pan",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Stereo Pan",
+        "_usage": "0~127: Pan (64=Center)"
+      },
+      {
+        "osc": "/stereo_pan/x1_pan",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Stereo Pan",
+        "_usage": "0~127: Pan (64=Center)"
+      },
+      {
+        "osc": "/stereo_pan/x2_pan",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Stereo Pan",
+        "_usage": "0~127: Pan (64=Center)"
+      },
+      {
+        "osc": "/stereo_pan/fm_pan",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Stereo Pan",
+        "_usage": "0~127: Pan (64=Center)"
+      },
+      {
+        "osc": "/global/store_instruments",
+        "cc": 62,
+        "range": [
+          64,
+          64
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "64: Store instruments"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

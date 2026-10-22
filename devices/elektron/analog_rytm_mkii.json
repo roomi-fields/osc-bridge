@@ -2,9 +2,12 @@
   "_sources": [
     {
       "type": "pencilresearch",
-      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Analog Rytm MKII.csv",
-      "imported_at": "2026-04-13",
-      "commit": "deb41f2"
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Analog Rytm MKII.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
     }
   ],
   "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
@@ -12,7 +15,8 @@
     "entries_total": 322,
     "cc_entries": 322,
     "nrpn_entries": 298,
-    "fourteen_bit_cc_pairs": 1
+    "fourteen_bit_cc_pairs": 1,
+    "triggers": 13
   },
   "device": {
     "name": "Analog Rytm MKII",
@@ -3907,5 +3911,152 @@
     "pitchbend": "/pitchbend {value_u14} {channel}",
     "aftertouch": "/aftertouch {value} {channel}"
   },
-  "replies": []
+  "replies": [],
+  "triggers": {
+    "entries": [
+      {
+        "osc": "/drum/sound_track_1",
+        "sound": "Sound track 1",
+        "section": "General",
+        "channel": 0,
+        "note_range": [
+          0,
+          0
+        ],
+        "note": 0
+      },
+      {
+        "osc": "/drum/sound_track_2",
+        "sound": "Sound track 2",
+        "section": "General",
+        "channel": 1,
+        "note_range": [
+          1,
+          1
+        ],
+        "note": 1
+      },
+      {
+        "osc": "/drum/sound_track_3",
+        "sound": "Sound track 3",
+        "section": "General",
+        "channel": 2,
+        "note_range": [
+          2,
+          2
+        ],
+        "note": 2
+      },
+      {
+        "osc": "/drum/sound_track_4",
+        "sound": "Sound track 4",
+        "section": "General",
+        "channel": 3,
+        "note_range": [
+          3,
+          3
+        ],
+        "note": 3
+      },
+      {
+        "osc": "/drum/sound_track_5",
+        "sound": "Sound track 5",
+        "section": "General",
+        "channel": 4,
+        "note_range": [
+          4,
+          4
+        ],
+        "note": 4
+      },
+      {
+        "osc": "/drum/sound_track_6",
+        "sound": "Sound track 6",
+        "section": "General",
+        "channel": 5,
+        "note_range": [
+          5,
+          5
+        ],
+        "note": 5
+      },
+      {
+        "osc": "/drum/sound_track_7",
+        "sound": "Sound track 7",
+        "section": "General",
+        "channel": 6,
+        "note_range": [
+          6,
+          6
+        ],
+        "note": 6
+      },
+      {
+        "osc": "/drum/sound_track_8",
+        "sound": "Sound track 8",
+        "section": "General",
+        "channel": 7,
+        "note_range": [
+          7,
+          7
+        ],
+        "note": 7
+      },
+      {
+        "osc": "/drum/sound_track_9",
+        "sound": "Sound track 9",
+        "section": "General",
+        "channel": 8,
+        "note_range": [
+          8,
+          8
+        ],
+        "note": 8
+      },
+      {
+        "osc": "/drum/sound_track_10",
+        "sound": "Sound track 10",
+        "section": "General",
+        "channel": 9,
+        "note_range": [
+          9,
+          9
+        ],
+        "note": 9
+      },
+      {
+        "osc": "/drum/sound_track_11",
+        "sound": "Sound track 11",
+        "section": "General",
+        "channel": 10,
+        "note_range": [
+          10,
+          10
+        ],
+        "note": 10
+      },
+      {
+        "osc": "/drum/sound_track_12",
+        "sound": "Sound track 12",
+        "section": "General",
+        "channel": 11,
+        "note_range": [
+          11,
+          11
+        ],
+        "note": 11
+      },
+      {
+        "osc": "/drum/chromatic",
+        "sound": "Chromatic",
+        "section": "General",
+        "channel_mode": "auto",
+        "note_range": [
+          12,
+          59
+        ],
+        "comments": "Plays the currently active track's sound across its 48 chromatic variations, lowest to highest pitch. Track Sound must be chromatic-enabled (Sound Settings) for this to be effective"
+      }
+    ]
+  }
 }

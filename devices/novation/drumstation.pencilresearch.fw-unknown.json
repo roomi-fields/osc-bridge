@@ -1,0 +1,781 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Novation/DrumStation.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 0,
+    "cc_entries": 0,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0,
+    "triggers": 66
+  },
+  "device": {
+    "name": "DrumStation",
+    "vendor": "Novation",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/drumstation",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": []
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": [],
+  "triggers": {
+    "entries": [
+      {
+        "osc": "/drum/808_drum_sounds/tr909_bass_drum",
+        "sound": "TR909 Bass drum",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          24,
+          24
+        ],
+        "note": 24
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr909_rim_shot",
+        "sound": "TR909 Rim shot",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          25,
+          25
+        ],
+        "note": 25
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr909_snare_drum",
+        "sound": "TR909 Snare drum",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          26,
+          26
+        ],
+        "note": 26
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr909_hand_clap",
+        "sound": "TR909 Hand clap",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          27,
+          27
+        ],
+        "note": 27
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr909_low_tom",
+        "sound": "TR909 Low tom",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          28,
+          28
+        ],
+        "note": 28
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr909_mid_tom",
+        "sound": "TR909 Mid tom",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          29,
+          29
+        ],
+        "note": 29
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr909_closed_hihat",
+        "sound": "TR909 Closed hihat",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          30,
+          30
+        ],
+        "note": 30
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr909_high_tom",
+        "sound": "TR909 High tom",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          31,
+          31
+        ],
+        "note": 31
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr909_crash_cymbal",
+        "sound": "TR909 Crash cymbal",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          32,
+          32
+        ],
+        "note": 32
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr909_ride_cymbal",
+        "sound": "TR909 Ride cymbal",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          33,
+          33
+        ],
+        "note": 33
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr909_open_hihat",
+        "sound": "TR909 Open hihat",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          34,
+          34
+        ],
+        "note": 34
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_bass_drum",
+        "sound": "TR808 Bass drum",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          36,
+          36
+        ],
+        "note": 36
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_rim_shot",
+        "sound": "TR808 Rim shot",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          37,
+          37
+        ],
+        "note": 37
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_snare_drum",
+        "sound": "TR808 Snare drum",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          38,
+          38
+        ],
+        "note": 38
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_hand_clap",
+        "sound": "TR808 Hand clap",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          39,
+          39
+        ],
+        "note": 39
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_snare_drum_2",
+        "sound": "TR808 Snare drum",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_low_tom",
+        "sound": "TR808 Low tom",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          41,
+          41
+        ],
+        "note": 41
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_closed_hihat",
+        "sound": "TR808 Closed hihat",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          42,
+          42
+        ],
+        "note": 42
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_low_tom_2",
+        "sound": "TR808 Low tom",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          43,
+          43
+        ],
+        "note": 43
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_closed_hihat_2",
+        "sound": "TR808 Closed hihat",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          44,
+          44
+        ],
+        "note": 44
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_mid_tom",
+        "sound": "TR808 Mid tom",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          45,
+          45
+        ],
+        "note": 45
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_open_hihat",
+        "sound": "TR808 Open hihat",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          46,
+          46
+        ],
+        "note": 46
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_mid_tom_2",
+        "sound": "TR808 Mid tom",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          47,
+          47
+        ],
+        "note": 47
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_high_tom",
+        "sound": "TR808 High tom",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          48,
+          48
+        ],
+        "note": 48
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_crash_cymbal",
+        "sound": "TR808 Crash cymbal",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          49,
+          49
+        ],
+        "note": 49
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_high_tom_2",
+        "sound": "TR808 High tom",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          50,
+          50
+        ],
+        "note": 50
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr909_ride_cymbal_2",
+        "sound": "TR909 Ride cymbal",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          51,
+          51
+        ],
+        "note": 51
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_cowbell",
+        "sound": "TR808 Cowbell",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          56,
+          56
+        ],
+        "note": 56
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_high_conga",
+        "sound": "TR808 High conga",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          62,
+          62
+        ],
+        "note": 62
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_mid_conga",
+        "sound": "TR808 Mid conga",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          63,
+          63
+        ],
+        "note": 63
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_low_conga",
+        "sound": "TR808 Low conga",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          64,
+          64
+        ],
+        "note": 64
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_maracas",
+        "sound": "TR808 Maracas",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          70,
+          70
+        ],
+        "note": 70
+      },
+      {
+        "osc": "/drum/808_drum_sounds/tr808_claves",
+        "sound": "TR808 Claves",
+        "section": "808 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          75,
+          75
+        ],
+        "note": 75
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr808_bass_drum",
+        "sound": "TR808 Bass drum",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          24,
+          24
+        ],
+        "note": 24
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr808_rim_shot",
+        "sound": "TR808 Rim shot",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          25,
+          25
+        ],
+        "note": 25
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr808_snare_drum",
+        "sound": "TR808 Snare drum",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          26,
+          26
+        ],
+        "note": 26
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr808_hand_clap",
+        "sound": "TR808 Hand clap",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          27,
+          27
+        ],
+        "note": 27
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr808_low_tom",
+        "sound": "TR808 Low tom",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          28,
+          28
+        ],
+        "note": 28
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr808_mid_tom",
+        "sound": "TR808 Mid tom",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          29,
+          29
+        ],
+        "note": 29
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr808_closed_hihat",
+        "sound": "TR808 Closed hihat",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          30,
+          30
+        ],
+        "note": 30
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr808_high_tom",
+        "sound": "TR808 High tom",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          31,
+          31
+        ],
+        "note": 31
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr808_crash_cymbal",
+        "sound": "TR808 Crash cymbal",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          32,
+          32
+        ],
+        "note": 32
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr909_ride_cymbal",
+        "sound": "TR909 Ride cymbal",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          33,
+          33
+        ],
+        "note": 33
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr909_open_hihat",
+        "sound": "TR909 Open hihat",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          34,
+          34
+        ],
+        "note": 34
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr909_bass_drum",
+        "sound": "TR909 Bass drum",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          36,
+          36
+        ],
+        "note": 36
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr909_rim_shot",
+        "sound": "TR909 Rim shot",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          37,
+          37
+        ],
+        "note": 37
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr909_snare_drum",
+        "sound": "TR909 Snare drum",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          38,
+          38
+        ],
+        "note": 38
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr909_hand_clap",
+        "sound": "TR909 Hand clap",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          39,
+          39
+        ],
+        "note": 39
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr909_snare_drum_2",
+        "sound": "TR909 Snare drum",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr909_low_tom",
+        "sound": "TR909 Low tom",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          41,
+          41
+        ],
+        "note": 41
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr909_closed_hihat",
+        "sound": "TR909 Closed hihat",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          42,
+          42
+        ],
+        "note": 42
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr808_low_tom_2",
+        "sound": "TR808 Low tom",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          43,
+          43
+        ],
+        "note": 43
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr909_closed_hihat_2",
+        "sound": "TR909 Closed hihat",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          44,
+          44
+        ],
+        "note": 44
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr909_mid_tom",
+        "sound": "TR909 Mid tom",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          45,
+          45
+        ],
+        "note": 45
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr909_open_hihat_2",
+        "sound": "TR909 Open hihat",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          46,
+          46
+        ],
+        "note": 46
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr909_mid_tom_2",
+        "sound": "TR909 Mid tom",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          47,
+          47
+        ],
+        "note": 47
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr909_high_tom",
+        "sound": "TR909 High tom",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          48,
+          48
+        ],
+        "note": 48
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr909_crash_cymbal",
+        "sound": "TR909 Crash cymbal",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          49,
+          49
+        ],
+        "note": 49
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr909_high_tom_2",
+        "sound": "TR909 High tom",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          50,
+          50
+        ],
+        "note": 50
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr909_ride_cymbal_2",
+        "sound": "TR909 Ride cymbal",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          51,
+          51
+        ],
+        "note": 51
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr808_cowbell",
+        "sound": "TR808 Cowbell",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          56,
+          56
+        ],
+        "note": 56
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr808_high_conga",
+        "sound": "TR808 High conga",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          62,
+          62
+        ],
+        "note": 62
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr808_mid_conga",
+        "sound": "TR808 Mid conga",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          63,
+          63
+        ],
+        "note": 63
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr808_low_conga",
+        "sound": "TR808 Low conga",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          64,
+          64
+        ],
+        "note": 64
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr808_maracas",
+        "sound": "TR808 Maracas",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          70,
+          70
+        ],
+        "note": 70
+      },
+      {
+        "osc": "/drum/909_drum_sounds/tr808_claves",
+        "sound": "TR808 Claves",
+        "section": "909 Drum sounds",
+        "channel_mode": "basic",
+        "note_range": [
+          75,
+          75
+        ],
+        "note": 75
+      }
+    ]
+  }
+}

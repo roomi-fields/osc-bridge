@@ -1,0 +1,2129 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/KORG/RADIAS.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 179,
+    "cc_entries": 71,
+    "nrpn_entries": 108,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "RADIAS",
+    "vendor": "KORG",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/radias",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/program/bank_select_msb",
+        "cc": 0,
+        "range": [
+          0,
+          32
+        ],
+        "orientation": "0-based",
+        "section": "Program",
+        "_usage": "0: Program A-P; 32: Timbre or Drum Kit"
+      },
+      {
+        "osc": "/program/bank_select_lsb",
+        "cc": 32,
+        "range": [
+          0,
+          64
+        ],
+        "orientation": "0-based",
+        "section": "Program",
+        "_usage": "0: Banks A-H; 1: Banks I-P; 32: Timbre 1; 33: Timbre 1 preset; 34: Timbre 2; 35: Timbre 2 preset; 36: Timbre 3; 37: Timbre 3 preset; 38: Timbre 4; 39:"
+      },
+      {
+        "osc": "/controllers/modulation",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers",
+        "_usage": "0~127: Modulation depth"
+      },
+      {
+        "osc": "/controllers/breath_control",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers",
+        "_usage": "0~127: Breath controller depth"
+      },
+      {
+        "osc": "/controllers/foot_control",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers",
+        "_usage": "0~127: Foot controller amount"
+      },
+      {
+        "osc": "/controllers/expression",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers",
+        "_usage": "0~127: Expression amount"
+      },
+      {
+        "osc": "/controllers/sustain",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/controllers/portamento_switch",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/controllers/foot_switch",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controllers",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/global/all_sound_off",
+        "cc": 120,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: All sound off"
+      },
+      {
+        "osc": "/global/reset_all_controllers",
+        "cc": 121,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Reset all controllers"
+      },
+      {
+        "osc": "/global/all_note_off",
+        "cc": 123,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: All notes off"
+      },
+      {
+        "osc": "/global/omni_mode_off",
+        "cc": 124,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Omni mode off"
+      },
+      {
+        "osc": "/global/omni_mode_on",
+        "cc": 125,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0: Omni mode on"
+      },
+      {
+        "osc": "/unison/switch",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Unison",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/pitch/portamento_time",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pitch",
+        "_usage": "0~127: Portamento time"
+      },
+      {
+        "osc": "/oscillator_1/wave",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1",
+        "_usage": "0-13: Saw; 14-27: Square; 28-41: Triangle; 42-55: Sine; 56-69: Formant; 70-83: Noise; 84-97: Synth PCM; 98-111: Drum PCM; 112-127: Audio in"
+      },
+      {
+        "osc": "/oscillator_1/modulation_type",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1",
+        "_usage": "0-31: Waveform; 32-63: Cross; 64-95: Unison; 96-127: VPM"
+      },
+      {
+        "osc": "/oscillator_1/control_1",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1",
+        "_usage": "0~127: Oscillator 1 control 1"
+      },
+      {
+        "osc": "/oscillator_1/control_2",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1",
+        "_usage": "0~127: Oscillator 1 control 2"
+      },
+      {
+        "osc": "/oscillator_2/wave",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2",
+        "_usage": "0-31: Saw; 32-63: Square; 64-95: Triangle; 96-127: Sine"
+      },
+      {
+        "osc": "/oscillator_2/modulation_type",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2",
+        "_usage": "0-31: Off; 32-63: Ring; 64-95: Sync; 96-127: Ring plus sync"
+      },
+      {
+        "osc": "/oscillator_2/semitone",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator 2",
+        "_usage": "0~127: -24 to +24 semitones"
+      },
+      {
+        "osc": "/oscillator_2/tune",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator 2",
+        "_usage": "0~127: -63 to +63 cents"
+      },
+      {
+        "osc": "/mixer/oscillator_1_level",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer",
+        "_usage": "0~127: Oscillator 1 level"
+      },
+      {
+        "osc": "/mixer/oscillator_2_level",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer",
+        "_usage": "0~127: Oscillator 2 level"
+      },
+      {
+        "osc": "/mixer/noise_level",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer",
+        "_usage": "0~127: Noise level"
+      },
+      {
+        "osc": "/filter/routing",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0-31: Single; 32-63: Serial; 64-95: Parallel; 96-127: Individual"
+      },
+      {
+        "osc": "/filter_1/type_balance",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 1",
+        "_usage": "0: LPF24; 1~30: LPF24 to LPF12 blend; 31-33: LPF12; 34~62: LPF12 to HPF blend; 63-65: HPF; 66~94: HPF to BPF blend; 95-97: BPF; 98~126: BPF to THRU bl"
+      },
+      {
+        "osc": "/filter_1/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 1",
+        "_usage": "0~127: Cutoff frequency"
+      },
+      {
+        "osc": "/filter_1/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 1",
+        "_usage": "0~127: Resonance"
+      },
+      {
+        "osc": "/filter_1/eg1_intensity",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter 1",
+        "_usage": "0~127: -63 to +63 modulation amount"
+      },
+      {
+        "osc": "/filter_1/keyboard_track",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter 1",
+        "_usage": "0~127: -2.00 to +2.00 tracking ratio"
+      },
+      {
+        "osc": "/filter_2/type",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 2",
+        "_usage": "0-31: LPF; 32-63: HPF; 64-95: BPF; 96-127: Comb"
+      },
+      {
+        "osc": "/filter_2/cutoff",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 2",
+        "_usage": "0~127: Cutoff frequency"
+      },
+      {
+        "osc": "/filter_2/resonance",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 2",
+        "_usage": "0~127: Resonance"
+      },
+      {
+        "osc": "/filter_2/eg1_intensity",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter 2",
+        "_usage": "0~127: -63 to +63 modulation amount"
+      },
+      {
+        "osc": "/filter_2/keyboard_track",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter 2",
+        "_usage": "0~127: -63 to +63 tracking amount"
+      },
+      {
+        "osc": "/amp/level",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Amp level"
+      },
+      {
+        "osc": "/amp/panpot",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Amp",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
+      },
+      {
+        "osc": "/amp/drive_depth",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Drive or waveshape depth"
+      },
+      {
+        "osc": "/amp/drive_switch",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0-41: Off; 42-84: Drive; 85-127: Waveshape"
+      },
+      {
+        "osc": "/eg_1/attack",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG 1",
+        "_usage": "0~127: Attack time"
+      },
+      {
+        "osc": "/eg_1/decay",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG 1",
+        "_usage": "0~127: Decay time"
+      },
+      {
+        "osc": "/eg_1/sustain",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG 1",
+        "_usage": "0~127: Sustain level"
+      },
+      {
+        "osc": "/eg_1/release",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG 1",
+        "_usage": "0~127: Release time"
+      },
+      {
+        "osc": "/eg_2/attack",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG 2",
+        "_usage": "0~127: Attack time"
+      },
+      {
+        "osc": "/eg_2/decay",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG 2",
+        "_usage": "0~127: Decay time"
+      },
+      {
+        "osc": "/eg_2/sustain",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG 2",
+        "_usage": "0~127: Sustain level"
+      },
+      {
+        "osc": "/eg_2/release",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG 2",
+        "_usage": "0~127: Release time"
+      },
+      {
+        "osc": "/lfo_1/wave",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1",
+        "_usage": "0-31: Saw; 32-63: Square; 64-95: Triangle; 96-127: Sample and hold"
+      },
+      {
+        "osc": "/lfo_1/frequency",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 1",
+        "_usage": "0~127: LFO frequency"
+      },
+      {
+        "osc": "/lfo_2/wave",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2",
+        "_usage": "0-31: Saw; 32-63: Square; 64-95: Triangle; 96-127: Sample and hold"
+      },
+      {
+        "osc": "/lfo_2/frequency",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO 2",
+        "_usage": "0~127: LFO frequency"
+      },
+      {
+        "osc": "/virtual_patch/patch_1_source",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Virtual Patch",
+        "_usage": "0-7: EG1; 8-16: EG2; 17-24: EG3; 25-33: LFO 1; 34-41: LFO 2; 42-50: Velocity; 51-58: Pitch bend; 59-67: Mod wheel; 68-75: Keyboard track; 76-84: Envel"
+      },
+      {
+        "osc": "/virtual_patch/patch_2_source",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Virtual Patch",
+        "_usage": "0-7: EG1; 8-16: EG2; 17-24: EG3; 25-33: LFO 1; 34-41: LFO 2; 42-50: Velocity; 51-58: Pitch bend; 59-67: Mod wheel; 68-75: Keyboard track; 76-84: Envel"
+      },
+      {
+        "osc": "/virtual_patch/patch_3_source",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Virtual Patch",
+        "_usage": "0-7: EG1; 8-16: EG2; 17-24: EG3; 25-33: LFO 1; 34-41: LFO 2; 42-50: Velocity; 51-58: Pitch bend; 59-67: Mod wheel; 68-75: Keyboard track; 76-84: Envel"
+      },
+      {
+        "osc": "/virtual_patch/patch_4_source",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Virtual Patch",
+        "_usage": "0-7: EG1; 8-16: EG2; 17-24: EG3; 25-33: LFO 1; 34-41: LFO 2; 42-50: Velocity; 51-58: Pitch bend; 59-67: Mod wheel; 68-75: Keyboard track; 76-84: Envel"
+      },
+      {
+        "osc": "/virtual_patch/patch_5_source",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Virtual Patch",
+        "_usage": "0-7: EG1; 8-16: EG2; 17-24: EG3; 25-33: LFO 1; 34-41: LFO 2; 42-50: Velocity; 51-58: Pitch bend; 59-67: Mod wheel; 68-75: Keyboard track; 76-84: Envel"
+      },
+      {
+        "osc": "/virtual_patch/patch_6_source",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Virtual Patch",
+        "_usage": "0-7: EG1; 8-16: EG2; 17-24: EG3; 25-33: LFO 1; 34-41: LFO 2; 42-50: Velocity; 51-58: Pitch bend; 59-67: Mod wheel; 68-75: Keyboard track; 76-84: Envel"
+      },
+      {
+        "osc": "/virtual_patch/patch_1_destination",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Virtual Patch",
+        "_usage": "0-7: Pitch; 8-15: OSC2 pitch; 16-23: OSC1 control; 24-31: OSC1 level; 32-39: OSC2 level; 40-47: Noise level; 48-55: Filter 1 type; 56-63: Filter 1 cut"
+      },
+      {
+        "osc": "/virtual_patch/patch_2_destination",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Virtual Patch",
+        "_usage": "0-7: Pitch; 8-15: OSC2 pitch; 16-23: OSC1 control; 24-31: OSC1 level; 32-39: OSC2 level; 40-47: Noise level; 48-55: Filter 1 type; 56-63: Filter 1 cut"
+      },
+      {
+        "osc": "/virtual_patch/patch_3_destination",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Virtual Patch",
+        "_usage": "0-7: Pitch; 8-15: OSC2 pitch; 16-23: OSC1 control; 24-31: OSC1 level; 32-39: OSC2 level; 40-47: Noise level; 48-55: Filter 1 type; 56-63: Filter 1 cut"
+      },
+      {
+        "osc": "/virtual_patch/patch_4_destination",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Virtual Patch",
+        "_usage": "0-7: Pitch; 8-15: OSC2 pitch; 16-23: OSC1 control; 24-31: OSC1 level; 32-39: OSC2 level; 40-47: Noise level; 48-55: Filter 1 type; 56-63: Filter 1 cut"
+      },
+      {
+        "osc": "/virtual_patch/patch_5_destination",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Virtual Patch",
+        "_usage": "0-7: Pitch; 8-15: OSC2 pitch; 16-23: OSC1 control; 24-31: OSC1 level; 32-39: OSC2 level; 40-47: Noise level; 48-55: Filter 1 type; 56-63: Filter 1 cut"
+      },
+      {
+        "osc": "/virtual_patch/patch_6_destination",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Virtual Patch",
+        "_usage": "0-7: Pitch; 8-15: OSC2 pitch; 16-23: OSC1 control; 24-31: OSC1 level; 32-39: OSC2 level; 40-47: Noise level; 48-55: Filter 1 type; 56-63: Filter 1 cut"
+      },
+      {
+        "osc": "/virtual_patch/patch_1_intensity",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Virtual Patch",
+        "_usage": "0~127: -63 to +63 intensity"
+      },
+      {
+        "osc": "/virtual_patch/patch_2_intensity",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Virtual Patch",
+        "_usage": "0~127: -63 to +63 intensity"
+      },
+      {
+        "osc": "/virtual_patch/patch_3_intensity",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Virtual Patch",
+        "_usage": "0~127: -63 to +63 intensity"
+      },
+      {
+        "osc": "/virtual_patch/patch_4_intensity",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Virtual Patch",
+        "_usage": "0~127: -63 to +63 intensity"
+      },
+      {
+        "osc": "/virtual_patch/patch_5_intensity",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Virtual Patch",
+        "_usage": "0~127: -63 to +63 intensity"
+      },
+      {
+        "osc": "/virtual_patch/patch_6_intensity",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Virtual Patch",
+        "_usage": "0~127: -63 to +63 intensity"
+      },
+      {
+        "osc": "/eq/high_gain",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "EQ",
+        "_usage": "0~127: -15.0 to +15.0 dB"
+      },
+      {
+        "osc": "/eq/low_gain",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "EQ",
+        "_usage": "0~127: -15.0 to +15.0 dB"
+      },
+      {
+        "osc": "/modulation_sequencer/switch",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Modulation Sequencer",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/modulation_sequencer_1/step_1_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 1",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_1/step_2_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 1",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_1/step_3_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 1",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_1/step_4_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 1",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_1/step_5_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 1",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_1/step_6_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 1",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_1/step_7_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 1",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_1/step_8_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 1",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_1/step_9_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 1",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_1/step_10_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 1",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_1/step_11_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 1",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_1/step_12_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 1",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_1/step_13_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 1",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_1/step_14_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 1",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_1/step_15_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 1",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_1/step_16_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 1",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_2/step_1_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 2",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_2/step_2_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 2",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_2/step_3_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 2",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_2/step_4_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 2",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_2/step_5_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 2",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_2/step_6_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 2",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_2/step_7_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 2",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_2/step_8_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 2",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_2/step_9_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 2",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_2/step_10_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 2",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_2/step_11_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 2",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_2/step_12_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 2",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_2/step_13_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 2",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_2/step_14_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 2",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_2/step_15_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 2",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_2/step_16_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 2",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_3/step_1_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 3",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_3/step_2_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 3",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_3/step_3_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 3",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_3/step_4_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 3",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_3/step_5_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 3",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_3/step_6_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 3",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_3/step_7_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 3",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_3/step_8_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 3",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_3/step_9_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 3",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_3/step_10_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 3",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_3/step_11_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 3",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_3/step_12_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 3",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_3/step_13_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 3",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_3/step_14_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 3",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_3/step_15_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 3",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/modulation_sequencer_3/step_16_value",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation Sequencer 3",
+        "_usage": "0~127: Value offset"
+      },
+      {
+        "osc": "/insert_fx_1/switch",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Insert FX 1",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/insert_fx_1/edit_1",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Insert FX 1",
+        "_usage": "0~127: Effect parameter value"
+      },
+      {
+        "osc": "/insert_fx_1/edit_2",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Insert FX 1",
+        "_usage": "0~127: Effect parameter value"
+      },
+      {
+        "osc": "/insert_fx_2/switch",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Insert FX 2",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/insert_fx_2/edit_1",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Insert FX 2",
+        "_usage": "0~127: Effect parameter value"
+      },
+      {
+        "osc": "/insert_fx_2/edit_2",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Insert FX 2",
+        "_usage": "0~127: Effect parameter value"
+      },
+      {
+        "osc": "/master_fx/switch",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master FX",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/master_fx/edit",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master FX",
+        "_usage": "0~127: Effect parameter value"
+      },
+      {
+        "osc": "/arpeggiator/on_off",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/arpeggiator/octave_range",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0: 1 octave; 1: 2 octaves; 2: 3 octaves; 3: 4 octaves",
+        "expects": "discrete"
+      },
+      {
+        "osc": "/arpeggiator/latch_on_off",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/arpeggiator/type",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0-20: Up; 21-41: Down; 42-62: Alt1; 63-83: Alt2; 84-104: Random; 105-127: Trigger"
+      },
+      {
+        "osc": "/arpeggiator/gate_time",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Arpeggiator",
+        "_usage": "0~127: -100 to +100 percent"
+      },
+      {
+        "osc": "/arpeggiator/select_switch",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0: Off; 1: Arpeggiator; 2: Step Seq 1; 3-127: Step Seq 2"
+      },
+      {
+        "osc": "/step_sequencer_1/latch",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Step Sequencer 1",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/step_sequencer_1/gate_time",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Step Sequencer 1",
+        "_usage": "0~127: -100 to +100 percent"
+      },
+      {
+        "osc": "/step_sequencer_2/latch",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Step Sequencer 2",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/step_sequencer_2/gate_time",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Step Sequencer 2",
+        "_usage": "0~127: -100 to +100 percent"
+      },
+      {
+        "osc": "/vocoder/band_1_level",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder",
+        "_usage": "0~127: Band level"
+      },
+      {
+        "osc": "/vocoder/band_2_level",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder",
+        "_usage": "0~127: Band level"
+      },
+      {
+        "osc": "/vocoder/band_3_level",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder",
+        "_usage": "0~127: Band level"
+      },
+      {
+        "osc": "/vocoder/band_4_level",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder",
+        "_usage": "0~127: Band level"
+      },
+      {
+        "osc": "/vocoder/band_5_level",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder",
+        "_usage": "0~127: Band level"
+      },
+      {
+        "osc": "/vocoder/band_6_level",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder",
+        "_usage": "0~127: Band level"
+      },
+      {
+        "osc": "/vocoder/band_7_level",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder",
+        "_usage": "0~127: Band level"
+      },
+      {
+        "osc": "/vocoder/band_8_level",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder",
+        "_usage": "0~127: Band level"
+      },
+      {
+        "osc": "/vocoder/band_9_level",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder",
+        "_usage": "0~127: Band level"
+      },
+      {
+        "osc": "/vocoder/band_10_level",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder",
+        "_usage": "0~127: Band level"
+      },
+      {
+        "osc": "/vocoder/band_11_level",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder",
+        "_usage": "0~127: Band level"
+      },
+      {
+        "osc": "/vocoder/band_12_level",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder",
+        "_usage": "0~127: Band level"
+      },
+      {
+        "osc": "/vocoder/band_13_level",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder",
+        "_usage": "0~127: Band level"
+      },
+      {
+        "osc": "/vocoder/band_14_level",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder",
+        "_usage": "0~127: Band level"
+      },
+      {
+        "osc": "/vocoder/band_15_level",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder",
+        "_usage": "0~127: Band level"
+      },
+      {
+        "osc": "/vocoder/band_16_level",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder",
+        "_usage": "0~127: Band level"
+      },
+      {
+        "osc": "/vocoder/band_1_pan",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vocoder",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
+      },
+      {
+        "osc": "/vocoder/band_2_pan",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vocoder",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
+      },
+      {
+        "osc": "/vocoder/band_3_pan",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vocoder",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
+      },
+      {
+        "osc": "/vocoder/band_4_pan",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vocoder",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
+      },
+      {
+        "osc": "/vocoder/band_5_pan",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vocoder",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
+      },
+      {
+        "osc": "/vocoder/band_6_pan",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vocoder",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
+      },
+      {
+        "osc": "/vocoder/band_7_pan",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vocoder",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
+      },
+      {
+        "osc": "/vocoder/band_8_pan",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vocoder",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
+      },
+      {
+        "osc": "/vocoder/band_9_pan",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vocoder",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
+      },
+      {
+        "osc": "/vocoder/band_10_pan",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vocoder",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
+      },
+      {
+        "osc": "/vocoder/band_11_pan",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vocoder",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
+      },
+      {
+        "osc": "/vocoder/band_12_pan",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vocoder",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
+      },
+      {
+        "osc": "/vocoder/band_13_pan",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vocoder",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
+      },
+      {
+        "osc": "/vocoder/band_14_pan",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vocoder",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
+      },
+      {
+        "osc": "/vocoder/band_15_pan",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vocoder",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
+      },
+      {
+        "osc": "/vocoder/band_16_pan",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Vocoder",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
+      },
+      {
+        "osc": "/vocoder/fc_mod_source",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vocoder",
+        "_usage": "0-7: EG1; 8-16: EG2; 17-24: EG3; 25-33: LFO 1; 34-41: LFO 2; 42-50: Velocity; 51-58: Pitch bend; 59-67: Mod wheel; 68-75: Keyboard track; 76-84: Envel"
+      },
+      {
+        "osc": "/timbres/timbre_1_switch",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Timbres",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/timbres/timbre_2_switch",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Timbres",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/timbres/timbre_3_switch",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Timbres",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/timbres/timbre_4_switch",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Timbres",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/timbres/vocoder_switch",
+        "nrpn_msb": 5,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Timbres",
+        "_usage": "0-63: Off; 64-127: On"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

@@ -1,0 +1,1181 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Roland/SPD-SX PRO.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 112,
+    "cc_entries": 112,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "SPD-SX PRO",
+    "vendor": "Roland",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/spd_sx_pro",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/bank_select/msb",
+        "cc": 0,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bank select"
+      },
+      {
+        "osc": "/bank_select/lsb",
+        "cc": 32,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Bank select",
+        "_usage": "0: Kits 1-128; 1: Kits 129-200",
+        "expects": "switch"
+      },
+      {
+        "osc": "/hi_hat_control_pedal/hi_hat_pedal_position_modulation",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hi-hat control pedal",
+        "_usage": "0~127: Open to closed"
+      },
+      {
+        "osc": "/hi_hat_control_pedal/hi_hat_pedal_position_breath",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hi-hat control pedal",
+        "_usage": "0~127: Open to closed"
+      },
+      {
+        "osc": "/hi_hat_control_pedal/hi_hat_pedal_position_foot_controller",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hi-hat control pedal",
+        "_usage": "0~127: Open to closed"
+      },
+      {
+        "osc": "/hi_hat_control_pedal/hi_hat_pedal_position_expression",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hi-hat control pedal",
+        "_usage": "0~127: Open to closed"
+      },
+      {
+        "osc": "/hi_hat_control_pedal/hi_hat_pedal_position_general_purpose_1",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hi-hat control pedal",
+        "_usage": "0~127: Open to closed"
+      },
+      {
+        "osc": "/hi_hat_control_pedal/hi_hat_pedal_position_general_purpose_2",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hi-hat control pedal",
+        "_usage": "0~127: Open to closed"
+      },
+      {
+        "osc": "/hi_hat_control_pedal/hi_hat_pedal_position_general_purpose_3",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hi-hat control pedal",
+        "_usage": "0~127: Open to closed"
+      },
+      {
+        "osc": "/hi_hat_control_pedal/hi_hat_pedal_position_general_purpose_4",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hi-hat control pedal",
+        "_usage": "0~127: Open to closed"
+      },
+      {
+        "osc": "/pad_expression/pad_expression",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pad expression"
+      },
+      {
+        "osc": "/master_effect/control_001",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_002",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_003",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_004",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_005",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_006",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_007",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_008",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_009",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_010",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_011",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_012",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_013",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_014",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_015",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_016",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_017",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_018",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_019",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_020",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_021",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_022",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_023",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_024",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_025",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_026",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_027",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_028",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_029",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_030",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_031",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_033",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_034",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_035",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_036",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_037",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_038",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_039",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_040",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_041",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_042",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_043",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_044",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_045",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_046",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_047",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_048",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_049",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_050",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_051",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_052",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_053",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_054",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_055",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_056",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_057",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_058",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_059",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_060",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_061",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_062",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_063",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_064",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_065",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_066",
+        "cc": 66,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_067",
+        "cc": 67,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_068",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_069",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_070",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_071",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_072",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_073",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_074",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_075",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_076",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_077",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_078",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_079",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_080",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_081",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_082",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_083",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_084",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_085",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_086",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_087",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_088",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_089",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_090",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_091",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_092",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_093",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_094",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/master_effect/control_095",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master effect"
+      },
+      {
+        "osc": "/channel_mode/all_sounds_off",
+        "cc": 120,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/reset_all_controllers",
+        "cc": 121,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/omni_off",
+        "cc": 124,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/omni_on",
+        "cc": 125,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/mono",
+        "cc": 126,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/poly",
+        "cc": 127,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

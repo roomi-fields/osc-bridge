@@ -1,0 +1,1104 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Kemper/PROFILER PowerHead.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 93,
+    "cc_entries": 43,
+    "nrpn_entries": 50,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "PROFILER PowerHead",
+    "vendor": "Kemper",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/profiler_powerhead",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/banks_and_presets/bank_select_msb",
+        "cc": 0,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets"
+      },
+      {
+        "osc": "/banks_and_presets/bank_select_lsb",
+        "cc": 32,
+        "range": [
+          0,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets"
+      },
+      {
+        "osc": "/banks_and_presets/performance_select",
+        "cc": 47,
+        "range": [
+          0,
+          124
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets"
+      },
+      {
+        "osc": "/banks_and_presets/performance_index_increase",
+        "cc": 48,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "0: Noop; 1: Increase",
+        "expects": "switch"
+      },
+      {
+        "osc": "/banks_and_presets/performance_index_decrease",
+        "cc": 49,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "0: Noop; 1: Decrease",
+        "expects": "switch"
+      },
+      {
+        "osc": "/banks_and_presets/select_performance_slot_1",
+        "cc": 50,
+        "range": [
+          1,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "1: Select Slot 1"
+      },
+      {
+        "osc": "/banks_and_presets/select_performance_slot_2",
+        "cc": 51,
+        "range": [
+          1,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "1: Select Slot 2"
+      },
+      {
+        "osc": "/banks_and_presets/select_performance_slot_3",
+        "cc": 52,
+        "range": [
+          1,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "1: Select Slot 3"
+      },
+      {
+        "osc": "/banks_and_presets/select_performance_slot_4",
+        "cc": 53,
+        "range": [
+          1,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "1: Select Slot 4"
+      },
+      {
+        "osc": "/banks_and_presets/select_performance_slot_5",
+        "cc": 54,
+        "range": [
+          1,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "1: Select Slot 5"
+      },
+      {
+        "osc": "/pedals/wah_pedal_level",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pedals",
+        "_usage": "0~127: Wah pedal level"
+      },
+      {
+        "osc": "/pedals/pitch_pedal_level",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pedals",
+        "_usage": "0~127: Pitch pedal level"
+      },
+      {
+        "osc": "/pedals/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pedals",
+        "_usage": "0~127: Volume"
+      },
+      {
+        "osc": "/pedals/pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Pedals",
+        "_usage": "0~127: Pan"
+      },
+      {
+        "osc": "/pedals/morph_pedal_value",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pedals",
+        "_usage": "0~127: Morph pedal value"
+      },
+      {
+        "osc": "/stomps/all_stomps_on_off",
+        "cc": 16,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Stomps",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/stomps/stomp_a_on_off",
+        "cc": 17,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Stomps",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/stomps/stomp_b_on_off",
+        "cc": 18,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Stomps",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/stomps/stomp_c_on_off",
+        "cc": 19,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Stomps",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/stomps/stomp_d_on_off",
+        "cc": 20,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Stomps",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/effects/effect_x_on_off",
+        "cc": 22,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/effects/effect_mod_on_off",
+        "cc": 24,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/effects/delay_on_off_cuts_tails",
+        "cc": 26,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/effects/delay_on_off_keeps_tails",
+        "cc": 27,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/effects/reverb_on_off_cuts_tails",
+        "cc": 28,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/effects/reverb_on_off_keeps_tails",
+        "cc": 29,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/effects/rotary_speed",
+        "cc": 33,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/effects/delay_feedback_infinity_on_off",
+        "cc": 34,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/effects/delay_hold_on_off",
+        "cc": 35,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/effects/delay_mix_level",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0~127: Delay mix level"
+      },
+      {
+        "osc": "/effects/delay_feedback_level",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0~127: Delay feedback level"
+      },
+      {
+        "osc": "/effects/reverb_mix_level",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0~127: Reverb mix level"
+      },
+      {
+        "osc": "/effects/reverb_time_level",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0~127: Reverb time level"
+      },
+      {
+        "osc": "/effects/effect_button_i",
+        "cc": 75,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/effects/effect_button_ii",
+        "cc": 76,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/effects/effect_button_iii",
+        "cc": 77,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/effects/effect_button_iv",
+        "cc": 78,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Effects",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/amplifier/gain_level",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier",
+        "_usage": "0~127: Amplifier gain level"
+      },
+      {
+        "osc": "/global_controls/tap_tempo",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global controls",
+        "_usage": "0: Off; 1: Tap; 127: Engage Beat Scanner"
+      },
+      {
+        "osc": "/global_controls/tuner_display",
+        "cc": 31,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Global controls",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/global_controls/monitor_volume",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global controls",
+        "_usage": "0~127: Monitor volume"
+      },
+      {
+        "osc": "/looper/start",
+        "cc": 81,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/looper/stop",
+        "cc": 82,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/rig/tempo",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Rig"
+      },
+      {
+        "osc": "/rig/volume",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Rig"
+      },
+      {
+        "osc": "/rig/tempo_enable",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Rig",
+        "_usage": "0: Off; 1~16383: On"
+      },
+      {
+        "osc": "/rig/transpose",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Rig"
+      },
+      {
+        "osc": "/rig/stomps_section_on_off",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 64,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Rig",
+        "_usage": "0: Off; 1~16383: On"
+      },
+      {
+        "osc": "/rig/stack_section_on_off",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 65,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Rig",
+        "_usage": "0: Off; 1~16383: On"
+      },
+      {
+        "osc": "/rig/effects_section_on_off",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 66,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Rig",
+        "_usage": "0: Off; 1~16383: On"
+      },
+      {
+        "osc": "/rig/volume_pedal_location",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 68,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Rig"
+      },
+      {
+        "osc": "/rig/volume_pedal_range",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 69,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Rig"
+      },
+      {
+        "osc": "/rig/parallel_path_enable",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 71,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Rig",
+        "_usage": "0: Off; 1~16383: On"
+      },
+      {
+        "osc": "/rig/parallel_path_mix",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 72,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Rig"
+      },
+      {
+        "osc": "/rig/spillover_off",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 73,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Rig",
+        "_usage": "0: Off; 1~16383: On"
+      },
+      {
+        "osc": "/rig/delay_reverb_routing",
+        "nrpn_msb": 4,
+        "nrpn_lsb": 74,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Rig"
+      },
+      {
+        "osc": "/input/noise_gate_intensity",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Input"
+      },
+      {
+        "osc": "/input/clean_sense",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Input"
+      },
+      {
+        "osc": "/input/distortion_sense",
+        "nrpn_msb": 9,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Input"
+      },
+      {
+        "osc": "/amplifier/on_off",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier",
+        "_usage": "0: Off; 1~16383: On"
+      },
+      {
+        "osc": "/amplifier/gain",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier"
+      },
+      {
+        "osc": "/amplifier/clean_compensation",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier"
+      },
+      {
+        "osc": "/amplifier/definition",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier"
+      },
+      {
+        "osc": "/amplifier/clarity",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier"
+      },
+      {
+        "osc": "/amplifier/power_sagging",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 8,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier"
+      },
+      {
+        "osc": "/amplifier/pick",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 9,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier"
+      },
+      {
+        "osc": "/amplifier/compressor",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 10,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier"
+      },
+      {
+        "osc": "/amplifier/tube_shape",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier"
+      },
+      {
+        "osc": "/amplifier/tube_bias",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 12,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier"
+      },
+      {
+        "osc": "/amplifier/direct_mix",
+        "nrpn_msb": 10,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Amplifier"
+      },
+      {
+        "osc": "/tone_stack/on_off",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Tone stack",
+        "_usage": "0: Off; 1~16383: On"
+      },
+      {
+        "osc": "/tone_stack/bass",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Tone stack"
+      },
+      {
+        "osc": "/tone_stack/mids",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Tone stack"
+      },
+      {
+        "osc": "/tone_stack/treble",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Tone stack"
+      },
+      {
+        "osc": "/tone_stack/presence",
+        "nrpn_msb": 11,
+        "nrpn_lsb": 7,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Tone stack"
+      },
+      {
+        "osc": "/cabinet/on_off",
+        "nrpn_msb": 12,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Cabinet",
+        "_usage": "0: Off; 1~16383: On"
+      },
+      {
+        "osc": "/cabinet/volume",
+        "nrpn_msb": 12,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Cabinet"
+      },
+      {
+        "osc": "/cabinet/high_shift",
+        "nrpn_msb": 12,
+        "nrpn_lsb": 4,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Cabinet"
+      },
+      {
+        "osc": "/cabinet/low_shift",
+        "nrpn_msb": 12,
+        "nrpn_lsb": 5,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Cabinet"
+      },
+      {
+        "osc": "/cabinet/character",
+        "nrpn_msb": 12,
+        "nrpn_lsb": 6,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Cabinet"
+      },
+      {
+        "osc": "/system_and_global_outputs/main_output_volume",
+        "nrpn_msb": 127,
+        "nrpn_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "System and global outputs"
+      },
+      {
+        "osc": "/system_and_global_outputs/headphone_output_volume",
+        "nrpn_msb": 127,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "System and global outputs"
+      },
+      {
+        "osc": "/system_and_global_outputs/monitor_output_volume",
+        "nrpn_msb": 127,
+        "nrpn_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "System and global outputs"
+      },
+      {
+        "osc": "/system_and_global_outputs/direct_output_volume",
+        "nrpn_msb": 127,
+        "nrpn_lsb": 3,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "System and global outputs"
+      },
+      {
+        "osc": "/system_and_global_outputs/spdif_input_enable",
+        "nrpn_msb": 127,
+        "nrpn_lsb": 11,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "System and global outputs",
+        "_usage": "0: Off; 1~16383: On"
+      },
+      {
+        "osc": "/system_and_global_outputs/main_output_eq_bass",
+        "nrpn_msb": 127,
+        "nrpn_lsb": 12,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "System and global outputs"
+      },
+      {
+        "osc": "/system_and_global_outputs/main_output_eq_mids",
+        "nrpn_msb": 127,
+        "nrpn_lsb": 13,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "System and global outputs"
+      },
+      {
+        "osc": "/system_and_global_outputs/main_output_eq_treble",
+        "nrpn_msb": 127,
+        "nrpn_lsb": 14,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "System and global outputs"
+      },
+      {
+        "osc": "/system_and_global_outputs/main_output_eq_presence",
+        "nrpn_msb": 127,
+        "nrpn_lsb": 15,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "System and global outputs"
+      },
+      {
+        "osc": "/system_and_global_outputs/monitor_output_eq_bass",
+        "nrpn_msb": 127,
+        "nrpn_lsb": 17,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "System and global outputs"
+      },
+      {
+        "osc": "/system_and_global_outputs/monitor_output_eq_mids",
+        "nrpn_msb": 127,
+        "nrpn_lsb": 18,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "System and global outputs"
+      },
+      {
+        "osc": "/system_and_global_outputs/monitor_output_eq_treble",
+        "nrpn_msb": 127,
+        "nrpn_lsb": 19,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "System and global outputs"
+      },
+      {
+        "osc": "/system_and_global_outputs/monitor_output_eq_presence",
+        "nrpn_msb": 127,
+        "nrpn_lsb": 20,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "System and global outputs"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

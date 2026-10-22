@@ -1,0 +1,996 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/discoDSP/Corona.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 88,
+    "cc_entries": 88,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Corona",
+    "vendor": "discoDSP",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/corona",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/global/portamento",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~127: Instant to slowest glide"
+      },
+      {
+        "osc": "/global/master",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~127: Silence to full output"
+      },
+      {
+        "osc": "/delay/feedback",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay",
+        "_usage": "0: Single repeat; 1~126: Sustain amount; 127: Near-infinite sustain"
+      },
+      {
+        "osc": "/delay/mix",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay",
+        "_usage": "0~127: Dry only to fully wet"
+      },
+      {
+        "osc": "/chorus/mix",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Chorus",
+        "_usage": "0~127: Dry only to fully wet"
+      },
+      {
+        "osc": "/oscillator/finetune",
+        "cc": 14,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "centered",
+        "section": "Oscillator",
+        "_usage": "0~100: -50 to +50 cents"
+      },
+      {
+        "osc": "/vibrato/vibfreq",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vibrato"
+      },
+      {
+        "osc": "/volume_envelope/attack",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume Envelope",
+        "_usage": "0~127: Near-instant to slowest attack"
+      },
+      {
+        "osc": "/volume_envelope/decay",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume Envelope",
+        "_usage": "0~127: Near-instant to slowest decay"
+      },
+      {
+        "osc": "/volume_envelope/sustain",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume Envelope",
+        "_usage": "0~127: No sustain to full sustain"
+      },
+      {
+        "osc": "/volume_envelope/release",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Volume Envelope",
+        "_usage": "0~127: Near-instant to slowest release"
+      },
+      {
+        "osc": "/filter_1/drive",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 1",
+        "_usage": "0~127: Clean to maximum saturation"
+      },
+      {
+        "osc": "/unison/spread_cents",
+        "cc": 24,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Unison",
+        "_usage": "0~100: No spread (unison) to maximum spread"
+      },
+      {
+        "osc": "/unison/panning_spread",
+        "cc": 25,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Unison",
+        "_usage": "0: Mono (centre); 100: Maximum stereo spread"
+      },
+      {
+        "osc": "/filter_1_envelope/filter_attack",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 1 Envelope",
+        "_usage": "0~127: Near-instant to slowest attack"
+      },
+      {
+        "osc": "/filter_1_envelope/filter_decay",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 1 Envelope",
+        "_usage": "0~127: Near-instant to slowest decay"
+      },
+      {
+        "osc": "/filter_1_envelope/filter_sustain",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 1 Envelope",
+        "_usage": "0~127: No sustain to full sustain"
+      },
+      {
+        "osc": "/filter_1_envelope/filter_release",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 1 Envelope",
+        "_usage": "0~127: Near-instant to slowest release"
+      },
+      {
+        "osc": "/filter_1_lfo/f_lfo_delay",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 1 LFO",
+        "_usage": "0~127: Immediate to longest delay"
+      },
+      {
+        "osc": "/filter_1_lfo/f_lfo_smooth",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 1 LFO",
+        "_usage": "0~127: No smoothing to maximum smoothing"
+      },
+      {
+        "osc": "/filter_1_lfo/f_lfo_mode",
+        "cc": 33,
+        "range": [
+          0,
+          11
+        ],
+        "orientation": "0-based",
+        "section": "Filter 1 LFO",
+        "_usage": "0: Voice (free-run, retrigger per voice); 1: Legato (free-run, retrigger only on legato); 2: Global (free-run, single LFO shared across voices); 3: V."
+      },
+      {
+        "osc": "/oscillator/semitones",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator",
+        "_usage": "0~127: -64 to +63 semitones"
+      },
+      {
+        "osc": "/global/finetune",
+        "cc": 35,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "centered",
+        "section": "Global",
+        "_usage": "0~100: -50 to +50 cents"
+      },
+      {
+        "osc": "/oscillator/w3_level",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator",
+        "_usage": "0~127: Silent to full level"
+      },
+      {
+        "osc": "/oscillator/phase",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator",
+        "_usage": "0~127: Negative to positive offset"
+      },
+      {
+        "osc": "/vibrato/vibdepth",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vibrato",
+        "_usage": "0~127: No vibrato to maximum pitch modulation"
+      },
+      {
+        "osc": "/oscillator/w3_finetune",
+        "cc": 40,
+        "range": [
+          0,
+          100
+        ],
+        "orientation": "centered",
+        "section": "Oscillator",
+        "_usage": "0~100: -50 to +50 cents"
+      },
+      {
+        "osc": "/oscillator/level",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator",
+        "_usage": "0~127: Silent to full level"
+      },
+      {
+        "osc": "/vibrato/vibdelay",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Vibrato",
+        "_usage": "0~127: Immediate to longest delay"
+      },
+      {
+        "osc": "/global/transpose",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Global",
+        "_usage": "0~127: -64 to +63 semitones"
+      },
+      {
+        "osc": "/oscillator/w3_semitones",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator",
+        "_usage": "0~127: -64 to +63 semitones"
+      },
+      {
+        "osc": "/mod_envelope/m_env_phase",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Envelope",
+        "_usage": "0~127: Negative to positive modulation"
+      },
+      {
+        "osc": "/mod_envelope/m_env_osc_2",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Envelope",
+        "_usage": "0~127: Negative to positive modulation"
+      },
+      {
+        "osc": "/mod_lfo/m_lfo_delay",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod LFO",
+        "_usage": "0~127: Immediate to longest delay"
+      },
+      {
+        "osc": "/mod_lfo/m_lfo_freq",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod LFO"
+      },
+      {
+        "osc": "/mod_lfo/m_lfo_decay",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod LFO",
+        "_usage": "0~126: LFO fade out time; 127: Constant amplitudeover time"
+      },
+      {
+        "osc": "/mod_lfo/m_lfo_smooth",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod LFO"
+      },
+      {
+        "osc": "/mod_lfo/m_lfo_waveform",
+        "cc": 51,
+        "range": [
+          0,
+          11
+        ],
+        "orientation": "0-based",
+        "section": "Mod LFO",
+        "_usage": "0: Triangle; 1: Sine; 2: Sawtooth; 3: Square; 4: Rnd (random / S&H); 5: Rnd^2; 6: Rnd^2 up; 7: Saw^2; 8: Saw^0.5; 9: Parabola; 10: x*|x|; 11: x(|x|*2-"
+      },
+      {
+        "osc": "/mod_lfo/m_lfo_mode",
+        "cc": 52,
+        "range": [
+          0,
+          11
+        ],
+        "orientation": "0-based",
+        "section": "Mod LFO",
+        "_usage": "0: Voice (free-run, retrigger per voice); 1: Legato (free-run, retrigger only on legato); 2: Global (free-run, single LFO shared across voices); 3: V."
+      },
+      {
+        "osc": "/filter_1_lfo/f_lfo_waveform",
+        "cc": 53,
+        "range": [
+          0,
+          11
+        ],
+        "orientation": "0-based",
+        "section": "Filter 1 LFO",
+        "_usage": "0: Triangle; 1: Sine; 2: Sawtooth; 3: Square; 4: Rnd (random / S&H); 5: Rnd^2; 6: Rnd^2 up; 7: Saw^2; 8: Saw^0.5; 9: Parabola; 10: x*|x|; 11: x(|x|*2-"
+      },
+      {
+        "osc": "/mod_lfo/m_lfo_phase",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod LFO",
+        "_usage": "0~127: Negative to positive modulation"
+      },
+      {
+        "osc": "/mod_lfo/m_lfo_osc_2",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod LFO",
+        "_usage": "0~127: Negative to positive modulation"
+      },
+      {
+        "osc": "/filter_2_lfo/f2_lfo_freq",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 2 LFO"
+      },
+      {
+        "osc": "/filter_2_lfo/f2_lfo_depth",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter 2 LFO",
+        "_usage": "0~127: Negative to positive modulation of depth on Filter 2 cutoff"
+      },
+      {
+        "osc": "/filter_2_lfo/f2_lfo_delay",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 2 LFO"
+      },
+      {
+        "osc": "/filter_2_lfo/f2_lfo_smooth",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 2 LFO"
+      },
+      {
+        "osc": "/chorus/frequency",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/chorus/depth",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Chorus"
+      },
+      {
+        "osc": "/distortion/mix",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Distortion",
+        "_usage": "0~127: Dry only to fully wet"
+      },
+      {
+        "osc": "/distortion/amount",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Distortion"
+      },
+      {
+        "osc": "/distortion/tone",
+        "cc": 65,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Distortion",
+        "_usage": "0~63: Darker amount; 64: Flat; 65~127: Brighter amount"
+      },
+      {
+        "osc": "/distortion/type",
+        "cc": 66,
+        "range": [
+          0,
+          8
+        ],
+        "orientation": "0-based",
+        "section": "Distortion",
+        "_usage": "0: Overdrive; 1: Foldback; 2: Clip (hard clip); 3: Asym (asymmetric clip); 4: Scream; 5: Quantize (bitcrush); 6: S&h (sample & hold); 7: S&h clip; 8: "
+      },
+      {
+        "osc": "/filter_2_lfo/f2_lfo_waveform",
+        "cc": 67,
+        "range": [
+          0,
+          11
+        ],
+        "orientation": "0-based",
+        "section": "Filter 2 LFO",
+        "_usage": "0: Triangle; 1: Sine; 2: Sawtooth; 3: Square; 4: Rnd (random / S&H); 5: Rnd^2; 6: Rnd^2 up; 7: Saw^2; 8: Saw^0.5; 9: Parabola; 10: x*|x|; 11: x(|x|*2-"
+      },
+      {
+        "osc": "/arpeggiator/a_length",
+        "cc": 68,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0~127: Staccato to full legato"
+      },
+      {
+        "osc": "/arpeggiator/a_swing",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0~63: Negative swing; 64: Straight; 65-127: Positive swing"
+      },
+      {
+        "osc": "/arpeggiator/a_vel_mix",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Arpeggiator",
+        "_usage": "0: Use only programmed step velocities; 1~126: Blend programmed step velocieis and incoming MIDI key velocities; 127: Use only incoming MIDI key veloc"
+      },
+      {
+        "osc": "/filter_1/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 1",
+        "_usage": "0~127: No resonance to maximum Q"
+      },
+      {
+        "osc": "/filter_2_lfo/f2_lfo_mode",
+        "cc": 72,
+        "range": [
+          0,
+          11
+        ],
+        "orientation": "0-based",
+        "section": "Filter 2 LFO",
+        "_usage": "0: Voice (free-run, retrigger per voice); 1: Legato (free-run, retrigger only on legato); 2: Global (free-run, single LFO shared across voices); 3: V."
+      },
+      {
+        "osc": "/filter_1/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 1",
+        "_usage": "0~127: Fully closed to fully open"
+      },
+      {
+        "osc": "/filter_1_lfo/f_lfo_freq",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 1 LFO"
+      },
+      {
+        "osc": "/mod_envelope/m_attack",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod Envelope",
+        "_usage": "0~127: Near-instant to slowest"
+      },
+      {
+        "osc": "/mod_envelope/m_decay",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod Envelope"
+      },
+      {
+        "osc": "/mod_envelope/m_sustain",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod Envelope"
+      },
+      {
+        "osc": "/mod_envelope/m_release",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mod Envelope"
+      },
+      {
+        "osc": "/filter_2/kbd_track_2",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 2",
+        "_usage": "0~127: No tracking to full 1-to-1 keyboard tracking"
+      },
+      {
+        "osc": "/filter_1/kbd_track",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 1",
+        "_usage": "0~127: No tracking to full 1-to-1 keyboard tracking of cutoff"
+      },
+      {
+        "osc": "/filter_2/resonance_2",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 2"
+      },
+      {
+        "osc": "/filter_2/drive_2",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 2"
+      },
+      {
+        "osc": "/filter_2/cutoff_2",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 2",
+        "_usage": "0~127: Fully closed to fully open"
+      },
+      {
+        "osc": "/filter_1/filter_envmod",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter 1",
+        "_usage": "0~63: Inverted envelope amount; 64: No modulation; 65~127: Positive envelope amount"
+      },
+      {
+        "osc": "/filter_1_lfo/f_lfo_depth",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter 1 LFO",
+        "_usage": "0~63: Negative depth; 64: No modulation; 65~127: Positive depth"
+      },
+      {
+        "osc": "/filter_2/filter_envmod_2",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Filter 2",
+        "_usage": "0~63: Negative depth; 64: No modulation; 65~127: Positive depth"
+      },
+      {
+        "osc": "/filter_2_envelope/filter_attack_2",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 2 Envelope"
+      },
+      {
+        "osc": "/filter_2_envelope/filter_sustain_2",
+        "cc": 95,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 2 Envelope"
+      },
+      {
+        "osc": "/filter_2_envelope/filter_release_2",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 2 Envelope"
+      },
+      {
+        "osc": "/filter_2_envelope/filter_decay_2",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter 2 Envelope"
+      },
+      {
+        "osc": "/limiter/limit_look_ahead",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Limiter"
+      },
+      {
+        "osc": "/limiter/limit_release",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Limiter"
+      },
+      {
+        "osc": "/mod_matrix/m1_amount",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix",
+        "_usage": "0~127: Full negative to full positive"
+      },
+      {
+        "osc": "/mod_matrix/m2_amount",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix",
+        "_usage": "0~127: Full negative to full positive"
+      },
+      {
+        "osc": "/mod_matrix/m3_amount",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix",
+        "_usage": "0~127: Full negative to full positive"
+      },
+      {
+        "osc": "/mod_matrix/m4_amount",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix",
+        "_usage": "0~127: Full negative to full positive"
+      },
+      {
+        "osc": "/mod_matrix/m5_amount",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix",
+        "_usage": "0~127: Full negative to full positive"
+      },
+      {
+        "osc": "/mod_matrix/m6_amount",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix",
+        "_usage": "0~127: Full negative to full positive"
+      },
+      {
+        "osc": "/mod_matrix/m7_amount",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix",
+        "_usage": "0~127: Full negative to full positive"
+      },
+      {
+        "osc": "/mod_matrix/m8_amount",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mod Matrix",
+        "_usage": "0~127: Full negative to full positive"
+      },
+      {
+        "osc": "/delay/left",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/right",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

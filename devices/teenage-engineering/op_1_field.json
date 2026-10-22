@@ -2,15 +2,18 @@
   "_sources": [
     {
       "type": "pencilresearch",
-      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Teenage Engineering/OP-1 field.csv",
-      "imported_at": "2026-04-13",
-      "commit": "deb41f2"
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Teenage Engineering/OP-1 field.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
     }
   ],
   "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
   "_coverage": {
-    "entries_total": 4,
-    "cc_entries": 4,
+    "entries_total": 61,
+    "cc_entries": 61,
     "nrpn_entries": 0,
     "fourteen_bit_cc_pairs": 0
   },
@@ -39,7 +42,8 @@
           127
         ],
         "orientation": "0-based",
-        "section": "MIDI LFO"
+        "section": "MIDI LFO",
+        "_usage": "0~127: MIDI LFO 1 amount"
       },
       {
         "osc": "/midi_lfo/parameter_2",
@@ -49,7 +53,8 @@
           127
         ],
         "orientation": "0-based",
-        "section": "MIDI LFO"
+        "section": "MIDI LFO",
+        "_usage": "0~127: MIDI LFO 2 amount"
       },
       {
         "osc": "/midi_lfo/parameter_3",
@@ -59,7 +64,8 @@
           127
         ],
         "orientation": "0-based",
-        "section": "MIDI LFO"
+        "section": "MIDI LFO",
+        "_usage": "0~127: MIDI LFO 3 amount"
       },
       {
         "osc": "/midi_lfo/parameter_4",
@@ -69,7 +75,635 @@
           127
         ],
         "orientation": "0-based",
-        "section": "MIDI LFO"
+        "section": "MIDI LFO",
+        "_usage": "0~127: MIDI LFO 4 amount"
+      },
+      {
+        "osc": "/mixer/volume",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer",
+        "_usage": "0~127: Volume amount"
+      },
+      {
+        "osc": "/mixer/mute",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer",
+        "_usage": "0-63: Mute off; 64-127: Mute on"
+      },
+      {
+        "osc": "/mixer/pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Mixer",
+        "_usage": "0~127: Pan amount"
+      },
+      {
+        "osc": "/synth/parameter_1",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth",
+        "_usage": "0~127: Synth parameter 1 amount"
+      },
+      {
+        "osc": "/synth/parameter_2",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth",
+        "_usage": "0~127: Synth parameter 2 amount"
+      },
+      {
+        "osc": "/synth/parameter_3",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth",
+        "_usage": "0~127: Synth parameter 3 amount"
+      },
+      {
+        "osc": "/synth/parameter_4",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth",
+        "_usage": "0~127: Synth parameter 4 amount"
+      },
+      {
+        "osc": "/drum/active_key_pitch",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum",
+        "_usage": "0~127: Drum active key pitch amount"
+      },
+      {
+        "osc": "/drum/active_key_loop_in",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum",
+        "_usage": "0~127: Drum active key loop in position"
+      },
+      {
+        "osc": "/drum/active_key_loop_out",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum",
+        "_usage": "0~127: Drum active key loop out position"
+      },
+      {
+        "osc": "/drum/active_key_play_mode",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum",
+        "_usage": "0~127: Drum active key play mode select"
+      },
+      {
+        "osc": "/synth/envelope_attack",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth",
+        "_usage": "0~127: Synth envelope attack duration"
+      },
+      {
+        "osc": "/synth/envelope_decay",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth",
+        "_usage": "0~127: Synth envelope decay duration"
+      },
+      {
+        "osc": "/synth/envelope_sustain",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth",
+        "_usage": "0~127: Synth envelope sustain volume"
+      },
+      {
+        "osc": "/synth/envelope_release",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Synth",
+        "_usage": "0~127: Synth envelope release duration"
+      },
+      {
+        "osc": "/drum/envelope_attack",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum",
+        "_usage": "0~127: Drum envelope attack duration"
+      },
+      {
+        "osc": "/drum/envelope_gain",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum",
+        "_usage": "0~127: Drum envelope gain amount"
+      },
+      {
+        "osc": "/drum/envelope_release",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum",
+        "_usage": "0~127: Drum envelope release duration"
+      },
+      {
+        "osc": "/drum/envelope_smooth",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drum",
+        "_usage": "0~127: Drum envelope smooth amount"
+      },
+      {
+        "osc": "/patch/fx_parameter_1",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Patch",
+        "_usage": "0~127: Patch FX parameter 1 amount"
+      },
+      {
+        "osc": "/patch/fx_parameter_2",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Patch",
+        "_usage": "0~127: Patch FX parameter 2 amount"
+      },
+      {
+        "osc": "/patch/fx_parameter_3",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Patch",
+        "_usage": "0~127: Patch FX parameter 3 amount"
+      },
+      {
+        "osc": "/patch/fx_parameter_4",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Patch",
+        "_usage": "0~127: Patch FX parameter 4 amount"
+      },
+      {
+        "osc": "/patch/lfo_parameter_1",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Patch",
+        "_usage": "0~127: Patch LFO parameter 1 amount"
+      },
+      {
+        "osc": "/patch/lfo_parameter_2",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Patch",
+        "_usage": "0~127: Patch LFO parameter 2 amount"
+      },
+      {
+        "osc": "/patch/lfo_parameter_3",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Patch",
+        "_usage": "0~127: Patch LFO parameter 3 amount"
+      },
+      {
+        "osc": "/patch/lfo_parameter_4",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Patch",
+        "_usage": "0~127: Patch LFO parameter 4 amount"
+      },
+      {
+        "osc": "/patch/randomize_patch",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Patch",
+        "_usage": "0-63: Off; 64-127: Randomize active patch"
+      },
+      {
+        "osc": "/patch/reset_patch",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Patch",
+        "_usage": "0-63: Off; 64-127: Reset active patch"
+      },
+      {
+        "osc": "/global/sustain_pedal",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0-63: Sustain up; 64-127: Sustain down"
+      },
+      {
+        "osc": "/master/fx_parameter_1",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master",
+        "_usage": "0~127: Master FX parameter 1"
+      },
+      {
+        "osc": "/master/fx_parameter_2",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master",
+        "_usage": "0~127: Master FX parameter 2"
+      },
+      {
+        "osc": "/master/fx_parameter_3",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master",
+        "_usage": "0~127: Master FX parameter 3"
+      },
+      {
+        "osc": "/master/fx_parameter_4",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master",
+        "_usage": "0~127: Master FX parameter 4"
+      },
+      {
+        "osc": "/master/volume_l",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master",
+        "_usage": "0~127: Master compressor parameter 1"
+      },
+      {
+        "osc": "/master/volume_r",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master",
+        "_usage": "0~127: Master compressor parameter 2"
+      },
+      {
+        "osc": "/master/drive",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master",
+        "_usage": "0~127: Master compressor parameter 3"
+      },
+      {
+        "osc": "/master/compressor",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master",
+        "_usage": "0~127: Master compressor parameter 4"
+      },
+      {
+        "osc": "/global/tape_record_level",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~127: Tape record level"
+      },
+      {
+        "osc": "/global/octave",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0-63: Down 1 octave; 64-127: Up 1 octave"
+      },
+      {
+        "osc": "/global/tempo",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~5: 40 to 50 BPM; 6~120: 52 to 166 BPM; 121~127: 168 to 180 BPM"
+      },
+      {
+        "osc": "/global/metronome_level",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0~127: Metronome level amount"
+      },
+      {
+        "osc": "/tape/previous_bar",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape",
+        "_usage": "0-63: Off; 64-127: Jump to previous bar"
+      },
+      {
+        "osc": "/tape/next_bar",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape",
+        "_usage": "0-63: Off; 64-127: Jump to next bar"
+      },
+      {
+        "osc": "/tape/jump_to_start",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape",
+        "_usage": "0-63: Off; 64-127: Jump to tape start"
+      },
+      {
+        "osc": "/tape/jump_to_end",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape",
+        "_usage": "0-63: Off; 64-127: Jump to tape end"
+      },
+      {
+        "osc": "/tape/set_loop_in",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape",
+        "_usage": "0-63: Off; 64-127: Set loop in"
+      },
+      {
+        "osc": "/tape/set_loop_out",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape",
+        "_usage": "0-63: Off; 64-127: Set loop out"
+      },
+      {
+        "osc": "/tape/toggle_loop",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape",
+        "_usage": "0-63: Off; 64-127: Toggle loop state"
+      },
+      {
+        "osc": "/master/eq_low",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master",
+        "_usage": "0~127: Master eq low amount"
+      },
+      {
+        "osc": "/master/eq_mid",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master",
+        "_usage": "0~127: Master eq mid amount"
+      },
+      {
+        "osc": "/master/eq_high",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Master",
+        "_usage": "0~127: Master eq high amount"
+      },
+      {
+        "osc": "/global/mode_select",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0-63: Activate synth mode; 64-127: Activate drum mode"
+      },
+      {
+        "osc": "/global/sound_slot_select",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0-63: Off; 64-127: Select sound slot"
+      },
+      {
+        "osc": "/tape/stop",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape",
+        "_usage": "0-63: Off; 64-127: Stop tape"
+      },
+      {
+        "osc": "/tape/play",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tape",
+        "_usage": "0-63: Off; 64-127: Play tape"
+      },
+      {
+        "osc": "/global/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global",
+        "_usage": "0-127: All notes off"
       }
     ]
   },

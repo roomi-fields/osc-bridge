@@ -2,9 +2,12 @@
   "_sources": [
     {
       "type": "pencilresearch",
-      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Digitakt II.csv",
-      "imported_at": "2026-04-13",
-      "commit": "deb41f2"
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Digitakt II.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
     }
   ],
   "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
@@ -12,7 +15,8 @@
     "entries_total": 262,
     "cc_entries": 247,
     "nrpn_entries": 260,
-    "fourteen_bit_cc_pairs": 6
+    "fourteen_bit_cc_pairs": 6,
+    "triggers": 17
   },
   "device": {
     "name": "Digitakt II",
@@ -3262,5 +3266,197 @@
     "pitchbend": "/pitchbend {value_u14} {channel}",
     "aftertouch": "/aftertouch {value} {channel}"
   },
-  "replies": []
+  "replies": [],
+  "triggers": {
+    "entries": [
+      {
+        "osc": "/drum/track_1",
+        "sound": "Track 1",
+        "section": "General",
+        "channel": 0,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_2",
+        "sound": "Track 2",
+        "section": "General",
+        "channel": 1,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_3",
+        "sound": "Track 3",
+        "section": "General",
+        "channel": 2,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_4",
+        "sound": "Track 4",
+        "section": "General",
+        "channel": 3,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_5",
+        "sound": "Track 5",
+        "section": "General",
+        "channel": 4,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_6",
+        "sound": "Track 6",
+        "section": "General",
+        "channel": 5,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_7",
+        "sound": "Track 7",
+        "section": "General",
+        "channel": 6,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_8",
+        "sound": "Track 8",
+        "section": "General",
+        "channel": 7,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_9",
+        "sound": "Track 9",
+        "section": "General",
+        "channel": 8,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_10",
+        "sound": "Track 10",
+        "section": "General",
+        "channel": 9,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_11",
+        "sound": "Track 11",
+        "section": "General",
+        "channel": 10,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_12",
+        "sound": "Track 12",
+        "section": "General",
+        "channel": 11,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_13",
+        "sound": "Track 13",
+        "section": "General",
+        "channel": 12,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_14",
+        "sound": "Track 14",
+        "section": "General",
+        "channel": 13,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_15",
+        "sound": "Track 15",
+        "section": "General",
+        "channel": 14,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_16",
+        "sound": "Track 16",
+        "section": "General",
+        "channel": 15,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/active_track",
+        "sound": "Active track",
+        "section": "General",
+        "channel_mode": "auto",
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Received on the Auto Channel; routes to whichever track is currently active."
+      }
+    ]
+  }
 }

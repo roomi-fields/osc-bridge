@@ -1,0 +1,729 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/KORG/minilogue xd.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 65,
+    "cc_entries": 65,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 1
+  },
+  "device": {
+    "name": "minilogue xd",
+    "vendor": "KORG",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/minilogue_xd",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/general/bank_select_msb",
+        "cc": 0,
+        "cc_lsb": 32,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/modulation1_joystick_y",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/modulation2_joystick_y",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/portamento",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/general/data_entry",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/vca/amp_eg_attack",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCA"
+      },
+      {
+        "osc": "/vca/amp_eg_decay",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCA"
+      },
+      {
+        "osc": "/vca/amp_eg_sustain",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCA"
+      },
+      {
+        "osc": "/vca/amp_eg_release",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCA"
+      },
+      {
+        "osc": "/eg/attack",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG"
+      },
+      {
+        "osc": "/eg/decay",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG"
+      },
+      {
+        "osc": "/eg/int",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG"
+      },
+      {
+        "osc": "/eg/target",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "EG",
+        "_usage": "0-42: Cutoff; 43-85: Pitch2; 86-127: Pitch"
+      },
+      {
+        "osc": "/lfo/rate",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/int",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/fx/voice_mode_depth",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/mod_fx_time",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/fx/mod_fx_depth",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/multi/level",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi"
+      },
+      {
+        "osc": "/vco_1/pitch",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 1"
+      },
+      {
+        "osc": "/vco_2/pitch",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 2"
+      },
+      {
+        "osc": "/vco_1/shape",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 1"
+      },
+      {
+        "osc": "/vco_2/shape",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 2"
+      },
+      {
+        "osc": "/vco_1/level",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 1"
+      },
+      {
+        "osc": "/vco_2/level",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 2"
+      },
+      {
+        "osc": "/general/cross_mod_depth",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      },
+      {
+        "osc": "/vcf/cutoff",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/vcf/resonance",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF"
+      },
+      {
+        "osc": "/vco_1/octave",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 1",
+        "_usage": "0-31: 16'; 32-63: 8'; 64-95: 4'; 96-127: 2'"
+      },
+      {
+        "osc": "/vco_2/octave",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 2",
+        "_usage": "0-31: 16'; 32-63: 8'; 64-95: 4'; 96-127: 2'"
+      },
+      {
+        "osc": "/vco_1/wave",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 1",
+        "_usage": "0-42: Square; 43-85: Triangle; 86-127: Saw"
+      },
+      {
+        "osc": "/vco_2/wave",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCO 2",
+        "_usage": "0-42: Square; 43-85: Triangle; 86-127: Saw"
+      },
+      {
+        "osc": "/multi/type",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi",
+        "_usage": "0-42: Noise; 43-85: VPM; 86-127: USR"
+      },
+      {
+        "osc": "/multi/shape",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi"
+      },
+      {
+        "osc": "/lfo/target",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0-42: Cutoff; 43-85: Shape; 86-127: Pitch"
+      },
+      {
+        "osc": "/lfo/wave",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0-42: Square; 43-85: Triangle; 86-127: Saw"
+      },
+      {
+        "osc": "/lfo/mode",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0-42: 1-shot; 43-85: Normal; 86-127: BPM"
+      },
+      {
+        "osc": "/fx/damper",
+        "cc": 64,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX"
+      },
+      {
+        "osc": "/vcf/sync",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF",
+        "_usage": "0-63: On; 64-127: Off"
+      },
+      {
+        "osc": "/vcf/ring",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF",
+        "_usage": "0-63: On; 64-127: Off"
+      },
+      {
+        "osc": "/vcf/cutoff_keytrack",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF",
+        "_usage": "0-42: Cutoff keytrack 0%; 43-85: Cutoff keytrack 50%; 86-127: Cutoff keytrack 100%"
+      },
+      {
+        "osc": "/vcf/cutoff_drive",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VCF",
+        "_usage": "0-42: Cutoff drive 0%; 43-85: Cutoff drive 50%; 86-127: Cutoff drive 100%"
+      },
+      {
+        "osc": "/fx/mod_fx_type",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX",
+        "_usage": "0-25: Chorus; 26-51: Ensemble; 52-76: Phaser; 77-101: Flanger; 102-127: User"
+      },
+      {
+        "osc": "/fx/delay_subtype",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX",
+        "_usage": "0-6: Stereo; 7-12: Mono; 13-19: Ping pong; 20-25: Hipass; 26-31: Tape; 32-38: One tap; 39-44: Stereo BPM; 45-51: Mono BPM; 52-57: Ping BPM; 58-63: Hip"
+      },
+      {
+        "osc": "/fx/reverb_subtype",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX",
+        "_usage": "0-7: Hall; 8-14: Smooth; 15-21: Arena; 22-28: Plate; 29-35: Room; 36-42: Early ref; 43-49: Space; 50-56: Riser; 57-63: Submarine; 64-71: Horror; 72-78"
+      },
+      {
+        "osc": "/fx/mod_fx_on_off",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/fx/delay_on_off",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/fx/reverb_on_off",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/fx/mod_fx_subtype_for_chorus",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX",
+        "_usage": "0-15: Stereo; 16-31: Light; 32-47: Deep; 48-63: Triphase; 64-79: Harmonic; 80-95: Mono; 96-111: Feedback; 112-127: Vibrato"
+      },
+      {
+        "osc": "/fx/mod_fx_subtype_for_ensemble",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX",
+        "_usage": "0-42: Stero; 43-85: Light; 86-127: Mono"
+      },
+      {
+        "osc": "/fx/mod_fx_subtype_for_phaser",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX",
+        "_usage": "0-15: Stereo; 16-31: Fast; 32-47: Orange; 48-63: Small; 64-79: Small reso; 80-95: Black; 96-111: Formant; 112-127: Twinkle"
+      },
+      {
+        "osc": "/fx/mod_fx_subtype_for_flanger",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX",
+        "_usage": "0-15: Stereo; 16-31: Light; 32-47: Mono; 48-63: High sweep; 64-79: Mid sweep; 80-95: Pan sweep; 96-111: Mono sweep; 112-127: Triphase"
+      },
+      {
+        "osc": "/fx/mod_fx_subtype_for_user",
+        "cc": 96,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "FX",
+        "_usage": "0-7: User 1; 8-15: User 2; 16-23: User 3; 24-31: User 4; 32-39: User 5; 40-47: User 6; 48-55: User 7; 56-63: User 8; 64-71: User 9; 72-79: User 10; 80"
+      },
+      {
+        "osc": "/multi/subtype_select_for_noise",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi",
+        "_usage": "0-15: High; 16-31: Low; 32-47: Peak; 48-127: Decim"
+      },
+      {
+        "osc": "/multi/subtype_select_for_vpm",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi",
+        "_usage": "0-7: SIN1; 8-15: SIN2; 16-23: SIN3; 24-31: SIN4; 32-39: SAW1; 40-47: SAW2; 48-55: SQU1; 56-63: SQU2; 64-71: FAT1; 72-79: FAT2; 80-87: AIR1; 88-95: AIR"
+      },
+      {
+        "osc": "/multi/subtype_select_for_user",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi",
+        "_usage": "0-7: User 1; 8-15: User 2; 16-23: User 3; 24-31: User 4; 32-39: User 5; 40-47: User 6; 48-55: User 7; 56-63: User 8; 64-71: User 9; 72-79: User 10; 80"
+      },
+      {
+        "osc": "/delay/time",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/depth",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/dry_wet",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/reverb/time",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/depth",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/dry_wet",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/cv/in_1",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CV"
+      },
+      {
+        "osc": "/cv/in_2",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "CV"
+      },
+      {
+        "osc": "/general/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

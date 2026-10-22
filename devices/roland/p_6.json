@@ -2,9 +2,12 @@
   "_sources": [
     {
       "type": "pencilresearch",
-      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Roland/P-6.csv",
-      "imported_at": "2026-04-13",
-      "commit": "deb41f2"
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Roland/P-6.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
     }
   ],
   "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
@@ -59,7 +62,8 @@
           127
         ],
         "orientation": "0-based",
-        "section": "Voice"
+        "section": "Voice",
+        "_usage": "0-1: Off; 2~63: Fade-out; 64: Half fade-in half fade-out; 65~127: Fade-in"
       },
       {
         "osc": "/voice/grain_time_key_follow",
@@ -78,7 +82,7 @@
           0,
           127
         ],
-        "orientation": "0-based",
+        "orientation": "centered",
         "section": "Voice"
       },
       {
@@ -98,7 +102,7 @@
           0,
           127
         ],
-        "orientation": "0-based",
+        "orientation": "centered",
         "section": "Voice"
       },
       {
@@ -148,7 +152,7 @@
           0,
           127
         ],
-        "orientation": "0-based",
+        "orientation": "centered",
         "section": "Voice"
       },
       {
@@ -159,7 +163,8 @@
           127
         ],
         "orientation": "0-based",
-        "section": "Voice"
+        "section": "Voice",
+        "_usage": "0: Cold; 1-127: Hot"
       },
       {
         "osc": "/voice/sample",
@@ -169,7 +174,8 @@
           127
         ],
         "orientation": "0-based",
-        "section": "Voice"
+        "section": "Voice",
+        "_usage": "0-2: A1; 3-5: A2; 6-7: A3; 8-10: A4; 11-13: A5; 14-15: A6; 16-18: B1; 19-20: B2; 21-23: B3; 24-26: B4; 27-28: B5; 29-31: B6; 32-33: C1; 34-36: C2; 37-"
       },
       {
         "osc": "/mixer/level",
@@ -189,7 +195,8 @@
           127
         ],
         "orientation": "0-based",
-        "section": "Mixer"
+        "section": "Mixer",
+        "_usage": "0: Off; 1: Alternate; 2: Swing; 3-127: Random"
       },
       {
         "osc": "/mixer/pan",
@@ -199,7 +206,8 @@
           127
         ],
         "orientation": "centered",
-        "section": "Mixer"
+        "section": "Mixer",
+        "_usage": "0~63: Pan left; 64: Center; 65~127: Pan right"
       },
       {
         "osc": "/mixer/level_jitter",
@@ -219,7 +227,8 @@
           127
         ],
         "orientation": "0-based",
-        "section": "Mixer"
+        "section": "Mixer",
+        "_usage": "0: Bus A; 1: Bus B; 2-127: Effect"
       },
       {
         "osc": "/mixer/send_delay",
@@ -249,7 +258,8 @@
           127
         ],
         "orientation": "0-based",
-        "section": "Envelope"
+        "section": "Envelope",
+        "_usage": "0: Off; 1-127: On"
       },
       {
         "osc": "/envelope/mode",
@@ -259,7 +269,8 @@
           127
         ],
         "orientation": "0-based",
-        "section": "Envelope"
+        "section": "Envelope",
+        "_usage": "0: ADSR; 1: ADR; 2-127: Cyclic"
       },
       {
         "osc": "/envelope/attack",
@@ -319,7 +330,8 @@
           127
         ],
         "orientation": "0-based",
-        "section": "Filter"
+        "section": "Filter",
+        "_usage": "0: Off; 1: LPF; 2: BPF; 3: HPF; 4-127: PKG"
       },
       {
         "osc": "/filter/frequency",
@@ -419,7 +431,8 @@
           127
         ],
         "orientation": "0-based",
-        "section": "Lo-fi"
+        "section": "Lo-Fi",
+        "_usage": "0: Off; 1-127: On"
       },
       {
         "osc": "/lo_fi/intensity",
@@ -429,7 +442,7 @@
           127
         ],
         "orientation": "0-based",
-        "section": "Lo-fi"
+        "section": "Lo-Fi"
       }
     ]
   },

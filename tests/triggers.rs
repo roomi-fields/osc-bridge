@@ -66,3 +66,10 @@ fn range_without_natural_note_requires_a_note_inside_the_range() {
 fn non_trigger_address_is_not_claimed() {
     assert!(trigger_note_on(&drum_machine(), &msg("/kit/cutoff", vec![])).is_none());
 }
+
+#[test]
+fn imported_midi_guide_drum_map_fires_the_documented_note() {
+    let d = Device::load("devices/vermona/drm1_mkiv.pencilresearch.fw-unknown.json").unwrap();
+    let bytes = trigger_note_on(&d, &msg("/drm1_mkiv/drum/kick", vec![OscType::Int(110)])).unwrap().unwrap();
+    assert_eq!(bytes, vec![0x99, 36, 110], "DRM1 MKIV kick: note 36 on channel 10");
+}

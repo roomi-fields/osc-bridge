@@ -1,0 +1,445 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/IK Multimedia/ToneX Pedal.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 39,
+    "cc_entries": 39,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "ToneX Pedal",
+    "vendor": "IK Multimedia",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/tonex_pedal",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/banks_and_presets/midi_patch_bank",
+        "cc": 0,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "0: Presets 00A-42B; 1: Presets 42C-49C",
+        "expects": "switch"
+      },
+      {
+        "osc": "/banks_and_presets/preset_on_off",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "0: Off; 127: On"
+      },
+      {
+        "osc": "/pedals/expression_pedal",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pedals",
+        "_usage": "0~127: Expression pedal"
+      },
+      {
+        "osc": "/main_parameters/gain",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Main parameters"
+      },
+      {
+        "osc": "/main_parameters/bass",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Main parameters"
+      },
+      {
+        "osc": "/main_parameters/mid",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Main parameters"
+      },
+      {
+        "osc": "/main_parameters/treble",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Main parameters"
+      },
+      {
+        "osc": "/alternative_parameters/reverb",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Alternative parameters"
+      },
+      {
+        "osc": "/alternative_parameters/compressor",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Alternative parameters"
+      },
+      {
+        "osc": "/alternative_parameters/noise_gate",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Alternative parameters"
+      },
+      {
+        "osc": "/alternative_parameters/presence",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Alternative parameters"
+      },
+      {
+        "osc": "/alternative_parameters/depth",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Alternative parameters"
+      },
+      {
+        "osc": "/additional_parameters/model_volume",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/noise_gate_threshold",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/noise_gate_release",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/noise_gate_depth",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/compressor",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/compressor_gain",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/compressor_attack",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/compressor_patch",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/bass_frequency",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/mid_q",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/mid_frequency",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/treble_frequency",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/eq_patch",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/reverb_mix",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/reverb",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/reverb_type",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/reverb_time",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/reverb_pre_delay",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/reverb_color",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/cabinet_resonance",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/mic_1",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/mic_1_x_position",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/mic_1_z_position",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/mic_2",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/mic_2_x_position",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/mic_2_z_position",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      },
+      {
+        "osc": "/additional_parameters/mics_mix",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Additional parameters"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

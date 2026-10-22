@@ -1,0 +1,402 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Universal Audio/ANTI 1992.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 31,
+    "cc_entries": 31,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "ANTI 1992",
+    "vendor": "Universal Audio",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/anti_1992",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/global_controls/bypass",
+        "cc": 19,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Global controls",
+        "_usage": "0: Bypass; 1: Unbypass Left Footswitch; 2: Unbypass Right Footswitch"
+      },
+      {
+        "osc": "/global_controls/store",
+        "cc": 16,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Global controls",
+        "_usage": "0: Off; 1: Hold",
+        "expects": "switch"
+      },
+      {
+        "osc": "/footswitches/footswitch_left",
+        "cc": 12,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "1: Toggle footswitch",
+        "expects": "switch"
+      },
+      {
+        "osc": "/footswitches/footswitch_right",
+        "cc": 13,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "1: Toggle footswitch",
+        "expects": "switch"
+      },
+      {
+        "osc": "/amp/input",
+        "cc": 21,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0: Low; 1: High",
+        "expects": "switch"
+      },
+      {
+        "osc": "/amp/channel_select",
+        "cc": 17,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0: Rhythm; 1: Crunch; 2: Lead"
+      },
+      {
+        "osc": "/amp/bias",
+        "cc": 26,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0: Cool; 1: Warm; 2: Cool Choke; 3: Warm Choke"
+      },
+      {
+        "osc": "/amp/bright",
+        "cc": 36,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/amp/pre",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Pre"
+      },
+      {
+        "osc": "/amp/post",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Post"
+      },
+      {
+        "osc": "/amp/output",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Output"
+      },
+      {
+        "osc": "/amp/bass",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Bass"
+      },
+      {
+        "osc": "/amp/middle",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Middle"
+      },
+      {
+        "osc": "/amp/treble",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Treble"
+      },
+      {
+        "osc": "/amp/presence",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Presence"
+      },
+      {
+        "osc": "/amp/resonance",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Resonance"
+      },
+      {
+        "osc": "/amp/room",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Room"
+      },
+      {
+        "osc": "/amp/boost_enable",
+        "cc": 40,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/amp/boost_drive",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Boost drive"
+      },
+      {
+        "osc": "/amp/boost_level",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Boost level"
+      },
+      {
+        "osc": "/amp/boost_tone",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0~127: Boost tone"
+      },
+      {
+        "osc": "/amp/boost_type",
+        "cc": 45,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Amp",
+        "_usage": "0: TS; 1: TC",
+        "expects": "switch"
+      },
+      {
+        "osc": "/cabinet/cab_select",
+        "cc": 18,
+        "range": [
+          0,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "Cabinet",
+        "_usage": "0~5: Cab 1-6; 6: No Cab"
+      },
+      {
+        "osc": "/cabinet/cab_up",
+        "cc": 14,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Cabinet",
+        "_usage": "1: Toggle switch",
+        "expects": "switch"
+      },
+      {
+        "osc": "/cabinet/cab_down",
+        "cc": 15,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Cabinet",
+        "_usage": "1: Toggle switch",
+        "expects": "switch"
+      },
+      {
+        "osc": "/noise_gate/gate_enable",
+        "cc": 70,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Noise Gate",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/noise_gate/gate_threshold",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Noise Gate",
+        "_usage": "0~127: Gate threshold"
+      },
+      {
+        "osc": "/noise_gate/gate_attack",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Noise Gate",
+        "_usage": "0~127: Gate attack"
+      },
+      {
+        "osc": "/noise_gate/gate_hold",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Noise Gate",
+        "_usage": "0~127: Gate hold"
+      },
+      {
+        "osc": "/noise_gate/gate_release",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Noise Gate",
+        "_usage": "0~127: Gate release"
+      },
+      {
+        "osc": "/noise_gate/gate_attenuation",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Noise Gate",
+        "_usage": "0~127: Gate attenuation"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

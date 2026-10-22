@@ -1,0 +1,294 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Vermona/meloDICER.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 24,
+    "cc_entries": 24,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "meloDICER",
+    "vendor": "Vermona",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/melodicer",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/rhythm/note_value",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Rhythm"
+      },
+      {
+        "osc": "/rhythm/variation",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Rhythm"
+      },
+      {
+        "osc": "/rhythm/legato",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Rhythm"
+      },
+      {
+        "osc": "/rhythm/rest_voice_1",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Rhythm"
+      },
+      {
+        "osc": "/rhythm/rest_voice_2",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Rhythm"
+      },
+      {
+        "osc": "/rhythm/rest_voice_3",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Rhythm"
+      },
+      {
+        "osc": "/melody/lo",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Melody"
+      },
+      {
+        "osc": "/melody/hi",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Melody"
+      },
+      {
+        "osc": "/melody/note_probability_c",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Melody"
+      },
+      {
+        "osc": "/melody/note_probability_d",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Melody"
+      },
+      {
+        "osc": "/melody/note_probability_e",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Melody"
+      },
+      {
+        "osc": "/melody/note_probability_f",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Melody"
+      },
+      {
+        "osc": "/melody/note_probability_g",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Melody"
+      },
+      {
+        "osc": "/melody/note_probability_a",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Melody"
+      },
+      {
+        "osc": "/melody/note_probability_b",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Melody"
+      },
+      {
+        "osc": "/dice/rhythm_on_off",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dice",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/dice/melody_on_off",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dice",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/dice/re_dice_rhythm",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dice"
+      },
+      {
+        "osc": "/dice/re_dice_melody",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dice"
+      },
+      {
+        "osc": "/pattern/lock",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pattern",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/pattern/first_step",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pattern"
+      },
+      {
+        "osc": "/pattern/last_step",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pattern"
+      },
+      {
+        "osc": "/dynamics/accent_probability",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Dynamics"
+      },
+      {
+        "osc": "/dynamics/standard_velocity",
+        "cc": 88,
+        "range": [
+          20,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Dynamics"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

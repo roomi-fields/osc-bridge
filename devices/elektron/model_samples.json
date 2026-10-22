@@ -2,9 +2,12 @@
   "_sources": [
     {
       "type": "pencilresearch",
-      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Model Samples.csv",
-      "imported_at": "2026-04-13",
-      "commit": "deb41f2"
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Model Samples.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
     }
   ],
   "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
@@ -12,7 +15,8 @@
     "entries_total": 29,
     "cc_entries": 29,
     "nrpn_entries": 0,
-    "fourteen_bit_cc_pairs": 1
+    "fourteen_bit_cc_pairs": 1,
+    "triggers": 13
   },
   "device": {
     "name": "Model Samples",
@@ -335,5 +339,172 @@
     "pitchbend": "/pitchbend {value_u14} {channel}",
     "aftertouch": "/aftertouch {value} {channel}"
   },
-  "replies": []
+  "replies": [],
+  "triggers": {
+    "entries": [
+      {
+        "osc": "/drum/track_1",
+        "sound": "Track 1",
+        "section": "General",
+        "channel": 0,
+        "note_range": [
+          0,
+          0
+        ],
+        "note": 0,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_1_chromatic",
+        "sound": "Track 1, chromatic",
+        "section": "General",
+        "channel": 0,
+        "note_range": [
+          12,
+          60
+        ],
+        "note": 36,
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays track 1's sample chromatically across 49 variations, lowest to highest pitch. Inferred; not explicit in the official documentation."
+      },
+      {
+        "osc": "/drum/track_2",
+        "sound": "Track 2",
+        "section": "General",
+        "channel": 1,
+        "note_range": [
+          1,
+          1
+        ],
+        "note": 1,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_2_chromatic",
+        "sound": "Track 2, chromatic",
+        "section": "General",
+        "channel": 1,
+        "note_range": [
+          12,
+          60
+        ],
+        "note": 36,
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays track 2's sample chromatically across 49 variations, lowest to highest pitch. Inferred; not explicit in the official documentation."
+      },
+      {
+        "osc": "/drum/track_3",
+        "sound": "Track 3",
+        "section": "General",
+        "channel": 2,
+        "note_range": [
+          2,
+          2
+        ],
+        "note": 2,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_3_chromatic",
+        "sound": "Track 3, chromatic",
+        "section": "General",
+        "channel": 2,
+        "note_range": [
+          12,
+          60
+        ],
+        "note": 36,
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays track 3's sample chromatically across 49 variations, lowest to highest pitch. Inferred; not explicit in the official documentation."
+      },
+      {
+        "osc": "/drum/track_4",
+        "sound": "Track 4",
+        "section": "General",
+        "channel": 3,
+        "note_range": [
+          3,
+          3
+        ],
+        "note": 3,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_4_chromatic",
+        "sound": "Track 4, chromatic",
+        "section": "General",
+        "channel": 3,
+        "note_range": [
+          12,
+          60
+        ],
+        "note": 36,
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays track 4's sample chromatically across 49 variations, lowest to highest pitch. Inferred; not explicit in the official documentation."
+      },
+      {
+        "osc": "/drum/track_5",
+        "sound": "Track 5",
+        "section": "General",
+        "channel": 4,
+        "note_range": [
+          4,
+          4
+        ],
+        "note": 4,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_5_chromatic",
+        "sound": "Track 5, chromatic",
+        "section": "General",
+        "channel": 4,
+        "note_range": [
+          12,
+          60
+        ],
+        "note": 36,
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays track 5's sample chromatically across 49 variations, lowest to highest pitch. Inferred; not explicit in the official documentation."
+      },
+      {
+        "osc": "/drum/track_6",
+        "sound": "Track 6",
+        "section": "General",
+        "channel": 5,
+        "note_range": [
+          5,
+          5
+        ],
+        "note": 5,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/track_6_chromatic",
+        "sound": "Track 6, chromatic",
+        "section": "General",
+        "channel": 5,
+        "note_range": [
+          12,
+          60
+        ],
+        "note": 36,
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays track 6's sample chromatically across 49 variations, lowest to highest pitch. Inferred; not explicit in the official documentation."
+      },
+      {
+        "osc": "/drum/active_track_chromatic",
+        "sound": "Active track, chromatic",
+        "section": "General",
+        "channel_mode": "auto",
+        "note_range": [
+          12,
+          60
+        ],
+        "note": 36,
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the currently active track's sample across its 49 chromatic variations, lowest to highest pitch."
+      }
+    ]
+  }
 }

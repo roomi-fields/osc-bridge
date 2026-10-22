@@ -2,15 +2,18 @@
   "_sources": [
     {
       "type": "pencilresearch",
-      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Ensoniq/ASR-X Pro.csv",
-      "imported_at": "2026-04-13",
-      "commit": "deb41f2"
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Ensoniq/ASR-X Pro.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
     }
   ],
   "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
   "_coverage": {
-    "entries_total": 15,
-    "cc_entries": 15,
+    "entries_total": 16,
+    "cc_entries": 16,
     "nrpn_entries": 0,
     "fourteen_bit_cc_pairs": 0
   },
@@ -165,6 +168,16 @@
           127
         ],
         "orientation": "0-based"
+      },
+      {
+        "osc": "/patch_select",
+        "cc": 70,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "_usage": "0: Neither; 32: Left Patch Select button; 64: Right Patch Select button; 123: Both Patch Select buttons"
       }
     ]
   },

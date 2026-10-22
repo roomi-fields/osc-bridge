@@ -1,0 +1,1639 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Alesis/SR-16.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 0,
+    "cc_entries": 0,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0,
+    "triggers": 132
+  },
+  "device": {
+    "name": "SR-16",
+    "vendor": "Alesis",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/sr_16",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": []
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": [],
+  "triggers": {
+    "entries": [
+      {
+        "osc": "/drum/kick",
+        "sound": "Kick",
+        "section": "Normal mode",
+        "channel_mode": "basic",
+        "note_range": [
+          36,
+          36
+        ],
+        "note": 36,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/snare",
+        "sound": "Snare",
+        "section": "Normal mode",
+        "channel_mode": "basic",
+        "note_range": [
+          38,
+          38
+        ],
+        "note": 38,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/claps",
+        "sound": "Claps",
+        "section": "Normal mode",
+        "channel_mode": "basic",
+        "note_range": [
+          39,
+          39
+        ],
+        "note": 39,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/closed_hihat",
+        "sound": "Closed hihat",
+        "section": "Normal mode",
+        "channel_mode": "basic",
+        "note_range": [
+          42,
+          42
+        ],
+        "note": 42,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/open_hihat",
+        "sound": "Open hihat",
+        "section": "Normal mode",
+        "channel_mode": "basic",
+        "note_range": [
+          46,
+          46
+        ],
+        "note": 46,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/tom_1",
+        "sound": "Tom 1",
+        "section": "Normal mode",
+        "channel_mode": "basic",
+        "note_range": [
+          48,
+          48
+        ],
+        "note": 48,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/tom_2",
+        "sound": "Tom 2",
+        "section": "Normal mode",
+        "channel_mode": "basic",
+        "note_range": [
+          45,
+          45
+        ],
+        "note": 45,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/tom_3",
+        "sound": "Tom 3",
+        "section": "Normal mode",
+        "channel_mode": "basic",
+        "note_range": [
+          41,
+          41
+        ],
+        "note": 41,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/ride",
+        "sound": "Ride",
+        "section": "Normal mode",
+        "channel_mode": "basic",
+        "note_range": [
+          51,
+          51
+        ],
+        "note": 51,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/crash",
+        "sound": "Crash",
+        "section": "Normal mode",
+        "channel_mode": "basic",
+        "note_range": [
+          49,
+          49
+        ],
+        "note": 49,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/percussion_1",
+        "sound": "Percussion 1",
+        "section": "Normal mode",
+        "channel_mode": "basic",
+        "note_range": [
+          65,
+          65
+        ],
+        "note": 65,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/percussion_2",
+        "sound": "Percussion 2",
+        "section": "Normal mode",
+        "channel_mode": "basic",
+        "note_range": [
+          67,
+          67
+        ],
+        "note": 67,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_00_pad_01",
+        "sound": "Drumset 00 Pad 01",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          0,
+          0
+        ],
+        "note": 0,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_00_pad_02",
+        "sound": "Drumset 00 Pad 02",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          1,
+          1
+        ],
+        "note": 1,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_00_pad_03",
+        "sound": "Drumset 00 Pad 03",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          2,
+          2
+        ],
+        "note": 2,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_00_pad_04",
+        "sound": "Drumset 00 Pad 04",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          3,
+          3
+        ],
+        "note": 3,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_00_pad_05",
+        "sound": "Drumset 00 Pad 05",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          4,
+          4
+        ],
+        "note": 4,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_00_pad_06",
+        "sound": "Drumset 00 Pad 06",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          5,
+          5
+        ],
+        "note": 5,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_00_pad_07",
+        "sound": "Drumset 00 Pad 07",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          6,
+          6
+        ],
+        "note": 6,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_00_pad_08",
+        "sound": "Drumset 00 Pad 08",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          7,
+          7
+        ],
+        "note": 7,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_00_pad_09",
+        "sound": "Drumset 00 Pad 09",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          8,
+          8
+        ],
+        "note": 8,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_00_pad_10",
+        "sound": "Drumset 00 Pad 10",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          9,
+          9
+        ],
+        "note": 9,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_00_pad_11",
+        "sound": "Drumset 00 Pad 11",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          10,
+          10
+        ],
+        "note": 10,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_00_pad_12",
+        "sound": "Drumset 00 Pad 12",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          11,
+          11
+        ],
+        "note": 11,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_01_pad_01",
+        "sound": "Drumset 01 Pad 01",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          12,
+          12
+        ],
+        "note": 12,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_01_pad_02",
+        "sound": "Drumset 01 Pad 02",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          13,
+          13
+        ],
+        "note": 13,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_01_pad_03",
+        "sound": "Drumset 01 Pad 03",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          14,
+          14
+        ],
+        "note": 14,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_01_pad_04",
+        "sound": "Drumset 01 Pad 04",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          15,
+          15
+        ],
+        "note": 15,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_01_pad_05",
+        "sound": "Drumset 01 Pad 05",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          16,
+          16
+        ],
+        "note": 16,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_01_pad_06",
+        "sound": "Drumset 01 Pad 06",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          17,
+          17
+        ],
+        "note": 17,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_01_pad_07",
+        "sound": "Drumset 01 Pad 07",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          18,
+          18
+        ],
+        "note": 18,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_01_pad_08",
+        "sound": "Drumset 01 Pad 08",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          19,
+          19
+        ],
+        "note": 19,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_01_pad_09",
+        "sound": "Drumset 01 Pad 09",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          20,
+          20
+        ],
+        "note": 20,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_01_pad_10",
+        "sound": "Drumset 01 Pad 10",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          21,
+          21
+        ],
+        "note": 21,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_01_pad_11",
+        "sound": "Drumset 01 Pad 11",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          22,
+          22
+        ],
+        "note": 22,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_01_pad_12",
+        "sound": "Drumset 01 Pad 12",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          23,
+          23
+        ],
+        "note": 23,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_02_pad_01",
+        "sound": "Drumset 02 Pad 01",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          24,
+          24
+        ],
+        "note": 24,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_02_pad_02",
+        "sound": "Drumset 02 Pad 02",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          25,
+          25
+        ],
+        "note": 25,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_02_pad_03",
+        "sound": "Drumset 02 Pad 03",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          26,
+          26
+        ],
+        "note": 26,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_02_pad_04",
+        "sound": "Drumset 02 Pad 04",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          27,
+          27
+        ],
+        "note": 27,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_02_pad_05",
+        "sound": "Drumset 02 Pad 05",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          28,
+          28
+        ],
+        "note": 28,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_02_pad_06",
+        "sound": "Drumset 02 Pad 06",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          29,
+          29
+        ],
+        "note": 29,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_02_pad_07",
+        "sound": "Drumset 02 Pad 07",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          30,
+          30
+        ],
+        "note": 30,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_02_pad_08",
+        "sound": "Drumset 02 Pad 08",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          31,
+          31
+        ],
+        "note": 31,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_02_pad_09",
+        "sound": "Drumset 02 Pad 09",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          32,
+          32
+        ],
+        "note": 32,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_02_pad_10",
+        "sound": "Drumset 02 Pad 10",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          33,
+          33
+        ],
+        "note": 33,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_02_pad_11",
+        "sound": "Drumset 02 Pad 11",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          34,
+          34
+        ],
+        "note": 34,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_02_pad_12",
+        "sound": "Drumset 02 Pad 12",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          35,
+          35
+        ],
+        "note": 35,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_03_pad_01",
+        "sound": "Drumset 03 Pad 01",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          36,
+          36
+        ],
+        "note": 36,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_03_pad_02",
+        "sound": "Drumset 03 Pad 02",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          37,
+          37
+        ],
+        "note": 37,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_03_pad_03",
+        "sound": "Drumset 03 Pad 03",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          38,
+          38
+        ],
+        "note": 38,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_03_pad_04",
+        "sound": "Drumset 03 Pad 04",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          39,
+          39
+        ],
+        "note": 39,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_03_pad_05",
+        "sound": "Drumset 03 Pad 05",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_03_pad_06",
+        "sound": "Drumset 03 Pad 06",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          41,
+          41
+        ],
+        "note": 41,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_03_pad_07",
+        "sound": "Drumset 03 Pad 07",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          42,
+          42
+        ],
+        "note": 42,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_03_pad_08",
+        "sound": "Drumset 03 Pad 08",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          43,
+          43
+        ],
+        "note": 43,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_03_pad_09",
+        "sound": "Drumset 03 Pad 09",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          44,
+          44
+        ],
+        "note": 44,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_03_pad_10",
+        "sound": "Drumset 03 Pad 10",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          45,
+          45
+        ],
+        "note": 45,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_03_pad_11",
+        "sound": "Drumset 03 Pad 11",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          46,
+          46
+        ],
+        "note": 46,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_03_pad_12",
+        "sound": "Drumset 03 Pad 12",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          47,
+          47
+        ],
+        "note": 47,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_04_pad_01",
+        "sound": "Drumset 04 Pad 01",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          48,
+          48
+        ],
+        "note": 48,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_04_pad_02",
+        "sound": "Drumset 04 Pad 02",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          49,
+          49
+        ],
+        "note": 49,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_04_pad_03",
+        "sound": "Drumset 04 Pad 03",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          50,
+          50
+        ],
+        "note": 50,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_04_pad_04",
+        "sound": "Drumset 04 Pad 04",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          51,
+          51
+        ],
+        "note": 51,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_04_pad_05",
+        "sound": "Drumset 04 Pad 05",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          52,
+          52
+        ],
+        "note": 52,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_04_pad_06",
+        "sound": "Drumset 04 Pad 06",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          53,
+          53
+        ],
+        "note": 53,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_04_pad_07",
+        "sound": "Drumset 04 Pad 07",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          54,
+          54
+        ],
+        "note": 54,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_04_pad_08",
+        "sound": "Drumset 04 Pad 08",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          55,
+          55
+        ],
+        "note": 55,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_04_pad_09",
+        "sound": "Drumset 04 Pad 09",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          56,
+          56
+        ],
+        "note": 56,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_04_pad_10",
+        "sound": "Drumset 04 Pad 10",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          57,
+          57
+        ],
+        "note": 57,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_04_pad_11",
+        "sound": "Drumset 04 Pad 11",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          58,
+          58
+        ],
+        "note": 58,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_04_pad_12",
+        "sound": "Drumset 04 Pad 12",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          59,
+          59
+        ],
+        "note": 59,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_05_pad_01",
+        "sound": "Drumset 05 Pad 01",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          60,
+          60
+        ],
+        "note": 60,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_05_pad_02",
+        "sound": "Drumset 05 Pad 02",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          61,
+          61
+        ],
+        "note": 61,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_05_pad_03",
+        "sound": "Drumset 05 Pad 03",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          62,
+          62
+        ],
+        "note": 62,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_05_pad_04",
+        "sound": "Drumset 05 Pad 04",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          63,
+          63
+        ],
+        "note": 63,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_05_pad_05",
+        "sound": "Drumset 05 Pad 05",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          64,
+          64
+        ],
+        "note": 64,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_05_pad_06",
+        "sound": "Drumset 05 Pad 06",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          65,
+          65
+        ],
+        "note": 65,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_05_pad_07",
+        "sound": "Drumset 05 Pad 07",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          66,
+          66
+        ],
+        "note": 66,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_05_pad_08",
+        "sound": "Drumset 05 Pad 08",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          67,
+          67
+        ],
+        "note": 67,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_05_pad_09",
+        "sound": "Drumset 05 Pad 09",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          68,
+          68
+        ],
+        "note": 68,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_05_pad_10",
+        "sound": "Drumset 05 Pad 10",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          69,
+          69
+        ],
+        "note": 69,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_05_pad_11",
+        "sound": "Drumset 05 Pad 11",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          70,
+          70
+        ],
+        "note": 70,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_05_pad_12",
+        "sound": "Drumset 05 Pad 12",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          71,
+          71
+        ],
+        "note": 71,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_06_pad_01",
+        "sound": "Drumset 06 Pad 01",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          72,
+          72
+        ],
+        "note": 72,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_06_pad_02",
+        "sound": "Drumset 06 Pad 02",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          73,
+          73
+        ],
+        "note": 73,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_06_pad_03",
+        "sound": "Drumset 06 Pad 03",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          74,
+          74
+        ],
+        "note": 74,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_06_pad_04",
+        "sound": "Drumset 06 Pad 04",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          75,
+          75
+        ],
+        "note": 75,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_06_pad_05",
+        "sound": "Drumset 06 Pad 05",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          76,
+          76
+        ],
+        "note": 76,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_06_pad_06",
+        "sound": "Drumset 06 Pad 06",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          77,
+          77
+        ],
+        "note": 77,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_06_pad_07",
+        "sound": "Drumset 06 Pad 07",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          78,
+          78
+        ],
+        "note": 78,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_06_pad_08",
+        "sound": "Drumset 06 Pad 08",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          79,
+          79
+        ],
+        "note": 79,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_06_pad_09",
+        "sound": "Drumset 06 Pad 09",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          80,
+          80
+        ],
+        "note": 80,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_06_pad_10",
+        "sound": "Drumset 06 Pad 10",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          81,
+          81
+        ],
+        "note": 81,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_06_pad_11",
+        "sound": "Drumset 06 Pad 11",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          82,
+          82
+        ],
+        "note": 82,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_06_pad_12",
+        "sound": "Drumset 06 Pad 12",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          83,
+          83
+        ],
+        "note": 83,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_07_pad_01",
+        "sound": "Drumset 07 Pad 01",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          84,
+          84
+        ],
+        "note": 84,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_07_pad_02",
+        "sound": "Drumset 07 Pad 02",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          85,
+          85
+        ],
+        "note": 85,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_07_pad_03",
+        "sound": "Drumset 07 Pad 03",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          86,
+          86
+        ],
+        "note": 86,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_07_pad_04",
+        "sound": "Drumset 07 Pad 04",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          87,
+          87
+        ],
+        "note": 87,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_07_pad_05",
+        "sound": "Drumset 07 Pad 05",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          88,
+          88
+        ],
+        "note": 88,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_07_pad_06",
+        "sound": "Drumset 07 Pad 06",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          89,
+          89
+        ],
+        "note": 89,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_07_pad_07",
+        "sound": "Drumset 07 Pad 07",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          90,
+          90
+        ],
+        "note": 90,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_07_pad_08",
+        "sound": "Drumset 07 Pad 08",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          91,
+          91
+        ],
+        "note": 91,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_07_pad_09",
+        "sound": "Drumset 07 Pad 09",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          92,
+          92
+        ],
+        "note": 92,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_07_pad_10",
+        "sound": "Drumset 07 Pad 10",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          93,
+          93
+        ],
+        "note": 93,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_07_pad_11",
+        "sound": "Drumset 07 Pad 11",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          94,
+          94
+        ],
+        "note": 94,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_07_pad_12",
+        "sound": "Drumset 07 Pad 12",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          95,
+          95
+        ],
+        "note": 95,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_08_pad_01",
+        "sound": "Drumset 08 Pad 01",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          96,
+          96
+        ],
+        "note": 96,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_08_pad_02",
+        "sound": "Drumset 08 Pad 02",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          97,
+          97
+        ],
+        "note": 97,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_08_pad_03",
+        "sound": "Drumset 08 Pad 03",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          98,
+          98
+        ],
+        "note": 98,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_08_pad_04",
+        "sound": "Drumset 08 Pad 04",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          99,
+          99
+        ],
+        "note": 99,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_08_pad_05",
+        "sound": "Drumset 08 Pad 05",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          100,
+          100
+        ],
+        "note": 100,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_08_pad_06",
+        "sound": "Drumset 08 Pad 06",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          101,
+          101
+        ],
+        "note": 101,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_08_pad_07",
+        "sound": "Drumset 08 Pad 07",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          102,
+          102
+        ],
+        "note": 102,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_08_pad_08",
+        "sound": "Drumset 08 Pad 08",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          103,
+          103
+        ],
+        "note": 103,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_08_pad_09",
+        "sound": "Drumset 08 Pad 09",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          104,
+          104
+        ],
+        "note": 104,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_08_pad_10",
+        "sound": "Drumset 08 Pad 10",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          105,
+          105
+        ],
+        "note": 105,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_08_pad_11",
+        "sound": "Drumset 08 Pad 11",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          106,
+          106
+        ],
+        "note": 106,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_08_pad_12",
+        "sound": "Drumset 08 Pad 12",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          107,
+          107
+        ],
+        "note": 107,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_09_pad_01",
+        "sound": "Drumset 09 Pad 01",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          108,
+          108
+        ],
+        "note": 108,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_09_pad_02",
+        "sound": "Drumset 09 Pad 02",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          109,
+          109
+        ],
+        "note": 109,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_09_pad_03",
+        "sound": "Drumset 09 Pad 03",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          110,
+          110
+        ],
+        "note": 110,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_09_pad_04",
+        "sound": "Drumset 09 Pad 04",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          111,
+          111
+        ],
+        "note": 111,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_09_pad_05",
+        "sound": "Drumset 09 Pad 05",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          112,
+          112
+        ],
+        "note": 112,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_09_pad_06",
+        "sound": "Drumset 09 Pad 06",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          113,
+          113
+        ],
+        "note": 113,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_09_pad_07",
+        "sound": "Drumset 09 Pad 07",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          114,
+          114
+        ],
+        "note": 114,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_09_pad_08",
+        "sound": "Drumset 09 Pad 08",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          115,
+          115
+        ],
+        "note": 115,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_09_pad_09",
+        "sound": "Drumset 09 Pad 09",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          116,
+          116
+        ],
+        "note": 116,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_09_pad_10",
+        "sound": "Drumset 09 Pad 10",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          117,
+          117
+        ],
+        "note": 117,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_09_pad_11",
+        "sound": "Drumset 09 Pad 11",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          118,
+          118
+        ],
+        "note": 118,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/drumset_09_pad_12",
+        "sound": "Drumset 09 Pad 12",
+        "section": "Multi-drumset mode",
+        "channel_mode": "basic",
+        "note_range": [
+          119,
+          119
+        ],
+        "note": 119,
+        "velocity_usage": "1~127: Volume"
+      }
+    ]
+  }
+}

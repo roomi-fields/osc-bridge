@@ -1,0 +1,175 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Vermona/DRM1 MKIV.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 0,
+    "cc_entries": 0,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0,
+    "triggers": 10
+  },
+  "device": {
+    "name": "DRM1 MKIV",
+    "vendor": "Vermona",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/drm1_mkiv",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": []
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": [],
+  "triggers": {
+    "entries": [
+      {
+        "osc": "/drum/kick",
+        "sound": "Kick",
+        "section": "General",
+        "channel": 9,
+        "note_range": [
+          36,
+          36
+        ],
+        "note": 36,
+        "velocity_usage": "1~127: Accent level"
+      },
+      {
+        "osc": "/drum/drum_1",
+        "sound": "Drum 1",
+        "section": "General",
+        "channel": 9,
+        "note_range": [
+          45,
+          45
+        ],
+        "note": 45,
+        "velocity_usage": "1~127: Accent level"
+      },
+      {
+        "osc": "/drum/drum_2",
+        "sound": "Drum 2",
+        "section": "General",
+        "channel": 9,
+        "note_range": [
+          50,
+          50
+        ],
+        "note": 50,
+        "velocity_usage": "1~127: Accent level"
+      },
+      {
+        "osc": "/drum/multi",
+        "sound": "Multi",
+        "section": "General",
+        "channel": 9,
+        "note_range": [
+          56,
+          56
+        ],
+        "note": 56,
+        "velocity_usage": "1~127: Accent level"
+      },
+      {
+        "osc": "/drum/snare",
+        "sound": "Snare",
+        "section": "General",
+        "channel": 9,
+        "note_range": [
+          38,
+          38
+        ],
+        "note": 38,
+        "velocity_usage": "1~127: Accent level"
+      },
+      {
+        "osc": "/drum/hihat_1_closed",
+        "sound": "Hihat 1 closed",
+        "section": "General",
+        "channel": 9,
+        "note_range": [
+          44,
+          44
+        ],
+        "note": 44,
+        "velocity_usage": "1~127: Accent level"
+      },
+      {
+        "osc": "/drum/hihat_1_open_cymbal",
+        "sound": "Hihat 1 open / cymbal",
+        "section": "General",
+        "channel": 9,
+        "note_range": [
+          46,
+          46
+        ],
+        "note": 46,
+        "velocity_usage": "1~127: Accent level"
+      },
+      {
+        "osc": "/drum/hihat_2_closed",
+        "sound": "Hihat 2 closed",
+        "section": "General",
+        "channel": 9,
+        "note_range": [
+          49,
+          49
+        ],
+        "note": 49,
+        "velocity_usage": "1~127: Accent level"
+      },
+      {
+        "osc": "/drum/hihat_2_open_cymbal",
+        "sound": "Hihat 2 open / cymbal",
+        "section": "General",
+        "channel": 9,
+        "note_range": [
+          51,
+          51
+        ],
+        "note": 51,
+        "velocity_usage": "1~127: Accent level"
+      },
+      {
+        "osc": "/drum/clap",
+        "sound": "Clap",
+        "section": "General",
+        "channel": 9,
+        "note_range": [
+          39,
+          39
+        ],
+        "note": 39,
+        "velocity_usage": "1~127: Accent level"
+      }
+    ]
+  }
+}

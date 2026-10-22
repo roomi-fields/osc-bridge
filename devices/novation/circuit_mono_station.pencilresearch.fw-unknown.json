@@ -1,0 +1,842 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Novation/Circuit Mono Station.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 75,
+    "cc_entries": 75,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 23
+  },
+  "device": {
+    "name": "Circuit Mono Station",
+    "vendor": "Novation",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/circuit_mono_station",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/patch/category",
+        "cc": 64,
+        "cc_lsb": 2,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Patch"
+      },
+      {
+        "osc": "/oscillator_common/oscillator_sync",
+        "cc": 110,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator common",
+        "expects": "switch"
+      },
+      {
+        "osc": "/oscillator_1/keyboard_octave",
+        "cc": 117,
+        "range": [
+          58,
+          69
+        ],
+        "orientation": "centered",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/waveform_type",
+        "cc": 80,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "centered",
+        "section": "Oscillator 1",
+        "_usage": "0: Sine; 1: Triangle; 2: Saw; 3: Pulse"
+      },
+      {
+        "osc": "/oscillator_1/pulse_width",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/tune_coarse",
+        "cc": 27,
+        "cc_lsb": 59,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/tune_fine",
+        "cc": 26,
+        "cc_lsb": 58,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Oscillator 1"
+      },
+      {
+        "osc": "/oscillator_1/range",
+        "cc": 70,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1",
+        "_usage": "0: 16'; 1: 8'; 2: 4'; 3: 2'"
+      },
+      {
+        "osc": "/oscillator_1/glide",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 1",
+        "_usage": "0: 0%; 1: 25%; 2: 37.5%; 3: 50%; 4: 62.5%; 5: 75%; 6: 87.5%; 7: 100%; 8: 200%; 9: 300%; 10: 400%; 11: 500%; 12: 600%; 13: 700%; 14: 800%; 15: 900%"
+      },
+      {
+        "osc": "/oscillator_2/keyboard_octave",
+        "cc": 76,
+        "range": [
+          58,
+          69
+        ],
+        "orientation": "centered",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/waveform_type",
+        "cc": 81,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "centered",
+        "section": "Oscillator 2",
+        "_usage": "0: Sine; 1: Triangle; 2: Saw; 3: Pulse"
+      },
+      {
+        "osc": "/oscillator_2/pulse_width",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/tune_coarse",
+        "cc": 30,
+        "cc_lsb": 62,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/tune_fine",
+        "cc": 29,
+        "cc_lsb": 61,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Oscillator 2"
+      },
+      {
+        "osc": "/oscillator_2/range",
+        "cc": 75,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2",
+        "_usage": "0: 16'; 1: 8'; 2: 4'; 3: 2'"
+      },
+      {
+        "osc": "/oscillator_2/glide",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Oscillator 2",
+        "_usage": "0: 0%; 1: 25%; 2: 37.5%; 3: 50%; 4: 62.5%; 5: 75%; 6: 87.5%; 7: 100%; 8: 200%; 9: 300%; 10: 400%; 11: 500%; 12: 600%; 13: 700%; 14: 800%; 15: 900%"
+      },
+      {
+        "osc": "/mixer/master",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/oscillator_1_level",
+        "cc": 20,
+        "cc_lsb": 52,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/oscillator_2_level",
+        "cc": 21,
+        "cc_lsb": 53,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/sub_oscillator_level",
+        "cc": 22,
+        "cc_lsb": 54,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/noise_level",
+        "cc": 23,
+        "cc_lsb": 55,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/audio_in_level",
+        "cc": 25,
+        "cc_lsb": 57,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/mixer/ring_mod_level",
+        "cc": 24,
+        "cc_lsb": 56,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Mixer"
+      },
+      {
+        "osc": "/filter/overdrive",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/frequency",
+        "cc": 16,
+        "cc_lsb": 48,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/filter/shape",
+        "cc": 84,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Low pass; 1: Band pass; 2: High pass"
+      },
+      {
+        "osc": "/filter/slope",
+        "cc": 40,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Low pass; 1: Band pass; 2: High pass"
+      },
+      {
+        "osc": "/filter/bypass",
+        "cc": 83,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: Off; 1: Noise; 2: Oscillator 2; 3: Noise and oscillator 2"
+      },
+      {
+        "osc": "/filter/key_tracking",
+        "cc": 69,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Filter",
+        "_usage": "0: 0%; 1: 15%; 2: 30%; 3: 45%; 4: 60%; 5: 75%; 6: 90%; 7: 100%"
+      },
+      {
+        "osc": "/envelope/trigger",
+        "cc": 73,
+        "cc_lsb": 0,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/attack",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/decay",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/sustain",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/envelope/release",
+        "cc": 93,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Envelope"
+      },
+      {
+        "osc": "/lfo/waveform_type",
+        "cc": 88,
+        "range": [
+          0,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: Triangle; 1: Descending saw; 2: Square; 3: Sample and hold"
+      },
+      {
+        "osc": "/lfo/rate",
+        "cc": 18,
+        "cc_lsb": 50,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "LFO"
+      },
+      {
+        "osc": "/lfo/sync_rate",
+        "cc": 87,
+        "range": [
+          0,
+          34
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "_usage": "0: 64 beats; 1: 48 beats; 2: 42 beats; 3: 36 beats; 4: 32 beats; 5: 30 beats; 6: 28 beats; 7: 24 beats; 8: 21+2/3 beats; 9: 20 beats; 10: 18+2/3 beats"
+      },
+      {
+        "osc": "/lfo/clock_sync",
+        "cc": 86,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "expects": "switch"
+      },
+      {
+        "osc": "/lfo/key_sync",
+        "cc": 43,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "LFO",
+        "expects": "switch"
+      },
+      {
+        "osc": "/distortion/level",
+        "cc": 94,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Distortion"
+      },
+      {
+        "osc": "/distortion/type",
+        "cc": 95,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Distortion",
+        "_usage": "0: Type I; 1: Type II; 2: Type III"
+      },
+      {
+        "osc": "/modulation_matrix/envelope_to_oscillator_1_pitch",
+        "cc": 12,
+        "cc_lsb": 44,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/envelope_to_oscillator_1_pwm",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/envelope_to_oscillator_2_pitch",
+        "cc": 13,
+        "cc_lsb": 45,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/envelope_to_oscillator_2_pwm",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/envelope_to_amp",
+        "cc": 42,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Modulation matrix",
+        "expects": "switch"
+      },
+      {
+        "osc": "/modulation_matrix/envelope_to_filter_frequency",
+        "cc": 14,
+        "cc_lsb": 46,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/envelope_to_distortion",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/envelope_to_auxillary_cv",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/lfo_to_oscillator_1_pitch",
+        "cc": 28,
+        "cc_lsb": 60,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/lfo_to_osillator_1_pwm",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/lfo_to_oscillator_2_pitch",
+        "cc": 3,
+        "cc_lsb": 35,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/lfo_to_oscillator_2_pwm",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/lfo_to_amp",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/lfo_to_filter_frequency",
+        "cc": 17,
+        "cc_lsb": 49,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/lfo_to_distortion",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/lfo_to_auxillary_cv",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/mod_seq_to_oscillator_1_pitch",
+        "cc": 15,
+        "cc_lsb": 47,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/mod_seq_to_oscillator_1_pwm",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/mod_seq_to_oscillator_2_pitch",
+        "cc": 19,
+        "cc_lsb": 51,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/mod_seq_to_oscillator_2_pwm",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/mod_seq_to_amp",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/mod_seq_to_filter_frequency",
+        "cc": 31,
+        "cc_lsb": 63,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/mod_seq_to_distortion",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/mod_seq_to_auxillary_cv",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/velocity_to_oscillator_1_pitch",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/velocity_to_oscillator_1_pwm",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/velocity_to_oscillator_2_pitch",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/velocity_to_oscillator_2_pwm",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/velocity_to_amp",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/velocity_to_filter_frequency",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/velocity_to_distortion",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/velocity_to_auxillary_cv",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Modulation matrix"
+      },
+      {
+        "osc": "/modulation_matrix/selected_routing",
+        "cc": 102,
+        "range": [
+          0,
+          31
+        ],
+        "orientation": "0-based",
+        "section": "Modulation matrix",
+        "_usage": "0: Envelope to oscillator 1 pitch depth; 1: Envelope to oscillator 1 shape depth; 2: Envelope to oscillator 2 pitch depth; 3: Envelope to oscillator 2"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

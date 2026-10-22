@@ -1,0 +1,231 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Roland/SPD-20 PRO.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 17,
+    "cc_entries": 17,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "SPD-20 PRO",
+    "vendor": "Roland",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/spd_20_pro",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/bank_select/msb",
+        "cc": 0,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bank select"
+      },
+      {
+        "osc": "/bank_select/lsb",
+        "cc": 32,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Bank select",
+        "_usage": "0: Kits 1 to 128; 1: Kits 129 to 200",
+        "expects": "switch"
+      },
+      {
+        "osc": "/hi_hat_control/hi_hat_pedal_position_1_mod",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hi-hat control",
+        "_usage": "0~127: Open to closed"
+      },
+      {
+        "osc": "/hi_hat_control/hi_hat_pedal_position_2_breath",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hi-hat control",
+        "_usage": "0~127: Open to closed"
+      },
+      {
+        "osc": "/hi_hat_control/hi_hat_pedal_position_4_foot",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hi-hat control",
+        "_usage": "0~127: Open to closed"
+      },
+      {
+        "osc": "/hi_hat_control/hi_hat_pedal_position_11_exp",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hi-hat control",
+        "_usage": "0~127: Open to closed"
+      },
+      {
+        "osc": "/hi_hat_control/hi_hat_pedal_position_16_gen1",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hi-hat control",
+        "_usage": "0~127: Open to closed"
+      },
+      {
+        "osc": "/hi_hat_control/hi_hat_pedal_position_17_gen2",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hi-hat control",
+        "_usage": "0~127: Open to closed"
+      },
+      {
+        "osc": "/hi_hat_control/hi_hat_pedal_position_18_gen3",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hi-hat control",
+        "_usage": "0~127: Open to closed"
+      },
+      {
+        "osc": "/hi_hat_control/hi_hat_pedal_position_19_gen4",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Hi-hat control",
+        "_usage": "0~127: Open to closed"
+      },
+      {
+        "osc": "/channel_mode/all_sounds_off",
+        "cc": 120,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/reset_all_controllers",
+        "cc": 121,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/omni_off",
+        "cc": 124,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/omni_on",
+        "cc": 125,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/mono",
+        "cc": 126,
+        "range": [
+          0,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/poly",
+        "cc": 127,
+        "range": [
+          0,
+          0
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

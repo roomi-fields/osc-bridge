@@ -1,0 +1,132 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Roland/T-8.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 0,
+    "cc_entries": 0,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0,
+    "triggers": 7
+  },
+  "device": {
+    "name": "T-8",
+    "vendor": "Roland",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/t_8",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": []
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": [],
+  "triggers": {
+    "entries": [
+      {
+        "osc": "/drum/bass",
+        "sound": "Bass",
+        "section": "Bass",
+        "channel": 1,
+        "note_range": [
+          12,
+          96
+        ],
+        "comments": "Monophonic chromatic bass voice"
+      },
+      {
+        "osc": "/drum/bass_drum",
+        "sound": "Bass drum",
+        "section": "Rhythm",
+        "channel": 9,
+        "note_range": [
+          36,
+          36
+        ],
+        "note": 36
+      },
+      {
+        "osc": "/drum/snare_drum",
+        "sound": "Snare drum",
+        "section": "Rhythm",
+        "channel": 9,
+        "note_range": [
+          38,
+          38
+        ],
+        "note": 38
+      },
+      {
+        "osc": "/drum/hand_clap",
+        "sound": "Hand clap",
+        "section": "Rhythm",
+        "channel": 9,
+        "note_range": [
+          50,
+          50
+        ],
+        "note": 50
+      },
+      {
+        "osc": "/drum/tom",
+        "sound": "Tom",
+        "section": "Rhythm",
+        "channel": 9,
+        "note_range": [
+          47,
+          47
+        ],
+        "note": 47
+      },
+      {
+        "osc": "/drum/closed_hihat",
+        "sound": "Closed hihat",
+        "section": "Rhythm",
+        "channel": 9,
+        "note_range": [
+          42,
+          42
+        ],
+        "note": 42
+      },
+      {
+        "osc": "/drum/open_hihat",
+        "sound": "Open hihat",
+        "section": "Rhythm",
+        "channel": 9,
+        "note_range": [
+          46,
+          46
+        ],
+        "note": 46
+      }
+    ]
+  }
+}

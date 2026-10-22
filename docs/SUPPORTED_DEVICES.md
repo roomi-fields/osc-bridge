@@ -3,13 +3,13 @@
 
 # Supported devices
 
-**848 devices** across **191 vendors** — shipped as **849 driver files** (a device may have several variants: per firmware, per source).
+**963 devices** across **212 vendors** — shipped as **981 driver files** (a device may have several variants: per firmware, per source).
 
 - **✅ hardware-verified** — 5 (tested on the physical device — scope varies per driver, see `_sources` in each JSON for what was exercised)
 - **📘 vendor-doc derived** — 3 (from a manufacturer programmer's reference / official MIDI spec — bytes match the spec, still beta until tested)
 - **📡 OSC-API (software targets)** — 7 (vendor-OSC or third-party OSC shim like AbletonOSC — DAWs and live coding environments)
 - **🎛️ electra-preset derived** — 588 (from a community Electra One preset — covers SysEx + CC/NRPN, but reflects the preset author's editorial choices)
-- **📦 pencilresearch derived** — 244 (community canonical CSVs — CC/NRPN only, no SysEx)
+- **📦 pencilresearch derived** — 376 (community canonical CSVs — CC/NRPN only, no SysEx)
 - **🚧 WIP** — 1
 - **📝 stub** — 1
 
@@ -25,114 +25,132 @@
 - [Access](#access) (6)
 - [AIR Music Tech](#air-music-tech) (1)
 - [Akai](#akai) (8)
-- [Alesis](#alesis) (3)
+- [Alesis](#alesis) (4)
+- [ALM Busy Circuits](#alm-busy-circuits) (1)
+- [Animal Factory Amplification](#animal-factory-amplification) (3)
 - [Antonus](#antonus) (1)
-- [Arturia](#arturia) (26)
+- [Arturia](#arturia) (26 devices, 27 files)
 - [ASM](#asm) (3)
-- [Audiothingies](#audiothingies) (3)
+- [Audiothingies](#audiothingies) (4)
 - [Baloran](#baloran) (1)
-- [Bastl Instruments](#bastl-instruments) (2)
+- [Bastl Instruments](#bastl-instruments) (5)
 - [Beatbot](#beatbot) (1)
 - [BeepStreet](#beepstreet) (1)
-- [Beetlecrab.audio](#beetlecrabaudio) (2 devices, 3 files)
-- [Behringer](#behringer) (9)
+- [Beetlecrab.audio](#beetlecrabaudio) (2 devices, 4 files)
+- [Behringer](#behringer) (11)
 - [Bitwig](#bitwig) (4)
 - [Black Corporation](#black-corporation) (3)
 - [Blokas](#blokas) (1)
 - [Bohm](#bohm) (1)
-- [BOSS](#boss) (4)
+- [BOSS](#boss) (7)
+- [Bradshaw Instruments](#bradshaw-instruments) (1)
 - [Camel Audio](#camel-audio) (1)
 - [Casio](#casio) (4)
-- [Chase Bliss](#chase-bliss) (26)
+- [Chase Bliss](#chase-bliss) (29)
 - [Cheetah](#cheetah) (1)
 - [Cherry Audio](#cherry-audio) (5)
 - [Cockos](#cockos) (1)
-- [Conductive Labs](#conductive-labs) (2)
+- [Conductive Labs](#conductive-labs) (3)
 - [Creamware](#creamware) (1)
 - [Critter & Guitari](#critter-&-guitari) (2)
 - [Crumar](#crumar) (1)
+- [Cwejman](#cwejman) (1)
+- [Cyma](#cyma) (2)
 - [D16 Group](#d16-group) (3)
+- [Darkglass](#darkglass) (1)
 - [Dave Smith Instruments](#dave-smith-instruments) (9)
 - [Derivative](#derivative) (1)
 - [Dirtywave](#dirtywave) (3)
+- [discoDSP](#discodsp) (5)
 - [Dmitry Sches](#dmitry-sches) (1)
-- [Dreadbox](#dreadbox) (6)
+- [Dreadbox](#dreadbox) (8 devices, 9 files)
 - [DSI](#dsi) (3)
 - [E-MU](#e-mu) (5)
 - [Electra Community](#electra-community) (23)
 - [Electra One](#electra-one) (1)
-- [Elektron](#elektron) (28)
+- [Elektron](#elektron) (28 devices, 32 files)
 - [Elka](#elka) (1)
 - [Empress](#empress) (2)
 - [Endorphin.es](#endorphines) (1)
+- [Enjoy Electronics](#enjoy-electronics) (1)
 - [Ensoniq](#ensoniq) (3)
 - [Eowave](#eowave) (2)
-- [Erica Synths](#erica-synths) (2)
+- [Erica Synths](#erica-synths) (4)
 - [Eventide](#eventide) (20)
-- [Expert Sleepers](#expert-sleepers) (5)
+- [Expert Sleepers](#expert-sleepers) (6)
 - [Expressive E](#expressive-e) (7)
 - [Ferrofish](#ferrofish) (1)
 - [Flame](#flame) (3)
-- [Fred's Lab](#fred's-lab) (2)
+- [Fred's Lab](#fred's-lab) (3)
 - [GEM](#gem) (1)
 - [Generalmusic](#generalmusic) (1)
 - [Generic MIDI](#generic-midi) (1)
 - [GFI System](#gfi-system) (1)
 - [Gotharman](#gotharman) (1)
 - [Groove Synthesis](#groove-synthesis) (3)
-- [GS Music](#gs-music) (2)
+- [Grp Synthesizer](#grp-synthesizer) (1)
+- [GS Music](#gs-music) (3)
 - [GSi](#gsi) (1)
 - [Haken](#haken) (1)
-- [Haken Audio](#haken-audio) (5)
-- [Hologram](#hologram) (2)
+- [Haken Audio](#haken-audio) (6)
+- [HeadRush](#headrush) (4)
+- [Hologram](#hologram) (3 devices, 4 files)
 - [Ichiro Toda](#ichiro-toda) (1)
-- [IK Multimedia](#ik-multimedia) (3)
+- [IK Multimedia](#ik-multimedia) (5)
 - [Imaginando](#imaginando) (1)
 - [Inphonik](#inphonik) (1)
+- [Instruō](#instruō) (1)
 - [Intellijel](#intellijel) (1)
-- [Jomox](#jomox) (5)
+- [Jomox](#jomox) (6 devices, 7 files)
 - [Kasser Synths](#kasser-synths) (2)
 - [Kawai](#kawai) (7)
-- [Kemper](#kemper) (1)
-- [Kinotone](#kinotone) (3)
+- [Kemper](#kemper) (5)
+- [Kinotone](#kinotone) (4)
+- [Kiviak Instruments](#kiviak-instruments) (1)
 - [Knif Audio](#knif-audio) (1)
 - [Knobula](#knobula) (1)
-- [Kodamo](#kodamo) (1)
-- [KORG](#korg) (38)
+- [Kodamo](#kodamo) (2)
+- [KORG](#korg) (46 devices, 47 files)
 - [Korg](#korg) (14)
 - [Kurzweil](#kurzweil) (2)
 - [L.L. Electronics](#ll-electronics) (1)
+- [Lambda Synthetics](#lambda-synthetics) (1)
 - [Lamberhuus](#lamberhuus) (1)
 - [LennarDigital](#lennardigital) (1)
 - [Lexicon](#lexicon) (8)
-- [Line 6](#line-6) (3)
+- [Line 6](#line-6) (9)
 - [Looperlative](#looperlative) (1)
 - [LPZW](#lpzw) (1)
-- [LZX Industries](#lzx-industries) (1)
+- [LZX Industries](#lzx-industries) (2)
 - [Madrona Labs](#madrona-labs) (2)
 - [Make Noise](#make-noise) (1)
 - [MAM](#mam) (1)
+- [Manikin Electronic](#manikin-electronic) (3)
 - [Marion Systems](#marion-systems) (2)
 - [MeeBlip](#meeblip) (2)
-- [Melbourne Instruments](#melbourne-instruments) (1)
-- [Meris](#meris) (4)
-- [MFB](#mfb) (8)
+- [Melbourne Instruments](#melbourne-instruments) (2)
+- [Meris](#meris) (5)
+- [MFB](#mfb) (9)
 - [MIDI Association](#midi-association) (1)
 - [Midibox](#midibox) (2)
 - [Modal](#modal) (1)
-- [Modal Electronics](#modal-electronics) (6)
+- [Modal Electronics](#modal-electronics) (8)
+- [Modbap](#modbap) (1)
 - [Modor](#modor) (3)
 - [Monome](#monome) (4)
-- [Moog](#moog) (21)
+- [Mooer](#mooer) (2)
+- [Moog](#moog) (22 devices, 23 files)
 - [Moonwind](#moonwind) (1)
+- [Morphor](#morphor) (1)
 - [MOTU](#motu) (3)
 - [Mutable Instruments](#mutable-instruments) (12)
 - [Native Instruments](#native-instruments) (3)
-- [Neuzeit Instruments](#neuzeit-instruments) (1)
+- [Neural DSP](#neural-dsp) (2)
+- [Neuzeit Instruments](#neuzeit-instruments) (2)
 - [Nonlinear Labs](#nonlinear-labs) (1)
-- [Norand](#norand) (1)
-- [Nord](#nord) (9)
-- [Novation](#novation) (22)
+- [Norand](#norand) (1 devices, 2 files)
+- [Nord](#nord) (12 devices, 13 files)
+- [Novation](#novation) (23 devices, 24 files)
 - [NUX](#nux) (1)
 - [Oberheim](#oberheim) (18)
 - [Orla](#orla) (1)
@@ -144,11 +162,11 @@
 - [Panda-Audio](#panda-audio) (2)
 - [Pioneer](#pioneer) (2)
 - [Pioneer DJ](#pioneer-dj) (3)
-- [Plinky](#plinky) (1)
-- [Polyend](#polyend) (4)
+- [Plinky](#plinky) (2)
+- [Polyend](#polyend) (5)
 - [PreenFM](#preenfm) (2)
 - [Pure Data](#pure-data) (1)
-- [PWM](#pwm) (2)
+- [PWM](#pwm) (3)
 - [Red Panda](#red-panda) (2)
 - [Red Panda Lab](#red-panda-lab) (1)
 - [RED Sound](#red-sound) (1)
@@ -156,25 +174,26 @@
 - [Reveal Sound](#reveal-sound) (1)
 - [Rhodes](#rhodes) (4)
 - [RME](#rme) (1)
-- [Roland](#roland) (72)
+- [Roland](#roland) (76 devices, 78 files)
 - [ROLI](#roli) (1)
+- [Schmidt](#schmidt) (1)
 - [Sequential](#sequential) (18)
 - [Sherman](#sherman) (1)
 - [SIEL](#siel) (1)
-- [Sleepy Circuits](#sleepy-circuits) (1)
+- [Sleepy Circuits](#sleepy-circuits) (2)
 - [Softube](#softube) (1)
 - [Sonic Pi](#sonic-pi) (1)
 - [Sonic Potions](#sonic-potions) (2)
-- [Sonicware](#sonicware) (14)
+- [Sonicware](#sonicware) (15)
 - [Soundtoys](#soundtoys) (1)
 - [Source Audio](#source-audio) (1)
 - [Spectrasonics](#spectrasonics) (5)
 - [Spektro Audio](#spektro-audio) (1)
 - [Spitfire](#spitfire) (1)
 - [Squarp](#squarp) (1)
-- [Squarp instruments](#squarp-instruments) (1)
+- [Squarp instruments](#squarp-instruments) (2)
 - [Steinberg](#steinberg) (1)
-- [Strymon](#strymon) (5)
+- [Strymon](#strymon) (6)
 - [Studio Electronics](#studio-electronics) (5)
 - [Studiologic](#studiologic) (1)
 - [Suonobuono](#suonobuono) (2)
@@ -182,34 +201,36 @@
 - [Supercritical](#supercritical) (1)
 - [Synapse Audio](#synapse-audio) (3)
 - [Syntecno](#syntecno) (1)
-- [Synthstrom](#synthstrom) (1)
+- [Synthstrom](#synthstrom) (1 devices, 2 files)
 - [Synthstrom Audible](#synthstrom-audible) (3)
 - [TAL Software](#tal-software) (3)
-- [Tasty Chips](#tasty-chips) (1)
+- [Tasty Chips](#tasty-chips) (2)
 - [Tasty Chips Electronics](#tasty-chips-electronics) (1)
 - [TC Electronic](#tc-electronic) (3)
 - [TC Helicon](#tc-helicon) (2)
-- [Teenage Engineering](#teenage-engineering) (6)
+- [Teenage Engineering](#teenage-engineering) (7)
 - [Telepathic Instruments](#telepathic-instruments) (1)
 - [Torso](#torso) (2)
 - [Torso Electronics](#torso-electronics) (2)
-- [Twisted Electrons](#twisted-electrons) (2)
+- [Tubbutec](#tubbutec) (1)
+- [Twisted Electrons](#twisted-electrons) (3)
 - [u-he](#u-he) (6)
 - [uCApps.de](#ucappsde) (1)
 - [UDO](#udo) (1)
 - [UDO Audio](#udo-audio) (2)
-- [Universal Audio](#universal-audio) (2)
-- [Unknown](#unknown) (1)
+- [Underscores](#underscores) (1)
+- [Universal Audio](#universal-audio) (6)
 - [Valhalla DSP](#valhalla-dsp) (1)
 - [VCV](#vcv) (1)
 - [VCV Rack](#vcv-rack) (3)
+- [Vermona](#vermona) (2)
 - [Vital Audio](#vital-audio) (1)
-- [VONGON](#vongon) (1)
-- [Waldorf](#waldorf) (27)
+- [VONGON](#vongon) (2)
+- [Waldorf](#waldorf) (28)
 - [Waves](#waves) (1)
 - [Xfer Records](#xfer-records) (1)
 - [Yamaha](#yamaha) (37)
-- [Zoom](#zoom) (4)
+- [Zoom](#zoom) (5)
 
 ---
 
@@ -256,10 +277,10 @@
 - **OSC prefix**: `/nanobox_razzmatazz`
 - **Variants**: 1
 
-#### 📦 [`nanobox_razzmatazz.json`](../devices/1010music/nanobox_razzmatazz.json)
+#### 📦 [`nanobox_razzmatazz.json`](../devices/1010music/nanobox_razzmatazz.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/1010music/nanobox | razzmatazz.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/1010music/nanobox razzmatazz.csv)
 - **Coverage**: 128 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -282,10 +303,10 @@
 - **OSC prefix**: `/droid_3`
 - **Variants**: 1
 
-#### 📦 [`droid_3.json`](../devices/abildgard/droid_3.json)
+#### 📦 [`droid_3.json`](../devices/abildgard/droid_3.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Abildgard/Droid-3.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Abildgard/Droid-3.csv)
 - **Coverage**: 32 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -982,6 +1003,70 @@
 - **Coverage**: 207 CC (207 NRPN) · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+### 📦 SR-16
+
+- **OSC prefix**: `/sr_16`
+- **Variants**: 1
+
+#### 📦 [`sr_16.pencilresearch.fw-unknown.json`](../devices/alesis/sr_16.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Alesis/SR-16.csv)
+- **Coverage**: midi_out
+- **Limitations**: CC/NRPN only.
+
+## ALM Busy Circuits
+
+### 📦 mmMidi
+
+- **OSC prefix**: `/mmmidi`
+- **Variants**: 1
+
+#### 📦 [`mmmidi.pencilresearch.fw-unknown.json`](../devices/alm-busy-circuits/mmmidi.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/ALM Busy Circuits/mmMidi.csv)
+- **Coverage**: 4 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+## Animal Factory Amplification
+
+### 📦 Dirty Mirror
+
+- **OSC prefix**: `/dirty_mirror`
+- **Variants**: 1
+
+#### 📦 [`dirty_mirror.pencilresearch.fw-unknown.json`](../devices/animal-factory-amplification/dirty_mirror.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Animal Factory Amplification/Dirty Mirror.csv)
+- **Coverage**: 10 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Godeater+
+
+- **OSC prefix**: `/godeater`
+- **Variants**: 1
+
+#### 📦 [`godeater.pencilresearch.fw-unknown.json`](../devices/animal-factory-amplification/godeater.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Animal Factory Amplification/Godeater+.csv)
+- **Coverage**: 7 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Ozymandias
+
+- **OSC prefix**: `/ozymandias`
+- **Variants**: 1
+
+#### 📦 [`ozymandias.pencilresearch.fw-unknown.json`](../devices/animal-factory-amplification/ozymandias.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Animal Factory Amplification/Ozymandias.csv)
+- **Coverage**: 3 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ## Antonus
 
 ### 📦 2600 Original Size
@@ -989,10 +1074,10 @@
 - **OSC prefix**: `/2600_original_size`
 - **Variants**: 1
 
-#### 📦 [`2600_original_size.json`](../devices/antonus/2600_original_size.json)
+#### 📦 [`2600_original_size.json`](../devices/antonus/2600_original_size.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Antonus/2600 Original Size.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Antonus/2600 Original Size.csv)
 - **Coverage**: 17 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1072,7 +1157,7 @@
 ### ✅ MatrixBrute
 
 - **OSC prefix**: `/matrixbrute`
-- **Variants**: 1
+- **Variants**: 2
 
 #### ✅ [`matrixbrute.json`](../devices/arturia/matrixbrute.json)
 
@@ -1080,15 +1165,22 @@
 - **Source**: [hardware test (partial)](https://github.com/roomi-fields/osc-bridge)
 - **Coverage**: 2 SysEx commands · 39 SysEx params · 78 CC · 2 replies · midi_out
 
+#### 📦 [`matrixbrute.pencilresearch.fw-unknown.json`](../devices/arturia/matrixbrute.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Arturia/MatrixBrute.csv)
+- **Coverage**: 78 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ### 📦 MicroFreak
 
 - **OSC prefix**: `/microfreak`
 - **Variants**: 1
 
-#### 📦 [`microfreak.json`](../devices/arturia/microfreak.json)
+#### 📦 [`microfreak.json`](../devices/arturia/microfreak.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Arturia/MicroFreak.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Arturia/MicroFreak.csv)
 - **Coverage**: 21 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1205,10 +1297,10 @@
 - **OSC prefix**: `/polybrute`
 - **Variants**: 1
 
-#### 📦 [`polybrute.json`](../devices/arturia/polybrute.json)
+#### 📦 [`polybrute.json`](../devices/arturia/polybrute.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Arturia/PolyBrute.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Arturia/PolyBrute.csv)
 - **Coverage**: 68 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1217,10 +1309,10 @@
 - **OSC prefix**: `/polybrute_12`
 - **Variants**: 1
 
-#### 📦 [`polybrute_12.json`](../devices/arturia/polybrute_12.json)
+#### 📦 [`polybrute_12.json`](../devices/arturia/polybrute_12.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Arturia/PolyBrute 12.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Arturia/PolyBrute 12.csv)
 - **Coverage**: 74 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1315,10 +1407,10 @@
 - **OSC prefix**: `/hydrasynth`
 - **Variants**: 1
 
-#### 📦 [`hydrasynth.json`](../devices/asm/hydrasynth.json)
+#### 📦 [`hydrasynth.json`](../devices/asm/hydrasynth.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/ASM/Hydrasynth.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/ASM/Hydrasynth.csv)
 - **Coverage**: 115 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1339,10 +1431,10 @@
 - **OSC prefix**: `/leviasynth`
 - **Variants**: 1
 
-#### 📦 [`leviasynth.json`](../devices/asm/leviasynth.json)
+#### 📦 [`leviasynth.json`](../devices/asm/leviasynth.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/ASM/Leviasynth.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/ASM/Leviasynth.csv)
 - **Coverage**: 110 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1384,6 +1476,18 @@
 - **Coverage**: 116 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+### 📦 Micromonsta 2
+
+- **OSC prefix**: `/micromonsta_2`
+- **Variants**: 1
+
+#### 📦 [`micromonsta_2.pencilresearch.fw-unknown.json`](../devices/audiothingies/micromonsta_2.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Audiothingies/Micromonsta 2.csv)
+- **Coverage**: 66 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ## Baloran
 
 ### 🎛️ Baloran The River
@@ -1417,11 +1521,47 @@
 - **OSC prefix**: `/kastle_2_alchemist`
 - **Variants**: 1
 
-#### 📦 [`kastle_2_alchemist.json`](../devices/bastl-instruments/kastle_2_alchemist.json)
+#### 📦 [`kastle_2_alchemist.json`](../devices/bastl-instruments/kastle_2_alchemist.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Bastl Instruments/Kastle 2 Alchemist.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Bastl Instruments/Kastle 2 Alchemist.csv)
 - **Coverage**: 21 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Kastle 2 FX Wizard
+
+- **OSC prefix**: `/kastle_2_fx_wizard`
+- **Variants**: 1
+
+#### 📦 [`kastle_2_fx_wizard.pencilresearch.fw-unknown.json`](../devices/bastl-instruments/kastle_2_fx_wizard.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Bastl Instruments/Kastle 2 FX Wizard.csv)
+- **Coverage**: 17 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Kastle 2 Wave Bard
+
+- **OSC prefix**: `/kastle_2_wave_bard`
+- **Variants**: 1
+
+#### 📦 [`kastle_2_wave_bard.pencilresearch.fw-unknown.json`](../devices/bastl-instruments/kastle_2_wave_bard.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Bastl Instruments/Kastle 2 Wave Bard.csv)
+- **Coverage**: 20 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Thyme+
+
+- **OSC prefix**: `/thyme`
+- **Variants**: 1
+
+#### 📦 [`thyme.pencilresearch.fw-unknown.json`](../devices/bastl-instruments/thyme.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Bastl Instruments/Thyme+.csv)
+- **Coverage**: 92 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ## Beatbot
@@ -1457,7 +1597,7 @@
 ### 📘 Tempera
 
 - **OSC prefix**: `/tempera`
-- **Variants**: 2
+- **Variants**: 3
 
 #### 📘 [`tempera.vendor.fw-2.2.json`](../devices/beetlecrab-audio/tempera.vendor.fw-2.2.json) — firmware `2.2`
 
@@ -1473,15 +1613,22 @@
 - **Coverage**: 117 CC · midi_out
 - **Limitations**: Community Electra One preset by Gabriel Alcantara.
 
+#### 📦 [`tempera.pencilresearch.fw-unknown.json`](../devices/beetlecrab-audio/tempera.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Beetlecrab.audio/Tempera.csv)
+- **Coverage**: 104 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ### 📦 Vector
 
 - **OSC prefix**: `/vector`
 - **Variants**: 1
 
-#### 📦 [`vector.json`](../devices/beetlecrab-audio/vector.json)
+#### 📦 [`vector.json`](../devices/beetlecrab-audio/vector.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Beetlecrab.audio/Vector.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Beetlecrab.audio/Vector.csv)
 - **Coverage**: 54 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1498,6 +1645,18 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/wjJRrl1luELP75mFEUwg)
 - **Coverage**: 128 CC (128 NRPN) · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+### 📦 Deepmind 12
+
+- **OSC prefix**: `/deepmind_12`
+- **Variants**: 1
+
+#### 📦 [`deepmind_12.pencilresearch.fw-unknown.json`](../devices/behringer/deepmind_12.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Behringer/Deepmind 12.csv)
+- **Coverage**: 111 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 🎛️ DEEPMIND 12 v1.0.2
 
@@ -1528,11 +1687,23 @@
 - **OSC prefix**: `/jt_4000m_micro`
 - **Variants**: 1
 
-#### 📦 [`jt_4000m_micro.json`](../devices/behringer/jt_4000m_micro.json)
+#### 📦 [`jt_4000m_micro.json`](../devices/behringer/jt_4000m_micro.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Behringer/JT-4000M MICRO.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Behringer/JT-4000M MICRO.csv)
 - **Coverage**: 31 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 LM DRUM
+
+- **OSC prefix**: `/lm_drum`
+- **Variants**: 1
+
+#### 📦 [`lm_drum.pencilresearch.fw-unknown.json`](../devices/behringer/lm_drum.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Behringer/LM DRUM.csv)
+- **Coverage**: 17 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 🎛️ Pro 800
@@ -1564,11 +1735,11 @@
 - **OSC prefix**: `/pro_vs_mini`
 - **Variants**: 1
 
-#### 📦 [`pro_vs_mini.json`](../devices/behringer/pro_vs_mini.json)
+#### 📦 [`pro_vs_mini.json`](../devices/behringer/pro_vs_mini.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Behringer/Pro VS Mini.csv)
-- **Coverage**: 15 CC · midi_out
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Behringer/Pro VS Mini.csv)
+- **Coverage**: 35 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 🎛️ WAVE V.1
@@ -1652,10 +1823,10 @@
 - **OSC prefix**: `/deckard_s_dream`
 - **Variants**: 1
 
-#### 📦 [`deckard_s_dream.json`](../devices/black-corporation/deckard_s_dream.json)
+#### 📦 [`deckard_s_dream.json`](../devices/black-corporation/deckard_s_dream.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Black Corporation/Deckard's Dream.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Black Corporation/Deckard's Dream.csv)
 - **Coverage**: 79 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1664,10 +1835,10 @@
 - **OSC prefix**: `/deckard_s_dream_mk2`
 - **Variants**: 1
 
-#### 📦 [`deckard_s_dream_mk2.json`](../devices/black-corporation/deckard_s_dream_mk2.json)
+#### 📦 [`deckard_s_dream_mk2.json`](../devices/black-corporation/deckard_s_dream_mk2.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Black Corporation/Deckard's Dream MK2.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Black Corporation/Deckard's Dream MK2.csv)
 - **Coverage**: 79 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1742,11 +1913,47 @@
 - **OSC prefix**: `/gm_800`
 - **Variants**: 1
 
-#### 📦 [`gm_800.json`](../devices/boss/gm_800.json)
+#### 📦 [`gm_800.json`](../devices/boss/gm_800.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/BOSS/GM-800.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/BOSS/GM-800.csv)
 - **Coverage**: 83 CC (1 14-bit) · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 KATANA-Artist MkII
+
+- **OSC prefix**: `/katana_artist_mkii`
+- **Variants**: 1
+
+#### 📦 [`katana_artist_mkii.pencilresearch.fw-unknown.json`](../devices/boss/katana_artist_mkii.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/BOSS/KATANA-Artist MkII.csv)
+- **Coverage**: 11 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 KATANA-Artist MkII Head
+
+- **OSC prefix**: `/katana_artist_mkii_head`
+- **Variants**: 1
+
+#### 📦 [`katana_artist_mkii_head.pencilresearch.fw-unknown.json`](../devices/boss/katana_artist_mkii_head.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/BOSS/KATANA-Artist MkII Head.csv)
+- **Coverage**: 11 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 KATANA-Head MkII
+
+- **OSC prefix**: `/katana_head_mkii`
+- **Variants**: 1
+
+#### 📦 [`katana_head_mkii.pencilresearch.fw-unknown.json`](../devices/boss/katana_head_mkii.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/BOSS/KATANA-Head MkII.csv)
+- **Coverage**: 11 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 📦 SY-1000
@@ -1754,11 +1961,25 @@
 - **OSC prefix**: `/sy_1000`
 - **Variants**: 1
 
-#### 📦 [`sy_1000.json`](../devices/boss/sy_1000.json)
+#### 📦 [`sy_1000.json`](../devices/boss/sy_1000.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/BOSS/SY-1000.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/BOSS/SY-1000.csv)
 - **Coverage**: 64 CC (1 14-bit) · midi_out
+- **Limitations**: CC/NRPN only.
+
+## Bradshaw Instruments
+
+### 📦 Drumkid
+
+- **OSC prefix**: `/drumkid`
+- **Variants**: 1
+
+#### 📦 [`drumkid.pencilresearch.fw-unknown.json`](../devices/bradshaw-instruments/drumkid.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Bradshaw Instruments/Drumkid.csv)
+- **Coverage**: 16 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ## Camel Audio
@@ -1832,10 +2053,10 @@
 - **OSC prefix**: `/billy_strings_wombtone`
 - **Variants**: 1
 
-#### 📦 [`billy_strings_wombtone.json`](../devices/chase-bliss/billy_strings_wombtone.json)
+#### 📦 [`billy_strings_wombtone.json`](../devices/chase-bliss/billy_strings_wombtone.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Billy Strings Wombtone.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Billy Strings Wombtone.csv)
 - **Coverage**: 12 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1844,10 +2065,10 @@
 - **OSC prefix**: `/bliss_factory`
 - **Variants**: 1
 
-#### 📦 [`bliss_factory.json`](../devices/chase-bliss/bliss_factory.json)
+#### 📦 [`bliss_factory.json`](../devices/chase-bliss/bliss_factory.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Bliss Factory.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Bliss Factory.csv)
 - **Coverage**: 12 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1856,10 +2077,10 @@
 - **OSC prefix**: `/blooper`
 - **Variants**: 1
 
-#### 📦 [`blooper.json`](../devices/chase-bliss/blooper.json)
+#### 📦 [`blooper.json`](../devices/chase-bliss/blooper.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/blooper.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/blooper.csv)
 - **Coverage**: 27 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1868,10 +2089,10 @@
 - **OSC prefix**: `/brothers`
 - **Variants**: 1
 
-#### 📦 [`brothers.json`](../devices/chase-bliss/brothers.json)
+#### 📦 [`brothers.json`](../devices/chase-bliss/brothers.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Brothers.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Brothers.csv)
 - **Coverage**: 12 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1880,10 +2101,10 @@
 - **OSC prefix**: `/brothers_am`
 - **Variants**: 1
 
-#### 📦 [`brothers_am.json`](../devices/chase-bliss/brothers_am.json)
+#### 📦 [`brothers_am.json`](../devices/chase-bliss/brothers_am.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Brothers AM.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Brothers AM.csv)
 - **Coverage**: 30 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1911,15 +2132,39 @@
 - **Coverage**: 14 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+### 📦 CHOMPI TAPE
+
+- **OSC prefix**: `/chompi_tape`
+- **Variants**: 1
+
+#### 📦 [`chompi_tape.pencilresearch.fw-unknown.json`](../devices/chase-bliss/chompi_tape.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/CHOMPI TAPE.csv)
+- **Coverage**: 9 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 CHOMPI TEMPO
+
+- **OSC prefix**: `/chompi_tempo`
+- **Variants**: 1
+
+#### 📦 [`chompi_tempo.pencilresearch.fw-unknown.json`](../devices/chase-bliss/chompi_tempo.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/CHOMPI TEMPO.csv)
+- **Coverage**: 14 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ### 📦 Clean
 
 - **OSC prefix**: `/clean`
 - **Variants**: 1
 
-#### 📦 [`clean.json`](../devices/chase-bliss/clean.json)
+#### 📦 [`clean.json`](../devices/chase-bliss/clean.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Clean.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Clean.csv)
 - **Coverage**: 43 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1928,10 +2173,10 @@
 - **OSC prefix**: `/condor`
 - **Variants**: 1
 
-#### 📦 [`condor.json`](../devices/chase-bliss/condor.json)
+#### 📦 [`condor.json`](../devices/chase-bliss/condor.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Condor.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Condor.csv)
 - **Coverage**: 12 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1940,10 +2185,10 @@
 - **OSC prefix**: `/cxm_1978`
 - **Variants**: 1
 
-#### 📦 [`cxm_1978.json`](../devices/chase-bliss/cxm_1978.json)
+#### 📦 [`cxm_1978.json`](../devices/chase-bliss/cxm_1978.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/CXM 1978.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/CXM 1978.csv)
 - **Coverage**: 19 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1952,10 +2197,10 @@
 - **OSC prefix**: `/dark_world`
 - **Variants**: 1
 
-#### 📦 [`dark_world.json`](../devices/chase-bliss/dark_world.json)
+#### 📦 [`dark_world.json`](../devices/chase-bliss/dark_world.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Dark World.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Dark World.csv)
 - **Coverage**: 12 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1976,10 +2221,10 @@
 - **OSC prefix**: `/generation_loss_mkii`
 - **Variants**: 1
 
-#### 📦 [`generation_loss_mkii.json`](../devices/chase-bliss/generation_loss_mkii.json)
+#### 📦 [`generation_loss_mkii.json`](../devices/chase-bliss/generation_loss_mkii.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Generation Loss MKII.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Generation Loss MKII.csv)
 - **Coverage**: 41 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -1988,10 +2233,10 @@
 - **OSC prefix**: `/gravitas`
 - **Variants**: 1
 
-#### 📦 [`gravitas.json`](../devices/chase-bliss/gravitas.json)
+#### 📦 [`gravitas.json`](../devices/chase-bliss/gravitas.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Gravitas.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Gravitas.csv)
 - **Coverage**: 12 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2000,10 +2245,10 @@
 - **OSC prefix**: `/habit`
 - **Variants**: 1
 
-#### 📦 [`habit.json`](../devices/chase-bliss/habit.json)
+#### 📦 [`habit.json`](../devices/chase-bliss/habit.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Habit.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Habit.csv)
 - **Coverage**: 17 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2024,10 +2269,10 @@
 - **OSC prefix**: `/lost_and_found`
 - **Variants**: 1
 
-#### 📦 [`lost_and_found.json`](../devices/chase-bliss/lost_and_found.json)
+#### 📦 [`lost_and_found.json`](../devices/chase-bliss/lost_and_found.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Lost and Found.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Lost and Found.csv)
 - **Coverage**: 51 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2036,10 +2281,10 @@
 - **OSC prefix**: `/mood`
 - **Variants**: 1
 
-#### 📦 [`mood.json`](../devices/chase-bliss/mood.json)
+#### 📦 [`mood.json`](../devices/chase-bliss/mood.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/MOOD.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/MOOD.csv)
 - **Coverage**: 12 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2048,10 +2293,10 @@
 - **OSC prefix**: `/mood_mkii`
 - **Variants**: 1
 
-#### 📦 [`mood_mkii.json`](../devices/chase-bliss/mood_mkii.json)
+#### 📦 [`mood_mkii.json`](../devices/chase-bliss/mood_mkii.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/MOOD MKII.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/MOOD MKII.csv)
 - **Coverage**: 51 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2060,10 +2305,10 @@
 - **OSC prefix**: `/onward`
 - **Variants**: 1
 
-#### 📦 [`onward.json`](../devices/chase-bliss/onward.json)
+#### 📦 [`onward.json`](../devices/chase-bliss/onward.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Onward.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Onward.csv)
 - **Coverage**: 52 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2072,10 +2317,10 @@
 - **OSC prefix**: `/preamp_mkii`
 - **Variants**: 1
 
-#### 📦 [`preamp_mkii.json`](../devices/chase-bliss/preamp_mkii.json)
+#### 📦 [`preamp_mkii.json`](../devices/chase-bliss/preamp_mkii.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Preamp MKII.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Preamp MKII.csv)
 - **Coverage**: 14 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2084,10 +2329,10 @@
 - **OSC prefix**: `/reverse_mode_c`
 - **Variants**: 1
 
-#### 📦 [`reverse_mode_c.json`](../devices/chase-bliss/reverse_mode_c.json)
+#### 📦 [`reverse_mode_c.json`](../devices/chase-bliss/reverse_mode_c.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Reverse Mode C.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Reverse Mode C.csv)
 - **Coverage**: 44 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2096,10 +2341,10 @@
 - **OSC prefix**: `/spectre`
 - **Variants**: 1
 
-#### 📦 [`spectre.json`](../devices/chase-bliss/spectre.json)
+#### 📦 [`spectre.json`](../devices/chase-bliss/spectre.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Spectre.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Spectre.csv)
 - **Coverage**: 12 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2115,15 +2360,27 @@
 - **Coverage**: 31 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+### 📦 Thermae
+
+- **OSC prefix**: `/thermae`
+- **Variants**: 1
+
+#### 📦 [`thermae.pencilresearch.fw-unknown.json`](../devices/chase-bliss/thermae.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Thermae.csv)
+- **Coverage**: 15 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ### 📦 Tonal Recall
 
 - **OSC prefix**: `/tonal_recall`
 - **Variants**: 1
 
-#### 📦 [`tonal_recall.json`](../devices/chase-bliss/tonal_recall.json)
+#### 📦 [`tonal_recall.json`](../devices/chase-bliss/tonal_recall.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Tonal Recall.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Tonal Recall.csv)
 - **Coverage**: 12 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2132,10 +2389,10 @@
 - **OSC prefix**: `/wombtone_mkii`
 - **Variants**: 1
 
-#### 📦 [`wombtone_mkii.json`](../devices/chase-bliss/wombtone_mkii.json)
+#### 📦 [`wombtone_mkii.json`](../devices/chase-bliss/wombtone_mkii.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Chase Bliss/Wombtone MKII.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Chase Bliss/Wombtone MKII.csv)
 - **Coverage**: 12 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2255,6 +2512,18 @@
 - **Coverage**: 51 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+### 📦 The NDLR
+
+- **OSC prefix**: `/the_ndlr`
+- **Variants**: 1
+
+#### 📦 [`the_ndlr.pencilresearch.fw-unknown.json`](../devices/conductive-labs/the_ndlr.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Conductive Labs/The NDLR.csv)
+- **Coverage**: 56 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ## Creamware
 
 ### 🎛️ CW Minimax ASB
@@ -2276,10 +2545,10 @@
 - **OSC prefix**: `/organelle_m`
 - **Variants**: 1
 
-#### 📦 [`organelle_m.json`](../devices/critter-guitari/organelle_m.json)
+#### 📦 [`organelle_m.json`](../devices/critter-guitari/organelle_m.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Critter & Guitari/Organelle M.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Critter & Guitari/Organelle M.csv)
 - **Coverage**: 7 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2288,10 +2557,10 @@
 - **OSC prefix**: `/organelle_s2`
 - **Variants**: 1
 
-#### 📦 [`organelle_s2.json`](../devices/critter-guitari/organelle_s2.json)
+#### 📦 [`organelle_s2.json`](../devices/critter-guitari/organelle_s2.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Critter & Guitari/Organelle S2.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Critter & Guitari/Organelle S2.csv)
 - **Coverage**: 7 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2308,6 +2577,46 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/6MQ5RiajHDg8VoyoFTAH)
 - **Coverage**: 55 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+## Cwejman
+
+### 📦 S1 MK2
+
+- **OSC prefix**: `/s1_mk2`
+- **Variants**: 1
+
+#### 📦 [`s1_mk2.pencilresearch.fw-unknown.json`](../devices/cwejman/s1_mk2.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Cwejman/S1 MK2.csv)
+- **Coverage**: 133 CC (16 NRPN) · midi_out
+- **Limitations**: CC/NRPN only.
+
+## Cyma
+
+### 📦 ALT
+
+- **OSC prefix**: `/alt`
+- **Variants**: 1
+
+#### 📦 [`alt.pencilresearch.fw-unknown.json`](../devices/cyma/alt.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Cyma/ALT.csv)
+- **Coverage**: 5 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 RND
+
+- **OSC prefix**: `/rnd`
+- **Variants**: 1
+
+#### 📦 [`rnd.pencilresearch.fw-unknown.json`](../devices/cyma/rnd.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Cyma/RND.csv)
+- **Coverage**: 5 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ## D16 Group
 
@@ -2347,6 +2656,20 @@
 - **Coverage**: 93 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+## Darkglass
+
+### 📦 Anagram
+
+- **OSC prefix**: `/anagram`
+- **Variants**: 1
+
+#### 📦 [`anagram.pencilresearch.fw-unknown.json`](../devices/darkglass/anagram.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Darkglass/Anagram.csv)
+- **Coverage**: 29 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ## Dave Smith Instruments
 
 ### 📦 Evolver
@@ -2354,10 +2677,10 @@
 - **OSC prefix**: `/evolver`
 - **Variants**: 1
 
-#### 📦 [`evolver.json`](../devices/dave-smith-instruments/evolver.json)
+#### 📦 [`evolver.json`](../devices/dave-smith-instruments/evolver.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Dave Smith Instruments/Evolver.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Dave Smith Instruments/Evolver.csv)
 - **Coverage**: 50 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2366,10 +2689,10 @@
 - **OSC prefix**: `/mopho_x4`
 - **Variants**: 1
 
-#### 📦 [`mopho_x4.json`](../devices/dave-smith-instruments/mopho_x4.json)
+#### 📦 [`mopho_x4.json`](../devices/dave-smith-instruments/mopho_x4.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Dave Smith Instruments/Mopho x4.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Dave Smith Instruments/Mopho x4.csv)
 - **Coverage**: 43 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2378,10 +2701,10 @@
 - **OSC prefix**: `/ob_6`
 - **Variants**: 1
 
-#### 📦 [`ob_6.json`](../devices/dave-smith-instruments/ob_6.json)
+#### 📦 [`ob_6.json`](../devices/dave-smith-instruments/ob_6.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Dave Smith Instruments/OB-6.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Dave Smith Instruments/OB-6.csv)
 - **Coverage**: 51 CC (2 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2390,10 +2713,10 @@
 - **OSC prefix**: `/pro_3`
 - **Variants**: 1
 
-#### 📦 [`pro_3.json`](../devices/dave-smith-instruments/pro_3.json)
+#### 📦 [`pro_3.json`](../devices/dave-smith-instruments/pro_3.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Dave Smith Instruments/Pro 3.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Dave Smith Instruments/Pro 3.csv)
 - **Coverage**: 123 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2402,10 +2725,10 @@
 - **OSC prefix**: `/prophet_08`
 - **Variants**: 1
 
-#### 📦 [`prophet_08.json`](../devices/dave-smith-instruments/prophet_08.json)
+#### 📦 [`prophet_08.json`](../devices/dave-smith-instruments/prophet_08.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Dave Smith Instruments/Prophet '08.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Dave Smith Instruments/Prophet '08.csv)
 - **Coverage**: 40 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2414,10 +2737,10 @@
 - **OSC prefix**: `/prophet_12`
 - **Variants**: 1
 
-#### 📦 [`prophet_12.json`](../devices/dave-smith-instruments/prophet_12.json)
+#### 📦 [`prophet_12.json`](../devices/dave-smith-instruments/prophet_12.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Dave Smith Instruments/Prophet 12.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Dave Smith Instruments/Prophet 12.csv)
 - **Coverage**: 114 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2426,10 +2749,10 @@
 - **OSC prefix**: `/prophet_rev2`
 - **Variants**: 1
 
-#### 📦 [`prophet_rev2.json`](../devices/dave-smith-instruments/prophet_rev2.json)
+#### 📦 [`prophet_rev2.json`](../devices/dave-smith-instruments/prophet_rev2.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Dave Smith Instruments/Prophet Rev2.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Dave Smith Instruments/Prophet Rev2.csv)
 - **Coverage**: 174 CC (111 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2438,10 +2761,10 @@
 - **OSC prefix**: `/prophet_x_prophet_xl`
 - **Variants**: 1
 
-#### 📦 [`prophet_x_prophet_xl.json`](../devices/dave-smith-instruments/prophet_x_prophet_xl.json)
+#### 📦 [`prophet_x_prophet_xl.json`](../devices/dave-smith-instruments/prophet_x_prophet_xl.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Dave Smith Instruments/Prophet X (Prophet XL).csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Dave Smith Instruments/Prophet X (Prophet XL).csv)
 - **Coverage**: 87 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2450,10 +2773,10 @@
 - **OSC prefix**: `/tetra`
 - **Variants**: 1
 
-#### 📦 [`tetra.json`](../devices/dave-smith-instruments/tetra.json)
+#### 📦 [`tetra.json`](../devices/dave-smith-instruments/tetra.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Dave Smith Instruments/TETRA.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Dave Smith Instruments/TETRA.csv)
 - **Coverage**: 44 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2490,10 +2813,10 @@
 - **OSC prefix**: `/m8`
 - **Variants**: 1
 
-#### 📦 [`m8.json`](../devices/dirtywave/m8.json)
+#### 📦 [`m8.json`](../devices/dirtywave/m8.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Dirtywave/M8.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Dirtywave/M8.csv)
 - **Coverage**: 128 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2508,6 +2831,68 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/ugmvHpY075zO8GDfp8MQ)
 - **Coverage**: 15 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+## discoDSP
+
+### 📦 Corona
+
+- **OSC prefix**: `/corona`
+- **Variants**: 1
+
+#### 📦 [`corona.pencilresearch.fw-unknown.json`](../devices/discodsp/corona.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/discoDSP/Corona.csv)
+- **Coverage**: 88 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Discovery
+
+- **OSC prefix**: `/discovery`
+- **Variants**: 1
+
+#### 📦 [`discovery.pencilresearch.fw-unknown.json`](../devices/discodsp/discovery.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/discoDSP/Discovery.csv)
+- **Coverage**: 55 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Discovery Pro
+
+- **OSC prefix**: `/discovery_pro`
+- **Variants**: 1
+
+#### 📦 [`discovery_pro.pencilresearch.fw-unknown.json`](../devices/discodsp/discovery_pro.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/discoDSP/Discovery Pro.csv)
+- **Coverage**: 112 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 OB-Xd 2
+
+- **OSC prefix**: `/ob_xd_2`
+- **Variants**: 1
+
+#### 📦 [`ob_xd_2.pencilresearch.fw-unknown.json`](../devices/discodsp/ob_xd_2.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/discoDSP/OB-Xd 2.csv)
+- **Coverage**: 74 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 OB-Xd 3
+
+- **OSC prefix**: `/ob_xd_3`
+- **Variants**: 1
+
+#### 📦 [`ob_xd_3.pencilresearch.fw-unknown.json`](../devices/discodsp/ob_xd_3.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/discoDSP/OB-Xd 3.csv)
+- **Coverage**: 81 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ## Dmitry Sches
 
@@ -2525,15 +2910,27 @@
 
 ## Dreadbox
 
+### 📦 Abyss
+
+- **OSC prefix**: `/abyss`
+- **Variants**: 1
+
+#### 📦 [`abyss.pencilresearch.fw-unknown.json`](../devices/dreadbox/abyss.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Dreadbox/Abyss.csv)
+- **Coverage**: 4 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ### 📦 Artemis
 
 - **OSC prefix**: `/artemis`
 - **Variants**: 1
 
-#### 📦 [`artemis.json`](../devices/dreadbox/artemis.json)
+#### 📦 [`artemis.json`](../devices/dreadbox/artemis.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Dreadbox/Artemis.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Dreadbox/Artemis.csv)
 - **Coverage**: 86 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -2548,6 +2945,18 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/ibGS7t045AqqijG0JUtO)
 - **Coverage**: 95 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+### 📦 Murmux V3 Adept Edition
+
+- **OSC prefix**: `/murmux_v3_adept_edition`
+- **Variants**: 1
+
+#### 📦 [`murmux_v3_adept_edition.pencilresearch.fw-unknown.json`](../devices/dreadbox/murmux_v3_adept_edition.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Dreadbox/Murmux V3 Adept Edition.csv)
+- **Coverage**: 53 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 🎛️ Nymphes
 
@@ -2576,7 +2985,7 @@
 ### 🎛️ Telepathy
 
 - **OSC prefix**: `/telepathy`
-- **Variants**: 1
+- **Variants**: 2
 
 #### 🎛️ [`telepathy.json`](../devices/dreadbox/telepathy.json)
 
@@ -2584,6 +2993,13 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/OOcv0ZGmIixKnrjJj7em)
 - **Coverage**: 6 SysEx commands · 48 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+#### 📦 [`telepathy.pencilresearch.fw-unknown.json`](../devices/dreadbox/telepathy.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Dreadbox/Telepathy.csv)
+- **Coverage**: 51 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 🎛️ Typhon
 
@@ -2690,10 +3106,10 @@
 - **OSC prefix**: `/mp_7_command_station`
 - **Variants**: 1
 
-#### 📦 [`mp_7_command_station.json`](../devices/e-mu/mp_7_command_station.json)
+#### 📦 [`mp_7_command_station.json`](../devices/e-mu/mp_7_command_station.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/E-MU/MP-7 Command Station.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/E-MU/MP-7 Command Station.csv)
 - **Coverage**: 30 CC (9 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -3029,7 +3445,7 @@
 ### 🎛️ Analog Four
 
 - **OSC prefix**: `/analog_four`
-- **Variants**: 1
+- **Variants**: 2
 
 #### 🎛️ [`analog_four.json`](../devices/elektron/analog_four.json)
 
@@ -3038,16 +3454,23 @@
 - **Coverage**: 50 CC (2 14-bit, 45 NRPN) · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+#### 📦 [`analog_four.pencilresearch.fw-unknown.json`](../devices/elektron/analog_four.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Analog Four.csv)
+- **Coverage**: 32 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ### 📦 Analog Four MKII
 
 - **OSC prefix**: `/analog_four_mkii`
 - **Variants**: 1
 
-#### 📦 [`analog_four_mkii.json`](../devices/elektron/analog_four_mkii.json)
+#### 📦 [`analog_four_mkii.json`](../devices/elektron/analog_four_mkii.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Analog Four MKII.csv)
-- **Coverage**: 230 CC (14 14-bit, 226 NRPN) · midi_out
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Analog Four MKII.csv)
+- **Coverage**: 230 CC (14 14-bit, 228 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 📦 Analog Heat
@@ -3055,10 +3478,10 @@
 - **OSC prefix**: `/analog_heat`
 - **Variants**: 1
 
-#### 📦 [`analog_heat.json`](../devices/elektron/analog_heat.json)
+#### 📦 [`analog_heat.json`](../devices/elektron/analog_heat.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Analog Heat.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Analog Heat.csv)
 - **Coverage**: 42 CC (42 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -3067,10 +3490,10 @@
 - **OSC prefix**: `/analog_heat_fx`
 - **Variants**: 1
 
-#### 📦 [`analog_heat_fx.json`](../devices/elektron/analog_heat_fx.json)
+#### 📦 [`analog_heat_fx.json`](../devices/elektron/analog_heat_fx.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Analog Heat +FX.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Analog Heat +FX.csv)
 - **Coverage**: 109 CC (20 14-bit, 109 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -3079,10 +3502,10 @@
 - **OSC prefix**: `/analog_rytm_mkii`
 - **Variants**: 1
 
-#### 📦 [`analog_rytm_mkii.json`](../devices/elektron/analog_rytm_mkii.json)
+#### 📦 [`analog_rytm_mkii.json`](../devices/elektron/analog_rytm_mkii.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Analog Rytm MKII.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Analog Rytm MKII.csv)
 - **Coverage**: 322 CC (1 14-bit, 298 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -3091,10 +3514,10 @@
 - **OSC prefix**: `/digitakt`
 - **Variants**: 1
 
-#### 📦 [`digitakt.json`](../devices/elektron/digitakt.json)
+#### 📦 [`digitakt.json`](../devices/elektron/digitakt.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Digitakt.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Digitakt.csv)
 - **Coverage**: 56 CC (1 14-bit, 54 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -3103,17 +3526,17 @@
 - **OSC prefix**: `/digitakt_ii`
 - **Variants**: 1
 
-#### 📦 [`digitakt_ii.json`](../devices/elektron/digitakt_ii.json)
+#### 📦 [`digitakt_ii.json`](../devices/elektron/digitakt_ii.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Digitakt II.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Digitakt II.csv)
 - **Coverage**: 262 CC (6 14-bit, 260 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 🎛️ Digitone
 
 - **OSC prefix**: `/digitone`
-- **Variants**: 1
+- **Variants**: 2
 
 #### 🎛️ [`digitone.json`](../devices/elektron/digitone.json)
 
@@ -3121,6 +3544,13 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/vH154n6QTxQrIvT349Jt)
 - **Coverage**: 93 CC (93 NRPN) · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+#### 📦 [`digitone.pencilresearch.fw-unknown.json`](../devices/elektron/digitone.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Digitone.csv)
+- **Coverage**: 123 CC (44 14-bit, 113 NRPN) · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 🎛️ Digitone 2.3
 
@@ -3139,10 +3569,10 @@
 - **OSC prefix**: `/digitone_ii`
 - **Variants**: 1
 
-#### 📦 [`digitone_ii.json`](../devices/elektron/digitone_ii.json)
+#### 📦 [`digitone_ii.json`](../devices/elektron/digitone_ii.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Digitone II.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Digitone II.csv)
 - **Coverage**: 322 CC (320 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -3163,10 +3593,10 @@
 - **OSC prefix**: `/machinedrum`
 - **Variants**: 1
 
-#### 📦 [`machinedrum.json`](../devices/elektron/machinedrum.json)
+#### 📦 [`machinedrum.json`](../devices/elektron/machinedrum.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/MachineDrum.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Elektron/MachineDrum.csv)
 - **Coverage**: 416 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -3175,10 +3605,10 @@
 - **OSC prefix**: `/model_cycles`
 - **Variants**: 1
 
-#### 📦 [`model_cycles.json`](../devices/elektron/model_cycles.json)
+#### 📦 [`model_cycles.json`](../devices/elektron/model_cycles.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Model Cycles.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Model Cycles.csv)
 - **Coverage**: 30 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -3187,17 +3617,17 @@
 - **OSC prefix**: `/model_samples`
 - **Variants**: 1
 
-#### 📦 [`model_samples.json`](../devices/elektron/model_samples.json)
+#### 📦 [`model_samples.json`](../devices/elektron/model_samples.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Model Samples.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Model Samples.csv)
 - **Coverage**: 29 CC (1 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 🎛️ MonoMachine
 
 - **OSC prefix**: `/monomachine`
-- **Variants**: 1
+- **Variants**: 2
 
 #### 🎛️ [`monomachine.json`](../devices/elektron/monomachine.json)
 
@@ -3205,6 +3635,13 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/PrSG4m4oBJPWZovj281y)
 - **Coverage**: 211 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+#### 📦 [`monomachine.pencilresearch.fw-unknown.json`](../devices/elektron/monomachine.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Elektron/MonoMachine.csv)
+- **Coverage**: 61 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 🎛️ OCTA DIGI KIK
 
@@ -3233,7 +3670,7 @@
 ### 🎛️ Octatrack
 
 - **OSC prefix**: `/octatrack`
-- **Variants**: 1
+- **Variants**: 2
 
 #### 🎛️ [`octatrack.json`](../devices/elektron/octatrack.json)
 
@@ -3241,6 +3678,13 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/8DSkHhw2acmQVVdBkmtW)
 - **Coverage**: 32 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+#### 📦 [`octatrack.pencilresearch.fw-unknown.json`](../devices/elektron/octatrack.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Octatrack.csv)
+- **Coverage**: 222 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 🎛️ OCTATRACK SELECT COL
 
@@ -3283,11 +3727,11 @@
 - **OSC prefix**: `/syntakt`
 - **Variants**: 1
 
-#### 📦 [`syntakt.json`](../devices/elektron/syntakt.json)
+#### 📦 [`syntakt.json`](../devices/elektron/syntakt.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Syntakt.csv)
-- **Coverage**: 404 CC (4 14-bit, 385 NRPN) · midi_out
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Syntakt.csv)
+- **Coverage**: 405 CC (4 14-bit, 386 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 🎛️ SYNTAKT AUTO
@@ -3307,11 +3751,11 @@
 - **OSC prefix**: `/tonverk`
 - **Variants**: 1
 
-#### 📦 [`tonverk.json`](../devices/elektron/tonverk.json)
+#### 📦 [`tonverk.json`](../devices/elektron/tonverk.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Elektron/Tonverk.csv)
-- **Coverage**: 892 CC (435 NRPN) · midi_out
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Tonverk.csv)
+- **Coverage**: 896 CC (435 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 🎛️ Torso, Oct, Rytm, TB
@@ -3380,6 +3824,20 @@
 - **Coverage**: 76 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
+## Enjoy Electronics
+
+### 📦 The GodFather
+
+- **OSC prefix**: `/the_godfather`
+- **Variants**: 1
+
+#### 📦 [`the_godfather.pencilresearch.fw-unknown.json`](../devices/enjoy-electronics/the_godfather.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Enjoy Electronics/The GodFather.csv)
+- **Coverage**: 66 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ## Ensoniq
 
 ### 📦 ASR-X Pro
@@ -3387,11 +3845,11 @@
 - **OSC prefix**: `/asr_x_pro`
 - **Variants**: 1
 
-#### 📦 [`asr_x_pro.json`](../devices/ensoniq/asr_x_pro.json)
+#### 📦 [`asr_x_pro.json`](../devices/ensoniq/asr_x_pro.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Ensoniq/ASR-X Pro.csv)
-- **Coverage**: 15 CC · midi_out
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Ensoniq/ASR-X Pro.csv)
+- **Coverage**: 16 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 🎛️ ESQ-1
@@ -3425,10 +3883,10 @@
 - **OSC prefix**: `/portail`
 - **Variants**: 1
 
-#### 📦 [`portail.json`](../devices/eowave/portail.json)
+#### 📦 [`portail.json`](../devices/eowave/portail.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Eowave/Portail.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Eowave/Portail.csv)
 - **Coverage**: 32 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -3437,14 +3895,26 @@
 - **OSC prefix**: `/quadrantid_swarm`
 - **Variants**: 1
 
-#### 📦 [`quadrantid_swarm.json`](../devices/eowave/quadrantid_swarm.json)
+#### 📦 [`quadrantid_swarm.json`](../devices/eowave/quadrantid_swarm.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Eowave/Quadrantid Swarm.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Eowave/Quadrantid Swarm.csv)
 - **Coverage**: 7 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ## Erica Synths
+
+### 📦 Echolocator
+
+- **OSC prefix**: `/echolocator`
+- **Variants**: 1
+
+#### 📦 [`echolocator.pencilresearch.fw-unknown.json`](../devices/erica-synths/echolocator.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Erica Synths/Echolocator.csv)
+- **Coverage**: 13 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 🎛️ LXR-02
 
@@ -3458,15 +3928,27 @@
 - **Coverage**: 216 CC (8 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
+### 📦 Nightverb
+
+- **OSC prefix**: `/nightverb`
+- **Variants**: 1
+
+#### 📦 [`nightverb.pencilresearch.fw-unknown.json`](../devices/erica-synths/nightverb.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Erica Synths/Nightverb.csv)
+- **Coverage**: 10 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ### 📦 PĒRKONS HD-01
 
 - **OSC prefix**: `/p_rkons_hd_01`
 - **Variants**: 1
 
-#### 📦 [`p_rkons_hd_01.json`](../devices/erica-synths/p_rkons_hd_01.json)
+#### 📦 [`p_rkons_hd_01.json`](../devices/erica-synths/p_rkons_hd_01.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Erica Synths/PĒRKONS HD-01.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Erica Synths/PĒRKONS HD-01.csv)
 - **Coverage**: 44 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -3714,6 +4196,18 @@
 
 ## Expert Sleepers
 
+### 📦 disting EX
+
+- **OSC prefix**: `/disting_ex`
+- **Variants**: 1
+
+#### 📦 [`disting_ex.pencilresearch.fw-unknown.json`](../devices/expert-sleepers/disting_ex.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Expert Sleepers/disting EX.csv)
+- **Coverage**: 913 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ### 🎛️ Disting EX Algos
 
 - **OSC prefix**: `/disting_ex_algos`
@@ -3743,10 +4237,10 @@
 - **OSC prefix**: `/disting_mk4`
 - **Variants**: 1
 
-#### 📦 [`disting_mk4.json`](../devices/expert-sleepers/disting_mk4.json)
+#### 📦 [`disting_mk4.json`](../devices/expert-sleepers/disting_mk4.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Expert Sleepers/Disting Mk4.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Expert Sleepers/disting mk4.csv)
 - **Coverage**: 9 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -3767,10 +4261,10 @@
 - **OSC prefix**: `/fh_2`
 - **Variants**: 1
 
-#### 📦 [`fh_2.json`](../devices/expert-sleepers/fh_2.json)
+#### 📦 [`fh_2.json`](../devices/expert-sleepers/fh_2.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Expert Sleepers/FH-2.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Expert Sleepers/FH-2.csv)
 - **Coverage**: 120 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -3829,10 +4323,10 @@
 - **OSC prefix**: `/osmose`
 - **Variants**: 1
 
-#### 📦 [`osmose.json`](../devices/expressive-e/osmose.json)
+#### 📦 [`osmose.json`](../devices/expressive-e/osmose.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Expressive E/Osmose.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Expressive E/Osmose.csv)
 - **Coverage**: 20 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -3881,10 +4375,10 @@
 - **OSC prefix**: `/curves`
 - **Variants**: 1
 
-#### 📦 [`curves.json`](../devices/flame/curves.json)
+#### 📦 [`curves.json`](../devices/flame/curves.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Flame/Curves.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Flame/Curves.csv)
 - **Coverage**: 27 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -3905,10 +4399,10 @@
 - **OSC prefix**: `/ma_ander`
 - **Variants**: 1
 
-#### 📦 [`ma_ander.json`](../devices/flame/ma_ander.json)
+#### 📦 [`ma_ander.json`](../devices/flame/ma_ander.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Flame/Mäander.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Flame/Mäander.csv)
 - **Coverage**: 33 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -3919,11 +4413,23 @@
 - **OSC prefix**: `/buzzzy`
 - **Variants**: 1
 
-#### 📦 [`buzzzy.json`](../devices/fred-s-lab/buzzzy.json)
+#### 📦 [`buzzzy.json`](../devices/fred-s-lab/buzzzy.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Fred's Lab/Buzzzy!.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Fred's Lab/Buzzzy!.csv)
 - **Coverage**: 31 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Manatee
+
+- **OSC prefix**: `/manatee`
+- **Variants**: 1
+
+#### 📦 [`manatee.pencilresearch.fw-unknown.json`](../devices/fred-s-lab/manatee.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Fred's Lab/Manatee.csv)
+- **Coverage**: 99 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 📦 Tooro
@@ -3931,10 +4437,10 @@
 - **OSC prefix**: `/tooro`
 - **Variants**: 1
 
-#### 📦 [`tooro.json`](../devices/fred-s-lab/tooro.json)
+#### 📦 [`tooro.json`](../devices/fred-s-lab/tooro.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Fred's Lab/Tooro.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Fred's Lab/Tooro.csv)
 - **Coverage**: 86 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -3945,10 +4451,10 @@
 - **OSC prefix**: `/rp_x`
 - **Variants**: 1
 
-#### 📦 [`rp_x.json`](../devices/gem/rp_x.json)
+#### 📦 [`rp_x.json`](../devices/gem/rp_x.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/GEM/rp-x.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/GEM/rp-x.csv)
 - **Coverage**: 20 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4001,10 +4507,10 @@
 - **OSC prefix**: `/spazedrum_black`
 - **Variants**: 1
 
-#### 📦 [`spazedrum_black.json`](../devices/gotharman/spazedrum_black.json)
+#### 📦 [`spazedrum_black.json`](../devices/gotharman/spazedrum_black.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Gotharman/Spazedrum Black.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Gotharman/Spazedrum Black.csv)
 - **Coverage**: 67 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4015,10 +4521,10 @@
 - **OSC prefix**: `/3rd_wave_24k`
 - **Variants**: 1
 
-#### 📦 [`3rd_wave_24k.json`](../devices/groove-synthesis/3rd_wave_24k.json)
+#### 📦 [`3rd_wave_24k.json`](../devices/groove-synthesis/3rd_wave_24k.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Groove Synthesis/3rd Wave 24K.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Groove Synthesis/3rd Wave 24K.csv)
 - **Coverage**: 102 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4027,10 +4533,10 @@
 - **OSC prefix**: `/3rd_wave_24m`
 - **Variants**: 1
 
-#### 📦 [`3rd_wave_24m.json`](../devices/groove-synthesis/3rd_wave_24m.json)
+#### 📦 [`3rd_wave_24m.json`](../devices/groove-synthesis/3rd_wave_24m.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Groove Synthesis/3rd Wave 24M.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Groove Synthesis/3rd Wave 24M.csv)
 - **Coverage**: 95 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4039,11 +4545,25 @@
 - **OSC prefix**: `/3rd_wave_8m`
 - **Variants**: 1
 
-#### 📦 [`3rd_wave_8m.json`](../devices/groove-synthesis/3rd_wave_8m.json)
+#### 📦 [`3rd_wave_8m.json`](../devices/groove-synthesis/3rd_wave_8m.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Groove Synthesis/3rd Wave 8M.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Groove Synthesis/3rd Wave 8M.csv)
 - **Coverage**: 48 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+## Grp Synthesizer
+
+### 📦 Vintage Genesi
+
+- **OSC prefix**: `/vintage_genesi`
+- **Variants**: 1
+
+#### 📦 [`vintage_genesi.pencilresearch.fw-unknown.json`](../devices/grp-synthesizer/vintage_genesi.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Grp Synthesizer/Vintage Genesi.csv)
+- **Coverage**: 7 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ## GS Music
@@ -4053,10 +4573,10 @@
 - **OSC prefix**: `/bree6`
 - **Variants**: 1
 
-#### 📦 [`bree6.json`](../devices/gs-music/bree6.json)
+#### 📦 [`bree6.json`](../devices/gs-music/bree6.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/GS Music/Bree6.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/GS Music/Bree6.csv)
 - **Coverage**: 51 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4071,6 +4591,18 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/szYoejqk1eD0z3ehzP0e)
 - **Coverage**: 67 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+### 📦 e7
+
+- **OSC prefix**: `/e7`
+- **Variants**: 1
+
+#### 📦 [`e7.pencilresearch.fw-unknown.json`](../devices/gs-music/e7.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/GS Music/e7.csv)
+- **Coverage**: 88 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ## GSi
 
@@ -4150,6 +4682,18 @@
 - **Coverage**: 34 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+### 📦 Slim Continuum
+
+- **OSC prefix**: `/slim_continuum`
+- **Variants**: 1
+
+#### 📦 [`slim_continuum.pencilresearch.fw-unknown.json`](../devices/haken-audio/slim_continuum.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Haken Audio/Slim Continuum.csv)
+- **Coverage**: 30 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ### 🎛️ Slim Continuum by Haken Audio
 
 - **OSC prefix**: `/slim_continuum_by_haken_audio`
@@ -4161,6 +4705,56 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/1I9CSH7rbefT5wXRHHx4)
 - **Coverage**: 23 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+## HeadRush
+
+### 📦 Gigboard
+
+- **OSC prefix**: `/gigboard`
+- **Variants**: 1
+
+#### 📦 [`gigboard.pencilresearch.fw-unknown.json`](../devices/headrush/gigboard.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/HeadRush/Gigboard.csv)
+- **Coverage**: 26 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 MX5
+
+- **OSC prefix**: `/mx5`
+- **Variants**: 1
+
+#### 📦 [`mx5.pencilresearch.fw-unknown.json`](../devices/headrush/mx5.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/HeadRush/MX5.csv)
+- **Coverage**: 25 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Pedalboard
+
+- **OSC prefix**: `/pedalboard`
+- **Variants**: 1
+
+#### 📦 [`pedalboard.pencilresearch.fw-unknown.json`](../devices/headrush/pedalboard.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/HeadRush/Pedalboard.csv)
+- **Coverage**: 34 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Prime
+
+- **OSC prefix**: `/prime`
+- **Variants**: 1
+
+#### 📦 [`prime.pencilresearch.fw-unknown.json`](../devices/headrush/prime.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/HeadRush/Prime.csv)
+- **Coverage**: 37 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ## Hologram
 
@@ -4176,10 +4770,22 @@
 - **Coverage**: 31 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+### 📦 Chroma Console
+
+- **OSC prefix**: `/chroma_console`
+- **Variants**: 1
+
+#### 📦 [`chroma_console.pencilresearch.fw-unknown.json`](../devices/hologram/chroma_console.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Hologram/Chroma Console.csv)
+- **Coverage**: 34 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ### 🎛️ Microcosm
 
 - **OSC prefix**: `/microcosm`
-- **Variants**: 1
+- **Variants**: 2
 
 #### 🎛️ [`microcosm.json`](../devices/hologram/microcosm.json)
 
@@ -4187,6 +4793,13 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/5c2WLlvEqHHejmJL796O)
 - **Coverage**: 34 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+#### 📦 [`microcosm.pencilresearch.fw-unknown.json`](../devices/hologram/microcosm.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Hologram/Microcosm.csv)
+- **Coverage**: 35 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ## Ichiro Toda
 
@@ -4204,15 +4817,39 @@
 
 ## IK Multimedia
 
+### 📦 ToneX One+
+
+- **OSC prefix**: `/tonex_one`
+- **Variants**: 1
+
+#### 📦 [`tonex_one.pencilresearch.fw-unknown.json`](../devices/ik-multimedia/tonex_one.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/IK Multimedia/ToneX One+.csv)
+- **Coverage**: 96 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 ToneX Pedal
+
+- **OSC prefix**: `/tonex_pedal`
+- **Variants**: 1
+
+#### 📦 [`tonex_pedal.pencilresearch.fw-unknown.json`](../devices/ik-multimedia/tonex_pedal.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/IK Multimedia/ToneX Pedal.csv)
+- **Coverage**: 39 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ### 📦 UNO Drum
 
 - **OSC prefix**: `/uno_drum`
 - **Variants**: 1
 
-#### 📦 [`uno_drum.json`](../devices/ik-multimedia/uno_drum.json)
+#### 📦 [`uno_drum.json`](../devices/ik-multimedia/uno_drum.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/IK Multimedia/Uno Drum.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/IK Multimedia/UNO Drum.csv)
 - **Coverage**: 70 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4221,10 +4858,10 @@
 - **OSC prefix**: `/uno_synth`
 - **Variants**: 1
 
-#### 📦 [`uno_synth.json`](../devices/ik-multimedia/uno_synth.json)
+#### 📦 [`uno_synth.json`](../devices/ik-multimedia/uno_synth.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/IK Multimedia/Uno Synth.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/IK Multimedia/UNO Synth.csv)
 - **Coverage**: 67 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4233,10 +4870,10 @@
 - **OSC prefix**: `/uno_synth_pro_x`
 - **Variants**: 1
 
-#### 📦 [`uno_synth_pro_x.json`](../devices/ik-multimedia/uno_synth_pro_x.json)
+#### 📦 [`uno_synth_pro_x.json`](../devices/ik-multimedia/uno_synth_pro_x.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/IK Multimedia/UNO Synth PRO X.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/IK Multimedia/UNO Synth PRO X.csv)
 - **Coverage**: 104 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4268,6 +4905,20 @@
 - **Coverage**: 70 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+## Instruō
+
+### 📦 Seashell
+
+- **OSC prefix**: `/seashell`
+- **Variants**: 1
+
+#### 📦 [`seashell.pencilresearch.fw-unknown.json`](../devices/instruo/seashell.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Instruō/Seashell.csv)
+- **Coverage**: 128 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ## Intellijel
 
 ### 📦 uMidi
@@ -4275,10 +4926,10 @@
 - **OSC prefix**: `/umidi`
 - **Variants**: 1
 
-#### 📦 [`umidi.json`](../devices/intellijel/umidi.json)
+#### 📦 [`umidi.json`](../devices/intellijel/umidi.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Intellijel/uMidi.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Intellijel/uMidi.csv)
 - **Coverage**: 10 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4287,7 +4938,7 @@
 ### 🎛️ Airbase 99
 
 - **OSC prefix**: `/airbase_99`
-- **Variants**: 1
+- **Variants**: 2
 
 #### 🎛️ [`airbase_99.json`](../devices/jomox/airbase_99.json)
 
@@ -4295,6 +4946,25 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/RZLHG9jcAqHH4kURhJPo)
 - **Coverage**: 77 CC (1 NRPN) · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+#### 📦 [`airbase_99.pencilresearch.fw-unknown.json`](../devices/jomox/airbase_99.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Jomox/Airbase 99.csv)
+- **Coverage**: 58 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Alpha Base
+
+- **OSC prefix**: `/alpha_base`
+- **Variants**: 1
+
+#### 📦 [`alpha_base.pencilresearch.fw-unknown.json`](../devices/jomox/alpha_base.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Jomox/Alpha Base.csv)
+- **Coverage**: 160 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 🎛️ JaZBase03
 
@@ -4449,10 +5119,10 @@
 - **OSC prefix**: `/k5000s_k5000r`
 - **Variants**: 1
 
-#### 📦 [`k5000s_k5000r.json`](../devices/kawai/k5000s_k5000r.json)
+#### 📦 [`k5000s_k5000r.json`](../devices/kawai/k5000s_k5000r.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Kawai/K5000S & K5000R.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Kawai/K5000S & K5000R.csv)
 - **Coverage**: 33 CC (8 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4470,7 +5140,67 @@
 - **Coverage**: 23 CC (9 NRPN) · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+### 📦 PROFILER Player
+
+- **OSC prefix**: `/profiler_player`
+- **Variants**: 1
+
+#### 📦 [`profiler_player.pencilresearch.fw-unknown.json`](../devices/kemper/profiler_player.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Kemper/PROFILER Player.csv)
+- **Coverage**: 93 CC (50 NRPN) · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 PROFILER PowerHead
+
+- **OSC prefix**: `/profiler_powerhead`
+- **Variants**: 1
+
+#### 📦 [`profiler_powerhead.pencilresearch.fw-unknown.json`](../devices/kemper/profiler_powerhead.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Kemper/PROFILER PowerHead.csv)
+- **Coverage**: 93 CC (50 NRPN) · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 PROFILER PowerRack
+
+- **OSC prefix**: `/profiler_powerrack`
+- **Variants**: 1
+
+#### 📦 [`profiler_powerrack.pencilresearch.fw-unknown.json`](../devices/kemper/profiler_powerrack.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Kemper/PROFILER PowerRack.csv)
+- **Coverage**: 93 CC (50 NRPN) · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 PROFILER Stage
+
+- **OSC prefix**: `/profiler_stage`
+- **Variants**: 1
+
+#### 📦 [`profiler_stage.pencilresearch.fw-unknown.json`](../devices/kemper/profiler_stage.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Kemper/PROFILER Stage.csv)
+- **Coverage**: 93 CC (50 NRPN) · midi_out
+- **Limitations**: CC/NRPN only.
+
 ## Kinotone
+
+### 📦 Ghosts
+
+- **OSC prefix**: `/ghosts`
+- **Variants**: 1
+
+#### 📦 [`ghosts.pencilresearch.fw-unknown.json`](../devices/kinotone/ghosts.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Kinotone/Ghosts.csv)
+- **Coverage**: 27 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 🎛️ Kinotone Ribbons
 
@@ -4501,11 +5231,25 @@
 - **OSC prefix**: `/sparks`
 - **Variants**: 1
 
-#### 📦 [`sparks.json`](../devices/kinotone/sparks.json)
+#### 📦 [`sparks.json`](../devices/kinotone/sparks.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Kinotone/Sparks.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Kinotone/Sparks.csv)
 - **Coverage**: 59 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+## Kiviak Instruments
+
+### 📦 WoFi
+
+- **OSC prefix**: `/wofi`
+- **Variants**: 1
+
+#### 📦 [`wofi.pencilresearch.fw-unknown.json`](../devices/kiviak-instruments/wofi.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Kiviak Instruments/WoFi.csv)
+- **Coverage**: 128 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ## Knif Audio
@@ -4529,10 +5273,10 @@
 - **OSC prefix**: `/pianophonic`
 - **Variants**: 1
 
-#### 📦 [`pianophonic.json`](../devices/knobula/pianophonic.json)
+#### 📦 [`pianophonic.json`](../devices/knobula/pianophonic.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Knobula/Pianophonic.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Knobula/Pianophonic.csv)
 - **Coverage**: 13 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4543,11 +5287,23 @@
 - **OSC prefix**: `/essencefm`
 - **Variants**: 1
 
-#### 📦 [`essencefm.json`](../devices/kodamo/essencefm.json)
+#### 📦 [`essencefm.json`](../devices/kodamo/essencefm.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Kodamo/EssenceFM.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Kodamo/EssenceFM.csv)
 - **Coverage**: 30 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 MASK1EX
+
+- **OSC prefix**: `/mask1ex`
+- **Variants**: 1
+
+#### 📦 [`mask1ex.pencilresearch.fw-unknown.json`](../devices/kodamo/mask1ex.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Kodamo/MASK1EX.csv)
+- **Coverage**: 82 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ## KORG
@@ -4581,10 +5337,10 @@
 - **OSC prefix**: `/arp_2600_m`
 - **Variants**: 1
 
-#### 📦 [`arp_2600_m.json`](../devices/korg/arp_2600_m.json)
+#### 📦 [`arp_2600_m.json`](../devices/korg/arp_2600_m.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/KORG/ARP 2600 M.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/ARP 2600 M.csv)
 - **Coverage**: 5 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4599,6 +5355,18 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/KIcil5SZUd62jGyoAneu)
 - **Coverage**: 225 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+### 📦 drumlogue
+
+- **OSC prefix**: `/drumlogue`
+- **Variants**: 1
+
+#### 📦 [`drumlogue.pencilresearch.fw-unknown.json`](../devices/korg/drumlogue.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/drumlogue.csv)
+- **Coverage**: 259 CC (13 14-bit) · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 🎛️ DS-8 w/ patch req  NewIgnis V1.1
 
@@ -4653,10 +5421,10 @@
 - **OSC prefix**: `/electribe_2_emx_2`
 - **Variants**: 1
 
-#### 📦 [`electribe_2_emx_2.json`](../devices/korg/electribe_2_emx_2.json)
+#### 📦 [`electribe_2_emx_2.json`](../devices/korg/electribe_2_emx_2.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/KORG/electribe 2 (EMX 2).csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/electribe 2 (EMX 2).csv)
 - **Coverage**: 23 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4665,11 +5433,35 @@
 - **OSC prefix**: `/electribe_er_1`
 - **Variants**: 1
 
-#### 📦 [`electribe_er_1.json`](../devices/korg/electribe_er_1.json)
+#### 📦 [`electribe_er_1.json`](../devices/korg/electribe_er_1.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/KORG/Electribe ER-1.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/Electribe ER-1.csv)
 - **Coverage**: 17 CC (17 NRPN) · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Electribe ES-1
+
+- **OSC prefix**: `/electribe_es_1`
+- **Variants**: 1
+
+#### 📦 [`electribe_es_1.pencilresearch.fw-unknown.json`](../devices/korg/electribe_es_1.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/Electribe ES-1.csv)
+- **Coverage**: 100 CC (98 NRPN) · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 EMX-1
+
+- **OSC prefix**: `/emx_1`
+- **Variants**: 1
+
+#### 📦 [`emx_1.pencilresearch.fw-unknown.json`](../devices/korg/emx_1.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/EMX-1.csv)
+- **Coverage**: 184 CC (145 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 🎛️ EX-8000
@@ -4725,11 +5517,23 @@
 - **OSC prefix**: `/micro_korg`
 - **Variants**: 1
 
-#### 📦 [`micro_korg.json`](../devices/korg/micro_korg.json)
+#### 📦 [`micro_korg.json`](../devices/korg/micro_korg.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/KORG/micro KORG.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/microKORG.csv)
 - **Coverage**: 47 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 microKORG2
+
+- **OSC prefix**: `/microkorg2`
+- **Variants**: 1
+
+#### 📦 [`microkorg2.pencilresearch.fw-unknown.json`](../devices/korg/microkorg2.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/microKORG2.csv)
+- **Coverage**: 79 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 📦 minilogue
@@ -4737,10 +5541,10 @@
 - **OSC prefix**: `/minilogue`
 - **Variants**: 1
 
-#### 📦 [`minilogue.json`](../devices/korg/minilogue.json)
+#### 📦 [`minilogue.json`](../devices/korg/minilogue.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/KORG/minilogue.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/minilogue.csv)
 - **Coverage**: 40 CC (1 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4755,6 +5559,18 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/nOAxmHt69QvJ5juIQr6G)
 - **Coverage**: 43 CC (3 NRPN) · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+### 📦 minilogue xd
+
+- **OSC prefix**: `/minilogue_xd`
+- **Variants**: 1
+
+#### 📦 [`minilogue_xd.pencilresearch.fw-unknown.json`](../devices/korg/minilogue_xd.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/minilogue xd.csv)
+- **Coverage**: 65 CC (1 14-bit) · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 🎛️ monologue
 
@@ -4785,11 +5601,23 @@
 - **OSC prefix**: `/ms2000`
 - **Variants**: 1
 
-#### 📦 [`ms2000.json`](../devices/korg/ms2000.json)
+#### 📦 [`ms2000.json`](../devices/korg/ms2000.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/KORG/MS2000.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/MS2000.csv)
 - **Coverage**: 45 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 multi-poly
+
+- **OSC prefix**: `/multi_poly`
+- **Variants**: 1
+
+#### 📦 [`multi_poly.pencilresearch.fw-unknown.json`](../devices/korg/multi_poly.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/multi-poly.csv)
+- **Coverage**: 117 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 🎛️ NTS-1
@@ -4809,17 +5637,17 @@
 - **OSC prefix**: `/nts_3_kaoss_pad`
 - **Variants**: 1
 
-#### 📦 [`nts_3_kaoss_pad.json`](../devices/korg/nts_3_kaoss_pad.json)
+#### 📦 [`nts_3_kaoss_pad.json`](../devices/korg/nts_3_kaoss_pad.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/KORG/NTS-3 kaoss pad.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/NTS-3 kaoss pad.csv)
 - **Coverage**: 37 CC (18 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 🎛️ opsix
 
 - **OSC prefix**: `/opsix`
-- **Variants**: 1
+- **Variants**: 2
 
 #### 🎛️ [`opsix.json`](../devices/korg/opsix.json)
 
@@ -4827,6 +5655,25 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/XY5Yrockd5058cWfssxH)
 - **Coverage**: 102 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+#### 📦 [`opsix.pencilresearch.fw-unknown.json`](../devices/korg/opsix.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/opsix.csv)
+- **Coverage**: 39 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 phase8
+
+- **OSC prefix**: `/phase8`
+- **Variants**: 1
+
+#### 📦 [`phase8.pencilresearch.fw-unknown.json`](../devices/korg/phase8.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/phase8.csv)
+- **Coverage**: 22 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 🎛️ Polysix
 
@@ -4845,10 +5692,10 @@
 - **OSC prefix**: `/prologue`
 - **Variants**: 1
 
-#### 📦 [`prologue.json`](../devices/korg/prologue.json)
+#### 📦 [`prologue.json`](../devices/korg/prologue.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/KORG/prologue.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/prologue.csv)
 - **Coverage**: 56 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4857,11 +5704,23 @@
 - **OSC prefix**: `/r3`
 - **Variants**: 1
 
-#### 📦 [`r3.json`](../devices/korg/r3.json)
+#### 📦 [`r3.json`](../devices/korg/r3.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/KORG/R3.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/R3.csv)
 - **Coverage**: 129 CC (68 NRPN) · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 RADIAS
+
+- **OSC prefix**: `/radias`
+- **Variants**: 1
+
+#### 📦 [`radias.pencilresearch.fw-unknown.json`](../devices/korg/radias.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/RADIAS.csv)
+- **Coverage**: 179 CC (108 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 🎛️ Triton EXB MOSS
@@ -4881,10 +5740,10 @@
 - **OSC prefix**: `/volca_bass`
 - **Variants**: 1
 
-#### 📦 [`volca_bass.json`](../devices/korg/volca_bass.json)
+#### 📦 [`volca_bass.json`](../devices/korg/volca_bass.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/KORG/volca bass.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/volca bass.csv)
 - **Coverage**: 12 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4941,10 +5800,10 @@
 - **OSC prefix**: `/volca_keys`
 - **Variants**: 1
 
-#### 📦 [`volca_keys.json`](../devices/korg/volca_keys.json)
+#### 📦 [`volca_keys.json`](../devices/korg/volca_keys.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/KORG/volca keys.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/volca keys.csv)
 - **Coverage**: 16 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4953,10 +5812,10 @@
 - **OSC prefix**: `/volca_kick`
 - **Variants**: 1
 
-#### 📦 [`volca_kick.json`](../devices/korg/volca_kick.json)
+#### 📦 [`volca_kick.json`](../devices/korg/volca_kick.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/KORG/volca kick.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/volca kick.csv)
 - **Coverage**: 10 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4965,10 +5824,10 @@
 - **OSC prefix**: `/volca_nubass`
 - **Variants**: 1
 
-#### 📦 [`volca_nubass.json`](../devices/korg/volca_nubass.json)
+#### 📦 [`volca_nubass.json`](../devices/korg/volca_nubass.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/KORG/volca nubass.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/volca nubass.csv)
 - **Coverage**: 11 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -4977,10 +5836,10 @@
 - **OSC prefix**: `/volca_sample`
 - **Variants**: 1
 
-#### 📦 [`volca_sample.json`](../devices/korg/volca_sample.json)
+#### 📦 [`volca_sample.json`](../devices/korg/volca_sample.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/KORG/volca sample.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/volca sample.csv)
 - **Coverage**: 11 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5001,10 +5860,10 @@
 - **OSC prefix**: `/wavestate_se`
 - **Variants**: 1
 
-#### 📦 [`wavestate_se.json`](../devices/korg/wavestate_se.json)
+#### 📦 [`wavestate_se.json`](../devices/korg/wavestate_se.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/KORG/Wavestate SE.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/KORG/Wavestate SE.csv)
 - **Coverage**: 52 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5185,10 +6044,10 @@
 - **OSC prefix**: `/k2000_v3`
 - **Variants**: 1
 
-#### 📦 [`k2000_v3.json`](../devices/kurzweil/k2000_v3.json)
+#### 📦 [`k2000_v3.json`](../devices/kurzweil/k2000_v3.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Kurzweil/K2000 V3.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Kurzweil/K2000 V3.csv)
 - **Coverage**: 99 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5197,10 +6056,10 @@
 - **OSC prefix**: `/k2661`
 - **Variants**: 1
 
-#### 📦 [`k2661.json`](../devices/kurzweil/k2661.json)
+#### 📦 [`k2661.json`](../devices/kurzweil/k2661.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Kurzweil/K2661.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Kurzweil/K2661.csv)
 - **Coverage**: 28 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5211,11 +6070,25 @@
 - **OSC prefix**: `/rozzbox_one_v2`
 - **Variants**: 1
 
-#### 📦 [`rozzbox_one_v2.json`](../devices/l-l-electronics/rozzbox_one_v2.json)
+#### 📦 [`rozzbox_one_v2.json`](../devices/l-l-electronics/rozzbox_one_v2.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/L.L. Electronics/RozzBox One V2.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/L.L. Electronics/RozzBox One V2.csv)
 - **Coverage**: 83 CC (78 14-bit) · midi_out
+- **Limitations**: CC/NRPN only.
+
+## Lambda Synthetics
+
+### 📦 PolyPulse
+
+- **OSC prefix**: `/polypulse`
+- **Variants**: 1
+
+#### 📦 [`polypulse.pencilresearch.fw-unknown.json`](../devices/lambda-synthetics/polypulse.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Lambda Synthetics/PolyPulse.csv)
+- **Coverage**: 128 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ## Lamberhuus
@@ -5351,10 +6224,10 @@
 - **OSC prefix**: `/dl4_mkii_delay_modeler`
 - **Variants**: 1
 
-#### 📦 [`dl4_mkii_delay_modeler.json`](../devices/line-6/dl4_mkii_delay_modeler.json)
+#### 📦 [`dl4_mkii_delay_modeler.json`](../devices/line-6/dl4_mkii_delay_modeler.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Line 6/DL4 MkII Delay Modeler.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Line 6/DL4 MkII Delay Modeler.csv)
 - **Coverage**: 22 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5363,11 +6236,71 @@
 - **OSC prefix**: `/helix_floor`
 - **Variants**: 1
 
-#### 📦 [`helix_floor.json`](../devices/line-6/helix_floor.json)
+#### 📦 [`helix_floor.json`](../devices/line-6/helix_floor.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Line 6/Helix Floor.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Line 6/Helix Floor.csv)
 - **Coverage**: 35 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Helix LT
+
+- **OSC prefix**: `/helix_lt`
+- **Variants**: 1
+
+#### 📦 [`helix_lt.pencilresearch.fw-unknown.json`](../devices/line-6/helix_lt.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Line 6/Helix LT.csv)
+- **Coverage**: 35 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Helix Rack
+
+- **OSC prefix**: `/helix_rack`
+- **Variants**: 1
+
+#### 📦 [`helix_rack.pencilresearch.fw-unknown.json`](../devices/line-6/helix_rack.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Line 6/Helix Rack.csv)
+- **Coverage**: 35 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 HX Effects
+
+- **OSC prefix**: `/hx_effects`
+- **Variants**: 1
+
+#### 📦 [`hx_effects.pencilresearch.fw-unknown.json`](../devices/line-6/hx_effects.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Line 6/HX Effects.csv)
+- **Coverage**: 25 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 HX Stomp
+
+- **OSC prefix**: `/hx_stomp`
+- **Variants**: 1
+
+#### 📦 [`hx_stomp.pencilresearch.fw-unknown.json`](../devices/line-6/hx_stomp.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Line 6/HX Stomp.csv)
+- **Coverage**: 26 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 HX Stomp XL
+
+- **OSC prefix**: `/hx_stomp_xl`
+- **Variants**: 1
+
+#### 📦 [`hx_stomp_xl.pencilresearch.fw-unknown.json`](../devices/line-6/hx_stomp_xl.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Line 6/HX Stomp XL.csv)
+- **Coverage**: 29 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 📦 M5 Stompbox Modeler
@@ -5375,11 +6308,23 @@
 - **OSC prefix**: `/m5_stompbox_modeler`
 - **Variants**: 1
 
-#### 📦 [`m5_stompbox_modeler.json`](../devices/line-6/m5_stompbox_modeler.json)
+#### 📦 [`m5_stompbox_modeler.json`](../devices/line-6/m5_stompbox_modeler.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Line 6/M5 Stompbox Modeler.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Line 6/M5 Stompbox Modeler.csv)
 - **Coverage**: 4 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 POD Go
+
+- **OSC prefix**: `/pod_go`
+- **Variants**: 1
+
+#### 📦 [`pod_go.pencilresearch.fw-unknown.json`](../devices/line-6/pod_go.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Line 6/POD Go.csv)
+- **Coverage**: 20 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ## Looperlative
@@ -5403,10 +6348,10 @@
 - **OSC prefix**: `/tram8`
 - **Variants**: 1
 
-#### 📦 [`tram8.json`](../devices/lpzw/tram8.json)
+#### 📦 [`tram8.json`](../devices/lpzw/tram8.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/LPZW/Tram8.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/LPZW/Tram8.csv)
 - **Coverage**: 8 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5423,6 +6368,18 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/pi8pOOd5dBQmWSLHRtT9)
 - **Coverage**: 10 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+### 📦 Videomancer
+
+- **OSC prefix**: `/videomancer`
+- **Variants**: 1
+
+#### 📦 [`videomancer.pencilresearch.fw-unknown.json`](../devices/lzx-industries/videomancer.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/LZX Industries/Videomancer.csv)
+- **Coverage**: 12 CC (12 14-bit) · midi_out
+- **Limitations**: CC/NRPN only.
 
 ## Madrona Labs
 
@@ -5457,10 +6414,10 @@
 - **OSC prefix**: `/0_coast`
 - **Variants**: 1
 
-#### 📦 [`0_coast.json`](../devices/make-noise/0_coast.json)
+#### 📦 [`0_coast.json`](../devices/make-noise/0_coast.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Make Noise/0-Coast.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Make Noise/0-Coast.csv)
 - **Coverage**: 17 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5477,6 +6434,44 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/nh5YejEaoej8Aoox86nB)
 - **Coverage**: 7 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+## Manikin Electronic
+
+### 📦 Memotron m2d
+
+- **OSC prefix**: `/memotron_m2d`
+- **Variants**: 1
+
+#### 📦 [`memotron_m2d.pencilresearch.fw-unknown.json`](../devices/manikin-electronic/memotron_m2d.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Manikin Electronic/Memotron m2d.csv)
+- **Coverage**: 10 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Memotron m2k
+
+- **OSC prefix**: `/memotron_m2k`
+- **Variants**: 1
+
+#### 📦 [`memotron_m2k.pencilresearch.fw-unknown.json`](../devices/manikin-electronic/memotron_m2k.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Manikin Electronic/Memotron m2k.csv)
+- **Coverage**: 10 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Schrittmacher
+
+- **OSC prefix**: `/schrittmacher`
+- **Variants**: 1
+
+#### 📦 [`schrittmacher.pencilresearch.fw-unknown.json`](../devices/manikin-electronic/schrittmacher.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Manikin Electronic/Schrittmacher.csv)
+- **Coverage**: 121 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ## Marion Systems
 
@@ -5511,10 +6506,10 @@
 - **OSC prefix**: `/geode`
 - **Variants**: 1
 
-#### 📦 [`geode.json`](../devices/meeblip/geode.json)
+#### 📦 [`geode.json`](../devices/meeblip/geode.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/MeeBlip/geode.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/MeeBlip/geode.csv)
 - **Coverage**: 17 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5523,24 +6518,36 @@
 - **OSC prefix**: `/triode`
 - **Variants**: 1
 
-#### 📦 [`triode.json`](../devices/meeblip/triode.json)
+#### 📦 [`triode.json`](../devices/meeblip/triode.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/MeeBlip/triode.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/MeeBlip/triode.csv)
 - **Coverage**: 21 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ## Melbourne Instruments
+
+### 📦 Delia
+
+- **OSC prefix**: `/delia`
+- **Variants**: 1
+
+#### 📦 [`delia.pencilresearch.fw-unknown.json`](../devices/melbourne-instruments/delia.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Melbourne Instruments/Delia.csv)
+- **Coverage**: 62 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 📦 Nina
 
 - **OSC prefix**: `/nina`
 - **Variants**: 1
 
-#### 📦 [`nina.json`](../devices/melbourne-instruments/nina.json)
+#### 📦 [`nina.json`](../devices/melbourne-instruments/nina.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Melbourne Instruments/Nina.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Melbourne Instruments/Nina.csv)
 - **Coverage**: 35 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5551,11 +6558,23 @@
 - **OSC prefix**: `/lvx`
 - **Variants**: 1
 
-#### 📦 [`lvx.json`](../devices/meris/lvx.json)
+#### 📦 [`lvx.json`](../devices/meris/lvx.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Meris/LVX.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Meris/LVX.csv)
 - **Coverage**: 106 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Mercury7
+
+- **OSC prefix**: `/mercury7`
+- **Variants**: 1
+
+#### 📦 [`mercury7.pencilresearch.fw-unknown.json`](../devices/meris/mercury7.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Meris/Mercury7.csv)
+- **Coverage**: 16 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 🎛️ Ottobit
@@ -5575,10 +6594,10 @@
 - **OSC prefix**: `/ottobit_jr`
 - **Variants**: 1
 
-#### 📦 [`ottobit_jr.json`](../devices/meris/ottobit_jr.json)
+#### 📦 [`ottobit_jr.json`](../devices/meris/ottobit_jr.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Meris/Ottobit Jr.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Meris/Ottobit Jr.csv)
 - **Coverage**: 18 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5587,10 +6606,10 @@
 - **OSC prefix**: `/polymoon`
 - **Variants**: 1
 
-#### 📦 [`polymoon.json`](../devices/meris/polymoon.json)
+#### 📦 [`polymoon.json`](../devices/meris/polymoon.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Meris/Polymoon.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Meris/Polymoon.csv)
 - **Coverage**: 20 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5625,10 +6644,10 @@
 - **OSC prefix**: `/synth_ii`
 - **Variants**: 1
 
-#### 📦 [`synth_ii.json`](../devices/mfb/synth_ii.json)
+#### 📦 [`synth_ii.json`](../devices/mfb/synth_ii.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/MFB/Synth II.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/MFB/Synth II.csv)
 - **Coverage**: 34 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5649,11 +6668,23 @@
 - **OSC prefix**: `/tanzbar_1`
 - **Variants**: 1
 
-#### 📦 [`tanzbar_1.json`](../devices/mfb/tanzbar_1.json)
+#### 📦 [`tanzbar_1.json`](../devices/mfb/tanzbar_1.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/MFB/Tanzbar 1.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/MFB/Tanzbar 1.csv)
 - **Coverage**: 64 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Tanzbar 2
+
+- **OSC prefix**: `/tanzbar_2`
+- **Variants**: 1
+
+#### 📦 [`tanzbar_2.pencilresearch.fw-unknown.json`](../devices/mfb/tanzbar_2.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/MFB/Tanzbar 2.csv)
+- **Coverage**: 30 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 📦 Tanzbar Lite
@@ -5661,10 +6692,10 @@
 - **OSC prefix**: `/tanzbar_lite`
 - **Variants**: 1
 
-#### 📦 [`tanzbar_lite.json`](../devices/mfb/tanzbar_lite.json)
+#### 📦 [`tanzbar_lite.json`](../devices/mfb/tanzbar_lite.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/MFB/Tanzbar Lite.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/MFB/Tanzbar Lite.csv)
 - **Coverage**: 25 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5699,10 +6730,10 @@
 - **OSC prefix**: `/generic_midi_1_0`
 - **Variants**: 1
 
-#### 📦 [`generic_midi_1_0.json`](../devices/midi-association/generic_midi_1_0.json)
+#### 📦 [`generic_midi_1_0.json`](../devices/midi-association/generic_midi_1_0.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/MIDI Association/Generic MIDI 1.0.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/MIDI Association/Generic MIDI 1.0.csv)
 - **Coverage**: 55 CC (18 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5753,11 +6784,23 @@
 - **OSC prefix**: `/argon8m`
 - **Variants**: 1
 
-#### 📦 [`argon8m.json`](../devices/modal-electronics/argon8m.json)
+#### 📦 [`argon8m.json`](../devices/modal-electronics/argon8m.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Modal Electronics/ARGON8M.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Modal Electronics/ARGON8M.csv)
 - **Coverage**: 110 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 CARBON8
+
+- **OSC prefix**: `/carbon8`
+- **Variants**: 1
+
+#### 📦 [`carbon8.pencilresearch.fw-unknown.json`](../devices/modal-electronics/carbon8.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Modal Electronics/CARBON8.csv)
+- **Coverage**: 112 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 📦 COBALT5S
@@ -5765,11 +6808,23 @@
 - **OSC prefix**: `/cobalt5s`
 - **Variants**: 1
 
-#### 📦 [`cobalt5s.json`](../devices/modal-electronics/cobalt5s.json)
+#### 📦 [`cobalt5s.json`](../devices/modal-electronics/cobalt5s.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Modal Electronics/COBALT5S.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Modal Electronics/COBALT5S.csv)
 - **Coverage**: 101 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 COBALT8
+
+- **OSC prefix**: `/cobalt8`
+- **Variants**: 1
+
+#### 📦 [`cobalt8.pencilresearch.fw-unknown.json`](../devices/modal-electronics/cobalt8.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Modal Electronics/COBALT8.csv)
+- **Coverage**: 109 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 📦 Craft
@@ -5777,10 +6832,10 @@
 - **OSC prefix**: `/craft`
 - **Variants**: 1
 
-#### 📦 [`craft.json`](../devices/modal-electronics/craft.json)
+#### 📦 [`craft.json`](../devices/modal-electronics/craft.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Modal Electronics/Craft.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Modal Electronics/Craft.csv)
 - **Coverage**: 49 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5801,10 +6856,10 @@
 - **OSC prefix**: `/craftsynth_2_0`
 - **Variants**: 1
 
-#### 📦 [`craftsynth_2_0.json`](../devices/modal-electronics/craftsynth_2_0.json)
+#### 📦 [`craftsynth_2_0.json`](../devices/modal-electronics/craftsynth_2_0.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Modal Electronics/CRAFTsynth 2.0.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Modal Electronics/CRAFTsynth 2.0.csv)
 - **Coverage**: 69 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5813,11 +6868,25 @@
 - **OSC prefix**: `/skulpt`
 - **Variants**: 1
 
-#### 📦 [`skulpt.json`](../devices/modal-electronics/skulpt.json)
+#### 📦 [`skulpt.json`](../devices/modal-electronics/skulpt.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Modal Electronics/Skulpt.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Modal Electronics/Skulpt.csv)
 - **Coverage**: 99 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+## Modbap
+
+### 📦 Trinity
+
+- **OSC prefix**: `/trinity`
+- **Variants**: 1
+
+#### 📦 [`trinity.json`](../devices/modbap/trinity.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Modbap/Trinity.csv)
+- **Coverage**: 16 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ## Modor
@@ -5851,10 +6920,10 @@
 - **OSC prefix**: `/nf_1`
 - **Variants**: 1
 
-#### 📦 [`nf_1.json`](../devices/modor/nf_1.json)
+#### 📦 [`nf_1.json`](../devices/modor/nf_1.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Modor/NF-1.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Modor/NF-1.csv)
 - **Coverage**: 106 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5908,6 +6977,32 @@
 - **Coverage**: 117 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+## Mooer
+
+### 📦 GE300
+
+- **OSC prefix**: `/ge300`
+- **Variants**: 1
+
+#### 📦 [`ge300.pencilresearch.fw-unknown.json`](../devices/mooer/ge300.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Mooer/GE300.csv)
+- **Coverage**: 8 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 GE300 Lite
+
+- **OSC prefix**: `/ge300_lite`
+- **Variants**: 1
+
+#### 📦 [`ge300_lite.pencilresearch.fw-unknown.json`](../devices/mooer/ge300_lite.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Mooer/GE300 Lite.csv)
+- **Coverage**: 8 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ## Moog
 
 ### 📦 Grandmother
@@ -5915,10 +7010,10 @@
 - **OSC prefix**: `/grandmother`
 - **Variants**: 1
 
-#### 📦 [`grandmother.json`](../devices/moog/grandmother.json)
+#### 📦 [`grandmother.json`](../devices/moog/grandmother.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Moog/Grandmother.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Moog/Grandmother.csv)
 - **Coverage**: 22 CC (5 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -5932,6 +7027,18 @@
 - **Revision**: per pencilresearch canonical CSV
 - **Source**: [electra-preset](https://app.electra.one/preset/o7ZwMAEEkDbLUUh5XvzQ)
 - **Coverage**: 77 SysEx commands · 52 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Messenger
+
+- **OSC prefix**: `/messenger`
+- **Variants**: 1
+
+#### 📦 [`messenger.pencilresearch.fw-unknown.json`](../devices/moog/messenger.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Moog/Messenger.csv)
+- **Coverage**: 57 CC (31 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 🎛️ Minimoog iPad
@@ -6023,10 +7130,10 @@
 - **OSC prefix**: `/sub37`
 - **Variants**: 1
 
-#### 📦 [`subsequent-37.json`](../devices/moog/subsequent-37.json)
+#### 📦 [`subsequent-37.json`](../devices/moog/subsequent-37.json) — firmware `unknown`
 
 - **Revision**: v1.1 firmware
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Moog/Subsequent%2037.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Moog/Subsequent 37.csv)
 - **Coverage**: 131 CC (31 14-bit, 98 NRPN) · midi_out
 
 ### 📦 Mother-32
@@ -6034,10 +7141,10 @@
 - **OSC prefix**: `/mother_32`
 - **Variants**: 1
 
-#### 📦 [`mother_32.json`](../devices/moog/mother_32.json)
+#### 📦 [`mother_32.json`](../devices/moog/mother_32.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Moog/Mother-32.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Moog/Mother-32.csv)
 - **Coverage**: 7 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6046,10 +7153,10 @@
 - **OSC prefix**: `/muse`
 - **Variants**: 1
 
-#### 📦 [`muse.json`](../devices/moog/muse.json)
+#### 📦 [`muse.json`](../devices/moog/muse.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Moog/Muse.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Moog/Muse.csv)
 - **Coverage**: 102 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6058,10 +7165,10 @@
 - **OSC prefix**: `/one`
 - **Variants**: 1
 
-#### 📦 [`one.json`](../devices/moog/one.json)
+#### 📦 [`one.json`](../devices/moog/one.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Moog/One.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Moog/One.csv)
 - **Coverage**: 356 CC (356 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6070,10 +7177,10 @@
 - **OSC prefix**: `/sirin`
 - **Variants**: 1
 
-#### 📦 [`sirin.json`](../devices/moog/sirin.json)
+#### 📦 [`sirin.json`](../devices/moog/sirin.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Moog/Sirin.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Moog/Sirin.csv)
 - **Coverage**: 40 CC (21 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6094,10 +7201,10 @@
 - **OSC prefix**: `/sub_phatty`
 - **Variants**: 1
 
-#### 📦 [`sub_phatty.json`](../devices/moog/sub_phatty.json)
+#### 📦 [`sub_phatty.json`](../devices/moog/sub_phatty.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Moog/Sub Phatty.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Moog/Sub Phatty.csv)
 - **Coverage**: 70 CC (27 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6118,10 +7225,10 @@
 - **OSC prefix**: `/subharmonicon`
 - **Variants**: 1
 
-#### 📦 [`subharmonicon.json`](../devices/moog/subharmonicon.json)
+#### 📦 [`subharmonicon.json`](../devices/moog/subharmonicon.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Moog/Subharmonicon.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Moog/Subharmonicon.csv)
 - **Coverage**: 11 CC (6 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6130,10 +7237,10 @@
 - **OSC prefix**: `/subsequent_25`
 - **Variants**: 1
 
-#### 📦 [`subsequent_25.json`](../devices/moog/subsequent_25.json)
+#### 📦 [`subsequent_25.json`](../devices/moog/subsequent_25.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Moog/Subsequent 25.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Moog/Subsequent 25.csv)
 - **Coverage**: 73 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6152,7 +7259,7 @@
 ### 🎛️ Voyager
 
 - **OSC prefix**: `/voyager`
-- **Variants**: 1
+- **Variants**: 2
 
 #### 🎛️ [`voyager.json`](../devices/moog/voyager.json)
 
@@ -6160,6 +7267,13 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/k9uDv55sMMCqTFSXspuN)
 - **Coverage**: 43 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+#### 📦 [`voyager.pencilresearch.fw-unknown.json`](../devices/moog/voyager.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Moog/Voyager.csv)
+- **Coverage**: 45 CC (29 14-bit) · midi_out
+- **Limitations**: CC/NRPN only.
 
 ## Moonwind
 
@@ -6174,6 +7288,20 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/bfRb26FWPdrnKX1VLYdV)
 - **Coverage**: 26 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+## Morphor
+
+### 📦 ECHON 6
+
+- **OSC prefix**: `/echon_6`
+- **Variants**: 1
+
+#### 📦 [`echon_6.pencilresearch.fw-unknown.json`](../devices/morphor/echon_6.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Morphor/ECHON 6.csv)
+- **Coverage**: 99 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ## MOTU
 
@@ -6220,10 +7348,10 @@
 - **OSC prefix**: `/ambika`
 - **Variants**: 1
 
-#### 📦 [`ambika.json`](../devices/mutable-instruments/ambika.json)
+#### 📦 [`ambika.json`](../devices/mutable-instruments/ambika.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Mutable Instruments/Ambika.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Mutable Instruments/Ambika.csv)
 - **Coverage**: 61 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6268,10 +7396,10 @@
 - **OSC prefix**: `/shruthi`
 - **Variants**: 1
 
-#### 📦 [`shruthi.json`](../devices/mutable-instruments/shruthi.json)
+#### 📦 [`shruthi.json`](../devices/mutable-instruments/shruthi.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Mutable Instruments/Shruthi.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Mutable Instruments/Shruthi.csv)
 - **Coverage**: 50 CC (3 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6340,10 +7468,10 @@
 - **OSC prefix**: `/yarns`
 - **Variants**: 1
 
-#### 📦 [`yarns.json`](../devices/mutable-instruments/yarns.json)
+#### 📦 [`yarns.json`](../devices/mutable-instruments/yarns.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Mutable Instruments/Yarns.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Mutable Instruments/Yarns.csv)
 - **Coverage**: 154 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6352,10 +7480,10 @@
 - **OSC prefix**: `/yarns_loom`
 - **Variants**: 1
 
-#### 📦 [`yarns_loom.json`](../devices/mutable-instruments/yarns_loom.json)
+#### 📦 [`yarns_loom.json`](../devices/mutable-instruments/yarns_loom.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Mutable Instruments/Yarns Loom.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Mutable Instruments/Yarns Loom.csv)
 - **Coverage**: 181 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6397,17 +7525,55 @@
 - **Coverage**: 38 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+## Neural DSP
+
+### 📦 Nano Cortex
+
+- **OSC prefix**: `/nano_cortex`
+- **Variants**: 1
+
+#### 📦 [`nano_cortex.pencilresearch.fw-unknown.json`](../devices/neural-dsp/nano_cortex.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Neural DSP/Nano Cortex.csv)
+- **Coverage**: 11 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Quad Cortex
+
+- **OSC prefix**: `/quad_cortex`
+- **Variants**: 1
+
+#### 📦 [`quad_cortex.pencilresearch.fw-unknown.json`](../devices/neural-dsp/quad_cortex.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Neural DSP/Quad Cortex.csv)
+- **Coverage**: 31 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ## Neuzeit Instruments
+
+### 📦 Drop
+
+- **OSC prefix**: `/drop`
+- **Variants**: 1
+
+#### 📦 [`drop.pencilresearch.fw-unknown.json`](../devices/neuzeit-instruments/drop.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Neuzeit Instruments/Drop.csv)
+- **Coverage**: 54 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 📦 Warp
 
 - **OSC prefix**: `/warp`
 - **Variants**: 1
 
-#### 📦 [`warp.json`](../devices/neuzeit-instruments/warp.json)
+#### 📦 [`warp.json`](../devices/neuzeit-instruments/warp.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Neuzeit Instruments/Warp.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Neuzeit Instruments/Warp.csv)
 - **Coverage**: 126 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6418,10 +7584,10 @@
 - **OSC prefix**: `/c15`
 - **Variants**: 1
 
-#### 📦 [`c15.json`](../devices/nonlinear-labs/c15.json)
+#### 📦 [`c15.json`](../devices/nonlinear-labs/c15.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Nonlinear Labs/C15.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Nonlinear Labs/C15.csv)
 - **Coverage**: 8 CC (7 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6430,7 +7596,7 @@
 ### 🎛️ Mono
 
 - **OSC prefix**: `/mono`
-- **Variants**: 1
+- **Variants**: 2
 
 #### 🎛️ [`mono.json`](../devices/norand/mono.json)
 
@@ -6439,12 +7605,19 @@
 - **Coverage**: 29 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+#### 📦 [`mono.pencilresearch.fw-unknown.json`](../devices/norand/mono.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Norand/Mono.csv)
+- **Coverage**: 29 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ## Nord
 
 ### 🎛️ Drum 2
 
 - **OSC prefix**: `/drum_2`
-- **Variants**: 1
+- **Variants**: 2
 
 #### 🎛️ [`drum_2.json`](../devices/nord/drum_2.json)
 
@@ -6453,15 +7626,22 @@
 - **Coverage**: 232 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+#### 📦 [`drum_2.pencilresearch.fw-unknown.json`](../devices/nord/drum_2.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Nord/Drum 2.csv)
+- **Coverage**: 36 CC (3 14-bit) · midi_out
+- **Limitations**: CC/NRPN only.
+
 ### 📦 Drum 3P
 
 - **OSC prefix**: `/drum_3p`
 - **Variants**: 1
 
-#### 📦 [`drum_3p.json`](../devices/nord/drum_3p.json)
+#### 📦 [`drum_3p.json`](../devices/nord/drum_3p.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Nord/Drum 3P.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Nord/Drum 3P.csv)
 - **Coverage**: 36 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6506,11 +7686,47 @@
 - **OSC prefix**: `/lead_rack_2x`
 - **Variants**: 1
 
-#### 📦 [`lead_rack_2x.json`](../devices/nord/lead_rack_2x.json)
+#### 📦 [`lead_rack_2x.json`](../devices/nord/lead_rack_2x.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Nord/Lead (Rack) 2X.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Nord/Lead (Rack) 2X.csv)
 - **Coverage**: 42 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Lead 4 (Lead 4R)
+
+- **OSC prefix**: `/lead_4_lead_4r`
+- **Variants**: 1
+
+#### 📦 [`lead_4_lead_4r.pencilresearch.fw-unknown.json`](../devices/nord/lead_4_lead_4r.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Nord/Lead 4 (Lead 4R).csv)
+- **Coverage**: 92 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Lead A1
+
+- **OSC prefix**: `/lead_a1`
+- **Variants**: 1
+
+#### 📦 [`lead_a1.pencilresearch.fw-unknown.json`](../devices/nord/lead_a1.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Nord/Lead A1.csv)
+- **Coverage**: 59 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Piano 5
+
+- **OSC prefix**: `/piano_5`
+- **Variants**: 1
+
+#### 📦 [`piano_5.pencilresearch.fw-unknown.json`](../devices/nord/piano_5.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Nord/Piano 5.csv)
+- **Coverage**: 67 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 📦 Stage 3
@@ -6518,10 +7734,10 @@
 - **OSC prefix**: `/stage_3`
 - **Variants**: 1
 
-#### 📦 [`stage_3.json`](../devices/nord/stage_3.json)
+#### 📦 [`stage_3.json`](../devices/nord/stage_3.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Nord/Stage 3.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Nord/Stage 3.csv)
 - **Coverage**: 111 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6530,10 +7746,10 @@
 - **OSC prefix**: `/stage_4`
 - **Variants**: 1
 
-#### 📦 [`stage_4.json`](../devices/nord/stage_4.json)
+#### 📦 [`stage_4.json`](../devices/nord/stage_4.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Nord/Stage 4.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Nord/Stage 4.csv)
 - **Coverage**: 146 CC (51 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6542,10 +7758,10 @@
 - **OSC prefix**: `/wave_2`
 - **Variants**: 1
 
-#### 📦 [`wave_2.json`](../devices/nord/wave_2.json)
+#### 📦 [`wave_2.json`](../devices/nord/wave_2.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Nord/Wave 2.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Nord/Wave 2.csv)
 - **Coverage**: 85 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6616,10 +7832,10 @@
 - **OSC prefix**: `/bass_station_ii`
 - **Variants**: 1
 
-#### 📦 [`bass_station_ii.json`](../devices/novation/bass_station_ii.json)
+#### 📦 [`bass_station_ii.json`](../devices/novation/bass_station_ii.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Novation/Bass Station II.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Novation/Bass Station II.csv)
 - **Coverage**: 92 CC (16 14-bit, 31 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6628,10 +7844,10 @@
 - **OSC prefix**: `/bass_station_rack`
 - **Variants**: 1
 
-#### 📦 [`bass_station_rack.json`](../devices/novation/bass_station_rack.json)
+#### 📦 [`bass_station_rack.json`](../devices/novation/bass_station_rack.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Novation/Bass Station Rack.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Novation/Bass Station Rack.csv)
 - **Coverage**: 16 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6674,7 +7890,7 @@
 ### 🎛️ Circuit Mono Station
 
 - **OSC prefix**: `/circuit_mono_station`
-- **Variants**: 1
+- **Variants**: 2
 
 #### 🎛️ [`circuit_mono_station.json`](../devices/novation/circuit_mono_station.json)
 
@@ -6683,16 +7899,35 @@
 - **Coverage**: 73 CC (21 14-bit) · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+#### 📦 [`circuit_mono_station.pencilresearch.fw-unknown.json`](../devices/novation/circuit_mono_station.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Novation/Circuit Mono Station.csv)
+- **Coverage**: 75 CC (23 14-bit) · midi_out
+- **Limitations**: CC/NRPN only.
+
 ### 📦 Circuit Rhythm
 
 - **OSC prefix**: `/circuit_rhythm`
 - **Variants**: 1
 
-#### 📦 [`circuit_rhythm.json`](../devices/novation/circuit_rhythm.json)
+#### 📦 [`circuit_rhythm.json`](../devices/novation/circuit_rhythm.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Novation/Circuit Rhythm.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Novation/Circuit Rhythm.csv)
 - **Coverage**: 58 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 DrumStation
+
+- **OSC prefix**: `/drumstation`
+- **Variants**: 1
+
+#### 📦 [`drumstation.pencilresearch.fw-unknown.json`](../devices/novation/drumstation.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Novation/DrumStation.csv)
+- **Coverage**: midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 📦 MiniNova
@@ -6700,10 +7935,10 @@
 - **OSC prefix**: `/mininova`
 - **Variants**: 1
 
-#### 📦 [`mininova.json`](../devices/novation/mininova.json)
+#### 📦 [`mininova.json`](../devices/novation/mininova.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Novation/MiniNova.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Novation/MiniNova.csv)
 - **Coverage**: 423 CC (319 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6712,10 +7947,10 @@
 - **OSC prefix**: `/nova`
 - **Variants**: 1
 
-#### 📦 [`nova.json`](../devices/novation/nova.json)
+#### 📦 [`nova.json`](../devices/novation/nova.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Novation/Nova.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Novation/Nova.csv)
 - **Coverage**: 110 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6747,10 +7982,10 @@
 - **OSC prefix**: `/summit_and_peak`
 - **Variants**: 1
 
-#### 📦 [`summit_and_peak.json`](../devices/novation/summit_and_peak.json)
+#### 📦 [`summit_and_peak.json`](../devices/novation/summit_and_peak.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Novation/Summit and Peak.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Novation/Summit and Peak.csv)
 - **Coverage**: 219 CC (145 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6821,10 +8056,10 @@
 - **OSC prefix**: `/tape_echo_ndd_7`
 - **Variants**: 1
 
-#### 📦 [`tape_echo_ndd_7.json`](../devices/nux/tape_echo_ndd_7.json)
+#### 📦 [`tape_echo_ndd_7.json`](../devices/nux/tape_echo_ndd_7.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/NUX/Tape Echo NDD-7.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/NUX/Tape Echo NDD-7.csv)
 - **Coverage**: 16 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -6931,10 +8166,10 @@
 - **OSC prefix**: `/ob_6`
 - **Variants**: 1
 
-#### 📦 [`ob_6.json`](../devices/oberheim/ob_6.json)
+#### 📦 [`ob_6.json`](../devices/oberheim/ob_6.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Oberheim/OB-6.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Oberheim/OB-6.csv)
 - **Coverage**: 122 CC (1 14-bit, 102 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7027,10 +8262,10 @@
 - **OSC prefix**: `/teo_5`
 - **Variants**: 1
 
-#### 📦 [`teo_5.json`](../devices/oberheim/teo_5.json)
+#### 📦 [`teo_5.json`](../devices/oberheim/teo_5.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Oberheim/TEO-5.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Oberheim/TEO-5.csv)
 - **Coverage**: 128 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7106,10 +8341,10 @@
 - **OSC prefix**: `/bam`
 - **Variants**: 1
 
-#### 📦 [`bam.json`](../devices/oto-machines-fx/bam.json)
+#### 📦 [`bam.json`](../devices/oto-machines-fx/bam.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/OTO Machines FX/BAM.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/OTO Machines FX/BAM.csv)
 - **Coverage**: 12 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7118,10 +8353,10 @@
 - **OSC prefix**: `/bim`
 - **Variants**: 1
 
-#### 📦 [`bim.json`](../devices/oto-machines-fx/bim.json)
+#### 📦 [`bim.json`](../devices/oto-machines-fx/bim.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/OTO Machines FX/BIM.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/OTO Machines FX/BIM.csv)
 - **Coverage**: 20 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7130,10 +8365,10 @@
 - **OSC prefix**: `/biscuit`
 - **Variants**: 1
 
-#### 📦 [`biscuit.json`](../devices/oto-machines-fx/biscuit.json)
+#### 📦 [`biscuit.json`](../devices/oto-machines-fx/biscuit.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/OTO Machines FX/BISCUIT.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/OTO Machines FX/BISCUIT.csv)
 - **Coverage**: 25 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7142,10 +8377,10 @@
 - **OSC prefix**: `/boum`
 - **Variants**: 1
 
-#### 📦 [`boum.json`](../devices/oto-machines-fx/boum.json)
+#### 📦 [`boum.json`](../devices/oto-machines-fx/boum.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/OTO Machines FX/BOUM.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/OTO Machines FX/BOUM.csv)
 - **Coverage**: 13 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7156,10 +8391,10 @@
 - **OSC prefix**: `/coral`
 - **Variants**: 1
 
-#### 📦 [`coral.json`](../devices/oxi/coral.json)
+#### 📦 [`coral.json`](../devices/oxi/coral.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/OXI/Coral.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/OXI/Coral.csv)
 - **Coverage**: 27 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7248,10 +8483,10 @@
 - **OSC prefix**: `/toraiz_sp_16`
 - **Variants**: 1
 
-#### 📦 [`toraiz_sp_16.json`](../devices/pioneer-dj/toraiz_sp_16.json)
+#### 📦 [`toraiz_sp_16.json`](../devices/pioneer-dj/toraiz_sp_16.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Pioneer DJ/Toraiz SP-16.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Pioneer DJ/Toraiz SP-16.csv)
 - **Coverage**: 35 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7281,6 +8516,18 @@
 - **Coverage**: 130 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
+### 📦 Plinky 12
+
+- **OSC prefix**: `/plinky_12`
+- **Variants**: 1
+
+#### 📦 [`plinky_12.pencilresearch.fw-unknown.json`](../devices/plinky/plinky_12.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Plinky/Plinky 12.csv)
+- **Coverage**: 86 CC (16 NRPN) · midi_out
+- **Limitations**: CC/NRPN only.
+
 ## Polyend
 
 ### 🎛️ Medusa
@@ -7306,15 +8553,27 @@
 - **Source**: [vendor spec](https://polyend.com/downloads/synth/)
 - **Coverage**: 1 SysEx command · 195 CC · midi_out
 
+### 📦 Synth
+
+- **OSC prefix**: `/synth`
+- **Variants**: 1
+
+#### 📦 [`synth.pencilresearch.fw-unknown.json`](../devices/polyend/synth.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Polyend/Synth.csv)
+- **Coverage**: 101 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ### 📦 Tracker
 
 - **OSC prefix**: `/tracker`
 - **Variants**: 1
 
-#### 📦 [`tracker.json`](../devices/polyend/tracker.json)
+#### 📦 [`tracker.json`](../devices/polyend/tracker.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Polyend/Tracker.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Polyend/Tracker.csv)
 - **Coverage**: 32 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7323,10 +8582,10 @@
 - **OSC prefix**: `/tracker_mini`
 - **Variants**: 1
 
-#### 📦 [`tracker_mini.json`](../devices/polyend/tracker_mini.json)
+#### 📦 [`tracker_mini.json`](../devices/polyend/tracker_mini.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Polyend/Tracker Mini.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Polyend/Tracker Mini.csv)
 - **Coverage**: 90 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7349,10 +8608,10 @@
 - **OSC prefix**: `/preenfm2_preenfm3`
 - **Variants**: 1
 
-#### 📦 [`preenfm2_preenfm3.json`](../devices/preenfm/preenfm2_preenfm3.json)
+#### 📦 [`preenfm2_preenfm3.json`](../devices/preenfm/preenfm2_preenfm3.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/PreenFM/PreenFM2 (PreenFM3).csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/PreenFM/PreenFM2 (PreenFM3).csv)
 - **Coverage**: 223 CC (211 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7371,6 +8630,18 @@
 - **Limitations**: Passthrough mode — Pure Data does not impose any OSC path layout.
 
 ## PWM
+
+### 📦 Mantis
+
+- **OSC prefix**: `/mantis`
+- **Variants**: 1
+
+#### 📦 [`mantis.pencilresearch.fw-unknown.json`](../devices/pwm/mantis.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/PWM/Mantis.csv)
+- **Coverage**: 91 CC (3 14-bit, 61 NRPN) · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 🎛️ PWM Mantis V3
 
@@ -7403,10 +8674,10 @@
 - **OSC prefix**: `/particle`
 - **Variants**: 1
 
-#### 📦 [`particle.json`](../devices/red-panda/particle.json)
+#### 📦 [`particle.json`](../devices/red-panda/particle.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Red Panda/Particle.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Red Panda/Particle.csv)
 - **Coverage**: 33 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7415,10 +8686,10 @@
 - **OSC prefix**: `/raster`
 - **Variants**: 1
 
-#### 📦 [`raster.json`](../devices/red-panda/raster.json)
+#### 📦 [`raster.json`](../devices/red-panda/raster.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Red Panda/Raster.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Red Panda/Raster.csv)
 - **Coverage**: 17 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7457,10 +8728,10 @@
 - **OSC prefix**: `/reliq`
 - **Variants**: 1
 
-#### 📦 [`reliq.json`](../devices/reliq-instruments/reliq.json)
+#### 📦 [`reliq.json`](../devices/reliq-instruments/reliq.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Reliq Instruments/Reliq.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Reliq Instruments/Reliq.csv)
 - **Coverage**: 47 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7561,10 +8832,10 @@
 - **OSC prefix**: `/d_05`
 - **Variants**: 1
 
-#### 📦 [`d_05.json`](../devices/roland/d_05.json)
+#### 📦 [`d_05.json`](../devices/roland/d_05.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/D-05.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/D-05.csv)
 - **Coverage**: 9 CC (2 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7609,10 +8880,10 @@
 - **OSC prefix**: `/gaia_sh_01`
 - **Variants**: 1
 
-#### 📦 [`gaia_sh_01.json`](../devices/roland/gaia_sh_01.json)
+#### 📦 [`gaia_sh_01.json`](../devices/roland/gaia_sh_01.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/GAIA SH-01.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/GAIA SH-01.csv)
 - **Coverage**: 7 CC (1 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7631,7 +8902,7 @@
 ### 🎛️ JD-08
 
 - **OSC prefix**: `/jd_08`
-- **Variants**: 1
+- **Variants**: 2
 
 #### 🎛️ [`jd_08.json`](../devices/roland/jd_08.json)
 
@@ -7640,15 +8911,22 @@
 - **Coverage**: 153 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+#### 📦 [`jd_08.pencilresearch.fw-unknown.json`](../devices/roland/jd_08.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/JD-08.csv)
+- **Coverage**: 81 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ### 📦 JD-XA
 
 - **OSC prefix**: `/jd_xa`
 - **Variants**: 1
 
-#### 📦 [`jd_xa.json`](../devices/roland/jd_xa.json)
+#### 📦 [`jd_xa.json`](../devices/roland/jd_xa.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/JD-XA.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/JD-XA.csv)
 - **Coverage**: 91 CC (16 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7657,10 +8935,10 @@
 - **OSC prefix**: `/jd_xi`
 - **Variants**: 1
 
-#### 📦 [`jd_xi.json`](../devices/roland/jd_xi.json)
+#### 📦 [`jd_xi.json`](../devices/roland/jd_xi.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/JD-Xi.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/JD-Xi.csv)
 - **Coverage**: 268 CC (2 14-bit, 244 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7765,10 +9043,10 @@
 - **OSC prefix**: `/jupiter_6_tauntek_upgrade`
 - **Variants**: 1
 
-#### 📦 [`jupiter_6_tauntek_upgrade.json`](../devices/roland/jupiter_6_tauntek_upgrade.json)
+#### 📦 [`jupiter_6_tauntek_upgrade.json`](../devices/roland/jupiter_6_tauntek_upgrade.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/Jupiter-6 Tauntek Upgrade.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/Jupiter-6 Tauntek Upgrade.csv)
 - **Coverage**: 63 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7777,10 +9055,10 @@
 - **OSC prefix**: `/jupiter_x_jupiter_xm`
 - **Variants**: 1
 
-#### 📦 [`jupiter_x_jupiter_xm.json`](../devices/roland/jupiter_x_jupiter_xm.json)
+#### 📦 [`jupiter_x_jupiter_xm.json`](../devices/roland/jupiter_x_jupiter_xm.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/Jupiter-X (Jupiter-Xm).csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/Jupiter-X (Jupiter-Xm).csv)
 - **Coverage**: 22 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7789,10 +9067,10 @@
 - **OSC prefix**: `/jv_1010`
 - **Variants**: 1
 
-#### 📦 [`jv_1010.json`](../devices/roland/jv_1010.json)
+#### 📦 [`jv_1010.json`](../devices/roland/jv_1010.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/JV-1010.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/JV-1010.csv)
 - **Coverage**: 24 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7849,10 +9127,10 @@
 - **OSC prefix**: `/jx_08`
 - **Variants**: 1
 
-#### 📦 [`jx_08.json`](../devices/roland/jx_08.json)
+#### 📦 [`jx_08.json`](../devices/roland/jx_08.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/JX-08.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/JX-08.csv)
 - **Coverage**: 48 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7933,10 +9211,10 @@
 - **OSC prefix**: `/mc_101`
 - **Variants**: 1
 
-#### 📦 [`mc_101.json`](../devices/roland/mc_101.json)
+#### 📦 [`mc_101.json`](../devices/roland/mc_101.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/MC-101.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/MC-101.csv)
 - **Coverage**: 25 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7945,10 +9223,10 @@
 - **OSC prefix**: `/mc_2oh2`
 - **Variants**: 1
 
-#### 📦 [`mc_2oh2.json`](../devices/roland/mc_2oh2.json)
+#### 📦 [`mc_2oh2.json`](../devices/roland/mc_2oh2.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/MC-2oh2.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/MC-2oh2.csv)
 - **Coverage**: 43 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -7969,10 +9247,10 @@
 - **OSC prefix**: `/mc_707_groovebox`
 - **Variants**: 1
 
-#### 📦 [`mc_707_groovebox.json`](../devices/roland/mc_707_groovebox.json)
+#### 📦 [`mc_707_groovebox.json`](../devices/roland/mc_707_groovebox.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/MC-707 GROOVEBOX.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/MC-707 GROOVEBOX.csv)
 - **Coverage**: 25 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8077,10 +9355,10 @@
 - **OSC prefix**: `/mx_1`
 - **Variants**: 1
 
-#### 📦 [`mx_1.json`](../devices/roland/mx_1.json)
+#### 📦 [`mx_1.json`](../devices/roland/mx_1.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/MX-1.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/MX-1.csv)
 - **Coverage**: 55 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8089,10 +9367,10 @@
 - **OSC prefix**: `/p_6`
 - **Variants**: 1
 
-#### 📦 [`p_6.json`](../devices/roland/p_6.json)
+#### 📦 [`p_6.json`](../devices/roland/p_6.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/P-6.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/P-6.csv)
 - **Coverage**: 40 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8123,7 +9401,7 @@
 ### 🎛️ S-1
 
 - **OSC prefix**: `/s_1`
-- **Variants**: 1
+- **Variants**: 2
 
 #### 🎛️ [`s_1.json`](../devices/roland/s_1.json)
 
@@ -8131,6 +9409,13 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/DVvbhcpcVetBtlLHSMkq)
 - **Coverage**: 54 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+#### 📦 [`s_1.pencilresearch.fw-unknown.json`](../devices/roland/s_1.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/S-1.csv)
+- **Coverage**: 54 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 🎛️ SDE-330
 
@@ -8185,10 +9470,10 @@
 - **OSC prefix**: `/sh_4d`
 - **Variants**: 1
 
-#### 📦 [`sh_4d.json`](../devices/roland/sh_4d.json)
+#### 📦 [`sh_4d.json`](../devices/roland/sh_4d.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/SH-4d.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/SH-4d.csv)
 - **Coverage**: 31 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8209,11 +9494,47 @@
 - **OSC prefix**: `/sound_canvas_sd_50`
 - **Variants**: 1
 
-#### 📦 [`sound_canvas_sd_50.json`](../devices/roland/sound_canvas_sd_50.json)
+#### 📦 [`sound_canvas_sd_50.json`](../devices/roland/sound_canvas_sd_50.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/Sound Canvas SD-50.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/Sound Canvas SD-50.csv)
 - **Coverage**: 34 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 SP-404MKII
+
+- **OSC prefix**: `/sp_404mkii`
+- **Variants**: 1
+
+#### 📦 [`sp_404mkii.pencilresearch.fw-unknown.json`](../devices/roland/sp_404mkii.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/SP-404MKII.csv)
+- **Coverage**: 51 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 SPD-20 PRO
+
+- **OSC prefix**: `/spd_20_pro`
+- **Variants**: 1
+
+#### 📦 [`spd_20_pro.pencilresearch.fw-unknown.json`](../devices/roland/spd_20_pro.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/SPD-20 PRO.csv)
+- **Coverage**: 17 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 SPD-SX PRO
+
+- **OSC prefix**: `/spd_sx_pro`
+- **Variants**: 1
+
+#### 📦 [`spd_sx_pro.pencilresearch.fw-unknown.json`](../devices/roland/spd_sx_pro.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/SPD-SX PRO.csv)
+- **Coverage**: 112 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 📦 System-1 (System-1M)
@@ -8221,10 +9542,10 @@
 - **OSC prefix**: `/system_1_system_1m`
 - **Variants**: 1
 
-#### 📦 [`system_1_system_1m.json`](../devices/roland/system_1_system_1m.json)
+#### 📦 [`system_1_system_1m.json`](../devices/roland/system_1_system_1m.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/System-1 (System-1M).csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/System-1 (System-1M).csv)
 - **Coverage**: 56 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8240,15 +9561,27 @@
 - **Coverage**: 127 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
+### 📦 T-8
+
+- **OSC prefix**: `/t_8`
+- **Variants**: 1
+
+#### 📦 [`t_8.pencilresearch.fw-unknown.json`](../devices/roland/t_8.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/T-8.csv)
+- **Coverage**: midi_out
+- **Limitations**: CC/NRPN only.
+
 ### 📦 TB-03
 
 - **OSC prefix**: `/tb_03`
 - **Variants**: 1
 
-#### 📦 [`tb_03.json`](../devices/roland/tb_03.json)
+#### 📦 [`tb_03.json`](../devices/roland/tb_03.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/TB-03.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/TB-03.csv)
 - **Coverage**: 10 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8269,10 +9602,10 @@
 - **OSC prefix**: `/tr_06`
 - **Variants**: 1
 
-#### 📦 [`tr_06.json`](../devices/roland/tr_06.json)
+#### 📦 [`tr_06.json`](../devices/roland/tr_06.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/TR-06.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/TR-06.csv)
 - **Coverage**: 43 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8281,10 +9614,10 @@
 - **OSC prefix**: `/tr_08`
 - **Variants**: 1
 
-#### 📦 [`tr_08.json`](../devices/roland/tr_08.json)
+#### 📦 [`tr_08.json`](../devices/roland/tr_08.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/TR-08.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/TR-08.csv)
 - **Coverage**: 38 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8293,10 +9626,10 @@
 - **OSC prefix**: `/tr_09`
 - **Variants**: 1
 
-#### 📦 [`tr_09.json`](../devices/roland/tr_09.json)
+#### 📦 [`tr_09.json`](../devices/roland/tr_09.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/TR-09.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/TR-09.csv)
 - **Coverage**: 39 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8305,10 +9638,10 @@
 - **OSC prefix**: `/tr_1000`
 - **Variants**: 1
 
-#### 📦 [`tr_1000.json`](../devices/roland/tr_1000.json)
+#### 📦 [`tr_1000.json`](../devices/roland/tr_1000.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/TR-1000.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/TR-1000.csv)
 - **Coverage**: 66 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8329,10 +9662,10 @@
 - **OSC prefix**: `/tr_8`
 - **Variants**: 1
 
-#### 📦 [`tr_8.json`](../devices/roland/tr_8.json)
+#### 📦 [`tr_8.json`](../devices/roland/tr_8.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/TR-8.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/TR-8.csv)
 - **Coverage**: 50 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8341,10 +9674,10 @@
 - **OSC prefix**: `/tr_8s`
 - **Variants**: 1
 
-#### 📦 [`tr_8s.json`](../devices/roland/tr_8s.json)
+#### 📦 [`tr_8s.json`](../devices/roland/tr_8s.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/TR-8S.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/TR-8S.csv)
 - **Coverage**: 55 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8353,10 +9686,10 @@
 - **OSC prefix**: `/verselab_mv_1`
 - **Variants**: 1
 
-#### 📦 [`verselab_mv_1.json`](../devices/roland/verselab_mv_1.json)
+#### 📦 [`verselab_mv_1.json`](../devices/roland/verselab_mv_1.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/VERSELAB MV-1.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/VERSELAB MV-1.csv)
 - **Coverage**: 25 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8377,10 +9710,10 @@
 - **OSC prefix**: `/xv_5050`
 - **Variants**: 1
 
-#### 📦 [`xv_5050.json`](../devices/roland/xv_5050.json)
+#### 📦 [`xv_5050.json`](../devices/roland/xv_5050.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Roland/XV-5050.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Roland/XV-5050.csv)
 - **Coverage**: 33 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8422,6 +9755,20 @@
 - **Coverage**: 26 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+## Schmidt
+
+### 📦 Synthesizer
+
+- **OSC prefix**: `/synthesizer`
+- **Variants**: 1
+
+#### 📦 [`synthesizer.pencilresearch.fw-unknown.json`](../devices/schmidt/synthesizer.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Schmidt/Synthesizer.csv)
+- **Coverage**: 329 CC (306 NRPN) · midi_out
+- **Limitations**: CC/NRPN only.
+
 ## Sequential
 
 ### 🎛️ Codeknobs REV2
@@ -8441,10 +9788,10 @@
 - **OSC prefix**: `/fourm`
 - **Variants**: 1
 
-#### 📦 [`fourm.json`](../devices/sequential/fourm.json)
+#### 📦 [`fourm.json`](../devices/sequential/fourm.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sequential/Fourm.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sequential/Fourm.csv)
 - **Coverage**: 101 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8465,10 +9812,10 @@
 - **OSC prefix**: `/pro_3`
 - **Variants**: 1
 
-#### 📦 [`pro_3.json`](../devices/sequential/pro_3.json)
+#### 📦 [`pro_3.json`](../devices/sequential/pro_3.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sequential/Pro 3.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sequential/Pro 3.csv)
 - **Coverage**: 116 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8561,10 +9908,10 @@
 - **OSC prefix**: `/prophet_rev2`
 - **Variants**: 1
 
-#### 📦 [`prophet_rev2.json`](../devices/sequential/prophet_rev2.json)
+#### 📦 [`prophet_rev2.json`](../devices/sequential/prophet_rev2.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sequential/Prophet Rev2.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sequential/Prophet Rev2.csv)
 - **Coverage**: 63 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8573,10 +9920,10 @@
 - **OSC prefix**: `/prophet_vs`
 - **Variants**: 1
 
-#### 📦 [`prophet_vs.json`](../devices/sequential/prophet_vs.json)
+#### 📦 [`prophet_vs.json`](../devices/sequential/prophet_vs.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sequential/Prophet VS.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sequential/Prophet VS.csv)
 - **Coverage**: 102 CC (102 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8597,10 +9944,10 @@
 - **OSC prefix**: `/prophet_6`
 - **Variants**: 1
 
-#### 📦 [`prophet_6.json`](../devices/sequential/prophet_6.json)
+#### 📦 [`prophet_6.json`](../devices/sequential/prophet_6.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sequential/Prophet-6.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sequential/Prophet-6.csv)
 - **Coverage**: 61 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8633,10 +9980,10 @@
 - **OSC prefix**: `/take_5`
 - **Variants**: 1
 
-#### 📦 [`take_5.json`](../devices/sequential/take_5.json)
+#### 📦 [`take_5.json`](../devices/sequential/take_5.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sequential/TAKE 5.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sequential/Take 5.csv)
 - **Coverage**: 89 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8661,24 +10008,36 @@
 - **OSC prefix**: `/dk_80`
 - **Variants**: 1
 
-#### 📦 [`dk_80.json`](../devices/siel/dk_80.json)
+#### 📦 [`dk_80.json`](../devices/siel/dk_80.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/SIEL/DK 80.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/SIEL/DK 80.csv)
 - **Coverage**: 47 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ## Sleepy Circuits
+
+### 📦 Hypno
+
+- **OSC prefix**: `/hypno`
+- **Variants**: 1
+
+#### 📦 [`hypno.pencilresearch.fw-unknown.json`](../devices/sleepy-circuits/hypno.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sleepy Circuits/Hypno.csv)
+- **Coverage**: 49 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 📦 Hypno 2
 
 - **OSC prefix**: `/hypno_2`
 - **Variants**: 1
 
-#### 📦 [`hypno_2.json`](../devices/sleepy-circuits/hypno_2.json)
+#### 📦 [`hypno_2.json`](../devices/sleepy-circuits/hypno_2.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sleepy Circuits/Hypno 2.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sleepy Circuits/Hypno 2.csv)
 - **Coverage**: 259 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8743,11 +10102,23 @@
 - **OSC prefix**: `/cydrums`
 - **Variants**: 1
 
-#### 📦 [`cydrums.json`](../devices/sonicware/cydrums.json)
+#### 📦 [`cydrums.json`](../devices/sonicware/cydrums.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sonicware/CyDrums.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sonicware/CyDrums.csv)
 - **Coverage**: 122 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 deconstruct MINIMAL
+
+- **OSC prefix**: `/deconstruct_minimal`
+- **Variants**: 1
+
+#### 📦 [`deconstruct_minimal.pencilresearch.fw-unknown.json`](../devices/sonicware/deconstruct_minimal.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sonicware/deconstruct MINIMAL.csv)
+- **Coverage**: 49 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 📦 ELZ_1 play V2
@@ -8755,10 +10126,10 @@
 - **OSC prefix**: `/elz_1_play_v2`
 - **Variants**: 1
 
-#### 📦 [`elz_1_play_v2.json`](../devices/sonicware/elz_1_play_v2.json)
+#### 📦 [`elz_1_play_v2.json`](../devices/sonicware/elz_1_play_v2.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sonicware/ELZ_1 play V2.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sonicware/ELZ_1 play V2.csv)
 - **Coverage**: 144 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8767,10 +10138,10 @@
 - **OSC prefix**: `/liven_8bit_warps`
 - **Variants**: 1
 
-#### 📦 [`liven_8bit_warps.json`](../devices/sonicware/liven_8bit_warps.json)
+#### 📦 [`liven_8bit_warps.json`](../devices/sonicware/liven_8bit_warps.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sonicware/LIVEN 8bit warps.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sonicware/LIVEN 8bit warps.csv)
 - **Coverage**: 37 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8791,10 +10162,10 @@
 - **OSC prefix**: `/liven_ambient`
 - **Variants**: 1
 
-#### 📦 [`liven_ambient.json`](../devices/sonicware/liven_ambient.json)
+#### 📦 [`liven_ambient.json`](../devices/sonicware/liven_ambient.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sonicware/LIVEN Ambient Ø.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sonicware/LIVEN Ambient Ø.csv)
 - **Coverage**: 45 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8803,10 +10174,10 @@
 - **OSC prefix**: `/liven_bass_beat`
 - **Variants**: 1
 
-#### 📦 [`liven_bass_beat.json`](../devices/sonicware/liven_bass_beat.json)
+#### 📦 [`liven_bass_beat.json`](../devices/sonicware/liven_bass_beat.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sonicware/LIVEN BASS&BEAT.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sonicware/LIVEN BASS&BEAT.csv)
 - **Coverage**: 47 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8815,10 +10186,10 @@
 - **OSC prefix**: `/liven_evoke`
 - **Variants**: 1
 
-#### 📦 [`liven_evoke.json`](../devices/sonicware/liven_evoke.json)
+#### 📦 [`liven_evoke.json`](../devices/sonicware/liven_evoke.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sonicware/LIVEN Evoke.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sonicware/LIVEN Evoke.csv)
 - **Coverage**: 61 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8827,10 +10198,10 @@
 - **OSC prefix**: `/liven_lofi_12`
 - **Variants**: 1
 
-#### 📦 [`liven_lofi_12.json`](../devices/sonicware/liven_lofi_12.json)
+#### 📦 [`liven_lofi_12.json`](../devices/sonicware/liven_lofi_12.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sonicware/LIVEN Lofi-12.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sonicware/LIVEN Lofi-12.csv)
 - **Coverage**: 43 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8839,10 +10210,10 @@
 - **OSC prefix**: `/liven_lofi_6`
 - **Variants**: 1
 
-#### 📦 [`liven_lofi_6.json`](../devices/sonicware/liven_lofi_6.json)
+#### 📦 [`liven_lofi_6.json`](../devices/sonicware/liven_lofi_6.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sonicware/LIVEN Lofi-6.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sonicware/LIVEN Lofi-6.csv)
 - **Coverage**: 43 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8851,10 +10222,10 @@
 - **OSC prefix**: `/liven_mega_synthesis`
 - **Variants**: 1
 
-#### 📦 [`liven_mega_synthesis.json`](../devices/sonicware/liven_mega_synthesis.json)
+#### 📦 [`liven_mega_synthesis.json`](../devices/sonicware/liven_mega_synthesis.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sonicware/LIVEN MEGA SYNTHESIS.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sonicware/LIVEN MEGA SYNTHESIS.csv)
 - **Coverage**: 26 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8875,10 +10246,10 @@
 - **OSC prefix**: `/liven_xfm`
 - **Variants**: 1
 
-#### 📦 [`liven_xfm.json`](../devices/sonicware/liven_xfm.json)
+#### 📦 [`liven_xfm.json`](../devices/sonicware/liven_xfm.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sonicware/LIVEN XFM.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sonicware/LIVEN XFM.csv)
 - **Coverage**: 43 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8887,10 +10258,10 @@
 - **OSC prefix**: `/lofi_12_xt`
 - **Variants**: 1
 
-#### 📦 [`lofi_12_xt.json`](../devices/sonicware/lofi_12_xt.json)
+#### 📦 [`lofi_12_xt.json`](../devices/sonicware/lofi_12_xt.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sonicware/Lofi-12 XT.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sonicware/Lofi-12 XT.csv)
 - **Coverage**: 101 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -8899,10 +10270,10 @@
 - **OSC prefix**: `/smpltrek`
 - **Variants**: 1
 
-#### 📦 [`smpltrek.json`](../devices/sonicware/smpltrek.json)
+#### 📦 [`smpltrek.json`](../devices/sonicware/smpltrek.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Sonicware/SmplTrek.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sonicware/SmplTrek.csv)
 - **Coverage**: 33 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -9045,11 +10416,23 @@
 - **OSC prefix**: `/hermod`
 - **Variants**: 1
 
-#### 📦 [`hermod.json`](../devices/squarp-instruments/hermod.json)
+#### 📦 [`hermod.json`](../devices/squarp-instruments/hermod.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Squarp instruments/Hermod.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Squarp instruments/Hermod.csv)
 - **Coverage**: 119 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Rample
+
+- **OSC prefix**: `/rample`
+- **Variants**: 1
+
+#### 📦 [`rample.pencilresearch.fw-unknown.json`](../devices/squarp-instruments/rample.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Squarp instruments/Rample.csv)
+- **Coverage**: 77 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ## Steinberg
@@ -9078,6 +10461,18 @@
 - **Revision**: per pencilresearch canonical CSV
 - **Source**: [electra-preset](https://app.electra.one/preset/xKi8pCIcSZRgXZsVgnAd)
 - **Coverage**: 124 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Deco
+
+- **OSC prefix**: `/deco`
+- **Variants**: 1
+
+#### 📦 [`deco.pencilresearch.fw-unknown.json`](../devices/strymon/deco.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Strymon/Deco.csv)
+- **Coverage**: 22 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 🎛️ Mobius
@@ -9159,10 +10554,10 @@
 - **OSC prefix**: `/se_1x`
 - **Variants**: 1
 
-#### 📦 [`se_1x.json`](../devices/studio-electronics/se_1x.json)
+#### 📦 [`se_1x.json`](../devices/studio-electronics/se_1x.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Studio Electronics/SE-1X.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Studio Electronics/SE-1X.csv)
 - **Coverage**: 50 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -9197,10 +10592,10 @@
 - **OSC prefix**: `/sledge`
 - **Variants**: 1
 
-#### 📦 [`sledge.json`](../devices/studiologic/sledge.json)
+#### 📦 [`sledge.json`](../devices/studiologic/sledge.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Studiologic/Sledge.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Studiologic/Sledge.csv)
 - **Coverage**: 67 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -9211,10 +10606,10 @@
 - **OSC prefix**: `/polyvera`
 - **Variants**: 1
 
-#### 📦 [`polyvera.json`](../devices/suonobuono/polyvera.json)
+#### 📦 [`polyvera.json`](../devices/suonobuono/polyvera.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Suonobuono/Polyvera.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Suonobuono/Polyvera.csv)
 - **Coverage**: 115 CC (3 14-bit, 45 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -9251,10 +10646,10 @@
 - **OSC prefix**: `/redshift_6`
 - **Variants**: 1
 
-#### 📦 [`redshift_6.json`](../devices/supercritical/redshift_6.json)
+#### 📦 [`redshift_6.json`](../devices/supercritical/redshift_6.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Supercritical/Redshift 6.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Supercritical/Redshift 6.csv)
 - **Coverage**: 116 CC (116 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -9303,10 +10698,10 @@
 - **OSC prefix**: `/teebee_mark_1`
 - **Variants**: 1
 
-#### 📦 [`teebee_mark_1.json`](../devices/syntecno/teebee_mark_1.json)
+#### 📦 [`teebee_mark_1.json`](../devices/syntecno/teebee_mark_1.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Syntecno/TeeBee Mark 1.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Syntecno/TeeBee Mark 1.csv)
 - **Coverage**: 6 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -9315,7 +10710,7 @@
 ### 🎛️ Deluge
 
 - **OSC prefix**: `/deluge`
-- **Variants**: 1
+- **Variants**: 2
 
 #### 🎛️ [`deluge.json`](../devices/synthstrom/deluge.json)
 
@@ -9323,6 +10718,13 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/V8cnLUoRuUtgLWSQBEw6)
 - **Coverage**: 71 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+#### 📦 [`deluge.pencilresearch.fw-unknown.json`](../devices/synthstrom/deluge.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Synthstrom/Deluge.csv)
+- **Coverage**: 128 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ## Synthstrom Audible
 
@@ -9407,11 +10809,23 @@
 - **OSC prefix**: `/gr_1`
 - **Variants**: 1
 
-#### 📦 [`gr_1.json`](../devices/tasty-chips/gr_1.json)
+#### 📦 [`gr_1.json`](../devices/tasty-chips/gr_1.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Tasty Chips/GR-1.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Tasty Chips/GR-1.csv)
 - **Coverage**: 37 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 GR-Mega
+
+- **OSC prefix**: `/gr_mega`
+- **Variants**: 1
+
+#### 📦 [`gr_mega.pencilresearch.fw-unknown.json`](../devices/tasty-chips/gr_mega.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Tasty Chips/GR-Mega.csv)
+- **Coverage**: 199 CC (149 NRPN) · midi_out
 - **Limitations**: CC/NRPN only.
 
 ## Tasty Chips Electronics
@@ -9434,10 +10848,10 @@
 - **OSC prefix**: `/d_two`
 - **Variants**: 1
 
-#### 📦 [`d_two.json`](../devices/tc-electronic/d_two.json)
+#### 📦 [`d_two.json`](../devices/tc-electronic/d_two.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/TC Electronic/D-Two.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/TC Electronic/D-TWO.csv)
 - **Coverage**: 43 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -9472,10 +10886,10 @@
 - **OSC prefix**: `/voicelive_3`
 - **Variants**: 1
 
-#### 📦 [`voicelive_3.json`](../devices/tc-helicon/voicelive_3.json)
+#### 📦 [`voicelive_3.json`](../devices/tc-helicon/voicelive_3.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/TC Helicon/VoiceLive 3.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/TC Helicon/VoiceLive 3.csv)
 - **Coverage**: 27 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -9484,24 +10898,36 @@
 - **OSC prefix**: `/voicelive_touch_2`
 - **Variants**: 1
 
-#### 📦 [`voicelive_touch_2.json`](../devices/tc-helicon/voicelive_touch_2.json)
+#### 📦 [`voicelive_touch_2.json`](../devices/tc-helicon/voicelive_touch_2.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/TC Helicon/VoiceLive Touch 2.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/TC Helicon/VoiceLive Touch 2.csv)
 - **Coverage**: 71 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ## Teenage Engineering
+
+### 📦 EP-133 K.O. II
+
+- **OSC prefix**: `/ep_133_k_o_ii`
+- **Variants**: 1
+
+#### 📦 [`ep_133_k_o_ii.pencilresearch.fw-unknown.json`](../devices/teenage-engineering/ep_133_k_o_ii.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Teenage Engineering/EP-133 K.O. II.csv)
+- **Coverage**: 5 CC (1 14-bit) · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 📦 OP-1
 
 - **OSC prefix**: `/op_1`
 - **Variants**: 1
 
-#### 📦 [`op_1.json`](../devices/teenage-engineering/op_1.json)
+#### 📦 [`op_1.json`](../devices/teenage-engineering/op_1.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Teenage Engineering/OP-1.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Teenage Engineering/OP-1.csv)
 - **Coverage**: 4 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -9510,11 +10936,11 @@
 - **OSC prefix**: `/op_1_field`
 - **Variants**: 1
 
-#### 📦 [`op_1_field.json`](../devices/teenage-engineering/op_1_field.json)
+#### 📦 [`op_1_field.json`](../devices/teenage-engineering/op_1_field.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Teenage Engineering/OP-1 field.csv)
-- **Coverage**: 4 CC · midi_out
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Teenage Engineering/OP-1 field.csv)
+- **Coverage**: 61 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 🎛️ OP-XY
@@ -9534,10 +10960,10 @@
 - **OSC prefix**: `/op_z`
 - **Variants**: 1
 
-#### 📦 [`op_z.json`](../devices/teenage-engineering/op_z.json)
+#### 📦 [`op_z.json`](../devices/teenage-engineering/op_z.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Teenage Engineering/OP-Z.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Teenage Engineering/OP-Z.csv)
 - **Coverage**: 48 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -9572,10 +10998,10 @@
 - **OSC prefix**: `/orchid`
 - **Variants**: 1
 
-#### 📦 [`orchid.json`](../devices/telepathic-instruments/orchid.json)
+#### 📦 [`orchid.json`](../devices/telepathic-instruments/orchid.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Telepathic Instruments/Orchid.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Telepathic Instruments/Orchid.csv)
 - **Coverage**: 3 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -9612,10 +11038,10 @@
 - **OSC prefix**: `/s4`
 - **Variants**: 1
 
-#### 📦 [`s4.json`](../devices/torso-electronics/s4.json)
+#### 📦 [`s4.json`](../devices/torso-electronics/s4.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Torso Electronics/S4.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Torso Electronics/S4.csv)
 - **Coverage**: 128 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -9624,11 +11050,25 @@
 - **OSC prefix**: `/t1`
 - **Variants**: 1
 
-#### 📦 [`t1.json`](../devices/torso-electronics/t1.json)
+#### 📦 [`t1.json`](../devices/torso-electronics/t1.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Torso Electronics/T1.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Torso Electronics/T1.csv)
 - **Coverage**: 14 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+## Tubbutec
+
+### 📦 Juno-66
+
+- **OSC prefix**: `/juno_66`
+- **Variants**: 1
+
+#### 📦 [`juno_66.pencilresearch.fw-unknown.json`](../devices/tubbutec/juno_66.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Tubbutec/Juno-66.csv)
+- **Coverage**: 27 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ## Twisted Electrons
@@ -9650,11 +11090,23 @@
 - **OSC prefix**: `/therapsid`
 - **Variants**: 1
 
-#### 📦 [`therapsid.json`](../devices/twisted-electrons/therapsid.json)
+#### 📦 [`therapsid.json`](../devices/twisted-electrons/therapsid.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Twisted Electrons/TherapSID.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Twisted Electrons/TherapSID.csv)
 - **Coverage**: 57 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 TWISTfm
+
+- **OSC prefix**: `/twistfm`
+- **Variants**: 1
+
+#### 📦 [`twistfm.pencilresearch.fw-unknown.json`](../devices/twisted-electrons/twistfm.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Twisted Electrons/TWISTfm.csv)
+- **Coverage**: 80 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ## u-he
@@ -9738,10 +11190,10 @@
 - **OSC prefix**: `/midibox_sid_v2_0`
 - **Variants**: 1
 
-#### 📦 [`midibox_sid_v2_0.json`](../devices/ucapps-de/midibox_sid_v2_0.json)
+#### 📦 [`midibox_sid_v2_0.json`](../devices/ucapps-de/midibox_sid_v2_0.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/uCApps.de/MIDIbox SID v2.0.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/uCApps.de/MIDIbox SID v2.0.csv)
 - **Coverage**: 225 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -9766,10 +11218,10 @@
 - **OSC prefix**: `/super_6`
 - **Variants**: 1
 
-#### 📦 [`super_6.json`](../devices/udo-audio/super_6.json)
+#### 📦 [`super_6.json`](../devices/udo-audio/super_6.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/UDO Audio/Super 6.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/UDO Audio/Super 6.csv)
 - **Coverage**: 89 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -9778,14 +11230,64 @@
 - **OSC prefix**: `/super_gemini_super_8`
 - **Variants**: 1
 
-#### 📦 [`super_gemini_super_8.json`](../devices/udo-audio/super_gemini_super_8.json)
+#### 📦 [`super_gemini_super_8.json`](../devices/udo-audio/super_gemini_super_8.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/UDO Audio/Super Gemini (Super 8).csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/UDO Audio/Super Gemini (Super 8).csv)
 - **Coverage**: 106 CC (3 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
+## Underscores
+
+### 📦 _recurBOY_
+
+- **OSC prefix**: `/recurboy`
+- **Variants**: 1
+
+#### 📦 [`recurboy.pencilresearch.fw-unknown.json`](../devices/underscores/recurboy.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Underscores/_recurBOY_.csv)
+- **Coverage**: 24 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ## Universal Audio
+
+### 📦 ANTI 1992
+
+- **OSC prefix**: `/anti_1992`
+- **Variants**: 1
+
+#### 📦 [`anti_1992.pencilresearch.fw-unknown.json`](../devices/universal-audio/anti_1992.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Universal Audio/ANTI 1992.csv)
+- **Coverage**: 31 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Dream '65
+
+- **OSC prefix**: `/dream_65`
+- **Variants**: 1
+
+#### 📦 [`dream_65.pencilresearch.fw-unknown.json`](../devices/universal-audio/dream_65.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Universal Audio/Dream '65.csv)
+- **Coverage**: 19 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 Ruby '63
+
+- **OSC prefix**: `/ruby_63`
+- **Variants**: 1
+
+#### 📦 [`ruby_63.pencilresearch.fw-unknown.json`](../devices/universal-audio/ruby_63.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Universal Audio/Ruby '63.csv)
+- **Coverage**: 19 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 🎛️ UA Polymax
 
@@ -9811,18 +11313,16 @@
 - **Coverage**: 180 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
-## Unknown
+### 📦 Woodrow '55
 
-### 📦 Trinity
-
-- **OSC prefix**: `/trinity`
+- **OSC prefix**: `/woodrow_55`
 - **Variants**: 1
 
-#### 📦 [`trinity.json`](../devices/unknown/trinity.json)
+#### 📦 [`woodrow_55.pencilresearch.fw-unknown.json`](../devices/universal-audio/woodrow_55.pencilresearch.fw-unknown.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Modbap/Trinity.csv)
-- **Coverage**: 16 CC · midi_out
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Universal Audio/Woodrow '55.csv)
+- **Coverage**: 15 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ## Valhalla DSP
@@ -9891,6 +11391,32 @@
 - **Coverage**: 2 CC (1 NRPN) · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+## Vermona
+
+### 📦 DRM1 MKIV
+
+- **OSC prefix**: `/drm1_mkiv`
+- **Variants**: 1
+
+#### 📦 [`drm1_mkiv.pencilresearch.fw-unknown.json`](../devices/vermona/drm1_mkiv.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Vermona/DRM1 MKIV.csv)
+- **Coverage**: midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 meloDICER
+
+- **OSC prefix**: `/melodicer`
+- **Variants**: 1
+
+#### 📦 [`melodicer.pencilresearch.fw-unknown.json`](../devices/vermona/melodicer.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Vermona/meloDICER.csv)
+- **Coverage**: 24 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ## Vital Audio
 
 ### 🎛️ Vital (v01)
@@ -9907,15 +11433,27 @@
 
 ## VONGON
 
+### 📦 Polyphrase
+
+- **OSC prefix**: `/polyphrase`
+- **Variants**: 1
+
+#### 📦 [`polyphrase.pencilresearch.fw-unknown.json`](../devices/vongon/polyphrase.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/VONGON/Polyphrase.csv)
+- **Coverage**: 15 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
 ### 📦 replay
 
 - **OSC prefix**: `/replay`
 - **Variants**: 1
 
-#### 📦 [`replay.json`](../devices/vongon/replay.json)
+#### 📦 [`replay.json`](../devices/vongon/replay.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/VONGON/replay.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/VONGON/replay.csv)
 - **Coverage**: 35 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -9974,10 +11512,10 @@
 - **OSC prefix**: `/iridium`
 - **Variants**: 1
 
-#### 📦 [`iridium.json`](../devices/waldorf/iridium.json)
+#### 📦 [`iridium.json`](../devices/waldorf/iridium.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Waldorf/Iridium.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Waldorf/Iridium.csv)
 - **Coverage**: 116 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -10034,10 +11572,10 @@
 - **OSC prefix**: `/m`
 - **Variants**: 1
 
-#### 📦 [`m.json`](../devices/waldorf/m.json)
+#### 📦 [`m.json`](../devices/waldorf/m.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Waldorf/M.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Waldorf/M.csv)
 - **Coverage**: 46 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -10094,10 +11632,10 @@
 - **OSC prefix**: `/protein`
 - **Variants**: 1
 
-#### 📦 [`protein.json`](../devices/waldorf/protein.json)
+#### 📦 [`protein.json`](../devices/waldorf/protein.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Waldorf/Protein.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Waldorf/Protein.csv)
 - **Coverage**: 132 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -10112,6 +11650,18 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/o04Fz1WdrKJuca6XELWG)
 - **Coverage**: 2 SysEx commands · 66 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+### 📦 Pulse 1
+
+- **OSC prefix**: `/pulse_1`
+- **Variants**: 1
+
+#### 📦 [`pulse_1.pencilresearch.fw-unknown.json`](../devices/waldorf/pulse_1.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Waldorf/Pulse 1.csv)
+- **Coverage**: 62 CC · midi_out
+- **Limitations**: CC/NRPN only.
 
 ### 🎛️ Pulse 2
 
@@ -10166,10 +11716,10 @@
 - **OSC prefix**: `/rocket`
 - **Variants**: 1
 
-#### 📦 [`rocket.json`](../devices/waldorf/rocket.json)
+#### 📦 [`rocket.json`](../devices/waldorf/rocket.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Waldorf/Rocket.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Waldorf/Rocket.csv)
 - **Coverage**: 23 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -10178,10 +11728,10 @@
 - **OSC prefix**: `/streichfett`
 - **Variants**: 1
 
-#### 📦 [`streichfett.json`](../devices/waldorf/streichfett.json)
+#### 📦 [`streichfett.json`](../devices/waldorf/streichfett.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Waldorf/Streichfett.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Waldorf/Streichfett.csv)
 - **Coverage**: 23 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -10496,10 +12046,10 @@
 - **OSC prefix**: `/nsx_1`
 - **Variants**: 1
 
-#### 📦 [`nsx_1.json`](../devices/yamaha/nsx_1.json)
+#### 📦 [`nsx_1.json`](../devices/yamaha/nsx_1.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Yamaha/NSX-1.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Yamaha/NSX-1.csv)
 - **Coverage**: 38 CC (1 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -10556,10 +12106,10 @@
 - **OSC prefix**: `/reface_cs`
 - **Variants**: 1
 
-#### 📦 [`reface_cs.json`](../devices/yamaha/reface_cs.json)
+#### 📦 [`reface_cs.json`](../devices/yamaha/reface_cs.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Yamaha/reface CS.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Yamaha/reface CS.csv)
 - **Coverage**: 17 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -10580,10 +12130,10 @@
 - **OSC prefix**: `/reface_yc`
 - **Variants**: 1
 
-#### 📦 [`reface_yc.json`](../devices/yamaha/reface_yc.json)
+#### 📦 [`reface_yc.json`](../devices/yamaha/reface_yc.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Yamaha/reface YC.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Yamaha/reface YC.csv)
 - **Coverage**: 18 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -10604,10 +12154,10 @@
 - **OSC prefix**: `/seqtrak`
 - **Variants**: 1
 
-#### 📦 [`seqtrak.json`](../devices/yamaha/seqtrak.json)
+#### 📦 [`seqtrak.json`](../devices/yamaha/seqtrak.json) — firmware `unknown`
 
 - **Revision**: per pencilresearch canonical CSV
-- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/deb41f2/Yamaha/SEQTRAK.csv)
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Yamaha/SEQTRAK.csv)
 - **Coverage**: 40 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
@@ -10743,6 +12293,18 @@
 - **Revision**: per pencilresearch canonical CSV
 - **Source**: [electra-preset](https://app.electra.one/preset/V0wJK9Nh9YBw8Zc1WQ9z)
 - **Coverage**: 26 SysEx commands · 131 CC · midi_out
+- **Limitations**: CC/NRPN only.
+
+### 📦 LiveTrak L6max
+
+- **OSC prefix**: `/livetrak_l6max`
+- **Variants**: 1
+
+#### 📦 [`livetrak_l6max.pencilresearch.fw-unknown.json`](../devices/zoom/livetrak_l6max.pencilresearch.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per pencilresearch canonical CSV
+- **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Zoom/LiveTrak L6max.csv)
+- **Coverage**: 94 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
 ### 🎛️ ms-70cdr_e1mk1

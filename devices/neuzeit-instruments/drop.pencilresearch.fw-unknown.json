@@ -1,0 +1,645 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Neuzeit Instruments/Drop.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 54,
+    "cc_entries": 54,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Drop",
+    "vendor": "Neuzeit Instruments",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/drop",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/settings/multiple_jumps",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Settings",
+        "_usage": "0: Allowed; 1-127: Not allowed"
+      },
+      {
+        "osc": "/settings/multiple_drops",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Settings",
+        "_usage": "0: Allowed; 1-127: Not allowed"
+      },
+      {
+        "osc": "/settings/fade_time",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Settings",
+        "_usage": "0~127: 0% to 100%"
+      },
+      {
+        "osc": "/settings/jump_time",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Settings",
+        "_usage": "0: One full cycle; 1: 10 seconds; 2: 20 seconds; 3: 30 seconds; 4: 40 seconds; 5: 50 seconds; 6-127: 60 seconds"
+      },
+      {
+        "osc": "/playback/length",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Playback",
+        "_usage": "0: Do nothing; 1~32: Number of bars"
+      },
+      {
+        "osc": "/playback/jump_quantization",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Playback",
+        "_usage": "0: No quantization; 1: 1/16 note; 2: 1/8 note; 3: 1/4 note; 4: 1/2 note; 5-127: 1 bar"
+      },
+      {
+        "osc": "/snapshots/bank_select",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Snapshots",
+        "_usage": "0: Do nothing; 1~20: Bank 1 to 20"
+      },
+      {
+        "osc": "/jump/fire_snapshot_1",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_2",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_3",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_4",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_5",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_6",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_7",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_8",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_9",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_10",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_11",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_12",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_13",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_14",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_15",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_16",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_17",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_18",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_19",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/fire_snapshot_20",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1~20: Fire on bank 1 to 20; 21~40: Manual fade on bank 1 to 20; 41~60: Force fire on bank 1 to 20; 61: Fire on current bank; 62: Manual"
+      },
+      {
+        "osc": "/jump/stop_jumps",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Jump",
+        "_usage": "0: Do nothing; 1: Stop all Jumps and exit/reset manual fade; 2-127: Stop all Jumps and exit manual fade"
+      },
+      {
+        "osc": "/drop/mode",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Single; 1-127: Repeat"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_1",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_2",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_3",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_4",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_5",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_6",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_7",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_8",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_9",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_10",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_11",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_12",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_13",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_14",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_15",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_16",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_17",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_18",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_19",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/schedule_snapshot_20",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1~20: Schedule on bank 1 to 20; 21~40: Remove from Drop on bank 1 to 20; 41~60: Force schedule on bank 1 to 20; 61: Schedule on current"
+      },
+      {
+        "osc": "/drop/stop_drops",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drop",
+        "_usage": "0: Do nothing; 1-127: Un-schedule Drop"
+      },
+      {
+        "osc": "/beatjump/quantization",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Beatjump",
+        "_usage": "0: 1 bar; 1-127: 1/4 note"
+      },
+      {
+        "osc": "/beatjump/button",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Beatjump",
+        "_usage": "0: Do nothing; 1~8: Circle button 1 to 8"
+      },
+      {
+        "osc": "/chain/start_and_stop",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Chain",
+        "_usage": "0: Do nothing; 1~20: Start chain 1 to 20; 21: Stop current chain"
+      },
+      {
+        "osc": "/layer/select",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Layer",
+        "_usage": "0: Layer A; 1-127: Layer B"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

@@ -2,9 +2,12 @@
   "_sources": [
     {
       "type": "pencilresearch",
-      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Roland/TR-8S.csv",
-      "imported_at": "2026-04-13",
-      "commit": "deb41f2"
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Roland/TR-8S.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
     }
   ],
   "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
@@ -12,7 +15,8 @@
     "entries_total": 55,
     "cc_entries": 55,
     "nrpn_entries": 0,
-    "fourteen_bit_cc_pairs": 0
+    "fourteen_bit_cc_pairs": 0,
+    "triggers": 22
   },
   "device": {
     "name": "TR-8S",
@@ -539,5 +543,251 @@
     "pitchbend": "/pitchbend {value_u14} {channel}",
     "aftertouch": "/aftertouch {value} {channel}"
   },
-  "replies": []
+  "replies": [],
+  "triggers": {
+    "entries": [
+      {
+        "osc": "/drum/default_note_map/bass_drum",
+        "sound": "Bass drum",
+        "section": "Default note map",
+        "channel": 9,
+        "note_range": [
+          36,
+          36
+        ],
+        "note": 36
+      },
+      {
+        "osc": "/drum/default_note_map/snare_drum",
+        "sound": "Snare drum",
+        "section": "Default note map",
+        "channel": 9,
+        "note_range": [
+          38,
+          38
+        ],
+        "note": 38
+      },
+      {
+        "osc": "/drum/default_note_map/low_tom",
+        "sound": "Low tom",
+        "section": "Default note map",
+        "channel": 9,
+        "note_range": [
+          43,
+          43
+        ],
+        "note": 43
+      },
+      {
+        "osc": "/drum/default_note_map/mid_tom",
+        "sound": "Mid tom",
+        "section": "Default note map",
+        "channel": 9,
+        "note_range": [
+          47,
+          47
+        ],
+        "note": 47
+      },
+      {
+        "osc": "/drum/default_note_map/high_tom",
+        "sound": "High tom",
+        "section": "Default note map",
+        "channel": 9,
+        "note_range": [
+          50,
+          50
+        ],
+        "note": 50
+      },
+      {
+        "osc": "/drum/default_note_map/rim_shot",
+        "sound": "Rim shot",
+        "section": "Default note map",
+        "channel": 9,
+        "note_range": [
+          37,
+          37
+        ],
+        "note": 37
+      },
+      {
+        "osc": "/drum/default_note_map/hand_clap",
+        "sound": "Hand clap",
+        "section": "Default note map",
+        "channel": 9,
+        "note_range": [
+          39,
+          39
+        ],
+        "note": 39
+      },
+      {
+        "osc": "/drum/default_note_map/closed_hi_hat",
+        "sound": "Closed hi-hat",
+        "section": "Default note map",
+        "channel": 9,
+        "note_range": [
+          42,
+          42
+        ],
+        "note": 42
+      },
+      {
+        "osc": "/drum/default_note_map/open_hi_hat",
+        "sound": "Open hi-hat",
+        "section": "Default note map",
+        "channel": 9,
+        "note_range": [
+          46,
+          46
+        ],
+        "note": 46
+      },
+      {
+        "osc": "/drum/default_note_map/crash_cymbal",
+        "sound": "Crash cymbal",
+        "section": "Default note map",
+        "channel": 9,
+        "note_range": [
+          49,
+          49
+        ],
+        "note": 49
+      },
+      {
+        "osc": "/drum/default_note_map/ride_cymbal",
+        "sound": "Ride cymbal",
+        "section": "Default note map",
+        "channel": 9,
+        "note_range": [
+          51,
+          51
+        ],
+        "note": 51
+      },
+      {
+        "osc": "/drum/alternate_note_map/bass_drum",
+        "sound": "Bass drum",
+        "section": "Alternate note map",
+        "channel": 9,
+        "note_range": [
+          35,
+          35
+        ],
+        "note": 35
+      },
+      {
+        "osc": "/drum/alternate_note_map/snare_drum",
+        "sound": "Snare drum",
+        "section": "Alternate note map",
+        "channel": 9,
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40
+      },
+      {
+        "osc": "/drum/alternate_note_map/low_tom",
+        "sound": "Low tom",
+        "section": "Alternate note map",
+        "channel": 9,
+        "note_range": [
+          41,
+          41
+        ],
+        "note": 41
+      },
+      {
+        "osc": "/drum/alternate_note_map/mid_tom",
+        "sound": "Mid tom",
+        "section": "Alternate note map",
+        "channel": 9,
+        "note_range": [
+          45,
+          45
+        ],
+        "note": 45
+      },
+      {
+        "osc": "/drum/alternate_note_map/high_tom",
+        "sound": "High tom",
+        "section": "Alternate note map",
+        "channel": 9,
+        "note_range": [
+          48,
+          48
+        ],
+        "note": 48
+      },
+      {
+        "osc": "/drum/alternate_note_map/rim_shot",
+        "sound": "Rim shot",
+        "section": "Alternate note map",
+        "channel": 9,
+        "note_range": [
+          56,
+          56
+        ],
+        "note": 56
+      },
+      {
+        "osc": "/drum/alternate_note_map/hand_clap",
+        "sound": "Hand clap",
+        "section": "Alternate note map",
+        "channel": 9,
+        "note_range": [
+          54,
+          54
+        ],
+        "note": 54
+      },
+      {
+        "osc": "/drum/alternate_note_map/closed_hi_hat",
+        "sound": "Closed hi-hat",
+        "section": "Alternate note map",
+        "channel": 9,
+        "note_range": [
+          44,
+          44
+        ],
+        "note": 44
+      },
+      {
+        "osc": "/drum/alternate_note_map/open_hi_hat",
+        "sound": "Open hi-hat",
+        "section": "Alternate note map",
+        "channel": 9,
+        "note_range": [
+          55,
+          55
+        ],
+        "note": 55
+      },
+      {
+        "osc": "/drum/alternate_note_map/crash_cymbal",
+        "sound": "Crash cymbal",
+        "section": "Alternate note map",
+        "channel": 9,
+        "note_range": [
+          61,
+          61
+        ],
+        "note": 61
+      },
+      {
+        "osc": "/drum/alternate_note_map/ride_cymbal",
+        "sound": "Ride cymbal",
+        "section": "Alternate note map",
+        "channel": 9,
+        "note_range": [
+          63,
+          63
+        ],
+        "note": 63
+      }
+    ]
+  }
 }

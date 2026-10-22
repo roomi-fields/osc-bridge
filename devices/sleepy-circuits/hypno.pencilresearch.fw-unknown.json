@@ -1,0 +1,666 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Sleepy Circuits/Hypno.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 49,
+    "cc_entries": 49,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0,
+    "triggers": 10
+  },
+  "device": {
+    "name": "Hypno",
+    "vendor": "Sleepy Circuits",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/hypno",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/main_page/frequency_a",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Main Page"
+      },
+      {
+        "osc": "/main_page/color",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Main Page"
+      },
+      {
+        "osc": "/main_page/frequency_b",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Main Page"
+      },
+      {
+        "osc": "/main_page/master_gain",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Main Page"
+      },
+      {
+        "osc": "/main_page/rotation_a",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Main Page"
+      },
+      {
+        "osc": "/main_page/rotation_b",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Main Page"
+      },
+      {
+        "osc": "/main_page/polarization_a",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Main Page"
+      },
+      {
+        "osc": "/main_page/polarization_b",
+        "cc": 8,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Main Page"
+      },
+      {
+        "osc": "/shape_a/drift_a",
+        "cc": 9,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Shape A"
+      },
+      {
+        "osc": "/shape_a/a_color_offset",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Shape A"
+      },
+      {
+        "osc": "/shape_a/a_b_gain",
+        "cc": 11,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Shape A"
+      },
+      {
+        "osc": "/shape_a/saturation_a",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Shape A"
+      },
+      {
+        "osc": "/shape_a/self_mod_rotation_a",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Shape A"
+      },
+      {
+        "osc": "/shape_a/fractal_axis_a",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Shape A"
+      },
+      {
+        "osc": "/shape_a/fractal_amount_a",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Shape A"
+      },
+      {
+        "osc": "/shape_a/self_mod_polar_fractal_a",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Shape A"
+      },
+      {
+        "osc": "/shape_b/drift_b",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Shape B"
+      },
+      {
+        "osc": "/shape_b/b_color_offset",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Shape B"
+      },
+      {
+        "osc": "/shape_b/b_a_gain",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Shape B"
+      },
+      {
+        "osc": "/shape_b/saturation_b",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Shape B"
+      },
+      {
+        "osc": "/shape_b/self_mod_rotation_b",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Shape B"
+      },
+      {
+        "osc": "/shape_b/fractal_axis_b",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Shape B"
+      },
+      {
+        "osc": "/shape_b/fractal_amount_b",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Shape B"
+      },
+      {
+        "osc": "/shape_b/self_mod_polar_fractal_b",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Shape B"
+      },
+      {
+        "osc": "/feedback/fb_a_gain",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Feedback"
+      },
+      {
+        "osc": "/feedback/fb_hue_shift",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Feedback"
+      },
+      {
+        "osc": "/feedback/fb_b_gain",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Feedback"
+      },
+      {
+        "osc": "/feedback/fb_zoom",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Feedback"
+      },
+      {
+        "osc": "/feedback/fb_rotation",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Feedback"
+      },
+      {
+        "osc": "/feedback/fb_rotation_self_mod",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Feedback"
+      },
+      {
+        "osc": "/feedback/fb_x_offset",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Feedback"
+      },
+      {
+        "osc": "/feedback/fb_y_offset",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Feedback"
+      },
+      {
+        "osc": "/video_a/x_crop_a",
+        "cc": 33,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Video A"
+      },
+      {
+        "osc": "/video_a/lumakey_min_a",
+        "cc": 34,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Video A"
+      },
+      {
+        "osc": "/video_a/y_crop_a",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Video A"
+      },
+      {
+        "osc": "/video_a/lumakey_max_a",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Video A"
+      },
+      {
+        "osc": "/video_a/file_index_a",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Video A"
+      },
+      {
+        "osc": "/video_a/aspect_a",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Video A"
+      },
+      {
+        "osc": "/video_a/folder_a",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Video A"
+      },
+      {
+        "osc": "/video_b/x_crop_b",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Video B"
+      },
+      {
+        "osc": "/video_b/lumakey_min_b",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Video B"
+      },
+      {
+        "osc": "/video_b/y_crop_b",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Video B"
+      },
+      {
+        "osc": "/video_b/lumakey_max_b",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Video B"
+      },
+      {
+        "osc": "/video_b/file_index_b",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Video B"
+      },
+      {
+        "osc": "/video_b/aspect_b",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Video B"
+      },
+      {
+        "osc": "/video_b/folder_b",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Video B"
+      },
+      {
+        "osc": "/mode_index/shape_index_a",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mode Index"
+      },
+      {
+        "osc": "/mode_index/shape_index_b",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mode Index"
+      },
+      {
+        "osc": "/mode_index/fb_mode_index",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Mode Index"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": [],
+  "triggers": {
+    "entries": [
+      {
+        "osc": "/drum/preset_recall_save",
+        "sound": "Preset recall / save",
+        "section": "General",
+        "channel": 15,
+        "note_range": [
+          2,
+          116
+        ],
+        "note": 2,
+        "comments": "Long press to save preset and short press to recall"
+      },
+      {
+        "osc": "/drum/toggle_a_shape",
+        "sound": "Toggle A Shape",
+        "section": "General",
+        "channel": 15,
+        "note_range": [
+          118,
+          118
+        ],
+        "note": 118,
+        "comments": "Cycle trough oscillator A shapes"
+      },
+      {
+        "osc": "/drum/toggle_b_shape",
+        "sound": "Toggle B Shape",
+        "section": "General",
+        "channel": 15,
+        "note_range": [
+          121,
+          121
+        ],
+        "note": 121,
+        "comments": "Cycle trough oscillator B shapes"
+      },
+      {
+        "osc": "/drum/toggle_fb_mode",
+        "sound": "Toggle FB Mode",
+        "section": "General",
+        "channel": 15,
+        "note_range": [
+          123,
+          123
+        ],
+        "note": 123,
+        "comments": "Cycle trough feedback modes"
+      },
+      {
+        "osc": "/drum/toggle_a_b",
+        "sound": "Toggle A->B",
+        "section": "General",
+        "channel": 15,
+        "note_range": [
+          127,
+          127
+        ],
+        "note": 127,
+        "comments": "Modulate oscillator B with oscillator A"
+      },
+      {
+        "osc": "/drum/toggle_a_main",
+        "sound": "Toggle A->Main",
+        "section": "General",
+        "channel": 15,
+        "note_range": [
+          125,
+          125
+        ],
+        "note": 125,
+        "comments": "Send oscillator A to main output"
+      },
+      {
+        "osc": "/drum/toggle_b_a",
+        "sound": "Toggle B->A",
+        "section": "General",
+        "channel": 15,
+        "note_range": [
+          124,
+          124
+        ],
+        "note": 124,
+        "comments": "Modulate oscillator A with oscillator B"
+      },
+      {
+        "osc": "/drum/toggle_b_main",
+        "sound": "Toggle B->Main",
+        "section": "General",
+        "channel": 15,
+        "note_range": [
+          122,
+          122
+        ],
+        "note": 122,
+        "comments": "Send oscillator B to main output"
+      },
+      {
+        "osc": "/drum/toggle_fb_a",
+        "sound": "Toggle FB->A",
+        "section": "General",
+        "channel": 15,
+        "note_range": [
+          120,
+          120
+        ],
+        "note": 120,
+        "comments": "Modulate oscillator A with feedback"
+      },
+      {
+        "osc": "/drum/toggle_fb_b",
+        "sound": "Toggle FB->B",
+        "section": "General",
+        "channel": 15,
+        "note_range": [
+          119,
+          119
+        ],
+        "note": 119,
+        "comments": "Modulate oscillator B with feedback"
+      }
+    ]
+  }
+}

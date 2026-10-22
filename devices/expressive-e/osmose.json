@@ -2,9 +2,12 @@
   "_sources": [
     {
       "type": "pencilresearch",
-      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Expressive E/Osmose.csv",
-      "imported_at": "2026-04-13",
-      "commit": "deb41f2"
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Expressive E/Osmose.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
     }
   ],
   "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
@@ -163,36 +166,36 @@
       },
       {
         "osc": "/general/sustain",
-        "expects": "momentary",
         "cc": 64,
         "range": [
           0,
           127
         ],
         "orientation": "0-based",
-        "section": "General"
+        "section": "General",
+        "expects": "momentary"
       },
       {
         "osc": "/general/sostenuto_1",
-        "expects": "momentary",
         "cc": 66,
         "range": [
           0,
           127
         ],
         "orientation": "0-based",
-        "section": "General"
+        "section": "General",
+        "expects": "momentary"
       },
       {
         "osc": "/general/sostenuto_2",
-        "expects": "momentary",
         "cc": 69,
         "range": [
           0,
           127
         ],
         "orientation": "0-based",
-        "section": "General"
+        "section": "General",
+        "expects": "momentary"
       },
       {
         "osc": "/general/eq_tilt_value",

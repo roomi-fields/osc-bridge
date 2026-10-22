@@ -1,0 +1,616 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Behringer/LM DRUM.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 17,
+    "cc_entries": 17,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0,
+    "triggers": 32
+  },
+  "device": {
+    "name": "LM DRUM",
+    "vendor": "Behringer",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/lm_drum",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/filter/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Filter"
+      },
+      {
+        "osc": "/tuning/bass_drum_tuning",
+        "cc": 75,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tuning"
+      },
+      {
+        "osc": "/tuning/snare_drum_tuning",
+        "cc": 76,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tuning"
+      },
+      {
+        "osc": "/tuning/sidestick_tuning",
+        "cc": 77,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tuning"
+      },
+      {
+        "osc": "/tuning/closed_hi_hat_tuning",
+        "cc": 78,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tuning"
+      },
+      {
+        "osc": "/tuning/open_hi_hat_tuning",
+        "cc": 79,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tuning"
+      },
+      {
+        "osc": "/tuning/high_tom_tuning",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tuning"
+      },
+      {
+        "osc": "/tuning/mid_tom_tuning",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tuning"
+      },
+      {
+        "osc": "/tuning/low_tom_tuning",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tuning"
+      },
+      {
+        "osc": "/tuning/ride_cymbal_tuning",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tuning"
+      },
+      {
+        "osc": "/tuning/crash_cymbal_tuning",
+        "cc": 84,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tuning"
+      },
+      {
+        "osc": "/tuning/cabasa_tuning",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tuning"
+      },
+      {
+        "osc": "/tuning/tambourine_tuning",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tuning"
+      },
+      {
+        "osc": "/tuning/high_conga_tuning",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tuning"
+      },
+      {
+        "osc": "/tuning/low_conga_tuning",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tuning"
+      },
+      {
+        "osc": "/tuning/cowbell_tuning",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tuning"
+      },
+      {
+        "osc": "/tuning/claps_tuning",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Tuning"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": [],
+  "triggers": {
+    "entries": [
+      {
+        "osc": "/drum/default_note_map/bass_drum",
+        "sound": "Bass drum",
+        "section": "Default note map",
+        "channel_mode": "basic",
+        "note_range": [
+          36,
+          36
+        ],
+        "note": 36,
+        "velocity_usage": "1~127: Volume",
+        "comments": "Velocity can select alternate samples at configurable thresholds."
+      },
+      {
+        "osc": "/drum/default_note_map/sidestick",
+        "sound": "Sidestick",
+        "section": "Default note map",
+        "channel_mode": "basic",
+        "note_range": [
+          37,
+          37
+        ],
+        "note": 37,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/default_note_map/snare_drum",
+        "sound": "Snare drum",
+        "section": "Default note map",
+        "channel_mode": "basic",
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40,
+        "velocity_usage": "1~127: Volume",
+        "comments": "Velocity can select alternate samples at configurable thresholds."
+      },
+      {
+        "osc": "/drum/default_note_map/closed_hi_hat",
+        "sound": "Closed hi-hat",
+        "section": "Default note map",
+        "channel_mode": "basic",
+        "note_range": [
+          42,
+          42
+        ],
+        "note": 42,
+        "velocity_usage": "1~127: Volume",
+        "comments": "Velocity can select alternate samples at configurable thresholds."
+      },
+      {
+        "osc": "/drum/default_note_map/open_hi_hat",
+        "sound": "Open hi-hat",
+        "section": "Default note map",
+        "channel_mode": "basic",
+        "note_range": [
+          46,
+          46
+        ],
+        "note": 46,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/default_note_map/crash_cymbal",
+        "sound": "Crash cymbal",
+        "section": "Default note map",
+        "channel_mode": "basic",
+        "note_range": [
+          49,
+          49
+        ],
+        "note": 49,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/default_note_map/ride_cymbal",
+        "sound": "Ride cymbal",
+        "section": "Default note map",
+        "channel_mode": "basic",
+        "note_range": [
+          51,
+          51
+        ],
+        "note": 51,
+        "velocity_usage": "1~127: Volume",
+        "comments": "Velocity can select alternate samples at configurable thresholds."
+      },
+      {
+        "osc": "/drum/default_note_map/high_tom",
+        "sound": "High tom",
+        "section": "Default note map",
+        "channel_mode": "basic",
+        "note_range": [
+          50,
+          50
+        ],
+        "note": 50,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/default_note_map/mid_tom",
+        "sound": "Mid tom",
+        "section": "Default note map",
+        "channel_mode": "basic",
+        "note_range": [
+          47,
+          47
+        ],
+        "note": 47,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/default_note_map/low_tom",
+        "sound": "Low tom",
+        "section": "Default note map",
+        "channel_mode": "basic",
+        "note_range": [
+          45,
+          45
+        ],
+        "note": 45,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/default_note_map/cabasa",
+        "sound": "Cabasa",
+        "section": "Default note map",
+        "channel_mode": "basic",
+        "note_range": [
+          69,
+          69
+        ],
+        "note": 69,
+        "velocity_usage": "1~127: Volume",
+        "comments": "Velocity can select alternate samples at configurable thresholds."
+      },
+      {
+        "osc": "/drum/default_note_map/tambourine",
+        "sound": "Tambourine",
+        "section": "Default note map",
+        "channel_mode": "basic",
+        "note_range": [
+          54,
+          54
+        ],
+        "note": 54,
+        "velocity_usage": "1~127: Volume",
+        "comments": "Velocity can select alternate samples at configurable thresholds."
+      },
+      {
+        "osc": "/drum/default_note_map/high_conga",
+        "sound": "High conga",
+        "section": "Default note map",
+        "channel_mode": "basic",
+        "note_range": [
+          63,
+          63
+        ],
+        "note": 63,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/default_note_map/low_conga",
+        "sound": "Low conga",
+        "section": "Default note map",
+        "channel_mode": "basic",
+        "note_range": [
+          64,
+          64
+        ],
+        "note": 64,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/default_note_map/cowbell",
+        "sound": "Cowbell",
+        "section": "Default note map",
+        "channel_mode": "basic",
+        "note_range": [
+          56,
+          56
+        ],
+        "note": 56,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/default_note_map/claps",
+        "sound": "Claps",
+        "section": "Default note map",
+        "channel_mode": "basic",
+        "note_range": [
+          39,
+          39
+        ],
+        "note": 39,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/chromatic_mode/bass_drum",
+        "sound": "Bass drum",
+        "section": "Chromatic mode",
+        "channel": 0,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the bass drum chromatically. Default channel; reconfigurable. Playable note range inferred from MIDI 1.0 because the manual does not state limits; velocity can select alternate samples at configurable thresholds."
+      },
+      {
+        "osc": "/drum/chromatic_mode/snare_drum",
+        "sound": "Snare drum",
+        "section": "Chromatic mode",
+        "channel": 1,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the snare drum chromatically. Default channel; reconfigurable. Playable note range inferred from MIDI 1.0 because the manual does not state limits; velocity can select alternate samples at configurable thresholds."
+      },
+      {
+        "osc": "/drum/chromatic_mode/sidestick",
+        "sound": "Sidestick",
+        "section": "Chromatic mode",
+        "channel": 2,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the sidestick chromatically. Default channel; reconfigurable. Playable note range inferred from MIDI 1.0 because the manual does not state limits."
+      },
+      {
+        "osc": "/drum/chromatic_mode/closed_hi_hat",
+        "sound": "Closed hi-hat",
+        "section": "Chromatic mode",
+        "channel": 3,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the closed hi-hat chromatically. Default channel; reconfigurable. Playable note range inferred from MIDI 1.0 because the manual does not state limits; velocity can select alternate samples at configurable thresholds."
+      },
+      {
+        "osc": "/drum/chromatic_mode/open_hi_hat",
+        "sound": "Open hi-hat",
+        "section": "Chromatic mode",
+        "channel": 4,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the open hi-hat chromatically. Default channel; reconfigurable. Playable note range inferred from MIDI 1.0 because the manual does not state limits."
+      },
+      {
+        "osc": "/drum/chromatic_mode/high_tom",
+        "sound": "High tom",
+        "section": "Chromatic mode",
+        "channel": 5,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the high tom chromatically. Default channel; reconfigurable. Playable note range inferred from MIDI 1.0 because the manual does not state limits."
+      },
+      {
+        "osc": "/drum/chromatic_mode/mid_tom",
+        "sound": "Mid tom",
+        "section": "Chromatic mode",
+        "channel": 6,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the mid tom chromatically. Default channel; reconfigurable. Playable note range inferred from MIDI 1.0 because the manual does not state limits."
+      },
+      {
+        "osc": "/drum/chromatic_mode/low_tom",
+        "sound": "Low tom",
+        "section": "Chromatic mode",
+        "channel": 7,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the low tom chromatically. Default channel; reconfigurable. Playable note range inferred from MIDI 1.0 because the manual does not state limits."
+      },
+      {
+        "osc": "/drum/chromatic_mode/ride_cymbal",
+        "sound": "Ride cymbal",
+        "section": "Chromatic mode",
+        "channel": 8,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the ride cymbal chromatically. Default channel; reconfigurable. Playable note range inferred from MIDI 1.0 because the manual does not state limits; velocity can select alternate samples at configurable thresholds."
+      },
+      {
+        "osc": "/drum/chromatic_mode/crash_cymbal",
+        "sound": "Crash cymbal",
+        "section": "Chromatic mode",
+        "channel": 9,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the crash cymbal chromatically. Default channel; reconfigurable. Playable note range inferred from MIDI 1.0 because the manual does not state limits."
+      },
+      {
+        "osc": "/drum/chromatic_mode/cabasa",
+        "sound": "Cabasa",
+        "section": "Chromatic mode",
+        "channel": 10,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the cabasa chromatically. Default channel; reconfigurable. Playable note range inferred from MIDI 1.0 because the manual does not state limits; velocity can select alternate samples at configurable thresholds."
+      },
+      {
+        "osc": "/drum/chromatic_mode/tambourine",
+        "sound": "Tambourine",
+        "section": "Chromatic mode",
+        "channel": 11,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the tambourine chromatically. Default channel; reconfigurable. Playable note range inferred from MIDI 1.0 because the manual does not state limits; velocity can select alternate samples at configurable thresholds."
+      },
+      {
+        "osc": "/drum/chromatic_mode/high_conga",
+        "sound": "High conga",
+        "section": "Chromatic mode",
+        "channel": 12,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the high conga chromatically. Default channel; reconfigurable. Playable note range inferred from MIDI 1.0 because the manual does not state limits."
+      },
+      {
+        "osc": "/drum/chromatic_mode/low_conga",
+        "sound": "Low conga",
+        "section": "Chromatic mode",
+        "channel": 13,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the low conga chromatically. Default channel; reconfigurable. Playable note range inferred from MIDI 1.0 because the manual does not state limits."
+      },
+      {
+        "osc": "/drum/chromatic_mode/cowbell",
+        "sound": "Cowbell",
+        "section": "Chromatic mode",
+        "channel": 14,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the cowbell chromatically. Default channel; reconfigurable. Playable note range inferred from MIDI 1.0 because the manual does not state limits."
+      },
+      {
+        "osc": "/drum/chromatic_mode/claps",
+        "sound": "Claps",
+        "section": "Chromatic mode",
+        "channel": 15,
+        "note_range": [
+          0,
+          127
+        ],
+        "velocity_usage": "1~127: Volume",
+        "comments": "Plays the claps chromatically. Default channel; reconfigurable. Playable note range inferred from MIDI 1.0 because the manual does not state limits."
+      }
+    ]
+  }
+}

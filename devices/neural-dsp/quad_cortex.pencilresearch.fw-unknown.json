@@ -1,0 +1,394 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Neural DSP/Quad Cortex.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 31,
+    "cc_entries": 31,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "Quad Cortex",
+    "vendor": "Neural DSP",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/quad_cortex",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/banks_and_presets/bank_select_msb",
+        "cc": 0,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "0: Preset group 0-127; 1: Preset group 128-256",
+        "expects": "switch"
+      },
+      {
+        "osc": "/banks_and_presets/bank_select_lsb",
+        "cc": 32,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Banks and presets",
+        "_usage": "0~127: Setlist"
+      },
+      {
+        "osc": "/pedals/expression_pedal_1",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pedals",
+        "_usage": "0~127: Expression pedal 1"
+      },
+      {
+        "osc": "/pedals/expression_pedal_2",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pedals",
+        "_usage": "0~127: Expression pedal 2"
+      },
+      {
+        "osc": "/footswitches/footswitch_a",
+        "cc": 35,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0-127: Enable/bypass Footswitch A"
+      },
+      {
+        "osc": "/footswitches/footswitch_b",
+        "cc": 36,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0-127: Enable/bypass Footswitch B"
+      },
+      {
+        "osc": "/footswitches/footswitch_c",
+        "cc": 37,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0-127: Enable/bypass Footswitch C"
+      },
+      {
+        "osc": "/footswitches/footswitch_d",
+        "cc": 38,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0-127: Enable/bypass Footswitch D"
+      },
+      {
+        "osc": "/footswitches/footswitch_e",
+        "cc": 39,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0-127: Enable/bypass Footswitch E"
+      },
+      {
+        "osc": "/footswitches/footswitch_f",
+        "cc": 40,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0-127: Enable/bypass Footswitch F"
+      },
+      {
+        "osc": "/footswitches/footswitch_g",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0-127: Enable/bypass Footswitch G"
+      },
+      {
+        "osc": "/footswitches/footswitch_h",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Footswitches",
+        "_usage": "0-127: Enable/bypass Footswitch H"
+      },
+      {
+        "osc": "/modes_and_scenes/scene_select",
+        "cc": 43,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Modes and scenes",
+        "_usage": "0: Scene A; 1: Scene B; 2: Scene C; 3: Scene D; 4: Scene E; 5: Scene F; 6: Scene G; 7: Scene H"
+      },
+      {
+        "osc": "/modes_and_scenes/mode_select",
+        "cc": 47,
+        "range": [
+          0,
+          2
+        ],
+        "orientation": "0-based",
+        "section": "Modes and scenes",
+        "_usage": "0: Preset Mode; 1: Scene Mode; 2: Stomp Mode"
+      },
+      {
+        "osc": "/global_controls/tempo_bpm",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global controls"
+      },
+      {
+        "osc": "/global_controls/tuner_on_off",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global controls",
+        "_usage": "0-63: Off; 64-127: On"
+      },
+      {
+        "osc": "/global_controls/gig_view_open_close",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Global controls",
+        "_usage": "0-63: Close; 64-127: Open"
+      },
+      {
+        "osc": "/looper/open_close_looper_ui",
+        "cc": 48,
+        "range": [
+          64,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "64-127: Open"
+      },
+      {
+        "osc": "/looper/duplicate_stop_duplicate",
+        "cc": 49,
+        "range": [
+          64,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "64-127: Duplicate/Stop Duplicate"
+      },
+      {
+        "osc": "/looper/one_shot_enable_disable",
+        "cc": 50,
+        "range": [
+          64,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "64-127: Enable/Disable One Shot"
+      },
+      {
+        "osc": "/looper/half_speed_enable_disable",
+        "cc": 51,
+        "range": [
+          64,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "64-127: Enable/Disable Half Speed"
+      },
+      {
+        "osc": "/looper/punch_in_out",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-63: Punch Out; 64-127: Punch In/Punch Out"
+      },
+      {
+        "osc": "/looper/record_overdub_stop",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0-63: Stop Recording; 64-127: Record/Overdub/Stop"
+      },
+      {
+        "osc": "/looper/play_stop",
+        "cc": 54,
+        "range": [
+          64,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "64-127: Play/Stop"
+      },
+      {
+        "osc": "/looper/reverse_enable_disable",
+        "cc": 55,
+        "range": [
+          64,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "64-127: Enable/Disable Reverse"
+      },
+      {
+        "osc": "/looper/undo_redo",
+        "cc": 56,
+        "range": [
+          64,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "64-127: Undo/Redo"
+      },
+      {
+        "osc": "/looper/duplicate_mode",
+        "cc": 57,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0: Free; 1: Sync",
+        "expects": "switch"
+      },
+      {
+        "osc": "/looper/quantize",
+        "cc": 58,
+        "range": [
+          0,
+          9
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0: Off; 1: 1 Beat; 2: 2 Beats; 3: 3 Beats; 4: 4 Beats; 5: 5 Beats; 6: 6 Beats; 7: 7 Beats; 8: 8 Beats; 9: 16 Beats"
+      },
+      {
+        "osc": "/looper/midi_clock_start",
+        "cc": 59,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
+      },
+      {
+        "osc": "/looper/perform_params_mode",
+        "cc": 60,
+        "range": [
+          0,
+          1
+        ],
+        "orientation": "0-based",
+        "section": "Looper",
+        "_usage": "0: Perform Mode; 1: Params Mode",
+        "expects": "switch"
+      },
+      {
+        "osc": "/looper/routing_mode",
+        "cc": 61,
+        "range": [
+          0,
+          13
+        ],
+        "orientation": "0-based",
+        "section": "Looper"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

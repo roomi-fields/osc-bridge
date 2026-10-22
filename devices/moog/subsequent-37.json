@@ -2,9 +2,12 @@
   "_sources": [
     {
       "type": "pencilresearch",
-      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Moog/Subsequent%2037.csv",
-      "commit": "deb41f2",
-      "imported_at": "2026-04-13"
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Moog/Subsequent 37.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
     }
   ],
   "device": {
@@ -93,7 +96,6 @@
       },
       {
         "osc": "/oscillator_2/frequency_mode",
-        "expects": "discrete",
         "nrpn_msb": 3,
         "nrpn_lsb": 103,
         "range": [
@@ -101,7 +103,8 @@
           2
         ],
         "orientation": "0-based",
-        "section": "Oscillator 2"
+        "section": "Oscillator 2",
+        "expects": "discrete"
       },
       {
         "osc": "/oscillator_2/beat_frequency",
@@ -116,7 +119,6 @@
       },
       {
         "osc": "/oscillator_2/beat_mode",
-        "expects": "switch",
         "nrpn_msb": 3,
         "nrpn_lsb": 104,
         "range": [
@@ -125,7 +127,8 @@
         ],
         "orientation": "0-based",
         "section": "Oscillator 2",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
       },
       {
         "osc": "/oscillator_2/hard_sync",
@@ -181,7 +184,6 @@
       },
       {
         "osc": "/mixer/oscillator_1_on",
-        "expects": "switch",
         "nrpn_msb": 3,
         "nrpn_lsb": 106,
         "range": [
@@ -190,7 +192,8 @@
         ],
         "orientation": "0-based",
         "section": "Mixer",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
       },
       {
         "osc": "/mixer/oscillator_1_level",
@@ -206,7 +209,6 @@
       },
       {
         "osc": "/mixer/sub_oscillator_on",
-        "expects": "switch",
         "nrpn_msb": 3,
         "nrpn_lsb": 107,
         "range": [
@@ -215,7 +217,8 @@
         ],
         "orientation": "0-based",
         "section": "Mixer",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
       },
       {
         "osc": "/mixer/sub_oscillator_level",
@@ -231,7 +234,6 @@
       },
       {
         "osc": "/mixer/oscillator_2_on",
-        "expects": "switch",
         "nrpn_msb": 3,
         "nrpn_lsb": 110,
         "range": [
@@ -240,7 +242,8 @@
         ],
         "orientation": "0-based",
         "section": "Mixer",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
       },
       {
         "osc": "/mixer/oscillator_2_level",
@@ -256,7 +259,6 @@
       },
       {
         "osc": "/mixer/noise_on",
-        "expects": "switch",
         "nrpn_msb": 3,
         "nrpn_lsb": 111,
         "range": [
@@ -265,7 +267,8 @@
         ],
         "orientation": "0-based",
         "section": "Mixer",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
       },
       {
         "osc": "/mixer/noise_level",
@@ -281,7 +284,6 @@
       },
       {
         "osc": "/mixer/feedback_external_on",
-        "expects": "switch",
         "nrpn_msb": 3,
         "nrpn_lsb": 114,
         "range": [
@@ -290,7 +292,8 @@
         ],
         "orientation": "0-based",
         "section": "Mixer",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
       },
       {
         "osc": "/mixer/feedback_external_level",
@@ -510,7 +513,6 @@
       },
       {
         "osc": "/filter_envelope/sync",
-        "expects": "switch",
         "nrpn_msb": 4,
         "nrpn_lsb": 3,
         "range": [
@@ -519,11 +521,11 @@
         ],
         "orientation": "0-based",
         "section": "Filter envelope",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
       },
       {
         "osc": "/filter_envelope/loop",
-        "expects": "switch",
         "nrpn_msb": 4,
         "nrpn_lsb": 4,
         "range": [
@@ -532,11 +534,11 @@
         ],
         "orientation": "0-based",
         "section": "Filter envelope",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
       },
       {
         "osc": "/filter_envelope/latch",
-        "expects": "switch",
         "nrpn_msb": 4,
         "nrpn_lsb": 5,
         "range": [
@@ -545,11 +547,11 @@
         ],
         "orientation": "0-based",
         "section": "Filter envelope",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
       },
       {
         "osc": "/filter_envelope/clock_divider",
-        "expects": "discrete",
         "nrpn_msb": 4,
         "nrpn_lsb": 6,
         "range": [
@@ -557,11 +559,11 @@
           20
         ],
         "orientation": "0-based",
-        "section": "Filter envelope"
+        "section": "Filter envelope",
+        "expects": "discrete"
       },
       {
         "osc": "/filter_envelope/attack_exponential",
-        "expects": "switch",
         "nrpn_msb": 4,
         "nrpn_lsb": 8,
         "range": [
@@ -570,7 +572,8 @@
         ],
         "orientation": "0-based",
         "section": "Filter envelope",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
       },
       {
         "osc": "/amplifier_envelope/attack",
@@ -758,7 +761,6 @@
       },
       {
         "osc": "/modulation_1/programmable_source",
-        "expects": "discrete",
         "nrpn_msb": 3,
         "nrpn_lsb": 57,
         "range": [
@@ -766,11 +768,11 @@
           7
         ],
         "orientation": "0-based",
-        "section": "Modulation 1"
+        "section": "Modulation 1",
+        "expects": "discrete"
       },
       {
         "osc": "/modulation_1/programmable_destination",
-        "expects": "discrete",
         "nrpn_msb": 3,
         "nrpn_lsb": 59,
         "range": [
@@ -778,7 +780,8 @@
           88
         ],
         "orientation": "0-based",
-        "section": "Modulation 1"
+        "section": "Modulation 1",
+        "expects": "discrete"
       },
       {
         "osc": "/modulation_1/mod_wheel_amount",
@@ -904,7 +907,6 @@
       },
       {
         "osc": "/modulation_2/programmable_source",
-        "expects": "discrete",
         "nrpn_msb": 3,
         "nrpn_lsb": 82,
         "range": [
@@ -912,11 +914,11 @@
           7
         ],
         "orientation": "0-based",
-        "section": "Modulation 2"
+        "section": "Modulation 2",
+        "expects": "discrete"
       },
       {
         "osc": "/modulation_2/programmable_destination",
-        "expects": "discrete",
         "nrpn_msb": 3,
         "nrpn_lsb": 84,
         "range": [
@@ -924,7 +926,8 @@
           88
         ],
         "orientation": "0-based",
-        "section": "Modulation 2"
+        "section": "Modulation 2",
+        "expects": "discrete"
       },
       {
         "osc": "/modulation_2/mod_wheel_amount",
@@ -985,7 +988,6 @@
       },
       {
         "osc": "/lfo_1/clock_divider",
-        "expects": "discrete",
         "cc": 3,
         "range": [
           0,
@@ -995,7 +997,8 @@
         "nrpn_lsb": 43,
         "orientation": "0-based",
         "section": "LFO 1",
-        "_usage": "0: 4 whole notes; 1: 3 whole notes; 2: 2 whole notes; 3: Whole + half note; 4: Whole note; 5: Dotted half note; 6: Whole note triplet; 7: Half note; 8"
+        "_usage": "0: 4 whole notes; 1: 3 whole notes; 2: 2 whole notes; 3: Whole + half note; 4: Whole note; 5: Dotted half note; 6: Whole note triplet; 7: Half note; 8",
+        "expects": "discrete"
       },
       {
         "osc": "/lfo_1/range",
@@ -1012,7 +1015,6 @@
       },
       {
         "osc": "/lfo_1/sync",
-        "expects": "switch",
         "nrpn_msb": 3,
         "nrpn_lsb": 41,
         "range": [
@@ -1021,7 +1023,8 @@
         ],
         "orientation": "0-based",
         "section": "LFO 1",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
       },
       {
         "osc": "/lfo_1/keyboard_reset",
@@ -1038,7 +1041,6 @@
       },
       {
         "osc": "/lfo_1/clock_source",
-        "expects": "switch",
         "nrpn_msb": 3,
         "nrpn_lsb": 44,
         "range": [
@@ -1046,7 +1048,8 @@
           1
         ],
         "orientation": "0-based",
-        "section": "LFO 1"
+        "section": "LFO 1",
+        "expects": "switch"
       },
       {
         "osc": "/lfo_1/keyboard_tracking",
@@ -1074,7 +1077,6 @@
       },
       {
         "osc": "/lfo_2/clock_divider",
-        "expects": "discrete",
         "cc": 8,
         "range": [
           0,
@@ -1084,7 +1086,8 @@
         "nrpn_lsb": 68,
         "orientation": "0-based",
         "section": "LFO 2",
-        "_usage": "0: 4 whole notes; 1: 3 whole notes; 2: 2 whole notes; 3: Whole + half note; 4: Whole note; 5: Dotted half note; 6: Whole note triplet; 7: Half note; 8"
+        "_usage": "0: 4 whole notes; 1: 3 whole notes; 2: 2 whole notes; 3: Whole + half note; 4: Whole note; 5: Dotted half note; 6: Whole note triplet; 7: Half note; 8",
+        "expects": "discrete"
       },
       {
         "osc": "/lfo_2/range",
@@ -1101,7 +1104,6 @@
       },
       {
         "osc": "/lfo_2/sync",
-        "expects": "switch",
         "nrpn_msb": 3,
         "nrpn_lsb": 66,
         "range": [
@@ -1110,7 +1112,8 @@
         ],
         "orientation": "0-based",
         "section": "LFO 2",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
       },
       {
         "osc": "/lfo_2/keyboard_reset",
@@ -1127,7 +1130,6 @@
       },
       {
         "osc": "/lfo_2/clock_source",
-        "expects": "switch",
         "nrpn_msb": 3,
         "nrpn_lsb": 69,
         "range": [
@@ -1135,7 +1137,8 @@
           1
         ],
         "orientation": "0-based",
-        "section": "LFO 2"
+        "section": "LFO 2",
+        "expects": "switch"
       },
       {
         "osc": "/lfo_2/keyboard_tracking",
@@ -1161,7 +1164,6 @@
       },
       {
         "osc": "/arpeggiator/run",
-        "expects": "switch",
         "nrpn_msb": 3,
         "nrpn_lsb": 26,
         "range": [
@@ -1170,7 +1172,8 @@
         ],
         "orientation": "0-based",
         "section": "Arpeggiator",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
       },
       {
         "osc": "/arpeggiator/latch",
@@ -1198,7 +1201,6 @@
       },
       {
         "osc": "/arpeggiator/sync",
-        "expects": "switch",
         "nrpn_msb": 3,
         "nrpn_lsb": 20,
         "range": [
@@ -1207,11 +1209,11 @@
         ],
         "orientation": "0-based",
         "section": "Arpeggiator",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
       },
       {
         "osc": "/arpeggiator/range",
-        "expects": "discrete",
         "nrpn_msb": 3,
         "nrpn_lsb": 21,
         "range": [
@@ -1219,11 +1221,11 @@
           6
         ],
         "orientation": "0-based",
-        "section": "Arpeggiator"
+        "section": "Arpeggiator",
+        "expects": "discrete"
       },
       {
         "osc": "/arpeggiator/back_forth",
-        "expects": "switch",
         "nrpn_msb": 3,
         "nrpn_lsb": 22,
         "range": [
@@ -1232,11 +1234,11 @@
         ],
         "orientation": "0-based",
         "section": "Arpeggiator",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
       },
       {
         "osc": "/arpeggiator/back_forth_mode",
-        "expects": "switch",
         "nrpn_msb": 3,
         "nrpn_lsb": 23,
         "range": [
@@ -1244,11 +1246,11 @@
           1
         ],
         "orientation": "0-based",
-        "section": "Arpeggiator"
+        "section": "Arpeggiator",
+        "expects": "switch"
       },
       {
         "osc": "/arpeggiator/invert",
-        "expects": "switch",
         "nrpn_msb": 3,
         "nrpn_lsb": 24,
         "range": [
@@ -1257,11 +1259,11 @@
         ],
         "orientation": "0-based",
         "section": "Arpeggiator",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
       },
       {
         "osc": "/arpeggiator/pattern",
-        "expects": "discrete",
         "nrpn_msb": 3,
         "nrpn_lsb": 25,
         "range": [
@@ -1269,7 +1271,8 @@
           5
         ],
         "orientation": "0-based",
-        "section": "Arpeggiator"
+        "section": "Arpeggiator",
+        "expects": "discrete"
       },
       {
         "osc": "/arpeggiator/gate_length",
@@ -1284,7 +1287,6 @@
       },
       {
         "osc": "/arpeggiator/clock_divider",
-        "expects": "discrete",
         "nrpn_msb": 3,
         "nrpn_lsb": 29,
         "range": [
@@ -1293,11 +1295,11 @@
         ],
         "orientation": "0-based",
         "section": "Arpeggiator",
-        "_usage": "0: 4 whole notes; 1: 3 whole notes; 2: 2 whole notes; 3: Whole + half note; 4: Whole note; 5: Dotted half note; 6: Whole note triplet; 7: Half note; 8"
+        "_usage": "0: 4 whole notes; 1: 3 whole notes; 2: 2 whole notes; 3: Whole + half note; 4: Whole note; 5: Dotted half note; 6: Whole note triplet; 7: Half note; 8",
+        "expects": "discrete"
       },
       {
         "osc": "/arpeggiator/step_1_reset",
-        "expects": "trigger",
         "nrpn_msb": 3,
         "nrpn_lsb": 32,
         "range": [
@@ -1306,7 +1308,8 @@
         ],
         "orientation": "0-based",
         "section": "Arpeggiator",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "trigger"
       },
       {
         "osc": "/performance/mod_wheel",
@@ -1334,7 +1337,6 @@
       },
       {
         "osc": "/performance/pitch_bend_up_amount",
-        "expects": "discrete",
         "cc": 107,
         "range": [
           0,
@@ -1342,11 +1344,11 @@
         ],
         "orientation": "0-based",
         "section": "Performance",
-        "_usage": "0~24: 0 to +24 semitones"
+        "_usage": "0~24: 0 to +24 semitones",
+        "expects": "discrete"
       },
       {
         "osc": "/performance/pitch_bend_down_amount",
-        "expects": "discrete",
         "cc": 108,
         "range": [
           0,
@@ -1354,7 +1356,8 @@
         ],
         "orientation": "0-based",
         "section": "Performance",
-        "_usage": "0~24: 0 to +24 semitones"
+        "_usage": "0~24: 0 to +24 semitones",
+        "expects": "discrete"
       },
       {
         "osc": "/glide/on",
@@ -1423,7 +1426,6 @@
       },
       {
         "osc": "/glide/gate",
-        "expects": "switch",
         "nrpn_msb": 3,
         "nrpn_lsb": 36,
         "range": [
@@ -1432,22 +1434,22 @@
         ],
         "orientation": "0-based",
         "section": "Glide",
-        "_usage": "0: Off; 1: On"
+        "_usage": "0: Off; 1: On",
+        "expects": "switch"
       },
       {
         "osc": "/global/bank_select",
-        "expects": "discrete",
         "cc": 0,
         "range": [
           0,
           0
         ],
         "orientation": "0-based",
-        "section": "Global"
+        "section": "Global",
+        "expects": "discrete"
       },
       {
         "osc": "/global/bank_select_lsb",
-        "expects": "discrete",
         "cc": 32,
         "range": [
           0,
@@ -1455,7 +1457,8 @@
         ],
         "orientation": "0-based",
         "section": "Global",
-        "_usage": "0: Preset banks 1-8; 1: Preset banks 9-16"
+        "_usage": "0: Preset banks 1-8; 1: Preset banks 9-16",
+        "expects": "discrete"
       },
       {
         "osc": "/global/master_volume",
@@ -1503,14 +1506,14 @@
       },
       {
         "osc": "/global/all_notes_off",
-        "expects": "trigger",
         "cc": 123,
         "range": [
           0,
           0
         ],
         "orientation": "0-based",
-        "section": "Global"
+        "section": "Global",
+        "expects": "trigger"
       },
       {
         "osc": "/reserved/midi_breath_control",
@@ -1628,5 +1631,11 @@
     "pitchbend": "/pitchbend {value_u14} {channel}",
     "aftertouch": "/aftertouch {value} {channel}"
   },
-  "replies": []
+  "replies": [],
+  "_coverage": {
+    "entries_total": 131,
+    "cc_entries": 89,
+    "nrpn_entries": 98,
+    "fourteen_bit_cc_pairs": 31
+  }
 }

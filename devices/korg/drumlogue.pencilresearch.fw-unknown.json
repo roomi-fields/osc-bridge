@@ -1,0 +1,2912 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/KORG/drumlogue.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 259,
+    "cc_entries": 259,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 13,
+    "triggers": 22
+  },
+  "device": {
+    "name": "drumlogue",
+    "vendor": "KORG",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/drumlogue",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/master/volume",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Master"
+      },
+      {
+        "osc": "/bass_drum/tune",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass drum"
+      },
+      {
+        "osc": "/bass_drum/drive",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass drum"
+      },
+      {
+        "osc": "/bass_drum/attack",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass drum"
+      },
+      {
+        "osc": "/bass_drum/decay",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass drum"
+      },
+      {
+        "osc": "/bass_drum/level",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Bass drum"
+      },
+      {
+        "osc": "/snare_drum/tune",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Snare drum"
+      },
+      {
+        "osc": "/snare_drum/snappy_level",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Snare drum"
+      },
+      {
+        "osc": "/snare_drum/snappy_decay",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Snare drum"
+      },
+      {
+        "osc": "/snare_drum/decay",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Snare drum"
+      },
+      {
+        "osc": "/snare_drum/level",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Snare drum"
+      },
+      {
+        "osc": "/low_tom/tune",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Low tom"
+      },
+      {
+        "osc": "/low_tom/detune",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Low tom"
+      },
+      {
+        "osc": "/low_tom/decay",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Low tom"
+      },
+      {
+        "osc": "/low_tom/level",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Low tom"
+      },
+      {
+        "osc": "/high_tom/tune",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "High tom"
+      },
+      {
+        "osc": "/high_tom/detune",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "High tom"
+      },
+      {
+        "osc": "/high_tom/decay",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "High tom"
+      },
+      {
+        "osc": "/high_tom/level",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "High tom"
+      },
+      {
+        "osc": "/closed_hi_hat/tune",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Closed hi-hat"
+      },
+      {
+        "osc": "/closed_hi_hat/decay",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Closed hi-hat"
+      },
+      {
+        "osc": "/closed_hi_hat/level",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Closed hi-hat"
+      },
+      {
+        "osc": "/open_hi_hat/tune",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Open hi-hat"
+      },
+      {
+        "osc": "/open_hi_hat/decay",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Open hi-hat"
+      },
+      {
+        "osc": "/open_hi_hat/level",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Open hi-hat"
+      },
+      {
+        "osc": "/rimshot/tune",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Rimshot"
+      },
+      {
+        "osc": "/rimshot/decay",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Rimshot"
+      },
+      {
+        "osc": "/rimshot/level",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Rimshot"
+      },
+      {
+        "osc": "/clap/tune",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Clap"
+      },
+      {
+        "osc": "/clap/decay",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Clap"
+      },
+      {
+        "osc": "/clap/level",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Clap"
+      },
+      {
+        "osc": "/sample_1/tune",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Sample 1"
+      },
+      {
+        "osc": "/sample_1/attack",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample 1"
+      },
+      {
+        "osc": "/sample_1/decay",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample 1"
+      },
+      {
+        "osc": "/sample_1/level",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample 1"
+      },
+      {
+        "osc": "/sample_2/tune",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Sample 2"
+      },
+      {
+        "osc": "/sample_2/attack",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample 2"
+      },
+      {
+        "osc": "/sample_2/decay",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample 2"
+      },
+      {
+        "osc": "/sample_2/level",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Sample 2"
+      },
+      {
+        "osc": "/multi/part_level",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi"
+      },
+      {
+        "osc": "/vpm/note",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VPM"
+      },
+      {
+        "osc": "/vpm/index",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VPM"
+      },
+      {
+        "osc": "/vpm/ratio",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VPM"
+      },
+      {
+        "osc": "/vpm/envelope_type",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VPM"
+      },
+      {
+        "osc": "/vpm/attack",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VPM"
+      },
+      {
+        "osc": "/vpm/release",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "VPM"
+      },
+      {
+        "osc": "/noise/color",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Noise"
+      },
+      {
+        "osc": "/noise/attack",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Noise"
+      },
+      {
+        "osc": "/noise/release",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Noise"
+      },
+      {
+        "osc": "/noise/peak",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Noise"
+      },
+      {
+        "osc": "/user_synth/parameter_1",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "User synth"
+      },
+      {
+        "osc": "/user_synth/parameter_2",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "User synth"
+      },
+      {
+        "osc": "/user_synth/parameter_3",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "User synth"
+      },
+      {
+        "osc": "/user_synth/parameter_4",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "User synth"
+      },
+      {
+        "osc": "/delay/parameter_1",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/parameter_2",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/parameter_3",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/return",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/reverb_send",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/delay/level",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Delay"
+      },
+      {
+        "osc": "/reverb/parameter_1",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/parameter_2",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/parameter_3",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/parameter_4",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/return",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/reverb/level",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Reverb"
+      },
+      {
+        "osc": "/channel_mode/all_sound_off",
+        "cc": 120,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/reset_all_controllers",
+        "cc": 121,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/omni_mode_off",
+        "cc": 124,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/omni_mode_on",
+        "cc": 125,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/mono_mode_on",
+        "cc": 126,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/channel_mode/poly_mode_on",
+        "cc": 127,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Channel mode"
+      },
+      {
+        "osc": "/multi_part_1_bass_drum/bass_drum_level",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 1 bass drum"
+      },
+      {
+        "osc": "/multi_part_1_bass_drum/bass_drum_pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 1 bass drum"
+      },
+      {
+        "osc": "/multi_part_1_bass_drum/bass_drum_reverb_send",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 1 bass drum"
+      },
+      {
+        "osc": "/multi_part_1_bass_drum/bass_drum_delay_send",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 1 bass drum"
+      },
+      {
+        "osc": "/multi_part_1_bass_drum/bass_drum_tune",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 1 bass drum"
+      },
+      {
+        "osc": "/multi_part_1_bass_drum/bass_drum_drive",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 1 bass drum"
+      },
+      {
+        "osc": "/multi_part_1_bass_drum/bass_drum_attack",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 1 bass drum"
+      },
+      {
+        "osc": "/multi_part_1_bass_drum/bass_drum_decay",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 1 bass drum"
+      },
+      {
+        "osc": "/multi_part_1_bass_drum/bass_drum_sweep",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 1 bass drum"
+      },
+      {
+        "osc": "/multi_part_1_bass_drum/bass_drum_sweep_time",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 1 bass drum"
+      },
+      {
+        "osc": "/multi_part_1_bass_drum/bass_drum_hold",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 1 bass drum"
+      },
+      {
+        "osc": "/multi_part_2_snare_drum/snare_drum_level",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 2 snare drum"
+      },
+      {
+        "osc": "/multi_part_2_snare_drum/snare_drum_pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 2 snare drum"
+      },
+      {
+        "osc": "/multi_part_2_snare_drum/snare_drum_reverb_send",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 2 snare drum"
+      },
+      {
+        "osc": "/multi_part_2_snare_drum/snare_drum_delay_send",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 2 snare drum"
+      },
+      {
+        "osc": "/multi_part_2_snare_drum/snare_drum_tune",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 2 snare drum"
+      },
+      {
+        "osc": "/multi_part_2_snare_drum/snare_drum_snappy_level",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 2 snare drum"
+      },
+      {
+        "osc": "/multi_part_2_snare_drum/snare_drum_snappy_decay",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 2 snare drum"
+      },
+      {
+        "osc": "/multi_part_2_snare_drum/snare_drum_decay",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 2 snare drum"
+      },
+      {
+        "osc": "/multi_part_2_snare_drum/snare_drum_tone",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 2 snare drum"
+      },
+      {
+        "osc": "/multi_part_3_low_tom/low_tom_level",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 3 low tom"
+      },
+      {
+        "osc": "/multi_part_3_low_tom/low_tom_pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 3 low tom"
+      },
+      {
+        "osc": "/multi_part_3_low_tom/low_tom_reverb_send",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 3 low tom"
+      },
+      {
+        "osc": "/multi_part_3_low_tom/low_tom_delay_send",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 3 low tom"
+      },
+      {
+        "osc": "/multi_part_3_low_tom/low_tom_tune",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 3 low tom"
+      },
+      {
+        "osc": "/multi_part_3_low_tom/low_tom_detune",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 3 low tom"
+      },
+      {
+        "osc": "/multi_part_3_low_tom/low_tom_decay",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 3 low tom"
+      },
+      {
+        "osc": "/multi_part_3_low_tom/low_tom_sweep",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 3 low tom"
+      },
+      {
+        "osc": "/multi_part_3_low_tom/low_tom_attack",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 3 low tom"
+      },
+      {
+        "osc": "/multi_part_3_low_tom/low_tom_drive",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 3 low tom"
+      },
+      {
+        "osc": "/multi_part_4_high_tom/high_tom_level",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 4 high tom"
+      },
+      {
+        "osc": "/multi_part_4_high_tom/high_tom_pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 4 high tom"
+      },
+      {
+        "osc": "/multi_part_4_high_tom/high_tom_reverb_send",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 4 high tom"
+      },
+      {
+        "osc": "/multi_part_4_high_tom/high_tom_delay_send",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 4 high tom"
+      },
+      {
+        "osc": "/multi_part_4_high_tom/high_tom_tune",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 4 high tom"
+      },
+      {
+        "osc": "/multi_part_4_high_tom/high_tom_detune",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 4 high tom"
+      },
+      {
+        "osc": "/multi_part_4_high_tom/high_tom_decay",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 4 high tom"
+      },
+      {
+        "osc": "/multi_part_4_high_tom/high_tom_sweep",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 4 high tom"
+      },
+      {
+        "osc": "/multi_part_4_high_tom/high_tom_attack",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 4 high tom"
+      },
+      {
+        "osc": "/multi_part_4_high_tom/high_tom_drive",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 4 high tom"
+      },
+      {
+        "osc": "/multi_part_5_closed_hi_hat/closed_hi_hat_level",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 5 closed hi-hat"
+      },
+      {
+        "osc": "/multi_part_5_closed_hi_hat/closed_hi_hat_pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 5 closed hi-hat"
+      },
+      {
+        "osc": "/multi_part_5_closed_hi_hat/closed_hi_hat_reverb_send",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 5 closed hi-hat"
+      },
+      {
+        "osc": "/multi_part_5_closed_hi_hat/closed_hi_hat_delay_send",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 5 closed hi-hat"
+      },
+      {
+        "osc": "/multi_part_5_closed_hi_hat/closed_hi_hat_tune",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 5 closed hi-hat"
+      },
+      {
+        "osc": "/multi_part_5_closed_hi_hat/closed_hi_hat_decay",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 5 closed hi-hat"
+      },
+      {
+        "osc": "/multi_part_5_closed_hi_hat/closed_hi_hat_attack",
+        "cc": 63,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 5 closed hi-hat"
+      },
+      {
+        "osc": "/multi_part_5_closed_hi_hat/closed_hi_hat_sample_start",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 5 closed hi-hat"
+      },
+      {
+        "osc": "/multi_part_5_closed_hi_hat/closed_hi_hat_sample_end",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 5 closed hi-hat"
+      },
+      {
+        "osc": "/multi_part_6_open_hi_hat/open_hi_hat_level",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 6 open hi-hat"
+      },
+      {
+        "osc": "/multi_part_6_open_hi_hat/open_hi_hat_pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 6 open hi-hat"
+      },
+      {
+        "osc": "/multi_part_6_open_hi_hat/open_hi_hat_reverb_send",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 6 open hi-hat"
+      },
+      {
+        "osc": "/multi_part_6_open_hi_hat/open_hi_hat_delay_send",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 6 open hi-hat"
+      },
+      {
+        "osc": "/multi_part_6_open_hi_hat/open_hi_hat_tune",
+        "cc": 80,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 6 open hi-hat"
+      },
+      {
+        "osc": "/multi_part_6_open_hi_hat/open_hi_hat_decay",
+        "cc": 81,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 6 open hi-hat"
+      },
+      {
+        "osc": "/multi_part_6_open_hi_hat/open_hi_hat_attack",
+        "cc": 82,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 6 open hi-hat"
+      },
+      {
+        "osc": "/multi_part_6_open_hi_hat/open_hi_hat_sample_start",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 6 open hi-hat"
+      },
+      {
+        "osc": "/multi_part_6_open_hi_hat/open_hi_hat_sample_end",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 6 open hi-hat"
+      },
+      {
+        "osc": "/multi_part_7_rimshot/rimshot_level",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 7 rimshot"
+      },
+      {
+        "osc": "/multi_part_7_rimshot/rimshot_pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 7 rimshot"
+      },
+      {
+        "osc": "/multi_part_7_rimshot/rimshot_reverb_send",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 7 rimshot"
+      },
+      {
+        "osc": "/multi_part_7_rimshot/rimshot_delay_send",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 7 rimshot"
+      },
+      {
+        "osc": "/multi_part_7_rimshot/rimshot_tune",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 7 rimshot"
+      },
+      {
+        "osc": "/multi_part_7_rimshot/rimshot_decay",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 7 rimshot"
+      },
+      {
+        "osc": "/multi_part_7_rimshot/rimshot_sample_start",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 7 rimshot"
+      },
+      {
+        "osc": "/multi_part_7_rimshot/rimshot_sample_end",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 7 rimshot"
+      },
+      {
+        "osc": "/multi_part_8_clap/clap_level",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 8 clap"
+      },
+      {
+        "osc": "/multi_part_8_clap/clap_pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 8 clap"
+      },
+      {
+        "osc": "/multi_part_8_clap/clap_reverb_send",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 8 clap"
+      },
+      {
+        "osc": "/multi_part_8_clap/clap_delay_send",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 8 clap"
+      },
+      {
+        "osc": "/multi_part_8_clap/clap_tune",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 8 clap"
+      },
+      {
+        "osc": "/multi_part_8_clap/clap_decay",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 8 clap"
+      },
+      {
+        "osc": "/multi_part_8_clap/clap_attack",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 8 clap"
+      },
+      {
+        "osc": "/multi_part_8_clap/clap_sample_start",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 8 clap"
+      },
+      {
+        "osc": "/multi_part_8_clap/clap_sample_end",
+        "cc": 62,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 8 clap"
+      },
+      {
+        "osc": "/multi_part_9_sample_1/sample_1_level",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 9 sample 1"
+      },
+      {
+        "osc": "/multi_part_9_sample_1/sample_1_pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 9 sample 1"
+      },
+      {
+        "osc": "/multi_part_9_sample_1/sample_1_reverb_send",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 9 sample 1"
+      },
+      {
+        "osc": "/multi_part_9_sample_1/sample_1_delay_send",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 9 sample 1"
+      },
+      {
+        "osc": "/multi_part_9_sample_1/sample_1_tune",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 9 sample 1"
+      },
+      {
+        "osc": "/multi_part_9_sample_1/sample_1_attack",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 9 sample 1"
+      },
+      {
+        "osc": "/multi_part_9_sample_1/sample_1_decay",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 9 sample 1"
+      },
+      {
+        "osc": "/multi_part_9_sample_1/sample_1_sample_start",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 9 sample 1"
+      },
+      {
+        "osc": "/multi_part_9_sample_1/sample_1_sample_end",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 9 sample 1"
+      },
+      {
+        "osc": "/multi_part_10_sample_2/sample_2_level",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 10 sample 2"
+      },
+      {
+        "osc": "/multi_part_10_sample_2/sample_2_pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 10 sample 2"
+      },
+      {
+        "osc": "/multi_part_10_sample_2/sample_2_reverb_send",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 10 sample 2"
+      },
+      {
+        "osc": "/multi_part_10_sample_2/sample_2_delay_send",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 10 sample 2"
+      },
+      {
+        "osc": "/multi_part_10_sample_2/sample_2_tune",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 10 sample 2"
+      },
+      {
+        "osc": "/multi_part_10_sample_2/sample_2_attack",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 10 sample 2"
+      },
+      {
+        "osc": "/multi_part_10_sample_2/sample_2_decay",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 10 sample 2"
+      },
+      {
+        "osc": "/multi_part_10_sample_2/sample_2_sample_start",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 10 sample 2"
+      },
+      {
+        "osc": "/multi_part_10_sample_2/sample_2_sample_end",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 10 sample 2"
+      },
+      {
+        "osc": "/multi_part_11_multi/multi_part_level",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 multi"
+      },
+      {
+        "osc": "/multi_part_11_multi/multi_part_pan",
+        "cc": 10,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 11 multi"
+      },
+      {
+        "osc": "/multi_part_11_multi/multi_part_reverb_send",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 multi"
+      },
+      {
+        "osc": "/multi_part_11_multi/multi_part_delay_send",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 multi"
+      },
+      {
+        "osc": "/multi_part_11_vpm/vpm_noise",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 VPM"
+      },
+      {
+        "osc": "/multi_part_11_vpm/vpm_index_modulation",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Multi: Part 11 VPM"
+      },
+      {
+        "osc": "/multi_part_11_vpm/vpm_note",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 VPM"
+      },
+      {
+        "osc": "/multi_part_11_vpm/vpm_index",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 VPM"
+      },
+      {
+        "osc": "/multi_part_11_vpm/vpm_ratio",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 VPM"
+      },
+      {
+        "osc": "/multi_part_11_vpm/vpm_envelope_type",
+        "cc": 113,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 VPM"
+      },
+      {
+        "osc": "/multi_part_11_vpm/vpm_attack",
+        "cc": 114,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 VPM"
+      },
+      {
+        "osc": "/multi_part_11_vpm/vpm_release",
+        "cc": 115,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 VPM"
+      },
+      {
+        "osc": "/multi_part_11_noise/noise_color",
+        "cc": 116,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 noise"
+      },
+      {
+        "osc": "/multi_part_11_noise/noise_attack",
+        "cc": 117,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 noise"
+      },
+      {
+        "osc": "/multi_part_11_noise/noise_release",
+        "cc": 118,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 noise"
+      },
+      {
+        "osc": "/multi_part_11_noise/noise_peak",
+        "cc": 119,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 noise"
+      },
+      {
+        "osc": "/multi_part_11_user_synth/user_synth_parameter_1",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 user synth"
+      },
+      {
+        "osc": "/multi_part_11_user_synth/user_synth_parameter_2",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 user synth"
+      },
+      {
+        "osc": "/multi_part_11_user_synth/user_synth_parameter_3",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 user synth"
+      },
+      {
+        "osc": "/multi_part_11_user_synth/user_synth_parameter_4",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 user synth"
+      },
+      {
+        "osc": "/multi_part_11_user_synth/user_synth_parameter_5",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 user synth"
+      },
+      {
+        "osc": "/multi_part_11_user_synth/user_synth_parameter_6",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 user synth"
+      },
+      {
+        "osc": "/multi_part_11_user_synth/user_synth_parameter_7",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 user synth"
+      },
+      {
+        "osc": "/multi_part_11_user_synth/user_synth_parameter_8",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 user synth"
+      },
+      {
+        "osc": "/multi_part_11_user_synth/user_synth_parameter_9",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 user synth"
+      },
+      {
+        "osc": "/multi_part_11_user_synth/user_synth_parameter_10",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 user synth"
+      },
+      {
+        "osc": "/multi_part_11_user_synth/user_synth_parameter_11",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 user synth"
+      },
+      {
+        "osc": "/multi_part_11_user_synth/user_synth_parameter_12",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 user synth"
+      },
+      {
+        "osc": "/multi_part_11_user_synth/user_synth_parameter_13",
+        "cc": 28,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 user synth"
+      },
+      {
+        "osc": "/multi_part_11_user_synth/user_synth_parameter_14",
+        "cc": 29,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 user synth"
+      },
+      {
+        "osc": "/multi_part_11_user_synth/user_synth_parameter_15",
+        "cc": 30,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 user synth"
+      },
+      {
+        "osc": "/multi_part_11_user_synth/user_synth_parameter_16",
+        "cc": 31,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 11 user synth"
+      },
+      {
+        "osc": "/multi_part_12_master/master_volume",
+        "cc": 7,
+        "cc_lsb": 39,
+        "range": [
+          0,
+          16383
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 master"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_parameter_1",
+        "cc": 12,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_parameter_2",
+        "cc": 13,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_parameter_3",
+        "cc": 14,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_parameter_4",
+        "cc": 15,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_parameter_5",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_parameter_6",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_parameter_7",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_parameter_8",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_parameter_9",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_parameter_10",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_parameter_11",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_parameter_12",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_parameter_13",
+        "cc": 24,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_parameter_14",
+        "cc": 25,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_parameter_15",
+        "cc": 26,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_parameter_16",
+        "cc": 27,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_return",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_reverb_send",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_delay/delay_level",
+        "cc": 92,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 delay"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_parameter_1",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_parameter_2",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_parameter_3",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_parameter_4",
+        "cc": 89,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_parameter_5",
+        "cc": 90,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_parameter_6",
+        "cc": 102,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_parameter_7",
+        "cc": 103,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_parameter_8",
+        "cc": 104,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_parameter_9",
+        "cc": 105,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_parameter_10",
+        "cc": 106,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_parameter_11",
+        "cc": 107,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_parameter_12",
+        "cc": 108,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_parameter_13",
+        "cc": 109,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_parameter_14",
+        "cc": 110,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_parameter_15",
+        "cc": 111,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_parameter_16",
+        "cc": 112,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_return",
+        "cc": 83,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_reverb/reverb_level",
+        "cc": 91,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 reverb"
+      },
+      {
+        "osc": "/multi_part_12_master_effect/master_effect_parameter_1",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 master effect"
+      },
+      {
+        "osc": "/multi_part_12_master_effect/master_effect_parameter_2",
+        "cc": 47,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 master effect"
+      },
+      {
+        "osc": "/multi_part_12_master_effect/master_effect_parameter_3",
+        "cc": 48,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 master effect"
+      },
+      {
+        "osc": "/multi_part_12_master_effect/master_effect_parameter_4",
+        "cc": 49,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 master effect"
+      },
+      {
+        "osc": "/multi_part_12_master_effect/master_effect_parameter_5",
+        "cc": 50,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 master effect"
+      },
+      {
+        "osc": "/multi_part_12_master_effect/master_effect_parameter_6",
+        "cc": 51,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 master effect"
+      },
+      {
+        "osc": "/multi_part_12_master_effect/master_effect_parameter_7",
+        "cc": 52,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 master effect"
+      },
+      {
+        "osc": "/multi_part_12_master_effect/master_effect_parameter_8",
+        "cc": 53,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 master effect"
+      },
+      {
+        "osc": "/multi_part_12_master_effect/master_effect_parameter_9",
+        "cc": 54,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 master effect"
+      },
+      {
+        "osc": "/multi_part_12_master_effect/master_effect_parameter_10",
+        "cc": 55,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 master effect"
+      },
+      {
+        "osc": "/multi_part_12_master_effect/master_effect_parameter_11",
+        "cc": 56,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 master effect"
+      },
+      {
+        "osc": "/multi_part_12_master_effect/master_effect_parameter_12",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 master effect"
+      },
+      {
+        "osc": "/multi_part_12_master_effect/master_effect_parameter_13",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 master effect"
+      },
+      {
+        "osc": "/multi_part_12_master_effect/master_effect_parameter_14",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 master effect"
+      },
+      {
+        "osc": "/multi_part_12_master_effect/master_effect_parameter_15",
+        "cc": 60,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 master effect"
+      },
+      {
+        "osc": "/multi_part_12_master_effect/master_effect_parameter_16",
+        "cc": 61,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Part 12 master effect"
+      },
+      {
+        "osc": "/multi_channel_mode/all_sound_off",
+        "cc": 120,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Channel mode"
+      },
+      {
+        "osc": "/multi_channel_mode/reset_all_controllers",
+        "cc": 121,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Channel mode"
+      },
+      {
+        "osc": "/multi_channel_mode/all_notes_off",
+        "cc": 123,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Channel mode"
+      },
+      {
+        "osc": "/multi_channel_mode/omni_mode_off",
+        "cc": 124,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Channel mode"
+      },
+      {
+        "osc": "/multi_channel_mode/omni_mode_on",
+        "cc": 125,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Channel mode"
+      },
+      {
+        "osc": "/multi_channel_mode/mono_mode_on",
+        "cc": 126,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Channel mode"
+      },
+      {
+        "osc": "/multi_channel_mode/poly_mode_on",
+        "cc": 127,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Multi: Channel mode"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": [],
+  "triggers": {
+    "entries": [
+      {
+        "osc": "/drum/single_channel_mode/bass_drum",
+        "sound": "Bass drum",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          36,
+          36
+        ],
+        "note": 36,
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/single_channel_mode/rimshot",
+        "sound": "Rimshot",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          37,
+          37
+        ],
+        "note": 37,
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/single_channel_mode/clap",
+        "sound": "Clap",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          39,
+          39
+        ],
+        "note": 39,
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/single_channel_mode/snare_drum",
+        "sound": "Snare drum",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40,
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/single_channel_mode/closed_hi_hat",
+        "sound": "Closed hi-hat",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          42,
+          42
+        ],
+        "note": 42,
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/single_channel_mode/low_tom",
+        "sound": "Low tom",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          45,
+          45
+        ],
+        "note": 45,
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/single_channel_mode/open_hi_hat",
+        "sound": "Open hi-hat",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          46,
+          46
+        ],
+        "note": 46,
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/single_channel_mode/high_tom",
+        "sound": "High tom",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          50,
+          50
+        ],
+        "note": 50,
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/single_channel_mode/sample_1",
+        "sound": "Sample 1",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          52,
+          52
+        ],
+        "note": 52,
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/single_channel_mode/sample_2",
+        "sound": "Sample 2",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          53,
+          53
+        ],
+        "note": 53,
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/single_channel_mode/multi",
+        "sound": "Multi",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          55,
+          55
+        ],
+        "note": 55,
+        "comments": "Multi part (VPM, Noise, or User synth engine) Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/multi_channel_mode/bass_drum",
+        "sound": "Bass drum",
+        "section": "Multi channel mode",
+        "channel": 0,
+        "note_range": [
+          0,
+          127
+        ],
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/multi_channel_mode/snare_drum",
+        "sound": "Snare drum",
+        "section": "Multi channel mode",
+        "channel": 1,
+        "note_range": [
+          0,
+          127
+        ],
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/multi_channel_mode/low_tom",
+        "sound": "Low tom",
+        "section": "Multi channel mode",
+        "channel": 2,
+        "note_range": [
+          0,
+          127
+        ],
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/multi_channel_mode/high_tom",
+        "sound": "High tom",
+        "section": "Multi channel mode",
+        "channel": 3,
+        "note_range": [
+          0,
+          127
+        ],
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/multi_channel_mode/closed_hi_hat",
+        "sound": "Closed hi-hat",
+        "section": "Multi channel mode",
+        "channel": 4,
+        "note_range": [
+          0,
+          127
+        ],
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/multi_channel_mode/open_hi_hat",
+        "sound": "Open hi-hat",
+        "section": "Multi channel mode",
+        "channel": 5,
+        "note_range": [
+          0,
+          127
+        ],
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/multi_channel_mode/rimshot",
+        "sound": "Rimshot",
+        "section": "Multi channel mode",
+        "channel": 6,
+        "note_range": [
+          0,
+          127
+        ],
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/multi_channel_mode/clap",
+        "sound": "Clap",
+        "section": "Multi channel mode",
+        "channel": 7,
+        "note_range": [
+          0,
+          127
+        ],
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/multi_channel_mode/sample_1",
+        "sound": "Sample 1",
+        "section": "Multi channel mode",
+        "channel": 8,
+        "note_range": [
+          0,
+          127
+        ],
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/multi_channel_mode/sample_2",
+        "sound": "Sample 2",
+        "section": "Multi channel mode",
+        "channel": 9,
+        "note_range": [
+          0,
+          127
+        ],
+        "comments": "Pitch is unaffected by the note number."
+      },
+      {
+        "osc": "/drum/multi_channel_mode/multi",
+        "sound": "Multi",
+        "section": "Multi channel mode",
+        "channel": 10,
+        "note_range": [
+          0,
+          127
+        ],
+        "comments": "Multi part (VPM, Noise, or User synth engine) Pitch follows note number."
+      }
+    ]
+  }
+}

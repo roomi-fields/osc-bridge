@@ -1,0 +1,667 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Conductive Labs/The NDLR.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 56,
+    "cc_entries": 56,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "The NDLR",
+    "vendor": "Conductive Labs",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/the_ndlr",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/general/chord_degree",
+        "cc": 26,
+        "range": [
+          1,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "1: I; 2: II; 3: III; 4: IV; 5: V; 6: VI; 7: VII"
+      },
+      {
+        "osc": "/general/chord_type",
+        "cc": 27,
+        "range": [
+          1,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "1: Triad; 2: 7th; 3: sus2; 4: alt1; 5: alt2; 6: sus4; 7: 6th"
+      },
+      {
+        "osc": "/general/black_keys_control_on_off",
+        "cc": 57,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0-62: On; 63-127: Off"
+      },
+      {
+        "osc": "/general/load_a_chord_sequence",
+        "cc": 89,
+        "range": [
+          1,
+          5
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "1~5: Sequence number"
+      },
+      {
+        "osc": "/general/chord_inversion",
+        "cc": 69,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0-62: On; 63-127: Off"
+      },
+      {
+        "osc": "/general/key",
+        "cc": 73,
+        "range": [
+          1,
+          12
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "1: C; 2: G; 3: D; 4: A; 5: E; 6: B; 7: F#; 8: Db; 9: Ab; 10: Eb; 11: Bb; 12: F"
+      },
+      {
+        "osc": "/general/mode_scale",
+        "cc": 74,
+        "range": [
+          0,
+          15
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Major; 1: Dorian; 2: Phrygian; 3: Lydian; 4: Mixolydian; 5: Minor (Aeolian); 6: Locrian; 7: Gypsy Min; 8: Harmonic Minor; 9: Minor Pentatonic; 10: "
+      },
+      {
+        "osc": "/general/tempo",
+        "cc": 72,
+        "range": [
+          5,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "5~127: 10-254 BPM (value x2)"
+      },
+      {
+        "osc": "/general/clock_in_mode",
+        "cc": 68,
+        "range": [
+          0,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Internal; 1~2: 5-Pin MIDI A-B; 3~6: USB 1-4; 7: Clock In CV"
+      },
+      {
+        "osc": "/general/clock_out_cv_ppq",
+        "cc": 61,
+        "range": [
+          1,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "1: 1 PPQ; 2: 2 PPQ; 3: 4 PPQ; 4: 24 PPQ"
+      },
+      {
+        "osc": "/general/clock_out_cv_divide",
+        "cc": 62,
+        "range": [
+          0,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: 1/1; 1: 1/2; 2: 1/4; 3: 1/8; 4: 1/16; 5: 1/32; 6: 1/64"
+      },
+      {
+        "osc": "/general/send_midi_start_stop_continue_to_midi_ports",
+        "cc": 58,
+        "range": [
+          0,
+          8
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: All Ports; 1~4: MIDI USB 1-4; 5: MIDI USB ALL; 6~7: 5-Pin MIDI A-B; 8: 5-Pin MIDI A & B"
+      },
+      {
+        "osc": "/general/humanize",
+        "cc": 59,
+        "range": [
+          0,
+          10
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Off; 1~10: 10%-100%"
+      },
+      {
+        "osc": "/general/inbound_keyboard_transpose_midi_channel",
+        "cc": 56,
+        "range": [
+          1,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "1~16: MIDI Channel"
+      },
+      {
+        "osc": "/general/korg_volca_fm_note_velocity_midi_channel_port",
+        "cc": 1,
+        "range": [
+          0,
+          32
+        ],
+        "orientation": "0-based",
+        "section": "General",
+        "_usage": "0: Off; 1~32: Channel/Port combinations"
+      },
+      {
+        "osc": "/pad/midi_channel",
+        "cc": 19,
+        "range": [
+          1,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Pad",
+        "_usage": "1~16: MIDI Channel"
+      },
+      {
+        "osc": "/pad/midi_port",
+        "cc": 18,
+        "range": [
+          1,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Pad",
+        "_usage": "1: All Ports; 2~5: MIDI USB 1-4; 6~7: 5-Pin MIDI A-B"
+      },
+      {
+        "osc": "/pad/position",
+        "cc": 28,
+        "range": [
+          1,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Pad",
+        "_usage": "1~100: Position range"
+      },
+      {
+        "osc": "/pad/strum",
+        "cc": 29,
+        "range": [
+          1,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Pad",
+        "_usage": "1: None; 2: 1/32; 3: 1/16; 4: 1/8T; 5: 3+1/8T; 6: 1/8; 7: 3+1/8"
+      },
+      {
+        "osc": "/pad/range",
+        "cc": 30,
+        "range": [
+          1,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Pad",
+        "_usage": "1~100: Range setting"
+      },
+      {
+        "osc": "/pad/spread",
+        "cc": 31,
+        "range": [
+          1,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "Pad",
+        "_usage": "1~6: Spread pattern"
+      },
+      {
+        "osc": "/pad/velocity",
+        "cc": 63,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pad",
+        "_usage": "1~127: Velocity value"
+      },
+      {
+        "osc": "/pad/inter_leaved_poly_chain",
+        "cc": 67,
+        "range": [
+          1,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Pad",
+        "_usage": "1~4: Number of channels"
+      },
+      {
+        "osc": "/pad/quantization",
+        "cc": 70,
+        "range": [
+          1,
+          3
+        ],
+        "orientation": "0-based",
+        "section": "Pad",
+        "_usage": "1: 1/4 note beat; 2: 1/8 note beat; 3: None"
+      },
+      {
+        "osc": "/pad/pause_play_toggle",
+        "cc": 85,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Pad",
+        "_usage": "0-62: Pause; 63-127: Play"
+      },
+      {
+        "osc": "/drone/midi_channel",
+        "cc": 21,
+        "range": [
+          1,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Drone",
+        "_usage": "1~16: MIDI Channel"
+      },
+      {
+        "osc": "/drone/midi_port",
+        "cc": 20,
+        "range": [
+          1,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Drone",
+        "_usage": "1: All Ports; 2~5: MIDI USB 1-4; 6~7: 5-Pin MIDI A-B"
+      },
+      {
+        "osc": "/drone/position",
+        "cc": 32,
+        "range": [
+          2,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "Drone",
+        "_usage": "2~6: Octaves 2-6"
+      },
+      {
+        "osc": "/drone/type",
+        "cc": 33,
+        "range": [
+          1,
+          4
+        ],
+        "orientation": "0-based",
+        "section": "Drone",
+        "_usage": "1: Root; 2: Root + Octave; 3: Root + 5th; 4: Root + Octave + 5th"
+      },
+      {
+        "osc": "/drone/trigger",
+        "cc": 34,
+        "range": [
+          1,
+          19
+        ],
+        "orientation": "0-based",
+        "section": "Drone",
+        "_usage": "1-8: Key Root based Drone; 9-19: Chord based Drone"
+      },
+      {
+        "osc": "/drone/pause_play_toggle",
+        "cc": 86,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Drone",
+        "_usage": "0-62: Pause; 63-127: Play"
+      },
+      {
+        "osc": "/motif_1/midi_channel",
+        "cc": 23,
+        "range": [
+          1,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Motif 1",
+        "_usage": "1~16: MIDI Channel"
+      },
+      {
+        "osc": "/motif_1/midi_port",
+        "cc": 22,
+        "range": [
+          1,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Motif 1",
+        "_usage": "1: All Ports; 2~5: MIDI USB 1-4; 6~7: 5-Pin MIDI A-B"
+      },
+      {
+        "osc": "/motif_1/position",
+        "cc": 35,
+        "range": [
+          1,
+          10
+        ],
+        "orientation": "0-based",
+        "section": "Motif 1",
+        "_usage": "1~10: Position"
+      },
+      {
+        "osc": "/motif_1/pattern_length",
+        "cc": 36,
+        "range": [
+          1,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Motif 1",
+        "_usage": "1~16: Pattern length"
+      },
+      {
+        "osc": "/motif_1/variation_pattern_play",
+        "cc": 37,
+        "range": [
+          1,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "Motif 1",
+        "_usage": "1: Forward; 2: Backward; 3: Ping-Pong; 4: Ping-Pong (w/repeats); 5: Odd-Even; 6: Random"
+      },
+      {
+        "osc": "/motif_1/pattern",
+        "cc": 38,
+        "range": [
+          1,
+          40
+        ],
+        "orientation": "0-based",
+        "section": "Motif 1",
+        "_usage": "1~20: Internal patterns; 21~40: User patterns (overwritable)"
+      },
+      {
+        "osc": "/motif_1/clock_divide",
+        "cc": 39,
+        "range": [
+          1,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "Motif 1",
+        "_usage": "1: 1/1; 2: 1/2; 3: 1/4; 4: 1/8; 5: Triplets 1/3; 6: Triplets 1/6"
+      },
+      {
+        "osc": "/motif_1/rhythm_length",
+        "cc": 40,
+        "range": [
+          4,
+          32
+        ],
+        "orientation": "0-based",
+        "section": "Motif 1",
+        "_usage": "4~32: Beats"
+      },
+      {
+        "osc": "/motif_1/accent",
+        "cc": 41,
+        "range": [
+          1,
+          10
+        ],
+        "orientation": "0-based",
+        "section": "Motif 1",
+        "_usage": "1: Rhythm Velocity; 2: Humanized Velocity; 3: Motif Velocity (fixed); 4~10: Assorted velocity patterns"
+      },
+      {
+        "osc": "/motif_1/rhythm",
+        "cc": 42,
+        "range": [
+          1,
+          40
+        ],
+        "orientation": "0-based",
+        "section": "Motif 1",
+        "_usage": "1~20: Internal rhythms; 21~40: User rhythms (overwritable)"
+      },
+      {
+        "osc": "/motif_1/velocity",
+        "cc": 64,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Motif 1",
+        "_usage": "1~127: Velocity value"
+      },
+      {
+        "osc": "/motif_1/motif_low_velocity",
+        "cc": 66,
+        "range": [
+          1,
+          100
+        ],
+        "orientation": "0-based",
+        "section": "Motif 1",
+        "_usage": "1~100: Low velocity bound"
+      },
+      {
+        "osc": "/motif_1/pause_play_toggle",
+        "cc": 87,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Motif 1",
+        "_usage": "0-62: Pause; 63-127: Play"
+      },
+      {
+        "osc": "/motif_2/midi_channel",
+        "cc": 25,
+        "range": [
+          1,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Motif 2",
+        "_usage": "1~16: MIDI Channel"
+      },
+      {
+        "osc": "/motif_2/midi_port",
+        "cc": 26,
+        "range": [
+          1,
+          7
+        ],
+        "orientation": "0-based",
+        "section": "Motif 2",
+        "_usage": "1: All Ports; 2~5: MIDI USB 1-4; 6~7: 5-Pin MIDI A-B"
+      },
+      {
+        "osc": "/motif_2/position",
+        "cc": 43,
+        "range": [
+          1,
+          10
+        ],
+        "orientation": "0-based",
+        "section": "Motif 2",
+        "_usage": "1~10: Position"
+      },
+      {
+        "osc": "/motif_2/pattern_length",
+        "cc": 44,
+        "range": [
+          1,
+          16
+        ],
+        "orientation": "0-based",
+        "section": "Motif 2",
+        "_usage": "1~16: Pattern length"
+      },
+      {
+        "osc": "/motif_2/variation_pattern_play",
+        "cc": 45,
+        "range": [
+          1,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "Motif 2",
+        "_usage": "1: Forward; 2: Backward; 3: Ping-Pong; 4: Ping-Pong (w/repeats); 5: Odd-Even; 6: Random"
+      },
+      {
+        "osc": "/motif_2/pattern",
+        "cc": 46,
+        "range": [
+          1,
+          40
+        ],
+        "orientation": "0-based",
+        "section": "Motif 2",
+        "_usage": "1~20: Internal patterns; 21~40: User patterns (overwritable)"
+      },
+      {
+        "osc": "/motif_2/clock_divide",
+        "cc": 47,
+        "range": [
+          1,
+          6
+        ],
+        "orientation": "0-based",
+        "section": "Motif 2",
+        "_usage": "1: 1/1; 2: 1/2; 3: 1/4; 4: 1/8; 5: Triplets 1/3; 6: Triplets 1/6"
+      },
+      {
+        "osc": "/motif_2/rhythm_length",
+        "cc": 48,
+        "range": [
+          4,
+          32
+        ],
+        "orientation": "0-based",
+        "section": "Motif 2",
+        "_usage": "4~32: Beats"
+      },
+      {
+        "osc": "/motif_2/accent",
+        "cc": 49,
+        "range": [
+          1,
+          10
+        ],
+        "orientation": "0-based",
+        "section": "Motif 2",
+        "_usage": "1: Rhythm Velocity; 2: Humanized Velocity; 3: Motif Velocity (fixed); 4~10: Assorted velocity patterns"
+      },
+      {
+        "osc": "/motif_2/rhythm",
+        "cc": 50,
+        "range": [
+          1,
+          40
+        ],
+        "orientation": "0-based",
+        "section": "Motif 2",
+        "_usage": "1~20: Internal rhythms; 21~40: User rhythms (overwritable)"
+      },
+      {
+        "osc": "/motif_2/velocity",
+        "cc": 65,
+        "range": [
+          1,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Motif 2",
+        "_usage": "1~127: Velocity value"
+      },
+      {
+        "osc": "/motif_2/pause_play_toggle",
+        "cc": 88,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Motif 2",
+        "_usage": "0-62: Pause; 63-127: Play"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

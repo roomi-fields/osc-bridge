@@ -1,0 +1,299 @@
+{
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Underscores/_recurBOY_.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
+    }
+  ],
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "_coverage": {
+    "entries_total": 24,
+    "cc_entries": 24,
+    "nrpn_entries": 0,
+    "fourteen_bit_cc_pairs": 0
+  },
+  "device": {
+    "name": "_recurBOY_",
+    "vendor": "Underscores",
+    "revision": "per pencilresearch canonical CSV",
+    "osc_prefix": "/recurboy",
+    "manufacturer_id": [],
+    "device_id": [],
+    "rate_limit_hz": 1000
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/controls/moveup",
+        "cc": 43,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "127: Move cursor up"
+      },
+      {
+        "osc": "/controls/movedown",
+        "cc": 44,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "127: Move cursor down"
+      },
+      {
+        "osc": "/controls/moveleft",
+        "cc": 58,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "127: Move cursor left"
+      },
+      {
+        "osc": "/controls/moveright",
+        "cc": 59,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "127: Move cursor right"
+      },
+      {
+        "osc": "/controls/enter",
+        "cc": 42,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "127: Validate"
+      },
+      {
+        "osc": "/controls/switchsource",
+        "cc": 45,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "127: Change video source"
+      },
+      {
+        "osc": "/controls/playswitch",
+        "cc": 41,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "127: Play/pause"
+      },
+      {
+        "osc": "/controls/fxswitch",
+        "cc": 46,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Controls",
+        "_usage": "127: Enable/disable effect"
+      },
+      {
+        "osc": "/shader/setshaderparam0",
+        "cc": 0,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Shader"
+      },
+      {
+        "osc": "/shader/setshaderparam1",
+        "cc": 1,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Shader"
+      },
+      {
+        "osc": "/shader/setshaderparam2",
+        "cc": 2,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Shader"
+      },
+      {
+        "osc": "/shader/setshaderspeed",
+        "cc": 3,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Shader"
+      },
+      {
+        "osc": "/effect/seteffectparam0",
+        "cc": 16,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect"
+      },
+      {
+        "osc": "/effect/seteffectparam1",
+        "cc": 17,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect"
+      },
+      {
+        "osc": "/effect/seteffectparam2",
+        "cc": 18,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Effect"
+      },
+      {
+        "osc": "/effect/seteffectspeed",
+        "cc": 19,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "centered",
+        "section": "Effect"
+      },
+      {
+        "osc": "/text/settextdisplacex",
+        "cc": 4,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Text"
+      },
+      {
+        "osc": "/text/settextdisplacey",
+        "cc": 5,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Text"
+      },
+      {
+        "osc": "/text/settextdisplacewidth",
+        "cc": 6,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Text"
+      },
+      {
+        "osc": "/text/settextdisplaceheight",
+        "cc": 7,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Text"
+      },
+      {
+        "osc": "/text/settextcolorhue",
+        "cc": 20,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Text"
+      },
+      {
+        "osc": "/text/settextcolorsat",
+        "cc": 21,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Text"
+      },
+      {
+        "osc": "/text/settextcolorbrightness",
+        "cc": 22,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Text"
+      },
+      {
+        "osc": "/text/settextcoloralpha",
+        "cc": 23,
+        "range": [
+          0,
+          127
+        ],
+        "orientation": "0-based",
+        "section": "Text"
+      }
+    ]
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "replies": []
+}

@@ -2,9 +2,12 @@
   "_sources": [
     {
       "type": "pencilresearch",
-      "url": "https://github.com/pencilresearch/midi/blob/deb41f2/Roland/TR-1000.csv",
-      "imported_at": "2026-04-13",
-      "commit": "deb41f2"
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Roland/TR-1000.csv",
+      "imported_at": "2026-10-22",
+      "firmware": "unknown",
+      "license": "CC-BY-SA-4.0",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "commit": "91299d6"
     }
   ],
   "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
@@ -12,7 +15,8 @@
     "entries_total": 66,
     "cc_entries": 66,
     "nrpn_entries": 0,
-    "fourteen_bit_cc_pairs": 0
+    "fourteen_bit_cc_pairs": 0,
+    "triggers": 68
   },
   "device": {
     "name": "TR-1000",
@@ -704,5 +708,807 @@
     "pitchbend": "/pitchbend {value_u14} {channel}",
     "aftertouch": "/aftertouch {value} {channel}"
   },
-  "replies": []
+  "replies": [],
+  "triggers": {
+    "entries": [
+      {
+        "osc": "/drum/single_channel_mode/bd",
+        "sound": "BD",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          36,
+          36
+        ],
+        "note": 36,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/bd_layer_a",
+        "sound": "BD Layer A",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          35,
+          35
+        ],
+        "note": 35,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/bd_layer_b_alt",
+        "sound": "BD Layer B/alt",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          99,
+          99
+        ],
+        "note": 99,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/sd",
+        "sound": "SD",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          38,
+          38
+        ],
+        "note": 38,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/sd_layer_a",
+        "sound": "SD Layer A",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/sd_layer_b_alt",
+        "sound": "SD Layer B/alt",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          104,
+          104
+        ],
+        "note": 104,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/lt",
+        "sound": "LT",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          43,
+          43
+        ],
+        "note": 43,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/lt_layer_a",
+        "sound": "LT Layer A",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          41,
+          41
+        ],
+        "note": 41,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/lt_layer_b_alt",
+        "sound": "LT Layer B/alt",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          105,
+          105
+        ],
+        "note": 105,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/ht",
+        "sound": "HT",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          50,
+          50
+        ],
+        "note": 50,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/ht_layer_a",
+        "sound": "HT Layer A",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          48,
+          48
+        ],
+        "note": 48,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/ht_layer_b_alt",
+        "sound": "HT Layer B/alt",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          112,
+          112
+        ],
+        "note": 112,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/rs",
+        "sound": "RS",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          37,
+          37
+        ],
+        "note": 37,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/rs_layer_b_alt",
+        "sound": "RS Layer B/alt",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          56,
+          56
+        ],
+        "note": 56,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/hc",
+        "sound": "HC",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          39,
+          39
+        ],
+        "note": 39,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/hc_layer_b_alt",
+        "sound": "HC Layer B/alt",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          54,
+          54
+        ],
+        "note": 54,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/ch",
+        "sound": "CH",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          42,
+          42
+        ],
+        "note": 42,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/ch_layer_b_alt",
+        "sound": "CH Layer B/alt",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          44,
+          44
+        ],
+        "note": 44,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/oh",
+        "sound": "OH",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          46,
+          46
+        ],
+        "note": 46,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/oh_layer_b_alt",
+        "sound": "OH Layer B/alt",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          58,
+          58
+        ],
+        "note": 58,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/cc",
+        "sound": "CC",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          49,
+          49
+        ],
+        "note": 49,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/cc_layer_b_alt",
+        "sound": "CC Layer B/alt",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          61,
+          61
+        ],
+        "note": 61,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/rc",
+        "sound": "RC",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          51,
+          51
+        ],
+        "note": 51,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/rc_layer_b_alt",
+        "sound": "RC Layer B/alt",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          63,
+          63
+        ],
+        "note": 63,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/single_channel_mode/trg",
+        "sound": "TRG",
+        "section": "Single channel mode",
+        "channel_mode": "basic",
+        "note_range": [
+          84,
+          84
+        ],
+        "note": 84,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/bd/bd",
+        "sound": "BD",
+        "section": "BD",
+        "channel": 0,
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/bd/bd_layer_a",
+        "sound": "BD Layer A",
+        "section": "BD",
+        "channel": 0,
+        "note_range": [
+          89,
+          89
+        ],
+        "note": 89,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/bd/bd_layer_a_slice",
+        "sound": "BD Layer A slice",
+        "section": "BD",
+        "channel": 0,
+        "note_range": [
+          0,
+          15
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/bd/bd_layer_b_alt",
+        "sound": "BD Layer B/alt",
+        "section": "BD",
+        "channel": 1,
+        "note_range": [
+          89,
+          89
+        ],
+        "note": 89,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/bd/bd_layer_a_b_slice",
+        "sound": "BD Layer A+B slice",
+        "section": "BD",
+        "channel": 1,
+        "note_range": [
+          16,
+          31
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/bd/bd_layer_b_slice",
+        "sound": "BD Layer B slice",
+        "section": "BD",
+        "channel": 1,
+        "note_range": [
+          0,
+          15
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/sd/sd",
+        "sound": "SD",
+        "section": "SD",
+        "channel": 2,
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/sd/sd_layer_a",
+        "sound": "SD Layer A",
+        "section": "SD",
+        "channel": 2,
+        "note_range": [
+          89,
+          89
+        ],
+        "note": 89,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/sd/sd_layer_a_slice",
+        "sound": "SD Layer A slice",
+        "section": "SD",
+        "channel": 2,
+        "note_range": [
+          0,
+          15
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/sd/sd_layer_b_alt",
+        "sound": "SD Layer B/alt",
+        "section": "SD",
+        "channel": 3,
+        "note_range": [
+          89,
+          89
+        ],
+        "note": 89,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/sd/sd_layer_a_b_slice",
+        "sound": "SD Layer A+B slice",
+        "section": "SD",
+        "channel": 3,
+        "note_range": [
+          16,
+          31
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/sd/sd_layer_b_slice",
+        "sound": "SD Layer B slice",
+        "section": "SD",
+        "channel": 3,
+        "note_range": [
+          0,
+          15
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/lt/lt",
+        "sound": "LT",
+        "section": "LT",
+        "channel": 4,
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/lt/lt_layer_a",
+        "sound": "LT Layer A",
+        "section": "LT",
+        "channel": 4,
+        "note_range": [
+          89,
+          89
+        ],
+        "note": 89,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/lt/lt_layer_a_slice",
+        "sound": "LT Layer A slice",
+        "section": "LT",
+        "channel": 4,
+        "note_range": [
+          0,
+          15
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/lt/lt_layer_b_alt",
+        "sound": "LT Layer B/alt",
+        "section": "LT",
+        "channel": 5,
+        "note_range": [
+          89,
+          89
+        ],
+        "note": 89,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/lt/lt_layer_a_b_slice",
+        "sound": "LT Layer A+B slice",
+        "section": "LT",
+        "channel": 5,
+        "note_range": [
+          16,
+          31
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/lt/lt_layer_b_slice",
+        "sound": "LT Layer B slice",
+        "section": "LT",
+        "channel": 5,
+        "note_range": [
+          0,
+          15
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/ht/ht",
+        "sound": "HT",
+        "section": "HT",
+        "channel": 6,
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/ht/ht_layer_a",
+        "sound": "HT Layer A",
+        "section": "HT",
+        "channel": 6,
+        "note_range": [
+          89,
+          89
+        ],
+        "note": 89,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/ht/ht_layer_a_slice",
+        "sound": "HT Layer A slice",
+        "section": "HT",
+        "channel": 6,
+        "note_range": [
+          0,
+          15
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/ht/ht_layer_b_alt",
+        "sound": "HT Layer B/alt",
+        "section": "HT",
+        "channel": 7,
+        "note_range": [
+          89,
+          89
+        ],
+        "note": 89,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/ht/ht_layer_a_b_slice",
+        "sound": "HT Layer A+B slice",
+        "section": "HT",
+        "channel": 7,
+        "note_range": [
+          16,
+          31
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/ht/ht_layer_b_slice",
+        "sound": "HT Layer B slice",
+        "section": "HT",
+        "channel": 7,
+        "note_range": [
+          0,
+          15
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/rs/rs",
+        "sound": "RS",
+        "section": "RS",
+        "channel": 8,
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/rs/rs_layer_b_alt",
+        "sound": "RS Layer B/alt",
+        "section": "RS",
+        "channel": 8,
+        "note_range": [
+          89,
+          89
+        ],
+        "note": 89,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/rs/rs_layer_a_b_slice",
+        "sound": "RS Layer A+B slice",
+        "section": "RS",
+        "channel": 8,
+        "note_range": [
+          0,
+          15
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/hc/hc",
+        "sound": "HC",
+        "section": "HC",
+        "channel": 9,
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/hc/hc_layer_b_alt",
+        "sound": "HC Layer B/alt",
+        "section": "HC",
+        "channel": 9,
+        "note_range": [
+          89,
+          89
+        ],
+        "note": 89,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/hc/hc_layer_a_b_slice",
+        "sound": "HC Layer A+B slice",
+        "section": "HC",
+        "channel": 9,
+        "note_range": [
+          0,
+          15
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/ch/ch",
+        "sound": "CH",
+        "section": "CH",
+        "channel": 10,
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/ch/ch_layer_b_alt",
+        "sound": "CH Layer B/alt",
+        "section": "CH",
+        "channel": 10,
+        "note_range": [
+          89,
+          89
+        ],
+        "note": 89,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/ch/ch_layer_a_b_slice",
+        "sound": "CH Layer A+B slice",
+        "section": "CH",
+        "channel": 10,
+        "note_range": [
+          0,
+          15
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/oh/oh",
+        "sound": "OH",
+        "section": "OH",
+        "channel": 11,
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/oh/oh_layer_b_alt",
+        "sound": "OH Layer B/alt",
+        "section": "OH",
+        "channel": 11,
+        "note_range": [
+          89,
+          89
+        ],
+        "note": 89,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/oh/oh_layer_a_b_slice",
+        "sound": "OH Layer A+B slice",
+        "section": "OH",
+        "channel": 11,
+        "note_range": [
+          0,
+          15
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/cc/cc",
+        "sound": "CC",
+        "section": "CC",
+        "channel": 12,
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/cc/cc_layer_b_alt",
+        "sound": "CC Layer B/alt",
+        "section": "CC",
+        "channel": 12,
+        "note_range": [
+          89,
+          89
+        ],
+        "note": 89,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/cc/cc_layer_a_b_slice",
+        "sound": "CC Layer A+B slice",
+        "section": "CC",
+        "channel": 12,
+        "note_range": [
+          0,
+          15
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/rc/rc",
+        "sound": "RC",
+        "section": "RC",
+        "channel": 13,
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/rc/rc_layer_b_alt",
+        "sound": "RC Layer B/alt",
+        "section": "RC",
+        "channel": 13,
+        "note_range": [
+          89,
+          89
+        ],
+        "note": 89,
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/rc/rc_layer_a_b_slice",
+        "sound": "RC Layer A+B slice",
+        "section": "RC",
+        "channel": 13,
+        "note_range": [
+          0,
+          15
+        ],
+        "velocity_usage": "1~127: Volume"
+      },
+      {
+        "osc": "/drum/trg/trg",
+        "sound": "TRG",
+        "section": "TRG",
+        "channel": 14,
+        "note_range": [
+          40,
+          40
+        ],
+        "note": 40,
+        "velocity_usage": "1~127: Volume"
+      }
+    ]
+  }
 }
