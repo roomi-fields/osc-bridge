@@ -69,10 +69,11 @@ The same catalogue as MCP tools, for Claude, Cursor and other MCP clients.
 detection and sending to a running bridge: see the [MCP guide](MCP.md).
 
 **Hosted, nothing to install**: add `https://mcp.osc-bridge.roomi-fields.com/mcp`
-as a remote MCP server (a "custom connector" in Claude). It offers five
-tools, at most 120 requests per minute per client: the catalogue tools
-`list_devices` (with `query`, `vendor`, `kind`, `limit`), `list_routes` and
-`get_device_docs`, plus `report_result` and `get_trust` (below).
+as a remote MCP server (a "custom connector" in Claude). It offers, at most
+120 requests per minute per client: the catalogue tools `list_devices` (with
+`query`, `vendor`, `kind`, `limit`), `list_routes` and `get_device_docs`;
+`report_result` and `get_trust` (below); and the relay tools, which reach
+the hardware on the user's own machine (below).
 
 No sign-up. The server gives each client an account when it connects: a
 random id, returned in the `Mcp-Session-Id` header and in the server's
@@ -89,6 +90,28 @@ improve the catalogue. It does not record your
 address. Like any site, the web server in front of it keeps a short access
 log (address, URL, time) for a few days for traffic statistics; the search
 words are not in it.
+
+### Relay: the user's hardware, from anywhere
+
+The user opens [the connect page](connect.md) in Chrome or Edge (or runs
+`osc-bridge connect`), which shows a pairing code, and gives the code to the
+agent. With it:
+
+| Tool | Does |
+|------|------|
+| `relay_status` | Lists the MIDI ports of the user's machine |
+| `relay_detect` | Sends the MIDI Identity Request to every output, matches the answers (manufacturer, model, firmware) against the catalogue |
+| `relay_send` | Sends one driver address with its arguments (`/filter/cutoff`, `[64]`), turned into the right CC, NRPN, note or SysEx by the server — or raw MIDI bytes |
+| `relay_listen` | Collects what the hardware sends for a few seconds, decoded; with a driver, each CC or NRPN that moved is matched to its addresses |
+
+Any program can be a relay door: it opens a WebSocket to
+`wss://mcp.osc-bridge.roomi-fields.com/relay` (add `?user=<id>` to keep its
+account), receives `{"type":"hello","code","user"}`, then exchanges JSON text
+frames — `{"type":"ports","outputs":[…],"inputs":[…]}` and
+`{"type":"midi_in","port","data":[bytes]}` towards the server,
+`{"type":"midi_out","port","data":[bytes]}` from it, and optionally
+`{"type":"share","enabled":false}` to keep device identities out of the
+records.
 
 ### Reports and trust
 
