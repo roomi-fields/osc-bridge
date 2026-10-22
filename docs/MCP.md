@@ -1,13 +1,13 @@
 # osc-bridge MCP server — a MIDI MCP and OSC MCP
 
 `osc-bridge` ships a [Model Context Protocol](https://modelcontextprotocol.io)
-server. It lets Claude — or any MCP client — discover a catalogue of **849
+server. It lets Claude — or any MCP client — discover a catalogue of **963
 music devices**, read each device's OSC surface, and send OSC to control
 synthesizers and DAWs.
 
 It is both:
 
-- a **MIDI MCP** — 849 hardware synthesizers exposed over MIDI / SysEx
+- a **MIDI MCP** — 963 hardware synthesizers exposed over MIDI / SysEx
   (every Prophet, Oberheim, Moog, Yamaha DX family, MatrixBrute, Hydrasynth,
   Virus TI, Digitone…), and
 - an **OSC MCP** — DAWs and live-coding environments over OSC (Ableton Live,
@@ -82,10 +82,11 @@ The path from cold start to controlling a device:
 
 1. `detect_hardware` — see what is plugged in and which driver matches
    (or `list_devices` to search the catalogue by name).
-2. `list_routes("matrixbrute")` — see every OSC address it accepts.
+2. `list_routes("minilogue")` — see every OSC address it accepts.
 3. (separately) start the bridge with the command `detect_hardware` returned,
-   e.g. `osc-bridge run --device devices/arturia/matrixbrute.json --out-port 3 --in-port 2`
-4. `send("/matrixbrute/filter/cutoff", [0.7])` — drive it.
+   e.g. `osc-bridge run --device devices/korg/minilogue.json --out-port 3 --in-port 2`
+4. `send("/minilogue/filter/cutoff", [90])` — drive it (CC 43, range 0–127:
+   values are the device's own integers, not 0–1).
 
 Before an experiment on a device's sounds, `backup_presets` saves its memory
 to a `.syx` file; `restore_presets` puts it back.
@@ -93,8 +94,8 @@ to a `.syx` file; `restore_presets` puts it back.
 `get_device_docs` fills in the device-specific quirks (port conventions,
 argument formats, host-side setup for software targets).
 
-A concrete prompt: *"What can the MatrixBrute do? Sweep its filter cutoff."* —
-Claude calls `list_routes("matrixbrute")`, then `send` a few times. No glue
+A concrete prompt: *"What can the minilogue do? Sweep its filter cutoff."* —
+Claude calls `list_routes("minilogue")`, then `send` a few times. No glue
 code.
 
 ## Driving software, not just hardware

@@ -416,7 +416,8 @@ pub struct OscArgPattern {
 
 impl Device {
     pub fn load<P: AsRef<Path>>(path: P) -> anyhow::Result<Self> {
-        let p = path.as_ref();
+        let resolved = crate::catalogue::resolve(path.as_ref());
+        let p = resolved.as_path();
         let txt = std::fs::read_to_string(p)
             .map_err(|e| anyhow::anyhow!("reading {}: {e}", p.display()))?;
         let mut dev: Device = serde_json::from_str(&txt)

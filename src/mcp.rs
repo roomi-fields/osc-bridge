@@ -118,10 +118,11 @@ fn tier_rank(tier: &str) -> u8 {
 
 pub fn run(opts: McpOptions) -> Result<()> {
     eprintln!("MCP server starting (devices_dir={}, default_target={})",
-        opts.devices_dir.display(), opts.default_target);
+        crate::catalogue::resolve(&opts.devices_dir).display(), opts.default_target);
     // Build the catalogue index once — every device tool reads from it
     // instead of re-walking the tree.
-    let index = DeviceIndex::build(&opts.devices_dir);
+    let devices_dir = crate::catalogue::resolve(&opts.devices_dir);
+    let index = DeviceIndex::build(&devices_dir);
     eprintln!("indexed {} device file(s)", index.entries.len());
 
     let stdin = std::io::stdin();
@@ -617,7 +618,7 @@ fn restore_presets(out_port: &str, file: &Path, gap_ms: u64) -> Result<Value, St
 /// `osc-bridge detect`: the same report as the `detect_hardware` tool, for a
 /// terminal.
 pub fn print_detection(devices_dir: &Path, probe: bool) -> Result<()> {
-    let index = DeviceIndex::build(devices_dir);
+    let index = DeviceIndex::build(&crate::catalogue::resolve(devices_dir));
     let report = detect_hardware(&index, probe, std::time::Duration::from_millis(800))
         .map_err(|e| anyhow::anyhow!(e))?;
     let devices = report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default();

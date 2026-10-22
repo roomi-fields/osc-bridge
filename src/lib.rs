@@ -17,6 +17,7 @@ pub mod mcp;
 pub mod ws;
 pub mod detect;
 pub mod librarian;
+pub mod catalogue;
 
 pub use device::Device;
 pub use runtime::{Runtime, RuntimeOptions};

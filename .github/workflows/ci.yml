@@ -106,6 +106,10 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Version mirrors are in sync with Cargo.toml
         run: python3 scripts/sync_version.py --check
+      - name: Bundle the device catalogue
+        # The binary looks for devices/ next to its package (src/catalogue.rs):
+        # without it the MCP server and `--device devices/…` find nothing.
+        run: cp -r devices npm/devices
       - name: Publish @roomi-fields/osc-bridge
         working-directory: npm
         run: npm publish --access public

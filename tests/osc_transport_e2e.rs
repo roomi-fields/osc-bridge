@@ -138,6 +138,7 @@ fn osc_passthrough_roundtrip() {
         osc_bind: format!("127.0.0.1:{bridge_in_port}"),
         osc_clients: vec![client_addr],
         ws_bind: None,
+        ws_allow_origins: vec![],
     };
 
     std::thread::spawn(move || { let _ = Runtime::run(opts); });
@@ -211,6 +212,7 @@ fn osc_transport_full_roundtrip() {
         osc_bind: format!("127.0.0.1:{bridge_in_port}"),
         osc_clients: vec![client_addr],
         ws_bind: None,
+        ws_allow_origins: vec![],
     };
 
     std::thread::spawn(move || { let _ = Runtime::run(opts); });
@@ -268,6 +270,41 @@ fn osc_transport_full_roundtrip() {
                 OscType::Float(f) => assert!((f - 126.0).abs() < 0.01),
                 ref other => panic!("expected float, got {other:?}"),
             }
+        }
+        other => panic!("expected message, got {other:?}"),
+    }
+}
+
+#[test]
+fn bridge_status_answers_a_caller_that_is_not_an_osc_client() {
+    let fake_target = UdpSocket::bind("127.0.0.1:0").unwrap();
+    let target_port = fake_target.local_addr().unwrap().port();
+    let reply_port = pick_free_port();
+    let bridge_in_port = pick_free_port();
+    let opts = RuntimeOptions {
+        device: passthrough_like(target_port, reply_port),
+        midi_out_port_idx: 0,
+        midi_in_port_idx: None,
+        osc_bind: format!("127.0.0.1:{bridge_in_port}"),
+        osc_clients: vec![],
+        ws_bind: None,
+        ws_allow_origins: vec![],
+    };
+    std::thread::spawn(move || { let _ = Runtime::run(opts); });
+    std::thread::sleep(Duration::from_millis(300));
+
+    // The MCP get_status tool asks from an ephemeral port like this one.
+    let caller = UdpSocket::bind("127.0.0.1:0").unwrap();
+    caller.set_read_timeout(Some(Duration::from_secs(2))).unwrap();
+    let q = OscPacket::Message(OscMessage { addr: "/bridge/status".into(), args: vec![] });
+    caller.send_to(&rosc::encoder::encode(&q).unwrap(), format!("127.0.0.1:{bridge_in_port}")).unwrap();
+
+    let mut buf = [0u8; 65536];
+    let (n, _) = caller.recv_from(&mut buf).expect("status reply to the caller");
+    match rosc::decoder::decode_udp(&buf[..n]).unwrap().1 {
+        OscPacket::Message(m) => {
+            assert_eq!(m.addr, "/bridge/status/device");
+            assert!(matches!(&m.args[0], OscType::String(s) if s == "sonicpi"));
         }
         other => panic!("expected message, got {other:?}"),
     }

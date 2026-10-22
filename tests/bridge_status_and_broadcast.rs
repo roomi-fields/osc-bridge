@@ -82,6 +82,7 @@ fn runtime_options_accepts_multiple_clients() {
             "127.0.0.1:9999".parse::<SocketAddr>().unwrap(),
         ],
         ws_bind: None,
+        ws_allow_origins: vec![],
     };
     assert_eq!(opts.osc_clients.len(), 2);
 }
@@ -108,6 +109,7 @@ fn runtime_options_accepts_zero_clients() {
         osc_bind: "127.0.0.1:0".into(),
         osc_clients: vec![],
         ws_bind: None,
+        ws_allow_origins: vec![],
     };
     assert!(opts.osc_clients.is_empty());
 }

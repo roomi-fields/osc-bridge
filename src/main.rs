@@ -90,6 +90,11 @@ enum Cmd {
         /// --osc-client and can send commands through the same dispatch.
         #[arg(long = "ws-bind")]
         ws_bind: Option<String>,
+        /// Browser origin allowed to connect to the WebSocket, e.g.
+        /// https://example.org (repeatable; `*` allows any site). Pages
+        /// served from localhost and non-browser clients are always allowed.
+        #[arg(long = "ws-allow-origin")]
+        ws_allow_origins: Vec<String>,
     },
     /// Send one OSC message to a local bridge for quick testing.
     OscSend {
@@ -145,8 +150,8 @@ fn main() -> Result<()> {
         }
         Cmd::Detect { no_probe, devices_dir } => osc_bridge::mcp::print_detection(&devices_dir, !no_probe),
         Cmd::Inspect { device } => cmd_inspect(device),
-        Cmd::Run { device, out_port, in_port, bind, osc_clients, ws_bind } =>
-            cmd_run(device, out_port, in_port, bind, osc_clients, ws_bind),
+        Cmd::Run { device, out_port, in_port, bind, osc_clients, ws_bind, ws_allow_origins } =>
+            cmd_run(device, out_port, in_port, bind, osc_clients, ws_bind, ws_allow_origins),
         Cmd::OscSend { target, addr, args, from_file } => cmd_osc_send(target, addr, args, from_file),
         Cmd::OscListen { bind } => cmd_osc_listen(bind),
         Cmd::Lint { device } => cmd_lint(device),
@@ -266,7 +271,7 @@ fn hex_vec(v: &[u8]) -> String {
     v.iter().map(|b| format!("{:02X}", b)).collect::<Vec<_>>().join(" ")
 }
 
-fn cmd_run(path: PathBuf, out_port: Option<usize>, in_port: Option<usize>, bind: String, clients: Vec<String>, ws_bind: Option<String>) -> Result<()> {
+fn cmd_run(path: PathBuf, out_port: Option<usize>, in_port: Option<usize>, bind: String, clients: Vec<String>, ws_bind: Option<String>, ws_allow_origins: Vec<String>) -> Result<()> {
     let dev = Device::load(&path)?;
     let is_osc = dev.device.transport.as_ref().map(|t| t.kind.as_str()) == Some("osc");
     let out_port = match (out_port, is_osc) {
@@ -290,6 +295,7 @@ fn cmd_run(path: PathBuf, out_port: Option<usize>, in_port: Option<usize>, bind:
         osc_bind: bind,
         osc_clients: client_addrs,
         ws_bind,
+        ws_allow_origins,
     })
 }
 

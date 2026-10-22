@@ -16,14 +16,15 @@ addressable by sound name — and its community data is now properly licensed.
 
 ### Added — named drum sounds (`triggers`)
 - New optional `triggers` block in device JSONs: each note-triggered sound
-  (drum voice, sample slot) gets an OSC address, e.g. `/tr8s/drum/kick`.
+  (drum voice, sample slot) gets an OSC address, e.g. `/drm1_mkiv/drum/kick`.
   `<address> [velocity] [note] [channel]` sends the documented Note On; the
   note is range-checked, velocity defaults to 100.
 - `list_routes` (MCP) returns the triggers of a device.
-- 15 drum machines ship with their drum map (476 named sounds): Roland
-  TR-8S, TR-1000, T-8; Elektron Analog Rytm MKII, Digitakt II, Syntakt,
+- 15 drivers ship with a drum map (476 named sounds): Roland TR-8S,
+  TR-1000, T-8; Elektron Analog Rytm MKII, Digitakt II, Syntakt,
   Model:Samples; KORG drumlogue; Behringer LM Drum; Vermona DRM1 MKIV;
-  Alesis SR-16; Novation DrumStation; and more.
+  Alesis SR-16; Novation DrumStation; and more, plus the General MIDI
+  percussion map.
 
 ### Added — hardware detection
 - `osc-bridge detect` and the `detect_hardware` MCP tool: list MIDI ports,
@@ -52,6 +53,23 @@ addressable by sound name — and its community data is now properly licensed.
   now wins (verified, then vendor doc, then OSC API, then Electra, then
   MIDI Guide) instead of whichever file was read first.
 - Modbap Trinity moved from `devices/unknown/` to `devices/modbap/`.
+
+### Fixed — MCP through npm
+- The npm package now ships the device catalogue, and the binary finds it
+  next to itself (`src/catalogue.rs`: current directory, `$OSC_BRIDGE_HOME`,
+  then beside the executable). Before, `npx @roomi-fields/osc-bridge mcp`
+  started from a client's working directory saw an empty catalogue, and
+  `--device devices/…` only worked from a checkout.
+- `/bridge/status` and `/bridge/docs` are answered straight to the sender,
+  not only to the configured `--osc-client`s — the MCP `get_status` tool
+  asks from its own port and never got a reply.
+
+### Security — WebSocket origin check
+- The WebSocket transport (0.12.0) accepted any browser page: a website open
+  in the same browser could drive your synths while `--ws-bind` was on. The
+  handshake now refuses (403) origins other than pages served from this
+  machine; non-browser clients are unaffected. `--ws-allow-origin` /
+  `ws_allow_origins` add trusted origins (`null` for `file://`, `*` for any).
 
 ### Fixed — licensing
 - MIDI Guide data is CC BY-SA 4.0 (it was declared MIT in `sources.toml`).
