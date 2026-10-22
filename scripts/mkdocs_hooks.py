@@ -8,6 +8,9 @@
    CollectionPage) linked to one publisher, one website and the software,
    whose version is read from Cargo.toml; the last change date is shown.
 3. `robots.txt` and `llms.txt` write `{site_url}`, filled in from mkdocs.yml.
+4. A static JSON API for agents under `api/v1/`: `index.json` lists every
+   driver with its source tier, firmware and coverage; `devices/<vendor>/
+   <driver>.json` is the driver file itself, byte for byte.
 
 After the build every page is checked as a crawler will receive it: a page
 without its block, with a block that does not parse or that lacks a field,
@@ -18,12 +21,17 @@ from __future__ import annotations
 import json
 import re
 import subprocess
+import sys
 from collections import defaultdict
 from datetime import date
 from pathlib import Path
 
 from mkdocs.exceptions import PluginError
+
 from mkdocs.structure.files import File
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_device_index import coverage  # noqa: E402 — the catalogue's own counts
 
 ROOT = Path(__file__).resolve().parent.parent
 DEVICES = ROOT / "devices"
@@ -349,9 +357,49 @@ def on_post_page(output, page, config):
     return output.replace("</head>", block + "\n</head>", 1)
 
 
+def _api_entry(d: dict, site: str) -> dict:
+    doc, meta = d["doc"], d["meta"]
+    source = (doc.get("_sources") or [{}])[0]
+    firmware = source.get("firmware")
+    kind = meta.get("kind") or ("software" if (meta.get("transport") or {}).get("kind") == "osc" else "hardware")
+    return {
+        "id": d["rel"],
+        "vendor": meta.get("vendor", ""),
+        "name": meta["name"],
+        "slug": (meta.get("osc_prefix") or "").lstrip("/"),
+        "kind": kind,
+        "source_tier": source.get("type", "unknown"),
+        "firmware": None if firmware in (None, "unknown") else firmware,
+        "license": source.get("license"),
+        "manufacturer_id": meta.get("manufacturer_id"),
+        "coverage": coverage(doc),
+        "url": f"{site}api/v1/devices/{d['rel']}.json",
+        "page": f"{site}devices/{d['rel']}/",
+    }
+
+
+def _write_api(site_dir: Path, site: str) -> int:
+    api = site_dir / "api" / "v1"
+    devices = _load_devices()
+    for d in devices:
+        out = api / "devices" / f"{d['rel']}.json"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_bytes(d["path"].read_bytes())
+    index = {
+        "version": _version(),
+        "count": len(devices),
+        "source": REPO,
+        "license": "Drivers are GPL-3.0; those derived from MIDI Guide are CC BY-SA 4.0 (see each entry).",
+        "devices": [_api_entry(d, site) for d in devices],
+    }
+    (api / "index.json").write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    return len(devices)
+
+
 def on_post_build(config):
     site_dir = Path(config["site_dir"])
     problems = []
+    print(f"INFO    -  API: {_write_api(site_dir, config['site_url'])} drivers under api/v1/")
     for name in FILLED:
         path = site_dir / name
         text = path.read_text(encoding="utf-8").replace("{site_url}", config["site_url"])

@@ -133,6 +133,11 @@ enum Cmd {
         /// (matching the standard `osc-bridge run` bind).
         #[arg(long, default_value = "127.0.0.1:7777")]
         default_target: String,
+        /// Serve over HTTP on this address (e.g. 0.0.0.0:8080, endpoint
+        /// `/mcp`) instead of stdio. Only the read-only catalogue tools are
+        /// offered: the others would act on this machine's MIDI ports.
+        #[arg(long)]
+        http: Option<String>,
     },
 }
 
@@ -156,13 +161,14 @@ fn main() -> Result<()> {
         Cmd::OscListen { bind } => cmd_osc_listen(bind),
         Cmd::Lint { device } => cmd_lint(device),
         Cmd::Orchestrate { config } => osc_bridge::orchestrator::Orchestrator::run(&config),
-        Cmd::Mcp { devices_dir, default_target } => {
+        Cmd::Mcp { devices_dir, default_target, http } => {
             let default_target = default_target.parse::<std::net::SocketAddr>()
                 .with_context(|| format!("parse --default-target {default_target}"))?;
-            osc_bridge::mcp::run(osc_bridge::mcp::McpOptions {
-                devices_dir,
-                default_target,
-            })
+            let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, catalogue_only: false };
+            match http {
+                Some(bind) => osc_bridge::mcp::run_http(opts, &bind),
+                None => osc_bridge::mcp::run(opts),
+            }
         }
     }
 }

@@ -34,15 +34,25 @@
   ],
   "license": "GPL-3.0-or-later",
   "compatibility": {
-    "platforms": ["darwin", "win32", "linux"],
-    "runtimes": { "node": ">=18.0.0" }
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
   },
   "server": {
     "type": "node",
     "entry_point": "bin/osc-bridge.js",
     "mcp_config": {
       "command": "npx",
-      "args": ["-y", "@roomi-fields/osc-bridge", "mcp"],
+      "args": [
+        "-y",
+        "@roomi-fields/osc-bridge",
+        "mcp"
+      ],
       "env": {}
     }
   },
@@ -59,124 +69,183 @@
   "tools": [
     {
       "name": "list_devices",
-      "description": "Enumerate every device driver — name, vendor, slug, kind (hardware/software), and source tier. Use this first to discover the catalogue.",
-      "inputSchema": { "type": "object", "properties": {} },
-      "outputSchema": {
-        "type": "object",
+      "description": "Find device drivers in the catalogue (about 980 synths, drum machines, controllers and DAWs). Without arguments it lists them all; `query` keeps drivers whose vendor, name or slug contain every word (e.g. 'korg minilogue'). Returns name, vendor, OSC prefix (slug), kind, source tier and firmware version when the source states one. Pass the slug to list_routes for the full CC/NRPN/SysEx map.",
+      "inputSchema": {
+        "additionalProperties": false,
         "properties": {
-          "count": { "type": "integer", "description": "Number of device drivers found." },
-          "devices": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "name": { "type": "string" },
-                "vendor": { "type": "string" },
-                "slug": { "type": "string", "description": "OSC prefix without the leading slash." },
-                "kind": { "type": "string", "description": "'hardware' or 'software'." },
-                "revision": { "type": "string" },
-                "source_tier": { "type": "string" },
-                "file": { "type": "string" }
-              },
-              "required": ["name", "vendor", "slug", "kind"]
-            }
+          "kind": {
+            "enum": [
+              "hardware",
+              "software"
+            ],
+            "type": "string"
+          },
+          "limit": {
+            "description": "Return at most this many drivers.",
+            "minimum": 1,
+            "type": "integer"
+          },
+          "query": {
+            "description": "Words that must all appear in the vendor, name or slug (case-insensitive).",
+            "type": "string"
+          },
+          "vendor": {
+            "description": "Exact vendor name, case-insensitive (e.g. 'Moog').",
+            "type": "string"
           }
         },
-        "required": ["count", "devices"]
-      },
-      "annotations": { "title": "List devices", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": false }
+        "type": "object"
+      }
     },
     {
       "name": "get_device_docs",
-      "description": "Fetch the markdown companion guide for one device, by slug (the device's OSC prefix without the leading slash, e.g. 'ableton').",
+      "description": "Fetch the markdown companion documentation for one device, if present. The slug is the device's OSC prefix without the leading slash (e.g. 'ableton' for /ableton).",
       "inputSchema": {
-        "type": "object",
-        "properties": { "slug": { "type": "string", "description": "Device slug, e.g. 'ableton' or 'minilab3'" } },
-        "required": ["slug"]
-      },
-      "outputSchema": {
-        "type": "object",
         "properties": {
-          "slug": { "type": "string" },
-          "has_docs": { "type": "boolean", "description": "False when no companion .md exists for the device." },
-          "markdown": { "type": "string", "description": "The companion documentation, or a not-found message when has_docs is false." }
+          "slug": {
+            "description": "Device slug, e.g. 'ableton' or 'minilab3'",
+            "type": "string"
+          }
         },
-        "required": ["slug", "has_docs", "markdown"]
-      },
-      "annotations": { "title": "Get device docs", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": false }
+        "required": [
+          "slug"
+        ],
+        "type": "object"
+      }
     },
     {
       "name": "list_routes",
-      "description": "Return the OSC routes a device exposes: declarative commands, CC/NRPN params, SysEx params, and reply patterns.",
+      "description": "Return the OSC routes a device exposes: declarative commands (OSC paths it accepts), cc/nrpn params, sysex params, named note triggers (drum sounds), and reply patterns. Use this to discover what a device can do.",
       "inputSchema": {
-        "type": "object",
-        "properties": { "slug": { "type": "string", "description": "Device slug, e.g. 'minilab3'" } },
-        "required": ["slug"]
-      },
-      "outputSchema": {
-        "type": "object",
         "properties": {
-          "device": { "type": "string" },
-          "vendor": { "type": "string" },
-          "osc_prefix": { "type": "string" },
-          "kind": { "type": "string" },
-          "commands": { "type": "array", "description": "Declarative OSC paths the device accepts, with typed args and mode.", "items": { "type": "object" } },
-          "cc_params": { "type": "array", "description": "CC / NRPN parameters, each mapped to an OSC address. Every entry carries an 'expects' field (continuous/switch/momentary/trigger/clock/discrete) describing the device-side nature of the control — informative only.", "items": { "type": "object" } },
-          "params": { "type": "array", "description": "SysEx parameters, each mapped to an OSC address. Each entry carries an 'expects' field — see cc_params.", "items": { "type": "object" } },
-          "replies": { "type": "array", "description": "Reply patterns the device emits back onto the OSC surface.", "items": { "type": "object" } }
+          "slug": {
+            "description": "Device slug, e.g. 'minilab3'",
+            "type": "string"
+          }
         },
-        "required": ["device", "osc_prefix", "commands", "cc_params", "params", "replies"]
-      },
-      "annotations": { "title": "List device routes", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": false }
+        "required": [
+          "slug"
+        ],
+        "type": "object"
+      }
     },
     {
       "name": "send",
-      "description": "Send a single OSC message (typed args: int, float, string, bool) to a running osc-bridge instance — drive synths and DAWs.",
+      "description": "Send a single OSC message to a running osc-bridge instance. Target defaults to the server's --default-target. Args are typed (int, float, string, bool).",
       "inputSchema": {
-        "type": "object",
         "properties": {
-          "addr": { "type": "string", "description": "OSC address, e.g. /ableton/transport/play" },
-          "args": { "type": "array", "description": "Typed OSC args (int / float / string / bool)" },
-          "target": { "type": "string", "description": "Optional host:port override" }
+          "addr": {
+            "description": "OSC address, e.g. /ableton/transport/play",
+            "type": "string"
+          },
+          "args": {
+            "description": "Typed args. Each item is one of {int}, {float}, {string}, {bool}.",
+            "items": {},
+            "type": "array"
+          },
+          "target": {
+            "description": "Optional override host:port (e.g. 127.0.0.1:7777). Defaults to MCP server's --default-target.",
+            "type": "string"
+          }
         },
-        "required": ["addr"]
-      },
-      "outputSchema": {
-        "type": "object",
-        "properties": {
-          "sent": { "type": "boolean" },
-          "address": { "type": "string" },
-          "bytes": { "type": "integer", "description": "Encoded OSC packet size." },
-          "target": { "type": "string", "description": "host:port the packet was sent to." }
-        },
-        "required": ["sent", "address", "bytes", "target"]
-      },
-      "annotations": { "title": "Send OSC message", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
+        "required": [
+          "addr"
+        ],
+        "type": "object"
+      }
     },
     {
       "name": "get_status",
-      "description": "Send /bridge/status to a running osc-bridge and report the replies received within 500 ms.",
+      "description": "Send /bridge/status to a running osc-bridge and wait briefly for one reply per device (up to 500 ms).",
       "inputSchema": {
-        "type": "object",
-        "properties": { "target": { "type": "string", "description": "host:port to query, defaults to the configured default target" } }
-      },
-      "outputSchema": {
-        "type": "object",
         "properties": {
-          "target": { "type": "string" },
-          "replied": { "type": "boolean", "description": "False when no reply arrived within 500 ms." },
-          "replies": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": { "addr": { "type": "string" }, "args": { "type": "array" } },
-              "required": ["addr", "args"]
-            }
+          "target": {
+            "description": "host:port to query, defaults to --default-target",
+            "type": "string"
           }
         },
-        "required": ["target", "replied", "replies"]
-      },
-      "annotations": { "title": "Get bridge status", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": true }
+        "type": "object"
+      }
+    },
+    {
+      "name": "backup_presets",
+      "description": "Back up a hardware device's presets as a .syx file. Listens on the device's MIDI input and records every SysEx message it sends (a 'bulk dump'), stopping 3 s after the last one. Either the user starts the dump from the device's menu during the call, or pass request_hex (the device's dump-request message, from its manual or driver) with out_port. Use detect_hardware first to find the ports.",
+      "inputSchema": {
+        "properties": {
+          "file": {
+            "description": "Path of the .syx file to write.",
+            "type": "string"
+          },
+          "in_port": {
+            "description": "MIDI IN port of the device: index or name fragment (e.g. 'minilab').",
+            "type": "string"
+          },
+          "max_seconds": {
+            "description": "Give up after this long, 1-600 (default 60).",
+            "type": "integer"
+          },
+          "out_port": {
+            "description": "MIDI OUT port for request_hex: index or name fragment.",
+            "type": "string"
+          },
+          "request_hex": {
+            "description": "Optional dump-request SysEx as hex, e.g. 'F0 43 20 00 F7'.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "in_port",
+          "file"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "restore_presets",
+      "description": "Send a .syx file to a hardware device, e.g. to restore a preset backup. This OVERWRITES the device's memory: confirm with the user first, then pass confirm_overwrite: true. Messages are paced (gap_ms) because older devices drop fast dumps.",
+      "inputSchema": {
+        "properties": {
+          "confirm_overwrite": {
+            "description": "Must be true: the user agreed to overwrite the device's memory.",
+            "type": "boolean"
+          },
+          "file": {
+            "description": "Path of the .syx file to send.",
+            "type": "string"
+          },
+          "gap_ms": {
+            "description": "Pause between messages, 0-2000 ms (default 50).",
+            "type": "integer"
+          },
+          "out_port": {
+            "description": "MIDI OUT port of the device: index or name fragment.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "out_port",
+          "file",
+          "confirm_overwrite"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "detect_hardware",
+      "description": "Find the MIDI devices plugged into this computer and match them to catalogue drivers. Lists MIDI ports, sends the standard MIDI Identity Request (harmless: it changes nothing on the device) and reads each device's manufacturer, model and firmware. Returns, per device, the best matching drivers and a ready-to-run 'osc-bridge run' command with the right port numbers.",
+      "inputSchema": {
+        "properties": {
+          "probe": {
+            "description": "Send the Identity Request (default true). False only lists ports and matches by port name.",
+            "type": "boolean"
+          },
+          "timeout_ms": {
+            "description": "How long to wait for identity replies, 100-5000 ms (default 800).",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      }
     }
   ]
 }
