@@ -207,6 +207,35 @@ pub fn midi_out_for_msg(dev: &Device, msg: &OscMessage) -> Option<Vec<u8>> {
     try_midi_out(msg, mo, &dev.device.osc_prefix)
 }
 
+/// Named note trigger: `/<prefix><trigger.osc> [velocity] [note] [channel]`
+/// becomes a Note On. None when `msg.addr` is not a trigger of `dev`.
+/// Velocity defaults to 100; the note defaults to the trigger's natural note
+/// and must stay inside its range; the channel defaults to the trigger's
+/// fixed channel, else `midi_out.default_channel`.
+pub fn trigger_note_on(dev: &Device, msg: &OscMessage) -> Option<Result<Vec<u8>, String>> {
+    let table = dev.triggers.as_ref()?;
+    let t = table.entries.iter().find(|t| dev.full_osc_path(&t.osc) == msg.addr)?;
+    let int_at = |i: usize| -> Option<i64> {
+        match msg.args.get(i)? {
+            OscType::Int(v) => Some(*v as i64),
+            OscType::Long(v) => Some(*v),
+            OscType::Float(v) => Some(*v as i64),
+            OscType::Double(v) => Some(*v as i64),
+            _ => None,
+        }
+    };
+    let velocity = int_at(0).unwrap_or(100).clamp(1, 127) as u8;
+    let [lo, hi] = t.note_range;
+    let note = match int_at(1).or(t.note.map(i64::from)) {
+        Some(n) if (lo as i64..=hi as i64).contains(&n) => n as u8,
+        Some(n) => return Some(Err(format!("note {n} outside {lo}..={hi} for {}", t.sound))),
+        None => return Some(Err(format!("{} plays notes {lo}..={hi}: pass the note as 2nd arg", t.sound))),
+    };
+    let default_ch = dev.midi_out.as_ref().map(|m| m.default_channel).unwrap_or(0);
+    let channel = int_at(2).map(|c| c as u8).or(t.channel).unwrap_or(default_ch) & 0x0F;
+    Some(Ok(vec![0x90 | channel, note & 0x7F, velocity]))
+}
+
 /// Dynamic-route CC in: given raw MIDI bytes, return the semantic OSC message
 /// if a route is registered. None means "no dynamic route — fall through to
 /// the declarative pipeline".
@@ -912,6 +941,13 @@ fn handle_message(
             enqueue(tx, bytes, &msg.addr, from);
             return;
         }
+    }
+
+    // Named note triggers (drum machines, samplers).
+    match trigger_note_on(dev, &msg) {
+        Some(Ok(bytes)) => { enqueue(tx, bytes, &msg.addr, from); return; }
+        Some(Err(e)) => { eprintln!("  trigger {}: {e}", msg.addr); return; }
+        None => {}
     }
 
     // Try CC-param match (pure MIDI, no SysEx)

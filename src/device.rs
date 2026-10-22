@@ -43,7 +43,47 @@ pub struct Device {
     /// controllers (Electra One preset upload) workable.
     #[serde(default)]
     pub custom_commands: Vec<CustomCommand>,
+    /// Note-triggered sounds (drum machines, samplers): each entry gives a
+    /// named OSC address that fires one MIDI note on the right channel.
+    #[serde(default)]
+    pub triggers: Option<TriggerTable>,
 }
+
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
+pub struct TriggerTable {
+    pub entries: Vec<TriggerEntry>,
+}
+
+/// One note-triggered sound. `/<prefix><osc> [velocity] [note] [channel]`
+/// sends a Note On.
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct TriggerEntry {
+    pub osc: String,
+    /// Human label of the voice (`Kick`, `TR909 Open hihat`).
+    pub sound: String,
+    #[serde(default)]
+    pub section: Option<String>,
+    /// Fixed receive channel 0-15. Absent when the device listens on its
+    /// user-set basic channel, in omni, or on the active track
+    /// (`channel_mode`); the sender then uses `midi_out.default_channel`.
+    #[serde(default)]
+    pub channel: Option<u8>,
+    /// `"fixed"` (default), `"basic"`, `"omni"` or `"auto"`.
+    #[serde(default = "default_channel_mode")]
+    pub channel_mode: String,
+    /// Lowest and highest note that trigger the sound.
+    pub note_range: [u8; 2],
+    /// Natural note within the range; absent for slices / active-track rows,
+    /// where the caller must pass the note explicitly.
+    #[serde(default)]
+    pub note: Option<u8>,
+    #[serde(default)]
+    pub velocity_usage: Option<String>,
+    #[serde(default)]
+    pub comments: Option<String>,
+}
+
+fn default_channel_mode() -> String { "fixed".to_string() }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct CustomCommand {

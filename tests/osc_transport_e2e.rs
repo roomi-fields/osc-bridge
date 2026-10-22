@@ -80,6 +80,7 @@ fn ableton_like(target_port: u16, reply_port: u16) -> Device {
         }],
         docs: None,
         custom_commands: vec![],
+        triggers: None,
     }
 }
 
@@ -113,6 +114,7 @@ fn passthrough_like(target_port: u16, reply_port: u16) -> Device {
         subscriptions: vec![],
         docs: None,
         custom_commands: vec![],
+        triggers: None,
     }
 }
 

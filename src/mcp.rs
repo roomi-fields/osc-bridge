@@ -56,7 +56,8 @@ struct DeviceIndex {
 impl DeviceIndex {
     /// Walk `devices/` once, parsing each JSON just enough to capture the
     /// catalogue metadata. When several files share an `osc_prefix` (the
-    /// per-variant convention), the first one walked wins the slug lookup.
+    /// per-variant convention), the most trustworthy source wins the slug
+    /// lookup (`tier_rank`), ties broken by path so the choice is stable.
     fn build(dir: &Path) -> Self {
         let mut entries: Vec<DeviceIndexEntry> = Vec::new();
         let mut by_slug: HashMap<String, usize> = HashMap::new();
@@ -70,7 +71,14 @@ impl DeviceIndex {
                 .unwrap_or("unknown").to_string();
             let idx = entries.len();
             if !slug.is_empty() {
-                by_slug.entry(slug.clone()).or_insert(idx);
+                let better = match by_slug.get(&slug) {
+                    None => true,
+                    Some(&cur) => {
+                        let c = &entries[cur];
+                        (tier_rank(&tier), path) < (tier_rank(&c.tier), c.path.as_path())
+                    }
+                };
+                if better { by_slug.insert(slug.clone(), idx); }
             }
             entries.push(DeviceIndexEntry {
                 path: path.to_path_buf(),
@@ -87,6 +95,19 @@ impl DeviceIndex {
 
     fn find_path(&self, slug: &str) -> Option<&Path> {
         self.by_slug.get(slug).map(|&i| self.entries[i].path.as_path())
+    }
+}
+
+/// Lower is more trustworthy: tested on the device, then the vendor's own
+/// documentation, then curated OSC surfaces, then community sources.
+fn tier_rank(tier: &str) -> u8 {
+    match tier {
+        "hardware-verified" | "software-verified" => 0,
+        "vendor-doc" | "vendor" => 1,
+        "vendor-osc-api" | "third-party-osc" => 2,
+        "electra-preset" => 3,
+        "pencilresearch" => 4,
+        _ => 5,
     }
 }
 
@@ -235,7 +256,7 @@ fn tools_list() -> Value {
             },
             {
                 "name": "list_routes",
-                "description": "Return the OSC routes a device exposes: declarative commands (OSC paths it accepts), cc/nrpn params, sysex params, and reply patterns. Use this to discover what a device can do.",
+                "description": "Return the OSC routes a device exposes: declarative commands (OSC paths it accepts), cc/nrpn params, sysex params, named note triggers (drum sounds), and reply patterns. Use this to discover what a device can do.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -265,13 +286,18 @@ fn tools_list() -> Value {
                             "description": "SysEx parameters, each mapped to an OSC address. Each entry carries an 'expects' field — see cc_params.",
                             "items": { "type": "object" }
                         },
+                        "triggers": {
+                            "type": "array",
+                            "description": "Named note-triggered sounds (drum machines, samplers). Send '<address> [velocity] [note] [channel]' to fire a Note On; 'note' is required when the entry has no natural note.",
+                            "items": { "type": "object" }
+                        },
                         "replies": {
                             "type": "array",
                             "description": "Reply patterns the device emits back onto the OSC surface.",
                             "items": { "type": "object" }
                         }
                     },
-                    "required": ["device", "osc_prefix", "commands", "cc_params", "params", "replies"]
+                    "required": ["device", "osc_prefix", "commands", "cc_params", "params", "triggers", "replies"]
                 },
                 "annotations": {
                     "title": "List device routes",
@@ -446,6 +472,16 @@ fn list_routes(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
         "range": e.range,
         "expects": e.expects,
     })).collect()).unwrap_or_default();
+    let triggers: Vec<Value> = dev.triggers.as_ref().map(|t| t.entries.iter().map(|e| json!({
+        "address": format!("{prefix}{}", e.osc),
+        "sound": e.sound,
+        "section": e.section,
+        "channel": e.channel,
+        "channel_mode": e.channel_mode,
+        "note_range": e.note_range,
+        "note": e.note,
+        "velocity_usage": e.velocity_usage,
+    })).collect()).unwrap_or_default();
     let replies: Vec<Value> = dev.replies.iter().map(|r| json!({
         "match_osc": r.match_osc,
         "match_frame_len": r.match_frame.len(),
@@ -459,6 +495,7 @@ fn list_routes(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
         "commands": cmds,
         "cc_params": cc_params,
         "params": params,
+        "triggers": triggers,
         "replies": replies,
     });
     let text = serde_json::to_string_pretty(&payload).unwrap_or_default();
@@ -666,6 +703,22 @@ mod tests {
             break;
         }
         assert!(checked, "expected at least one device with cc_params");
+    }
+
+    #[test]
+    fn shared_slug_resolves_to_the_most_trustworthy_variant() {
+        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let mut by_slug: HashMap<&str, Vec<&DeviceIndexEntry>> = HashMap::new();
+        for e in &idx.entries { by_slug.entry(e.slug.as_str()).or_default().push(e); }
+        let mut checked = 0;
+        for (slug, variants) in by_slug.iter().filter(|(s, v)| !s.is_empty() && v.len() > 1) {
+            let best = variants.iter().map(|e| tier_rank(&e.tier)).min().unwrap();
+            let chosen = idx.find_path(slug).unwrap();
+            let chosen_tier = &variants.iter().find(|e| e.path == chosen).unwrap().tier;
+            assert_eq!(tier_rank(chosen_tier), best, "{slug} resolved to a weaker variant");
+            checked += 1;
+        }
+        assert!(checked > 0, "catalogue should contain shared slugs");
     }
 
     #[test]

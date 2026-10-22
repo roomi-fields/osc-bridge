@@ -5,14 +5,25 @@ Import a pencilresearch/midi canonical CSV into an osc-bridge device JSON.
 Usage:
     python3 scripts/import_pencilresearch.py <repo>/<Vendor>/<Device>.csv [--out path]
     python3 scripts/import_pencilresearch.py --update devices/<vendor>/<slug>.json --from <CSV>
-    python3 scripts/import_pencilresearch.py --bulk <repo-path>
+    python3 scripts/import_pencilresearch.py --sync <repo-path> [--dry-run]
 
-The CSV is expected to come from https://github.com/pencilresearch/midi.
+The CSV is expected to come from https://github.com/pencilresearch/midi
+(MIDI Guide, https://midi.guide). That dataset is licensed CC BY-SA 4.0:
+every source entry written here carries the licence and the attribution.
 
-The generated JSON is `📄 doc-derived`, CC/NRPN only (no SysEx). A
-`_limitations` field documents the gap explicitly. The `_sources` field is
-an array so future SysEx / vendor-doc layers can be appended without
-losing the link back to pencilresearch.
+The generated JSON is `📄 doc-derived`, CC/NRPN only (no SysEx), plus the
+device's note triggers when a sibling `<Device>.triggers.csv` exists. A
+`_limitations` field documents the gap explicitly.
+
+`--sync` reconciles the whole catalogue with a fresh clone, following the
+one-source-per-file rule:
+  - a file whose only source is pencilresearch is refreshed in place
+    (CC/NRPN and triggers replaced, every other block preserved), also when
+    the CSV was renamed upstream;
+  - a file mixing several sources keeps its data; only the licence and
+    attribution of its pencilresearch entry are filled in;
+  - a device not yet imported from pencilresearch gets its own file,
+    `<slug>.pencilresearch.fw-unknown.json`, next to any other variant.
 
 Re-import behaviour (`--update`): the CC/NRPN entries are replaced with the
 fresh ones; everything else in the JSON (commands, sysex header/footer,
@@ -30,6 +41,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 PENCIL_REPO_URL = "https://github.com/pencilresearch/midi"
+LICENSE = "CC-BY-SA-4.0"
+ATTRIBUTION = "MIDI Guide (https://midi.guide) by Pencil Research and contributors"
 
 
 def slug(s: str) -> str:
@@ -50,7 +63,7 @@ def parse_csv(path: Path):
     device = None
     groups = {}
     order = []
-    with path.open() as f:
+    with path.open(encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
             vendor = vendor or row.get("manufacturer", "").strip()
             device = device or row.get("device", "").strip()
@@ -112,7 +125,7 @@ def parse_csv(path: Path):
         if g.get("usage"):
             e["_usage"] = g["usage"][:150]
         entries.append(e)
-    return vendor or "Unknown", device or path.stem, entries
+    return vendor or path.parent.name, device or path.stem, entries
 
 
 def get_git_commit(repo_path: Path) -> str | None:
@@ -128,19 +141,106 @@ def pencilresearch_blob_url(commit: str, relative: str) -> str:
     return f"{PENCIL_REPO_URL}/blob/{commit}/{relative}"
 
 
-def build_device(vendor, device_name, entries, csv_rel_path, commit):
-    prefix = "/" + slug(device_name)
-    n_cc = sum(1 for e in entries if "cc" in e)
-    n_nrpn = sum(1 for e in entries if "nrpn_msb" in e)
-    n_14bit = sum(1 for e in entries if "cc_lsb" in e)
+def make_source(commit, csv_rel_path):
     source = {
         "type": "pencilresearch",
         "url": pencilresearch_blob_url(commit, csv_rel_path) if commit else f"{PENCIL_REPO_URL}/{csv_rel_path}",
         "imported_at": date.today().isoformat(),
+        "firmware": "unknown",
+        "license": LICENSE,
+        "attribution": ATTRIBUTION,
     }
     if commit:
         source["commit"] = commit
-    return {
+    return source
+
+
+def parse_triggers(path: Path):
+    """Read a `<Device>.triggers.csv` into `triggers.entries`."""
+    rows = []
+    with path.open(encoding="utf-8-sig") as f:
+        for row in csv.DictReader(f):
+            sound = (row.get("sound_name") or "").strip()
+            lo, hi = (row.get("note_number_min_value") or "").strip(), (row.get("note_number_max_value") or "").strip()
+            if not sound or not lo.isdigit() or not hi.isdigit():
+                continue
+            rows.append(row | {"sound_name": sound, "_lo": int(lo), "_hi": int(hi)})
+    sound_slugs = [slug(r["sound_name"]) for r in rows]
+    unique = len(set(sound_slugs)) == len(sound_slugs)
+    entries, seen = [], {}
+    for r, ss in zip(rows, sound_slugs):
+        section = (r.get("section") or "").strip()
+        osc = f"/drum/{ss}" if unique or not section else f"/drum/{slug(section)}/{ss}"
+        seen[osc] = seen.get(osc, 0) + 1
+        if seen[osc] > 1:
+            osc = f"{osc}_{seen[osc]}"
+        e = {"osc": osc, "sound": r["sound_name"]}
+        if section:
+            e["section"] = section
+        ch = (r.get("midi_channel") or "").strip().lower()
+        if ch.isdigit() and 1 <= int(ch) <= 16:
+            e["channel"] = int(ch) - 1
+        elif ch in ("basic", "omni", "auto"):
+            e["channel_mode"] = ch
+        e["note_range"] = [r["_lo"], r["_hi"]]
+        default = (r.get("note_number_default_value") or "").strip()
+        if default.isdigit():
+            e["note"] = int(default)
+        for col, key in (("velocity_usage", "velocity_usage"), ("sound_description", "comments"), ("comments", "comments")):
+            v = (r.get(col) or "").strip()
+            if v:
+                e[key] = f"{e[key]} {v}" if key in e else v
+        entries.append(e)
+    return entries
+
+
+CSV_KEYS = {"osc", "cc", "cc_lsb", "range", "nrpn_msb", "nrpn_lsb", "orientation", "section", "_usage"}
+
+
+def structural_expects(entry):
+    """The catalogue's structural `expects` rule: binary [0,1] is a switch, a
+    small NRPN stepper (no CC, 2..31 span) is discrete; everything else stays
+    continuous (the default, left implicit)."""
+    lo, hi = entry.get("range", [0, 127])
+    if [lo, hi] == [0, 1]:
+        return "switch"
+    if entry.get("cc") is None and 2 <= hi - lo <= 31:
+        return "discrete"
+    return None
+
+
+def annotate(entries, previous=()):
+    """Carry over hand-added fields (`expects`, `transform`, …) from the
+    previous entry with the same OSC path; apply the structural rule to the
+    rest."""
+    kept = {e["osc"]: {k: v for k, v in e.items() if k not in CSV_KEYS} for e in previous}
+    for e in entries:
+        extra = kept.get(e["osc"], {})
+        e.update(extra)
+        if "expects" not in e:
+            nature = structural_expects(e)
+            if nature:
+                e["expects"] = nature
+    return entries
+
+
+def coverage(entries, triggers):
+    cov = {
+        "entries_total": len(entries),
+        "cc_entries": sum(1 for e in entries if "cc" in e),
+        "nrpn_entries": sum(1 for e in entries if "nrpn_msb" in e),
+        "fourteen_bit_cc_pairs": sum(1 for e in entries if "cc_lsb" in e),
+    }
+    if triggers:
+        cov["triggers"] = len(triggers)
+    return cov
+
+
+def build_device(vendor, device_name, entries, csv_rel_path, commit, triggers=None):
+    prefix = "/" + slug(device_name)
+    annotate(entries)
+    source = make_source(commit, csv_rel_path)
+    doc = {
         "_sources": [source],
         "_limitations": (
             "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, "
@@ -148,12 +248,7 @@ def build_device(vendor, device_name, entries, csv_rel_path, commit):
             "this device with SysEx, sniff the vendor editor, add `sysex.header/footer` "
             "+ `commands` blocks, and use `update_device.md` PR template."
         ),
-        "_coverage": {
-            "entries_total": len(entries),
-            "cc_entries": n_cc,
-            "nrpn_entries": n_nrpn,
-            "fourteen_bit_cc_pairs": n_14bit,
-        },
+        "_coverage": coverage(entries, triggers),
         "device": {
             "name": device_name,
             "vendor": vendor,
@@ -176,84 +271,151 @@ def build_device(vendor, device_name, entries, csv_rel_path, commit):
         },
         "replies": [],
     }
+    if triggers:
+        doc["triggers"] = {"entries": triggers}
+    return doc
 
 
 def default_out_path(vendor, device_name):
     return REPO_ROOT / "devices" / vendor_slug(vendor) / f"{slug(device_name)}.json"
 
 
+def variant_out_path(vendor, device_name):
+    return REPO_ROOT / "devices" / vendor_slug(vendor) / f"{slug(device_name)}.pencilresearch.fw-unknown.json"
+
+
+def triggers_for(csv_path: Path):
+    t = csv_path.with_name(csv_path.stem + ".triggers.csv")
+    return parse_triggers(t) if t.is_file() else []
+
+
+def rel_to(path: Path, repo: Path | None) -> str:
+    try:
+        return path.relative_to(repo).as_posix() if repo else path.name
+    except ValueError:
+        return path.name
+
+
 def import_one(csv_path: Path, pencil_repo: Path | None, out_path: Path | None, min_entries: int = 3):
     vendor, device_name, entries = parse_csv(csv_path)
-    if len(entries) < min_entries:
+    triggers = triggers_for(csv_path)
+    if len(entries) < min_entries and not triggers:
         return None, f"skip (skeleton, {len(entries)} entries): {csv_path.name}"
     commit = get_git_commit(pencil_repo) if pencil_repo else None
-    # csv path relative to the pencilresearch repo root
-    if pencil_repo:
-        try:
-            rel = csv_path.relative_to(pencil_repo).as_posix()
-        except ValueError:
-            rel = csv_path.name
-    else:
-        rel = csv_path.name
-    doc = build_device(vendor, device_name, entries, rel, commit)
+    doc = build_device(vendor, device_name, entries, rel_to(csv_path, pencil_repo), commit, triggers)
     out = out_path or default_out_path(vendor, device_name)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(doc, indent=2) + "\n")
-    return out, f"{out.relative_to(REPO_ROOT)} — {len(entries)} entries"
+    return out, f"{out.relative_to(REPO_ROOT)} — {len(entries)} entries, {len(triggers)} triggers"
 
 
 def update_existing(json_path: Path, csv_path: Path, pencil_repo: Path | None):
-    """Re-import CC/NRPN while preserving every other block (SysEx, custom commands, etc.)"""
+    """Re-import CC/NRPN and triggers while preserving every other block."""
     existing = json.loads(json_path.read_text())
-    vendor, device_name, entries = parse_csv(csv_path)
+    _, _, entries = parse_csv(csv_path)
+    triggers = triggers_for(csv_path)
     commit = get_git_commit(pencil_repo) if pencil_repo else None
-    try:
-        rel = csv_path.relative_to(pencil_repo).as_posix() if pencil_repo else csv_path.name
-    except ValueError:
-        rel = csv_path.name
-    # Replace only cc_params
-    if "cc_params" not in existing:
-        existing["cc_params"] = {"channel": 0, "entries": []}
-    existing["cc_params"]["entries"] = entries
-    # Update / replace the pencilresearch source entry
-    src = {
-        "type": "pencilresearch",
-        "url": pencilresearch_blob_url(commit, rel) if commit else f"{PENCIL_REPO_URL}/{rel}",
-        "imported_at": date.today().isoformat(),
-    }
-    if commit:
-        src["commit"] = commit
-    sources = existing.get("_sources", [])
-    # Remove any prior pencilresearch entry, prepend new one, keep others.
-    sources = [s for s in sources if s.get("type") != "pencilresearch"]
-    sources.insert(0, src)
-    existing["_sources"] = sources
-    # Refresh coverage
-    n_cc = sum(1 for e in entries if "cc" in e)
-    n_nrpn = sum(1 for e in entries if "nrpn_msb" in e)
-    n_14bit = sum(1 for e in entries if "cc_lsb" in e)
-    existing["_coverage"] = {
-        "entries_total": len(entries),
-        "cc_entries": n_cc,
-        "nrpn_entries": n_nrpn,
-        "fourteen_bit_cc_pairs": n_14bit,
-    }
+    table = existing.setdefault("cc_params", {"channel": 0, "entries": []})
+    table["entries"] = annotate(entries, table.get("entries", []))
+    if triggers:
+        existing["triggers"] = {"entries": triggers}
+    else:
+        existing.pop("triggers", None)
+    sources = [s for s in existing.get("_sources", []) if s.get("type") != "pencilresearch"]
+    existing["_sources"] = [make_source(commit, rel_to(csv_path, pencil_repo))] + sources
+    existing["_coverage"] = coverage(entries, triggers)
     json_path.write_text(json.dumps(existing, indent=2) + "\n")
-    return f"{json_path.relative_to(REPO_ROOT)} — refreshed {len(entries)} entries"
+    return f"{json_path.relative_to(REPO_ROOT)} — refreshed {len(entries)} entries, {len(triggers)} triggers"
 
 
-def bulk_import(repo_path: Path, min_entries: int = 3):
-    imported = []
-    skipped = []
-    for csv_path in sorted(repo_path.rglob("*.csv")):
-        if csv_path.parent == repo_path:  # top-level CSVs aren't device files
+def license_only(json_path: Path):
+    """Fill licence + attribution on the pencilresearch entry of a mixed file."""
+    doc = json.loads(json_path.read_text())
+    changed = False
+    for src in doc.get("_sources", []):
+        if src.get("type") == "pencilresearch" and (src.get("license"), src.get("attribution")) != (LICENSE, ATTRIBUTION):
+            src["license"], src["attribution"] = LICENSE, ATTRIBUTION
+            changed = True
+    if changed:
+        json_path.write_text(json.dumps(doc, indent=2) + "\n")
+    return changed
+
+
+def norm(s: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", s.lower())
+
+
+def pencil_csv_of(doc) -> str | None:
+    from urllib.parse import unquote
+    for src in doc.get("_sources", []):
+        if src.get("type") == "pencilresearch":
+            m = re.search(r"pencilresearch/midi/(?:blob/[0-9a-f]+/)?(.+\.csv)$", src.get("url", ""))
+            return unquote(m.group(1)) if m else None
+    return None
+
+
+def sync(repo: Path, min_entries: int = 3, dry_run: bool = False):
+    repo = repo.resolve()
+    upstream = {p.relative_to(repo).as_posix(): p for p in repo.rglob("*.csv")
+                if p.parent != repo and not p.name.endswith(".triggers.csv")}
+    # Devices documented only by their note triggers have no main CSV.
+    for t in repo.rglob("*.triggers.csv"):
+        main = t.with_name(t.name.replace(".triggers.csv", ".csv"))
+        if not main.exists():
+            upstream.setdefault(main.relative_to(repo).as_posix(), main)
+    by_norm = {}
+    for rel in upstream:
+        vendor_dir, _, name = rel.rpartition("/")
+        by_norm[(norm(vendor_dir), norm(name[:-4]))] = rel
+
+    refreshed, licensed, created, skipped, orphaned = [], [], [], [], []
+    claimed = set()
+    for f in sorted((REPO_ROOT / "devices").rglob("*.json")):
+        try:
+            doc = json.loads(f.read_text())
+        except (json.JSONDecodeError, UnicodeDecodeError):
             continue
-        out, msg = import_one(csv_path, repo_path, None, min_entries)
-        (imported if out else skipped).append(msg)
-    print(f"\n=== Imported {len(imported)} devices ===")
-    for m in imported: print("  " + m)
-    print(f"\n=== Skipped {len(skipped)} CSVs ===")
-    for m in skipped: print("  " + m)
+        rel = pencil_csv_of(doc)
+        if rel is None:
+            continue
+        if rel not in upstream:
+            vendor_dir, _, name = rel.rpartition("/")
+            rel = by_norm.get((norm(vendor_dir), norm(name[:-4])), rel)
+        claimed.add(rel)
+        if len(doc.get("_sources", [])) > 1:
+            if dry_run or license_only(f):
+                licensed.append(f.relative_to(REPO_ROOT).as_posix())
+            continue
+        if rel not in upstream:
+            orphaned.append(f.relative_to(REPO_ROOT).as_posix())
+            continue
+        refreshed.append(f.relative_to(REPO_ROOT).as_posix() if dry_run
+                         else update_existing(f, upstream[rel], repo))
+
+    for rel in sorted(set(upstream) - claimed):
+        csv_path = upstream[rel]
+        if csv_path.exists():
+            vendor, device_name, entries = parse_csv(csv_path)
+        else:
+            rows = list(csv.DictReader(csv_path.with_name(csv_path.stem + ".triggers.csv").open(encoding="utf-8-sig")))
+            vendor, device_name, entries = rows[0]["manufacturer"], rows[0]["device"], []
+        triggers = triggers_for(csv_path)
+        if len(entries) < min_entries and not triggers:
+            skipped.append(rel)
+            continue
+        out = variant_out_path(vendor, device_name)
+        if not dry_run:
+            out.parent.mkdir(parents=True, exist_ok=True)
+            doc = build_device(vendor, device_name, entries, rel, get_git_commit(repo), triggers)
+            out.write_text(json.dumps(doc, indent=2) + "\n")
+        created.append(f"{out.relative_to(REPO_ROOT)} — {len(entries)} entries, {len(triggers)} triggers")
+
+    for title, items in (("Refreshed", refreshed), ("Licence filled (mixed sources, data untouched)", licensed),
+                         ("Created", created), ("Skipped (fewer than %d entries)" % min_entries, skipped),
+                         ("Kept, CSV gone upstream", orphaned)):
+        print(f"\n=== {title}: {len(items)} ===")
+        for m in items:
+            print("  " + m)
 
 
 def main():
@@ -261,31 +423,28 @@ def main():
     g = ap.add_mutually_exclusive_group()
     g.add_argument("--update", metavar="JSON",
                    help="update an existing device JSON with a fresh CSV")
-    g.add_argument("--bulk", metavar="REPO",
-                   help="import every CSV from a pencilresearch/midi clone")
+    g.add_argument("--sync", metavar="REPO",
+                   help="reconcile the catalogue with a pencilresearch/midi clone")
     ap.add_argument("--from", dest="from_csv", help="CSV path (with --update)")
     ap.add_argument("--out", help="output path (single-import mode)")
     ap.add_argument("--min-entries", type=int, default=3,
-                    help="skip CSVs with fewer than this many entries (default 3)")
+                    help="skip CSVs with fewer than this many entries and no triggers (default 3)")
+    ap.add_argument("--dry-run", action="store_true", help="with --sync: report without writing")
     ap.add_argument("csv", nargs="?", help="single CSV to import")
     args = ap.parse_args()
 
     if args.update:
         if not args.from_csv:
             ap.error("--update requires --from <CSV>")
-        out_json = Path(args.update)
         csv_path = Path(args.from_csv)
-        # Try to detect pencilresearch repo root by walking up from the CSV
         repo = csv_path.resolve()
-        while repo != repo.parent:
-            if (repo / ".git").exists() or (repo / "README.md").exists() and (repo / "CONTRIBUTING.md").exists():
-                break
+        while repo != repo.parent and not (repo / ".git").exists():
             repo = repo.parent
-        print(update_existing(out_json, csv_path, repo if (repo / ".git").exists() else None))
+        print(update_existing(Path(args.update), csv_path, repo if (repo / ".git").exists() else None))
         return
 
-    if args.bulk:
-        bulk_import(Path(args.bulk), args.min_entries)
+    if args.sync:
+        sync(Path(args.sync), args.min_entries, args.dry_run)
         return
 
     if not args.csv:

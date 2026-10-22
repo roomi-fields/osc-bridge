@@ -10,7 +10,7 @@ when the source driver supports it.
 
 Converters (turning cached data into device JSONs) are intentionally kept
 separate — run them after `sync_sources.py` has populated the cache:
-    python3 scripts/import_pencilresearch.py   --bulk .cache/pencilresearch-midi
+    python3 scripts/import_pencilresearch.py   --sync .cache/pencilresearch-midi
     python3 scripts/import_electra_preset.py   --bulk .cache/electra-presets
 """
 from __future__ import annotations
