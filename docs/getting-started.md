@@ -71,6 +71,22 @@ Add the MCP server to Claude Desktop, Claude Code or Cursor:
 Then ask: *“What synth is plugged in, and what can it do?”* — see the
 [MCP guide](MCP.md).
 
+## 6. Or use the hosted relay, nothing to run locally but a door
+
+With an assistant that only reaches the internet (Claude on the web, a phone,
+an agent on a server), the hosted server can drive your hardware through a
+relay. Open [the connect page](connect.md) in Chrome or Edge, or run:
+
+```bash
+osc-bridge connect
+```
+
+It prints a pairing code and a personal MCP address: add the address to your
+assistant as a remote MCP server once, then give it the code. The agent can
+then detect your devices, set parameters by name and hear what you play
+(`relay_detect`, `relay_send`, `relay_listen`). Stop with Ctrl-C;
+`--no-share` keeps your devices' identities out of the records.
+
 ## Next
 
 - [Add your own device](TUTORIAL_FIRST_DEVICE.md) in about 30 minutes.

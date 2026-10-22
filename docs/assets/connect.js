@@ -63,6 +63,8 @@
         if (!out) return log("✕", msg.port, msg.data);
         try { out.send(msg.data); log("→", msg.port, msg.data); }
         catch (e) { log("✕ " + e.message, msg.port, msg.data); }
+      } else if (msg.type === "paired") {
+        status("An agent is connected. Only it can use this code; press New code to change agent.");
       } else if (msg.type === "error") {
         status("Relay error: " + msg.error);
       }
@@ -95,6 +97,11 @@
     access.onstatechange = () => { listen(); sendPorts(); };
     listen();
     open();
+  });
+  $("ob-connect-new").addEventListener("click", () => {
+    if (!ws) return;
+    ws.onclose = () => open();
+    ws.close();
   });
   $("ob-connect-share").addEventListener("change", e => send({ type: "share", enabled: e.target.checked }));
   root.querySelectorAll(".ob-connect-copy").forEach(b => b.addEventListener("click", () => {

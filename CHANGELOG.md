@@ -56,6 +56,9 @@ addressable by sound name — and its community data is now properly licensed.
   program speaking the WebSocket protocol — pairs the user's MIDI ports
   with a code; agents detect, play and listen to that hardware through the
   hosted server, which encodes driver addresses into MIDI itself.
+  `osc-bridge connect` is the command-line door (all ports, rescanned every
+  3 s, account kept in `~/.config/osc-bridge/user`). The first agent account
+  to use a code owns the door; 64 doors at most, 4 per address.
 - Hosted instance: https://mcp.osc-bridge.roomi-fields.com/mcp.
 - The site publishes a static JSON API: `/api/v1/index.json` (every driver
   with source, firmware and coverage) and each driver file under

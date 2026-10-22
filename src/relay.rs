@@ -20,6 +20,13 @@
 //!
 //! The door connects with `?user=<id>` to keep its account; an id the server
 //! did not issue gets a new account. A session lives as long as its socket.
+//!
+//! Who may drive a door: whoever holds its pairing code (about 40 random
+//! bits, new for each session) — and once an agent account has used it, that
+//! account only (`Session::claim`); the door is told, with
+//! `{"type":"paired"}`, and a new session gives a new code. The server
+//! itself is protected by caps on doors: `MAX_DOORS` in all,
+//! `MAX_DOORS_PER_CLIENT` per network address.
 
 use anyhow::{Context, Result};
 use crossbeam_channel::{bounded, Receiver, Sender};
@@ -42,7 +49,17 @@ const OUTBOUND_QUEUE: usize = 1024;
 
 const READ_TIMEOUT: Duration = Duration::from_millis(5);
 const WRITE_TIMEOUT: Duration = Duration::from_secs(5);
-const HANDSHAKE_TIMEOUT: Duration = Duration::from_secs(10);
+const HANDSHAKE_TIMEOUT: Duration = Duration::from_secs(5);
+
+/// Doors served at once, handshakes included: each holds a thread, and the
+/// container's thread budget is shared with the HTTP server.
+pub const MAX_DOORS: usize = 64;
+
+/// Doors one network address may hold at once.
+pub const MAX_DOORS_PER_CLIENT: usize = 4;
+
+/// A ping every so often keeps proxies from closing a quiet session.
+const KEEPALIVE: Duration = Duration::from_secs(30);
 
 /// One MIDI message received from the door.
 #[derive(Clone, Debug)]
@@ -60,6 +77,8 @@ pub struct Session {
     inputs: Mutex<Vec<String>>,
     inbound: Mutex<VecDeque<Inbound>>,
     share: Mutex<bool>,
+    /// The agent account driving this door, from its first relay call.
+    owner: Mutex<Option<String>>,
     tx: Sender<String>,
 }
 
@@ -70,6 +89,21 @@ impl Session {
 
     pub fn inputs(&self) -> Vec<String> {
         self.inputs.lock().map(|g| g.clone()).unwrap_or_default()
+    }
+
+    /// Let `user` drive this door: the first account to use the code owns
+    /// it, others are refused.
+    pub fn claim(&self, user: &str) -> std::result::Result<(), String> {
+        let mut owner = self.owner.lock().map_err(|_| "relay unavailable")?;
+        match owner.as_deref() {
+            Some(o) if o == user => Ok(()),
+            Some(_) => Err("this relay is paired with another agent: press New code on the page, and give the new code".into()),
+            None => {
+                *owner = Some(user.to_string());
+                let _ = self.tx.try_send(json!({ "type": "paired" }).to_string());
+                Ok(())
+            }
+        }
     }
 
     pub fn shares(&self) -> bool {
@@ -142,10 +176,39 @@ impl Session {
     }
 }
 
-/// Every connected door, by pairing code.
+/// Every connected door, by pairing code, and the doors held per address.
 #[derive(Default)]
 pub struct Relays {
     sessions: Mutex<HashMap<String, Arc<Session>>>,
+    doors: std::sync::atomic::AtomicUsize,
+    per_client: Mutex<HashMap<String, usize>>,
+}
+
+/// One door counted against its address; released on drop.
+struct ClientSlot<'a> {
+    relays: &'a Relays,
+    client: String,
+}
+
+impl Drop for ClientSlot<'_> {
+    fn drop(&mut self) {
+        if let Ok(mut g) = self.relays.per_client.lock() {
+            if let Some(n) = g.get_mut(&self.client) {
+                *n -= 1;
+                if *n == 0 { g.remove(&self.client); }
+            }
+        }
+    }
+}
+
+impl Relays {
+    fn take_slot(&self, client: &str) -> Option<ClientSlot<'_>> {
+        let mut g = self.per_client.lock().ok()?;
+        let n = g.entry(client.to_string()).or_insert(0);
+        if *n >= MAX_DOORS_PER_CLIENT { return None; }
+        *n += 1;
+        Some(ClientSlot { relays: self, client: client.to_string() })
+    }
 }
 
 impl Relays {
@@ -169,6 +232,7 @@ impl Relays {
             inputs: Mutex::new(Vec::new()),
             inbound: Mutex::new(VecDeque::new()),
             share: Mutex::new(true),
+            owner: Mutex::new(None),
             tx,
         });
         sessions.insert(code, session.clone());
@@ -207,40 +271,62 @@ pub trait Accounts: Send + Sync {
 }
 
 /// Serve doors on `bind`. Browser pages are accepted from `allowed_origins`
-/// (and localhost); programs that send no origin are always accepted.
-/// Returns once the listener is up; doors are served on background threads.
-pub fn serve(bind: &str, relays: Arc<Relays>, accounts: Arc<dyn Accounts>, allowed_origins: Vec<String>) -> Result<SocketAddr> {
+/// (and localhost); programs that send no origin are always accepted. With
+/// `behind_proxy`, a door's address is the one the proxy appended to
+/// `X-Forwarded-For`. Returns once the listener is up; doors are served on
+/// background threads.
+pub fn serve(bind: &str, relays: Arc<Relays>, accounts: Arc<dyn Accounts>, allowed_origins: Vec<String>,
+             behind_proxy: bool) -> Result<SocketAddr> {
+    use std::sync::atomic::Ordering;
     let listener = TcpListener::bind(bind).with_context(|| format!("bind relay {bind}"))?;
     let local = listener.local_addr()?;
     let allowed = Arc::new(allowed_origins);
     std::thread::spawn(move || {
         for stream in listener.incoming() {
             let Ok(stream) = stream else { continue };
+            if relays.doors.fetch_add(1, Ordering::SeqCst) >= MAX_DOORS {
+                relays.doors.fetch_sub(1, Ordering::SeqCst);
+                eprintln!("relay: {MAX_DOORS} doors open, connection refused");
+                continue; // dropping the stream closes it
+            }
             let (relays, accounts, allowed) = (relays.clone(), accounts.clone(), allowed.clone());
             std::thread::spawn(move || {
-                if let Err(e) = door(stream, &relays, accounts.as_ref(), &allowed) {
+                if let Err(e) = door(stream, &relays, accounts.as_ref(), &allowed, behind_proxy) {
                     eprintln!("relay: {e}");
                 }
+                relays.doors.fetch_sub(1, Ordering::SeqCst);
             });
         }
     });
     Ok(local)
 }
 
-fn door(stream: TcpStream, relays: &Relays, accounts: &dyn Accounts, allowed: &[String]) -> Result<()> {
+fn door(stream: TcpStream, relays: &Relays, accounts: &dyn Accounts, allowed: &[String], behind_proxy: bool) -> Result<()> {
     stream.set_read_timeout(Some(HANDSHAKE_TIMEOUT))?;
     stream.set_write_timeout(Some(WRITE_TIMEOUT))?;
+    let peer = stream.peer_addr().map(|a| a.ip().to_string()).unwrap_or_default();
     let mut presented: Option<String> = None;
+    let mut slot: Option<ClientSlot> = None;
     let check = |req: &Request, resp: Response| -> std::result::Result<Response, ErrorResponse> {
+        let deny = |status: tungstenite::http::StatusCode, why: &str| {
+            let mut deny = ErrorResponse::new(Some(why.into()));
+            *deny.status_mut() = status;
+            deny
+        };
         presented = req.uri().query().and_then(|q| q.split('&').find_map(|kv| kv.strip_prefix("user=")))
             .map(str::to_string);
         let origin = req.headers().get("origin").and_then(|v| v.to_str().ok());
-        if crate::ws::origin_allowed(origin, allowed) {
-            return Ok(resp);
+        if !crate::ws::origin_allowed(origin, allowed) {
+            return Err(deny(tungstenite::http::StatusCode::FORBIDDEN, "origin not allowed"));
         }
-        let mut deny = ErrorResponse::new(Some("origin not allowed".into()));
-        *deny.status_mut() = tungstenite::http::StatusCode::FORBIDDEN;
-        Err(deny)
+        let client = behind_proxy.then(|| req.headers().get("x-forwarded-for")
+            .and_then(|v| v.to_str().ok()).and_then(crate::ws::proxy_seen_address)).flatten()
+            .unwrap_or_else(|| peer.clone());
+        slot = relays.take_slot(&client);
+        if slot.is_none() {
+            return Err(deny(tungstenite::http::StatusCode::TOO_MANY_REQUESTS, "too many relays from this address"));
+        }
+        Ok(resp)
     };
     let mut ws: WebSocket<TcpStream> = match tungstenite::accept_hdr(stream, check) {
         Ok(ws) => ws,
@@ -256,7 +342,12 @@ fn door(stream: TcpStream, relays: &Relays, accounts: &dyn Accounts, allowed: &[
     let hello = json!({ "type": "hello", "code": display_code(&session.code), "user": user });
     let outcome = (|| -> Result<()> {
         ws.send(Message::Text(hello.to_string().into()))?;
+        let mut last_ping = Instant::now();
         loop {
+            if last_ping.elapsed() >= KEEPALIVE {
+                ws.send(Message::Ping(Vec::new().into()))?;
+                last_ping = Instant::now();
+            }
             while let Ok(frame) = rx.try_recv() {
                 ws.send(Message::Text(frame.into()))?;
             }
@@ -272,6 +363,7 @@ fn door(stream: TcpStream, relays: &Relays, accounts: &dyn Accounts, allowed: &[
         }
     })();
     relays.close(&session.code);
+    drop(slot);
     outcome
 }
 
@@ -297,7 +389,7 @@ mod tests {
     #[test]
     fn a_door_pairs_and_carries_midi_both_ways() {
         let relays = Arc::new(Relays::default());
-        let addr = serve("127.0.0.1:0", relays.clone(), Arc::new(AnyAccount), vec![]).unwrap();
+        let addr = serve("127.0.0.1:0", relays.clone(), Arc::new(AnyAccount), vec![], false).unwrap();
         let (mut ws, _) = tungstenite::connect(format!("ws://{addr}/relay?user=abc")).unwrap();
         let hello = text(&mut ws);
         assert_eq!(hello["type"], "hello");
@@ -328,9 +420,29 @@ mod tests {
     }
 
     #[test]
+    fn the_first_agent_owns_a_door_and_one_address_holds_few() {
+        let relays = Arc::new(Relays::default());
+        let addr = serve("127.0.0.1:0", relays.clone(), Arc::new(AnyAccount), vec![], false).unwrap();
+        let mut doors: Vec<_> = (0..MAX_DOORS_PER_CLIENT).map(|_| tungstenite::connect(format!("ws://{addr}/relay")).unwrap().0).collect();
+        assert!(tungstenite::connect(format!("ws://{addr}/relay")).is_err(), "one address, too many doors");
+        let code = text(&mut doors[0])["code"].as_str().unwrap().to_string();
+        let session = relays.get(&code).unwrap();
+        session.claim("agent-a").unwrap();
+        assert_eq!(text(&mut doors[0])["type"], "paired");
+        session.claim("agent-a").unwrap();
+        assert!(session.claim("agent-b").is_err());
+        for mut d in doors.drain(..) { d.close(None).unwrap(); let _ = d.read(); }
+        let freed = (0..200).any(|_| {
+            std::thread::sleep(Duration::from_millis(5));
+            tungstenite::connect(format!("ws://{addr}/relay")).is_ok()
+        });
+        assert!(freed, "closing doors frees the address");
+    }
+
+    #[test]
     fn pages_from_other_sites_are_refused() {
         let relays = Arc::new(Relays::default());
-        let addr = serve("127.0.0.1:0", relays, Arc::new(AnyAccount), vec!["https://osc-bridge.roomi-fields.com".into()]).unwrap();
+        let addr = serve("127.0.0.1:0", relays, Arc::new(AnyAccount), vec!["https://osc-bridge.roomi-fields.com".into()], false).unwrap();
         let req = |origin: &str| {
             let mut r = tungstenite::client::IntoClientRequest::into_client_request(format!("ws://{addr}/relay")).unwrap();
             r.headers_mut().insert("origin", origin.parse().unwrap());
