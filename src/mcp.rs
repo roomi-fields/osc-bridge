@@ -47,15 +47,20 @@ pub struct McpOptions {
 /// and reporting on it. None touches the host's MIDI ports.
 const HOSTED_TOOLS: [&str; 5] = ["list_devices", "get_device_docs", "list_routes", "report_result", "get_trust"];
 
-/// Who is calling, as far as the hosted server knows: the anonymous user id
-/// and the report store. Both are absent on stdio.
+/// Who is calling, as far as the hosted server knows: the account (an id
+/// the server issued) and the ledger. Both are absent on stdio.
 #[derive(Clone, Copy, Default)]
 pub struct Caller<'a> {
     pub user: Option<&'a str>,
-    /// The network client (address as the server sees it), for the
-    /// per-connection report cap. Held in memory only.
-    pub client: Option<&'a str>,
-    pub reports: Option<&'a crate::reports::ReportStore>,
+    pub ledger: Option<&'a crate::reports::Ledger>,
+}
+
+/// What only the hosted server has: the ledger, and the administrator's
+/// token (`OSC_BRIDGE_ADMIN_TOKEN`) guarding `/admin/*`; without a token
+/// those endpoints answer 404.
+pub struct Hosted {
+    pub ledger: crate::reports::Ledger,
+    pub admin_token: Option<String>,
 }
 
 /// One lightweight catalogue entry. The full `Device` is loaded on demand
@@ -254,26 +259,33 @@ fn proxy_seen_address(header: &str) -> Option<String> {
 /// minute. `GET /` returns a one-line description for people who open the
 /// URL in a browser, `GET /healthz` answers `ok`. With `behind_proxy`, the
 /// client is identified by `X-Forwarded-For` — only set it when a proxy that
-/// overwrites that header is the sole way in.
+/// overwrites that header is the sole way in. `data_dir` holds
+/// `usage.jsonl` and the ledger `ledger.jsonl` (accounts, reports,
+/// decisions); without it they live in memory only.
 pub fn run_http(opts: McpOptions, bind: &str, behind_proxy: bool, data_dir: Option<&Path>) -> Result<()> {
     let opts = McpOptions { hosted: true, ..opts };
     let usage = UsageLog::open(data_dir.map(|d| d.join("usage.jsonl")).as_deref())?;
-    let reports = crate::reports::ReportStore::open(data_dir.map(|d| d.join("reports.jsonl")).as_deref())?;
+    let hosted = Hosted {
+        ledger: crate::reports::Ledger::open(data_dir.map(|d| d.join("ledger.jsonl")).as_deref())?,
+        admin_token: std::env::var("OSC_BRIDGE_ADMIN_TOKEN").ok().filter(|t| t.len() >= 16),
+    };
+    if hosted.admin_token.is_none() {
+        eprintln!("no OSC_BRIDGE_ADMIN_TOKEN (16+ characters): /admin endpoints disabled");
+    }
     let index = build_index(&opts);
     let server = tiny_http::Server::http(bind).map_err(|e| anyhow::anyhow!("bind HTTP {bind}: {e}"))?;
-    eprintln!("MCP over HTTP on http://{}/mcp (catalogue tools only)", server.server_addr());
-    let shared = std::sync::Arc::new((server, opts, index, RateLimiter::default(), usage, reports));
+    eprintln!("MCP over HTTP on http://{}/mcp ({})", server.server_addr(), HOSTED_TOOLS.join(", "));
+    let shared = std::sync::Arc::new((server, opts, index, RateLimiter::default(), usage, hosted));
     let workers: Vec<_> = (0..HTTP_WORKERS).map(|_| {
         let shared = shared.clone();
         std::thread::spawn(move || {
-            let (server, opts, index, limiter, usage, reports) = &*shared;
+            let (server, opts, index, limiter, usage, hosted) = &*shared;
             for mut req in server.incoming_requests() {
                 if !limiter.allow(&client_key(&req, behind_proxy)) {
                     respond(req, HttpReply::new(429, Some("rate limit: 120 requests per minute\n".into())));
                     continue;
                 }
-                let client = client_key(&req, behind_proxy);
-                let reply = http_exchange(&read_request(&mut req), opts, index, reports, &client);
+                let reply = http_exchange(&read_request(&mut req), opts, index, hosted);
                 if let Some(line) = &reply.usage {
                     usage.write(line);
                 }
@@ -290,9 +302,12 @@ struct HttpRequest {
     method: String,
     path: String,
     body: Result<String, String>,
-    /// The anonymous user id the client presents: from a personal URL
+    /// The account id the client presents: from a personal URL
     /// (`/u/<id>/mcp`) or the `Mcp-Session-Id` header (see `user_id`).
+    /// Not yet checked against the ledger.
     user: Option<String>,
+    /// The bearer token of an `Authorization` header.
+    bearer: Option<String>,
 }
 
 /// What the server sends back. `session` is the id to return in the
@@ -339,23 +354,17 @@ impl UsageLog {
     }
 }
 
-/// A fresh anonymous user id: 128 random bits, hex.
-fn new_user_id() -> String {
-    let mut bytes = [0u8; 16];
-    getrandom::fill(&mut bytes).expect("system random source");
-    bytes.iter().map(|b| format!("{b:02x}")).collect()
-}
-
 fn is_user_id(s: &str) -> bool {
     s.len() == 32 && s.bytes().all(|b| b.is_ascii_hexdigit())
 }
 
-/// Anonymous users, no account. Every client that initializes gets an id
-/// back in `Mcp-Session-Id`, which MCP clients repeat on each request of the
-/// session. To stay the same user across sessions, a client uses a personal
-/// endpoint `/u/<id>/mcp` (a fresh one from `GET /u/new`); that id then
-/// serves as the session id too. Returns the path without the id prefix,
-/// and the id when one was presented and well formed.
+/// Accounts without sign-up: the server issues every id and keeps it in the
+/// ledger. A client that initializes without one gets a new account, in
+/// `Mcp-Session-Id`, which MCP clients repeat on each request of the
+/// session. To stay the same account across sessions, a client uses its
+/// personal endpoint `/u/<id>/mcp` (a fresh one from `GET /u/new`); that id
+/// then serves as the session id too. Returns the path without the id
+/// prefix, and the id when one was presented and well formed.
 fn user_id(path: &str, session_header: Option<&str>) -> (String, Option<String>) {
     if let Some(rest) = path.strip_prefix("/u/") {
         if let Some((id, tail)) = rest.split_once('/') {
@@ -379,27 +388,72 @@ fn read_request(req: &mut tiny_http::Request) -> HttpRequest {
         Ok(_) => Ok(text),
         Err(e) => Err(format!("read body: {e}")),
     };
-    HttpRequest { method, path, body, user }
+    let bearer = req.headers().iter().find(|h| h.field.equiv("Authorization"))
+        .and_then(|h| h.value.as_str().strip_prefix("Bearer ").map(|t| t.trim().to_string()));
+    HttpRequest { method, path, body, user, bearer }
+}
+
+/// Compare a presented token with the expected one in time independent of
+/// where they differ.
+fn token_matches(given: &str, expected: &str) -> bool {
+    given.len() == expected.len()
+        && given.bytes().zip(expected.bytes()).fold(0u8, |acc, (a, b)| acc | (a ^ b)) == 0
+}
+
+/// `/admin/*`: what waits for approval, and decisions on reports and
+/// accounts. 404 without a configured token, 401 with a wrong one.
+fn admin_exchange(req: &HttpRequest, hosted: &Hosted) -> HttpReply {
+    use crate::reports::Decision;
+    let Some(expected) = &hosted.admin_token else { return HttpReply::new(404, None) };
+    if !req.bearer.as_deref().is_some_and(|t| token_matches(t, expected)) {
+        return HttpReply::new(401, Some(json!({ "error": "admin token required" }).to_string()));
+    }
+    let error = |status: u16, msg: String| HttpReply::new(status, Some(json!({ "error": msg }).to_string()));
+    match (req.method.as_str(), req.path.as_str()) {
+        ("GET", "/admin/pending") => HttpReply::new(200, Some(hosted.ledger.pending().to_string())),
+        ("POST", "/admin/decide") => {
+            let Ok(body) = req.body.as_deref().map(serde_json::from_str::<Value>) else {
+                return error(413, "request body too large".into());
+            };
+            let Ok(body) = body else { return error(400, "expected a JSON object".into()) };
+            let decision = match body.get("decision").and_then(Value::as_str) {
+                Some("approve") => Decision::Approve,
+                Some("reject") => Decision::Reject,
+                Some("suspect") => Decision::Suspect,
+                Some("clear") => Decision::Clear,
+                _ => return error(400, "decision must be approve, reject, suspect or clear".into()),
+            };
+            let report = body.get("report").and_then(Value::as_u64);
+            let user = body.get("user").and_then(Value::as_str);
+            match hosted.ledger.decide(decision, report, user) {
+                Ok(v) => HttpReply::new(200, Some(v.to_string())),
+                Err(e) => error(400, e),
+            }
+        }
+        _ => HttpReply::new(404, None),
+    }
 }
 
 /// The reply to one HTTP request.
-fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex, reports: &crate::reports::ReportStore, client: &str) -> HttpReply {
+fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex, hosted: &Hosted) -> HttpReply {
+    let ledger = &hosted.ledger;
     let rpc_error = |code: i64, msg: String| json!({
         "jsonrpc": "2.0", "id": null, "error": { "code": code, "message": msg },
     }).to_string();
     match (req.method.as_str(), req.path.as_str()) {
         ("OPTIONS", _) => HttpReply::new(204, None),
         ("GET", "/") => HttpReply::new(200, Some(format!(
-            "osc-bridge {SERVER_VERSION} MCP server (catalogue tools: {}). POST JSON-RPC to /mcp; \
-             a personal endpoint that keeps your anonymous id: GET /u/new. \
+            "osc-bridge {SERVER_VERSION} MCP server (tools: {}). POST JSON-RPC to /mcp; \
+             a personal endpoint that keeps your account: GET /u/new. \
              Trust of every reported driver: GET /v1/trust. \
              Docs: https://osc-bridge.roomi-fields.com/api/\n", HOSTED_TOOLS.join(", ")))),
-        ("GET", "/v1/trust") => HttpReply::new(200, Some(reports.all().to_string())),
+        ("GET", "/v1/trust") => HttpReply::new(200, Some(ledger.all().to_string())),
+        (_, p) if p.starts_with("/admin/") => admin_exchange(req, hosted),
         ("GET", "/healthz") => HttpReply::new(200, Some("ok\n".into())),
-        ("GET", "/u/new") => {
-            let id = new_user_id();
-            HttpReply::new(200, Some(json!({ "user_id": id, "mcp_path": format!("/u/{id}/mcp") }).to_string()))
-        }
+        ("GET", "/u/new") => match ledger.issue_account() {
+            Ok(id) => HttpReply::new(200, Some(json!({ "user_id": id, "mcp_path": format!("/u/{id}/mcp") }).to_string())),
+            Err(e) => HttpReply::new(503, Some(json!({ "error": e }).to_string())),
+        },
         // No server-initiated event stream (optional in the spec).
         ("GET", "/mcp") => HttpReply::new(405, None),
         ("POST", "/mcp") => {
@@ -413,16 +467,25 @@ fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex, repo
                 Err(e) => return HttpReply::new(400, Some(rpc_error(-32700, format!("parse error: {e}")))),
             };
             let method = msg.get("method").and_then(Value::as_str).unwrap_or("");
+            // An id from the URL or the session header that the server never
+            // issued: 404, so the client starts over (MCP spec for unknown
+            // sessions). One in the arguments is simply ignored.
+            if let Some(id) = &req.user {
+                if !ledger.knows(id) {
+                    return HttpReply::new(404, Some(rpc_error(-32001,
+                        "unknown account: start a new session, or get one from GET /u/new".into())));
+                }
+            }
             let from_args = msg.pointer("/params/arguments/user_id").and_then(Value::as_str)
-                .filter(|id| is_user_id(id)).map(str::to_ascii_lowercase);
+                .map(str::to_ascii_lowercase).filter(|id| ledger.knows(id));
             let user = match (req.user.clone().or(from_args), method) {
                 (Some(id), _) => Some(id),
-                (None, "initialize") => Some(new_user_id()),
+                (None, "initialize") => ledger.issue_account().ok(),
                 (None, _) => None,
             };
             let usage = (method == "tools/call").then(|| usage_record(user.as_deref(), &msg));
             let session = if method == "initialize" { user.clone() } else { None };
-            match handle_request(&msg, opts, index, Caller { user: user.as_deref(), client: Some(client), reports: Some(reports) }) {
+            match handle_request(&msg, opts, index, Caller { user: user.as_deref(), ledger: Some(ledger) }) {
                 Some(mut resp) => {
                     if let (Some(id), Some(result)) = (&session, resp.get_mut("result")) {
                         result["instructions"] = json!(keep_id_instructions(id));
@@ -444,9 +507,10 @@ fn keep_id_instructions(id: &str) -> String {
         980 synths, drum machines and DAWs. Start with list_devices (query: 'korg minilogue'), then \
         list_routes with the slug; get_trust tells how far other users confirmed a driver, per firmware. \
         After testing a driver on the real device, call report_result with the firmware and the \
-        device's Identity Reply. Your anonymous id is {id} (no account, no personal data). \
-        To stay the same user in later sessions, connect to the personal endpoint /u/{id}/mcp \
-        on this server, or pass user_id: \"{id}\" in tool calls; keep it if you can store it.")
+        device's Identity Reply. This server issued you the account {id} (no sign-up, no personal \
+        data); your reports belong to it. To keep it in later sessions, connect to the personal \
+        endpoint /u/{id}/mcp on this server, or pass user_id: \"{id}\" in tool calls; keep it if \
+        you can store it.")
 }
 
 /// One JSON line per tool call: when, which anonymous user, which tool and
@@ -857,7 +921,7 @@ fn all_tools() -> Value {
             },
             {
                 "name": "report_result",
-                "description": "Tell the catalogue how a driver behaved on a real device, after testing it: 'works', 'fails' or 'partial', for the whole driver or one OSC address (from list_routes). Give the firmware version, and the device's reply to the MIDI Identity Request (F0 7E 7F 06 01 F7) as identity_hex when you can: trust is counted per firmware, so a failure on another firmware does not count against the driver, and a report of unknown firmware cannot be placed. Several users who agree on one firmware mark the driver usage-verified there. Report only what was actually tested.",
+                "description": "Tell the catalogue how a driver behaved on a real device, after testing it: 'works', 'fails' or 'partial', for the whole driver or one OSC address (from list_routes). Give the firmware version, and the device's reply to the MIDI Identity Request (F0 7E 7F 06 01 F7) as identity_hex when you can: trust is counted per firmware, so a failure on another firmware does not count against the driver, and a report of unknown firmware cannot be placed. Several accounts that agree on one firmware mark the driver usage-verified there; a report that several others contradict is rolled back and puts its account under review. Report only what was actually tested.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -875,9 +939,11 @@ fn all_tools() -> Value {
                     "type": "object",
                     "properties": {
                         "recorded": { "type": "boolean" },
+                        "report": { "type": "integer", "description": "The report's id." },
+                        "status": { "type": "string", "enum": ["accepted", "pending", "rolled-back", "rejected"], "description": "accepted: counts in the trust; pending: the account is under review; rolled-back: other accounts contradict it on this firmware." },
                         "trust": { "type": "object", "description": "The driver's trust after this report (see get_trust)." }
                     },
-                    "required": ["recorded", "trust"]
+                    "required": ["recorded", "report", "status", "trust"]
                 },
                 "annotations": {
                     "title": "Report a test result",
@@ -928,13 +994,13 @@ fn tool_names(opts: &McpOptions) -> Vec<&'static str> {
 
 fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, caller: Caller) -> Result<Value, String> {
     match name {
-        "list_devices" => list_devices(index, &DeviceFilter::from_args(args), caller.reports),
+        "list_devices" => list_devices(index, &DeviceFilter::from_args(args), caller.ledger),
         "report_result" => report_result(index, args, caller),
         "get_trust" => {
-            let reports = caller.reports.ok_or("trust is kept by the hosted server only")?;
+            let ledger = caller.ledger.ok_or("trust is kept by the hosted server only")?;
             let device = args.get("device").and_then(Value::as_str).ok_or("missing device")?;
             let entry = index.find(device).ok_or_else(|| format!("no device '{device}'"))?;
-            let trust = reports.trust(&entry.id);
+            let trust = ledger.trust(&entry.id);
             Ok(content_structured(&serde_json::to_string_pretty(&trust).unwrap_or_default(), trust))
         }
         "get_device_docs" => {
@@ -1122,12 +1188,12 @@ impl DeviceFilter {
     }
 }
 
-fn list_devices(index: &DeviceIndex, filter: &DeviceFilter, reports: Option<&crate::reports::ReportStore>) -> Result<Value, String> {
+fn list_devices(index: &DeviceIndex, filter: &DeviceFilter, ledger: Option<&crate::reports::Ledger>) -> Result<Value, String> {
     let matching: Vec<&DeviceIndexEntry> = index.entries.iter().filter(|e| filter.keeps(e)).collect();
     let count = matching.len();
     let devices: Vec<Value> = matching.into_iter().take(filter.limit.unwrap_or(usize::MAX)).map(|e| json!({
         "id": e.id,
-        "usage_status": reports.map(|r| r.status(&e.id)),
+        "usage_status": ledger.map(|l| l.status(&e.id)),
         "name": e.name,
         "vendor": e.vendor,
         "slug": e.slug,
@@ -1156,8 +1222,8 @@ fn surface_addresses(dev: &Device) -> Vec<String> {
 
 fn report_result(index: &DeviceIndex, args: &Value, caller: Caller) -> Result<Value, String> {
     use crate::reports::{DeviceIdentity, Outcome, Report, LEARN_FIRMWARE, MAX_NOTE};
-    let reports = caller.reports.ok_or("reports go to the hosted server: https://mcp.osc-bridge.roomi-fields.com/mcp")?;
-    let user = caller.user.ok_or("no user id: initialize the session first, or pass user_id")?;
+    let ledger = caller.ledger.ok_or("reports go to the hosted server: https://mcp.osc-bridge.roomi-fields.com/mcp")?;
+    let user = caller.user.ok_or("no account: initialize the session first, or pass the user_id the server gave you")?;
     let text = |k: &str| args.get(k).and_then(Value::as_str).map(str::trim).filter(|s| !s.is_empty());
     let device = text("device").ok_or("missing device")?;
     let entry = index.find(device).ok_or_else(|| format!("no device '{device}' (use the id or slug from list_devices)"))?;
@@ -1185,6 +1251,7 @@ fn report_result(index: &DeviceIndex, args: &Value, caller: Caller) -> Result<Va
         None => None,
     };
     let report = Report {
+        id: 0,
         ts: chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
         user: user.to_string(),
         device: entry.id.clone(),
@@ -1195,13 +1262,20 @@ fn report_result(index: &DeviceIndex, args: &Value, caller: Caller) -> Result<Va
         note: text("note").map(|n| n.chars().take(MAX_NOTE).collect()),
     };
     let unplaced = report.firmware.is_none() && report.identity.is_none();
-    reports.add(report, caller.client.unwrap_or(user))?;
-    let trust = reports.trust(&entry.id);
-    let mut text = format!("Report recorded for {}. Driver status: {}.", entry.id, trust["overall"]["status"].as_str().unwrap_or("?"));
+    let (id, status) = ledger.add(report)?;
+    let trust = ledger.trust(&entry.id);
+    let mut text = format!("Report {id} recorded for {}: {}. Driver status: {}.", entry.id,
+        serde_json::to_value(status).ok().and_then(|v| v.as_str().map(str::to_string)).unwrap_or_default(),
+        trust["overall"]["status"].as_str().unwrap_or("?"));
+    match status {
+        crate::reports::ReportStatus::Pending => text.push_str(" Your account is under review: the report counts once approved."),
+        crate::reports::ReportStatus::RolledBack => text.push_str(" Other accounts contradict it on this firmware, so it was rolled back and your account is under review."),
+        _ => {}
+    }
     if unplaced || trust["overall"]["needs_firmware"] == true {
         text.push_str(&format!("\n\n{LEARN_FIRMWARE}"));
     }
-    Ok(content_structured(&text, json!({ "recorded": true, "trust": trust })))
+    Ok(content_structured(&text, json!({ "recorded": true, "report": id, "status": status, "trust": trust })))
 }
 
 fn load_device_by_slug(index: &DeviceIndex, slug: &str) -> Result<Device, String> {
@@ -1409,6 +1483,10 @@ mod tests {
         DeviceIndex { entries: Vec::new(), by_slug: HashMap::new() }
     }
 
+    fn hosted_for_tests() -> Hosted {
+        Hosted { ledger: crate::reports::Ledger::open(None).unwrap(), admin_token: Some("x".repeat(16)) }
+    }
+
     fn test_opts() -> McpOptions {
         McpOptions {
             devices_dir: PathBuf::from("devices"),
@@ -1449,87 +1527,110 @@ mod tests {
     fn http_exchange_answers_posts_notifications_and_rejects_the_rest() {
         let opts = McpOptions { hosted: true, ..test_opts() };
         let idx = empty_index();
-        let store = crate::reports::ReportStore::open(None).unwrap();
+        let store = hosted_for_tests();
         let req = |method: &str, path: &str, body: &str| HttpRequest {
-            method: method.into(), path: path.into(), body: Ok(body.into()), user: None,
+            method: method.into(), path: path.into(), body: Ok(body.into()), user: None, bearer: None,
         };
-        let r = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":7,"method":"tools/list"}"#), &opts, &idx, &store, "test-client");
+        let r = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":7,"method":"tools/list"}"#), &opts, &idx, &store);
         assert_eq!(r.status, 200);
         let v: Value = serde_json::from_str(&r.body.unwrap()).unwrap();
         assert_eq!(v["id"], json!(7));
         assert_eq!(v["result"]["tools"].as_array().unwrap().len(), HOSTED_TOOLS.len());
-        let r = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#), &opts, &idx, &store, "test-client");
+        let r = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#), &opts, &idx, &store);
         assert_eq!((r.status, r.body), (202, None));
-        let status = |m: &str, p: &str, b: &str| http_exchange(&req(m, p, b), &opts, &idx, &store, "test-client").status;
+        let status = |m: &str, p: &str, b: &str| http_exchange(&req(m, p, b), &opts, &idx, &store).status;
         assert_eq!(status("POST", "/mcp", "not json"), 400);
         assert_eq!(status("GET", "/mcp", ""), 405);
         assert_eq!(status("GET", "/", ""), 200);
         assert_eq!(status("GET", "/healthz", ""), 200);
         assert_eq!(status("POST", "/other", ""), 404);
         let call = r#"{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"list_devices","arguments":{"query":"moog"}}}"#;
-        let usage: Value = serde_json::from_str(&http_exchange(&req("POST", "/mcp", call), &opts, &idx, &store, "test-client").usage.unwrap()).unwrap();
+        let usage: Value = serde_json::from_str(&http_exchange(&req("POST", "/mcp", call), &opts, &idx, &store).usage.unwrap()).unwrap();
         assert_eq!((usage["tool"].as_str(), usage["query"].as_str()), (Some("list_devices"), Some("moog")));
-        assert!(http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":4,"method":"tools/list"}"#), &opts, &idx, &store, "test-client").usage.is_none());
+        assert!(http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":4,"method":"tools/list"}"#), &opts, &idx, &store).usage.is_none());
+    }
+
+    /// One request to the hosted server, as an HTTP exchange.
+    #[allow(clippy::too_many_arguments)]
+    fn exchange(opts: &McpOptions, idx: &DeviceIndex, hosted: &Hosted, method: &str, path: &str,
+                header: Option<&str>, bearer: Option<&str>, body: &str) -> HttpReply {
+        let (path, user) = user_id(path, header);
+        http_exchange(&HttpRequest { method: method.into(), path, body: Ok(body.into()), user,
+            bearer: bearer.map(str::to_string) }, opts, idx, hosted)
     }
 
     #[test]
-    fn anonymous_users_get_an_id_and_keep_it_through_a_personal_path() {
+    fn the_server_issues_accounts_and_refuses_ids_it_did_not_issue() {
         let opts = McpOptions { hosted: true, ..test_opts() };
         let idx = empty_index();
-        let store = crate::reports::ReportStore::open(None).unwrap();
+        let hosted = hosted_for_tests();
         let init = r#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}"#;
-        let post = |path: &str, header: Option<&str>| {
-            let (path, user) = user_id(path, header);
-            http_exchange(&HttpRequest { method: "POST".into(), path, body: Ok(init.into()), user }, &opts, &idx, &store, "test-client")
-        };
-        let fresh = post("/mcp", None).session.expect("initialize hands out an id");
-        assert!(is_user_id(&fresh));
-        assert_ne!(post("/mcp", None).session.unwrap(), fresh, "ids are random");
-        let mine = "0123456789abcdef0123456789ABCDEF";
-        assert_eq!(post(&format!("/u/{mine}/mcp"), None).session.unwrap(), mine.to_lowercase());
-        assert_eq!(post("/mcp", Some(&fresh)).session.unwrap(), fresh);
-        let body: Value = serde_json::from_str(&post("/mcp", None).body.unwrap()).unwrap();
+        let fresh = exchange(&opts, &idx, &hosted, "POST", "/mcp", None, None, init).session.expect("initialize issues an account");
+        assert!(is_user_id(&fresh) && hosted.ledger.knows(&fresh));
+        assert_ne!(exchange(&opts, &idx, &hosted, "POST", "/mcp", None, None, init).session.unwrap(), fresh, "ids are random");
+        // The same account comes back through its personal endpoint or the session header.
+        assert_eq!(exchange(&opts, &idx, &hosted, "POST", &format!("/u/{fresh}/mcp"), None, None, init).session.unwrap(), fresh);
+        assert_eq!(exchange(&opts, &idx, &hosted, "POST", "/mcp", Some(&fresh), None, init).session.unwrap(), fresh);
+        let body: Value = serde_json::from_str(&exchange(&opts, &idx, &hosted, "POST", "/mcp", None, None, init).body.unwrap()).unwrap();
         assert!(body["result"]["instructions"].as_str().unwrap().contains("/u/"));
+        // An id the server never issued is refused, whatever the way.
+        let forged = "0123456789abcdef0123456789abcdef";
+        assert_eq!(exchange(&opts, &idx, &hosted, "POST", &format!("/u/{forged}/mcp"), None, None, init).status, 404);
+        assert_eq!(exchange(&opts, &idx, &hosted, "POST", "/mcp", Some(forged), None, init).status, 404);
+        let with_arg = format!(r#"{{"jsonrpc":"2.0","id":1,"method":"initialize","params":{{"arguments":{{"user_id":"{forged}"}}}}}}"#);
+        let r = exchange(&opts, &idx, &hosted, "POST", "/mcp", None, None, &with_arg);
+        assert_ne!(r.session.unwrap(), forged, "a forged id in the arguments is ignored");
         let with_arg = format!(r#"{{"jsonrpc":"2.0","id":1,"method":"initialize","params":{{"arguments":{{"user_id":"{fresh}"}}}}}}"#);
-        let r = http_exchange(&HttpRequest { method: "POST".into(), path: "/mcp".into(), body: Ok(with_arg), user: None }, &opts, &idx, &store, "test-client");
-        assert_eq!(r.session.unwrap(), fresh);
+        assert_eq!(exchange(&opts, &idx, &hosted, "POST", "/mcp", None, None, &with_arg).session.unwrap(), fresh);
         let schema = &tools_list(&opts)["tools"][0]["inputSchema"]["properties"]["user_id"];
         assert_eq!(schema["type"], "string");
         assert_eq!(user_id("/u/not-an-id/mcp", None), ("/u/not-an-id/mcp".to_string(), None));
-        let new = http_exchange(&HttpRequest { method: "GET".into(), path: "/u/new".into(), body: Ok(String::new()), user: None }, &opts, &idx, &store, "test-client");
-        let v: Value = serde_json::from_str(&new.body.unwrap()).unwrap();
-        assert!(is_user_id(v["user_id"].as_str().unwrap()));
+        let new: Value = serde_json::from_str(&exchange(&opts, &idx, &hosted, "GET", "/u/new", None, None, "").body.unwrap()).unwrap();
+        assert!(hosted.ledger.knows(new["user_id"].as_str().unwrap()));
     }
 
     #[test]
-    fn reports_over_http_build_trust_and_reject_unknown_addresses() {
+    fn reports_over_http_build_trust_roll_back_and_reach_the_administrator() {
         let opts = McpOptions { hosted: true, ..test_opts() };
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
-        let store = crate::reports::ReportStore::open(None).unwrap();
+        let hosted = hosted_for_tests();
         let call = |user: &str, tool: &str, args: Value| {
             let body = json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": tool, "arguments": args}});
-            let r = http_exchange(&HttpRequest { method: "POST".into(), path: "/mcp".into(),
-                body: Ok(body.to_string()), user: Some(user.into()) }, &opts, &idx, &store, user);
+            let r = exchange(&opts, &idx, &hosted, "POST", "/mcp", Some(user), None, &body.to_string());
             serde_json::from_str::<Value>(&r.body.unwrap()).unwrap()["result"].clone()
         };
-        let users = ["a".repeat(32), "b".repeat(32), "c".repeat(32)];
-        for u in &users {
-            let r = call(u, "report_result", json!({"device": "korg/minilogue", "outcome": "works", "firmware": "2.1", "identity_hex": "F0 7E 00 06 02 42 2C 01 00 00 02 01 00 00 F7"}));
-            assert_eq!(r["structuredContent"]["recorded"], true, "{r}");
+        let users: Vec<String> = (0..4).map(|_| hosted.ledger.issue_account().unwrap()).collect();
+        let works = json!({"device": "korg/minilogue", "outcome": "works", "firmware": "2.1",
+            "identity_hex": "F0 7E 00 06 02 42 2C 01 00 00 02 01 00 00 F7"});
+        for u in &users[..3] {
+            let r = call(u, "report_result", works.clone());
+            assert_eq!(r["structuredContent"]["status"], "accepted", "{r}");
         }
         let trust = call(&users[0], "get_trust", json!({"device": "minilogue"}));
         assert_eq!(trust["structuredContent"]["overall"]["status"], "usage-verified");
         let bad = call(&users[0], "report_result", json!({"device": "korg/minilogue", "outcome": "works", "address": "/minilogue/nope"}));
         assert_eq!(bad["isError"], true);
-        let addr = call(&users[1], "report_result", json!({"device": "korg/minilogue", "outcome": "fails", "firmware": "2.1", "address": "/minilogue/filter/cutoff"}));
-        assert_eq!(addr["structuredContent"]["trust"]["overall"]["status"], "disputed");
+        let liar = call(&users[3], "report_result", json!({"device": "korg/minilogue", "outcome": "fails", "firmware": "2.1"}));
+        assert_eq!(liar["structuredContent"]["status"], "rolled-back");
+        assert_eq!(liar["structuredContent"]["trust"]["overall"]["status"], "usage-verified");
         let listed = call(&users[0], "list_devices", json!({"query": "korg minilogue", "limit": 50}));
         let entry = listed["structuredContent"]["devices"].as_array().unwrap().iter()
             .find(|d| d["id"] == "korg/minilogue").cloned().unwrap();
-        assert_eq!(entry["usage_status"], "disputed");
-        let all = http_exchange(&HttpRequest { method: "GET".into(), path: "/v1/trust".into(), body: Ok(String::new()), user: None }, &opts, &idx, &store, "test-client");
-        let all: Value = serde_json::from_str(&all.body.unwrap()).unwrap();
-        assert_eq!(all["devices"]["korg/minilogue"]["status"], "disputed");
+        assert_eq!(entry["usage_status"], "usage-verified");
+        let all: Value = serde_json::from_str(&exchange(&opts, &idx, &hosted, "GET", "/v1/trust", None, None, "").body.unwrap()).unwrap();
+        assert_eq!(all["devices"]["korg/minilogue"]["rolled_back"], 1);
+        // The administrator sees the suspect account and clears it.
+        let token = "x".repeat(16);
+        assert_eq!(exchange(&opts, &idx, &hosted, "GET", "/admin/pending", None, None, "").status, 401);
+        assert_eq!(exchange(&opts, &idx, &hosted, "GET", "/admin/pending", None, Some("wrong-token-wrong"), "").status, 401);
+        let pending: Value = serde_json::from_str(&exchange(&opts, &idx, &hosted, "GET", "/admin/pending", None, Some(&token), "").body.unwrap()).unwrap();
+        assert_eq!(pending["suspect_accounts"][0], users[3].as_str());
+        let clear = json!({"decision": "clear", "user": users[3]}).to_string();
+        assert_eq!(exchange(&opts, &idx, &hosted, "POST", "/admin/decide", None, Some(&token), &clear).status, 200);
+        let nonsense = json!({"decision": "approve", "user": users[3]}).to_string();
+        assert_eq!(exchange(&opts, &idx, &hosted, "POST", "/admin/decide", None, Some(&token), &nonsense).status, 400);
+        let off = Hosted { ledger: crate::reports::Ledger::open(None).unwrap(), admin_token: None };
+        assert_eq!(exchange(&opts, &idx, &off, "GET", "/admin/pending", None, Some(&token), "").status, 404);
     }
 
     #[test]

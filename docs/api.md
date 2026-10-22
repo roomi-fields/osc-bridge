@@ -74,15 +74,16 @@ tools, at most 120 requests per minute per client: the catalogue tools
 `list_devices` (with `query`, `vendor`, `kind`, `limit`), `list_routes` and
 `get_device_docs`, plus `report_result` and `get_trust` (below).
 
-No account is needed. Each client gets an anonymous id when it connects,
-returned in the `Mcp-Session-Id` header and in the server's instructions. To
-be recognised from one session to the next, keep it: connect to your
-personal endpoint `https://mcp.osc-bridge.roomi-fields.com/u/<id>/mcp`
-(`GET /u/new` hands out a fresh one), or pass `user_id` in tool calls. The id
-is random and tied to nothing else.
+No sign-up. The server gives each client an account when it connects: a
+random id, returned in the `Mcp-Session-Id` header and in the server's
+instructions, and kept by the server. To stay the same account from one
+session to the next, keep it: connect to your personal endpoint
+`https://mcp.osc-bridge.roomi-fields.com/u/<id>/mcp` (`GET /u/new` hands out
+a fresh one), or pass `user_id` in tool calls. Only ids the server issued
+are accepted; the id is tied to nothing else.
 
-What the hosted server records: for each tool call, the time, the
-anonymous id, the tool and its catalogue arguments (search words, vendor,
+What the hosted server records: the accounts it issued; for each tool
+call, the time, the account, the tool and its catalogue arguments (search words, vendor,
 device slug); and the reports sent with `report_result`. Both are kept to
 improve the catalogue. It does not record your
 address. Like any site, the web server in front of it keeps a short access
@@ -98,21 +99,24 @@ the firmware version and the device's reply to the MIDI Identity Request
 connected and carries the firmware as the device reports it; it must come
 from the driver's manufacturer.
 
-Trust is counted per firmware, from each user's latest report, with no
-human review:
+Trust is counted per firmware, from each account's latest accepted report:
 
 | Status | Meaning |
 |--------|---------|
 | `unreported` | No report yet |
-| `unconfirmed` | Reported working, by fewer than 3 users on one firmware or none with an identified device |
-| `usage-verified` | 3 users or more agree it works on one firmware, one of them with an identified device, and nobody reports otherwise there |
+| `unconfirmed` | Reported working, by fewer than 3 accounts on one firmware or none with an identified device |
+| `usage-verified` | 3 accounts or more agree it works on one firmware, one of them with an identified device, and none reports otherwise there |
 | `firmware-dependent` | Works on some firmware, fails on another |
 | `failing` | Only failures reported |
-| `disputed` | Users disagree on the same firmware, or a contrary report gives no firmware |
+| `disputed` | Accounts disagree on the same firmware, or a contrary report gives no firmware |
 
-Limits: 100 reports per user and 30 per connection per day (the
-connection count is kept in memory only, never written), 5,000 per day for
-the whole server.
+Each report has a status: `accepted` (counts), `pending` (waits for
+approval), `rolled-back` or `rejected`. A report that at least 3 other
+accounts contradict on the same target and firmware, more than agree with
+it, is rolled back automatically: the driver's trust returns to what it was
+without it. Its account becomes suspect: its other reports, and its new ones,
+are pending until an administrator approves them or clears the account.
+`get_trust` shows how many reports of a driver are pending or rolled back.
 
 When a disagreement involves a report without firmware, `get_trust` sets
 `needs_firmware` and the server asks the next reporters to identify their
@@ -123,7 +127,13 @@ driver is public at
 
 **Over HTTP on your own machine**: `osc-bridge mcp --http 0.0.0.0:8080` serves MCP on
 `/mcp` with the same five tools; `--data-dir <dir>` keeps the usage records
-and reports on disk (in memory otherwise). The tools that open MIDI ports
+(`usage.jsonl`) and the ledger of accounts, reports and decisions
+(`ledger.jsonl`) on disk, in memory otherwise. With `OSC_BRIDGE_ADMIN_TOKEN`
+set (16 characters or more), `GET /admin/pending` lists pending reports and
+suspect accounts and `POST /admin/decide` takes
+`{"decision": "approve" | "reject", "report": <id>}` or
+`{"decision": "suspect" | "clear", "user": "<id>"}`, both with
+`Authorization: Bearer <token>`. The tools that open MIDI ports
 are left out, since they would act on the server's machine, not the
 caller's. The container image runs it the same way:
 
