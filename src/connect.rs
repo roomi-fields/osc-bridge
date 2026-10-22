@@ -11,7 +11,7 @@
 //! the user stays the same from one run to the next.
 
 use anyhow::{anyhow, Context, Result};
-use crossbeam_channel::{unbounded, Receiver, Sender};
+use crossbeam_channel::{unbounded, Sender};
 use midir::{Ignore, MidiInput, MidiInputConnection, MidiOutput, MidiOutputConnection};
 use serde_json::{json, Value};
 use std::collections::HashMap;
@@ -144,7 +144,7 @@ pub fn run(server: &str, share: bool) -> Result<()> {
     ws.send(Message::Text(json!({ "type": "share", "enabled": share }).to_string().into()))?;
     set_read_timeout(&ws, READ_TIMEOUT)?;
 
-    let (in_tx, in_rx): (Sender<(String, Vec<u8>)>, Receiver<(String, Vec<u8>)>) = unbounded();
+    let (in_tx, in_rx) = unbounded::<(String, Vec<u8>)>();
     let mut ports = open_ports(&in_tx)?;
     let mut announce = true;
     let mut last_scan = Instant::now();

@@ -39,7 +39,14 @@
 //! accounts are not counted. Learned mappings that differ from a driver are
 //! what corrections of that driver are made from.
 //!
-//! Everything — accounts issued, reports, observations, decisions — is one append-only
+//! Contributions. An account submits a driver file — a new device, or a
+//! corrected variant built from learned mappings (`Contribution`). It waits
+//! as `pending` until the catalogue's merge job (a GitHub workflow) picks it
+//! up, checks it, merges it and reports back `merged` or `rejected`
+//! (`ContributionStatus`). Contributions of a suspect account are held.
+//!
+//! Everything — accounts issued, reports, observations, contributions,
+//! decisions — is one append-only
 //! ledger (JSON lines) replayed in order at startup, so the outcome is the
 //! same after a restart.
 
@@ -390,6 +397,31 @@ impl Observation {
     }
 }
 
+/// A driver file an account submitted for the catalogue.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Contribution {
+    #[serde(default)]
+    pub id: u64,
+    pub ts: String,
+    pub user: String,
+    /// Where the file goes, under the repository root (`devices/...json`).
+    pub path: String,
+    /// The driver file, as it will be committed.
+    pub content: String,
+    /// `driver` (a new or replaced file) or `fix` (built from learned mappings).
+    pub kind: String,
+    pub note: Option<String>,
+}
+
+/// Where a contribution stands.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ContributionState {
+    Pending,
+    Merged,
+    Rejected,
+}
+
 /// One line of the ledger.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(tag = "event", rename_all = "snake_case")]
@@ -397,6 +429,8 @@ enum Event {
     Account { ts: String, user: String },
     Report(Report),
     Observation(Observation),
+    Contribution(Contribution),
+    ContributionStatus { ts: String, id: u64, state: ContributionState, detail: Option<String>, pr: Option<String> },
     Decision { ts: String, decision: Decision, report: Option<u64>, user: Option<String> },
 }
 
@@ -418,6 +452,7 @@ struct State {
     entries: Vec<Entry>,
     by_device: HashMap<String, Vec<usize>>,
     observations: Vec<Observation>,
+    contributions: Vec<(Contribution, ContributionState, Option<String>, Option<String>)>,
     bytes: u64,
 }
 
@@ -435,6 +470,15 @@ impl State {
                 self.review(vec![r.device.clone()]);
             }
             Event::Observation(o) => self.observations.push(o.clone()),
+            Event::Contribution(c) => {
+                let id = self.contributions.len() as u64;
+                self.contributions.push((Contribution { id, ..c.clone() }, ContributionState::Pending, None, None));
+            }
+            Event::ContributionStatus { id, state, detail, pr, .. } => {
+                if let Some(c) = self.contributions.get_mut(*id as usize) {
+                    (c.1, c.2, c.3) = (*state, detail.clone(), pr.clone());
+                }
+            }
             Event::Decision { decision, report, user, .. } => {
                 let mut touched = Vec::new();
                 if let Some(e) = report.and_then(|id| self.entries.get_mut(id as usize)) {
@@ -618,6 +662,50 @@ impl Ledger {
         }
         self.record(&mut state, Event::Decision { ts: now(), decision, report, user: user.map(str::to_string) })?;
         Ok(json!({ "applied": true }))
+    }
+
+    /// Queue a driver file from an account; returns its id.
+    pub fn contribute(&self, c: Contribution) -> std::result::Result<u64, String> {
+        let mut state = self.state.lock().map_err(|_| "ledger unavailable")?;
+        if !state.accounts.contains(&c.user) {
+            return Err("unknown account: start a session with the server to get one".into());
+        }
+        let id = state.contributions.len() as u64;
+        self.record(&mut state, Event::Contribution(c))?;
+        Ok(id)
+    }
+
+    /// Where a contribution stands, for its author or anyone with its id.
+    pub fn contribution(&self, id: u64) -> Option<Value> {
+        let state = self.state.lock().ok()?;
+        let (c, st, detail, pr) = state.contributions.get(id as usize)?;
+        let held = *st == ContributionState::Pending && state.suspect.contains(&c.user);
+        Some(json!({ "id": id, "path": c.path, "kind": c.kind, "state": if held { "held" } else {
+            match st { ContributionState::Pending => "pending", ContributionState::Merged => "merged", ContributionState::Rejected => "rejected" }
+        }, "detail": detail, "pr": pr, "submitted": c.ts }))
+    }
+
+    /// Contributions the merge job should take: pending, from accounts that
+    /// are not suspect, latest per path.
+    pub fn pending_contributions(&self) -> Vec<Contribution> {
+        let Ok(state) = self.state.lock() else { return Vec::new() };
+        let mut by_path: BTreeMap<&str, &Contribution> = BTreeMap::new();
+        for (c, st, _, _) in &state.contributions {
+            if *st == ContributionState::Pending && !state.suspect.contains(&c.user) {
+                by_path.insert(c.path.as_str(), c);
+            }
+        }
+        by_path.into_values().cloned().collect()
+    }
+
+    /// The merge job's verdict on a contribution.
+    pub fn settle_contribution(&self, id: u64, st: ContributionState, detail: Option<String>, pr: Option<String>)
+        -> std::result::Result<(), String> {
+        let mut state = self.state.lock().map_err(|_| "ledger unavailable")?;
+        if id as usize >= state.contributions.len() || st == ContributionState::Pending {
+            return Err("unknown contribution, or not a final state".into());
+        }
+        self.record(&mut state, Event::ContributionStatus { ts: now(), id, state: st, detail, pr })
     }
 
     /// Record what an account saw a control send.
@@ -859,6 +947,25 @@ mod tests {
         l.decide(Decision::Suspect, None, Some(&u[3])).unwrap();
         assert_eq!(l.learned(None)[0]["learned"], Value::Null, "a suspect account's observations do not count");
         assert!(l.observe(obs(&"f".repeat(32), 43)).is_err(), "only issued accounts observe");
+    }
+
+    #[test]
+    fn contributions_wait_for_the_merge_job_and_suspects_are_held() {
+        let (l, u) = ledger(2);
+        let c = |user: &str, path: &str| Contribution {
+            id: 0, ts: "2026-10-22T12:00:00Z".into(), user: user.into(), path: path.into(),
+            content: "{}".into(), kind: "driver".into(), note: None,
+        };
+        let a = l.contribute(c(&u[0], "devices/acme/box.agent-contributed.fw-unknown.json")).unwrap();
+        let b = l.contribute(c(&u[1], "devices/acme/other.agent-contributed.fw-unknown.json")).unwrap();
+        assert_eq!(l.pending_contributions().len(), 2);
+        l.decide(Decision::Suspect, None, Some(&u[1])).unwrap();
+        assert_eq!(l.contribution(b).unwrap()["state"], "held");
+        assert_eq!(l.pending_contributions().len(), 1);
+        l.settle_contribution(a, ContributionState::Merged, None, Some("https://github.com/x/y/pull/1".into())).unwrap();
+        assert_eq!(l.contribution(a).unwrap()["state"], "merged");
+        assert!(l.pending_contributions().is_empty());
+        assert!(l.settle_contribution(a, ContributionState::Pending, None, None).is_err());
     }
 
     #[test]

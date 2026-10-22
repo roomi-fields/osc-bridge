@@ -45,8 +45,9 @@ pub struct McpOptions {
 
 /// The tools of a server reached over the network: reading the catalogue
 /// and reporting on it. None touches the host's MIDI ports.
-const HOSTED_TOOLS: [&str; 10] = ["list_devices", "get_device_docs", "list_routes", "report_result", "get_trust",
-    "report_mapping", "relay_status", "relay_detect", "relay_send", "relay_listen"];
+const HOSTED_TOOLS: [&str; 13] = ["list_devices", "get_device_docs", "list_routes", "report_result", "get_trust",
+    "report_mapping", "submit_driver", "submit_fix", "get_contribution",
+    "relay_status", "relay_detect", "relay_send", "relay_listen"];
 
 /// Who is calling, as far as the hosted server knows: the account (an id
 /// the server issued), the ledger, the relay doors and the usage log. All
@@ -60,13 +61,15 @@ pub struct Caller<'a> {
 }
 
 /// What only the hosted server has: the ledger, the relay doors, the usage
-/// log, and the administrator's token (`OSC_BRIDGE_ADMIN_TOKEN`) guarding
-/// `/admin/*`; without a token those endpoints answer 404.
+/// log, the administrator's token (`OSC_BRIDGE_ADMIN_TOKEN`) guarding
+/// `/admin/*`, and the merge job's token (`OSC_BRIDGE_SYNC_TOKEN`), which
+/// opens `/admin/contributions*` only. Without a token its endpoints answer 404.
 pub struct Hosted {
     pub ledger: std::sync::Arc<crate::reports::Ledger>,
     pub relays: std::sync::Arc<crate::relay::Relays>,
     usage: UsageLog,
     pub admin_token: Option<String>,
+    pub sync_token: Option<String>,
 }
 
 impl Hosted {
@@ -174,7 +177,8 @@ impl DeviceIndex {
 }
 
 /// Lower is more trustworthy: tested on the device, then the vendor's own
-/// documentation, then curated OSC surfaces, then community sources.
+/// documentation, then curated OSC surfaces, then community sources, then
+/// what agents contributed (checked automatically, not reviewed).
 fn tier_rank(tier: &str) -> u8 {
     match tier {
         "hardware-verified" | "software-verified" => 0,
@@ -182,7 +186,8 @@ fn tier_rank(tier: &str) -> u8 {
         "vendor-osc-api" | "third-party-osc" => 2,
         "electra-preset" => 3,
         "pencilresearch" => 4,
-        _ => 5,
+        "agent-contributed" => 5,
+        _ => 6,
     }
 }
 
@@ -293,6 +298,7 @@ pub fn run_http(opts: McpOptions, bind: &str, behind_proxy: bool, data_dir: Opti
         relays: std::sync::Arc::new(crate::relay::Relays::default()),
         usage: UsageLog::open(data_dir.map(|d| d.join("usage.jsonl")).as_deref())?,
         admin_token: std::env::var("OSC_BRIDGE_ADMIN_TOKEN").ok().filter(|t| t.len() >= 16),
+        sync_token: std::env::var("OSC_BRIDGE_SYNC_TOKEN").ok().filter(|t| t.len() >= 16),
     };
     if let Some(rb) = relay_bind {
         let addr = crate::relay::serve(rb, hosted.relays.clone(),
@@ -434,13 +440,36 @@ fn token_matches(given: &str, expected: &str) -> bool {
 /// `/admin/*`: what waits for approval, and decisions on reports and
 /// accounts. 404 without a configured token, 401 with a wrong one.
 fn admin_exchange(req: &HttpRequest, hosted: &Hosted) -> HttpReply {
-    use crate::reports::Decision;
-    let Some(expected) = &hosted.admin_token else { return HttpReply::new(404, None) };
-    if !req.bearer.as_deref().is_some_and(|t| token_matches(t, expected)) {
+    use crate::reports::{ContributionState, Decision};
+    let contributions = req.path == "/admin/contributions" || req.path.starts_with("/admin/contributions/");
+    let accepted: Vec<&String> = hosted.admin_token.iter()
+        .chain(hosted.sync_token.iter().filter(|_| contributions)).collect();
+    if accepted.is_empty() { return HttpReply::new(404, None) }
+    if !req.bearer.as_deref().is_some_and(|t| accepted.iter().any(|e| token_matches(t, e))) {
         return HttpReply::new(401, Some(json!({ "error": "admin token required" }).to_string()));
     }
     let error = |status: u16, msg: String| HttpReply::new(status, Some(json!({ "error": msg }).to_string()));
     match (req.method.as_str(), req.path.as_str()) {
+        ("GET", "/admin/contributions") => HttpReply::new(200, Some(json!({
+            "contributions": hosted.ledger.pending_contributions() }).to_string())),
+        ("POST", p) if p.starts_with("/admin/contributions/") => {
+            let Some(id) = p.rsplit('/').next().and_then(|n| n.parse::<u64>().ok()) else {
+                return error(404, "unknown contribution".into());
+            };
+            let Some(body) = req.body.as_deref().ok().and_then(|b| serde_json::from_str::<Value>(b).ok()) else {
+                return error(400, "expected a JSON object".into());
+            };
+            let st = match body.get("state").and_then(Value::as_str) {
+                Some("merged") => ContributionState::Merged,
+                Some("rejected") => ContributionState::Rejected,
+                _ => return error(400, "state must be merged or rejected".into()),
+            };
+            let text = |k: &str| body.get(k).and_then(Value::as_str).map(|s| s.chars().take(2000).collect());
+            match hosted.ledger.settle_contribution(id, st, text("detail"), text("pr")) {
+                Ok(()) => HttpReply::new(200, Some(json!({ "applied": true }).to_string())),
+                Err(e) => error(400, e),
+            }
+        }
         ("GET", "/admin/pending") => HttpReply::new(200, Some(hosted.ledger.pending().to_string())),
         ("POST", "/admin/decide") => {
             let Ok(body) = req.body.as_deref().map(serde_json::from_str::<Value>) else {
@@ -1035,6 +1064,32 @@ fn all_tools() -> Value {
                 "annotations": { "title": "Report what a control sends", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false }
             },
             {
+                "name": "submit_driver",
+                "description": "Contribute a driver for a device the catalogue lacks (or a better one): the full driver file as a JSON object, in the osc-bridge device schema (device.name, device.vendor, device.osc_prefix, and cc_params / params / commands / triggers — see https://osc-bridge.roomi-fields.com/DEVICE_JSON_SCHEMA/). It is checked, then merged into the public catalogue by the merge job if it parses, lints and passes the tests, as its own file of source 'agent-contributed'. Say where the data comes from (manual page, tested on the device).",
+                "inputSchema": { "type": "object", "properties": {
+                    "driver": { "type": "object", "description": "The driver file." },
+                    "firmware": { "type": "string", "description": "Firmware the driver was written or tested for." },
+                    "source": { "type": "string", "description": "Where the mapping comes from (e.g. 'manual v1.2 p. 34, tested on the device')." },
+                    "note": { "type": "string" } },
+                    "required": ["driver"], "additionalProperties": false },
+                "annotations": { "title": "Contribute a driver", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
+            },
+            {
+                "name": "submit_fix",
+                "description": "Contribute a corrected variant of a driver from what the catalogue learned: where learned mappings (get_trust → mappings, differs: true) disagree with the driver on one firmware, builds a copy of the driver with the learned CC / NRPN numbers, as a new file for that firmware, and queues it for the merge job.",
+                "inputSchema": { "type": "object", "properties": {
+                    "device": { "type": "string", "description": "Driver id or slug." },
+                    "firmware": { "type": "string", "description": "Needed when learned mappings differ on several firmwares." } },
+                    "required": ["device"], "additionalProperties": false },
+                "annotations": { "title": "Contribute a fix from learned mappings", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
+            },
+            {
+                "name": "get_contribution",
+                "description": "Where a contribution stands: pending (waiting for the merge job), merged (with its pull request), rejected (with the reason), or held (its account is under review).",
+                "inputSchema": { "type": "object", "properties": { "id": { "type": "integer" } }, "required": ["id"], "additionalProperties": false },
+                "annotations": { "title": "Contribution status", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": false }
+            },
+            {
                 "name": "relay_status",
                 "description": "Check a relay: the user opened https://osc-bridge.roomi-fields.com/connect/ (or ran osc-bridge connect) and gave you its pairing code. Returns the MIDI output and input ports of their machine. Nothing is sent to the hardware.",
                 "inputSchema": { "type": "object", "properties": { "code": { "type": "string", "description": "The pairing code the relay page or program shows (e.g. 'K7QM-2XPA')." } }, "required": ["code"], "additionalProperties": false },
@@ -1086,6 +1141,14 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, c
         "list_devices" => list_devices(index, &DeviceFilter::from_args(args), caller.ledger),
         "report_result" => report_result(index, args, caller),
         "report_mapping" => report_mapping(index, args, caller),
+        "submit_driver" => submit_driver(index, args, caller),
+        "submit_fix" => submit_fix(index, args, caller),
+        "get_contribution" => {
+            let ledger = caller.ledger.ok_or("contributions go to the hosted server")?;
+            let id = args.get("id").and_then(Value::as_u64).ok_or("missing id")?;
+            let c = ledger.contribution(id).ok_or_else(|| format!("no contribution {id}"))?;
+            Ok(content_structured(&serde_json::to_string_pretty(&c).unwrap_or_default(), c))
+        }
         "relay_status" | "relay_detect" | "relay_send" | "relay_listen" => {
             let relays = caller.relays.ok_or("the relay runs on the hosted server only")?;
             let code = args.get("code").and_then(Value::as_str).ok_or("missing code (the pairing code shown by the door)")?;
@@ -1688,6 +1751,130 @@ fn report_mapping(index: &DeviceIndex, args: &Value, caller: Caller) -> Result<V
     Ok(content_structured(&text, json!({ "recorded": true, "mappings": mappings })))
 }
 
+/// Largest driver file accepted as a contribution.
+const MAX_CONTRIBUTION: usize = 256 * 1024;
+
+/// `Moog Music` → `moog_music`: lower case, other characters as `sep`.
+fn slugify(s: &str, sep: char) -> String {
+    let mut out = String::new();
+    for c in s.chars() {
+        if c.is_ascii_alphanumeric() { out.push(c.to_ascii_lowercase()); }
+        else if !out.ends_with(sep) && !out.is_empty() { out.push(sep); }
+    }
+    out.trim_end_matches(sep).to_string()
+}
+
+/// The catalogue folder of a vendor: the one its drivers already use, else
+/// a new one from its name.
+fn vendor_dir(index: &DeviceIndex, vendor: &str) -> String {
+    index.entries.iter().find(|e| e.vendor.eq_ignore_ascii_case(vendor))
+        .and_then(|e| e.id.split('/').next().map(str::to_string))
+        .unwrap_or_else(|| slugify(vendor, '-'))
+}
+
+fn queue_contribution(caller: Caller, path: String, doc: &Value, kind: &str, note: Option<String>) -> Result<Value, String> {
+    let ledger = caller.ledger.ok_or("contributions go to the hosted server: https://mcp.osc-bridge.roomi-fields.com/mcp")?;
+    let user = caller.user.ok_or("no account: initialize the session first, or pass the user_id the server gave you")?;
+    let content = serde_json::to_string_pretty(doc).map_err(|e| e.to_string())? + "\n";
+    if content.len() > MAX_CONTRIBUTION {
+        return Err(format!("driver file too large ({} bytes, {MAX_CONTRIBUTION} at most)", content.len()));
+    }
+    let id = ledger.contribute(crate::reports::Contribution {
+        id: 0,
+        ts: chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
+        user: user.to_string(), path: path.clone(), content, kind: kind.to_string(), note,
+    })?;
+    let text = format!("Contribution {id} queued as {path}. The catalogue's merge job checks it (parse, lint, tests) \
+        and merges it within the hour if it passes; check with get_contribution.");
+    Ok(content_structured(&text, json!({ "id": id, "path": path, "state": "pending" })))
+}
+
+/// A new driver file from an agent: checked here as a driver, then queued.
+fn submit_driver(index: &DeviceIndex, args: &Value, caller: Caller) -> Result<Value, String> {
+    let mut doc = args.get("driver").cloned().filter(Value::is_object).ok_or("missing driver (the driver file, as a JSON object)")?;
+    let dev: Device = serde_json::from_value(doc.clone()).map_err(|e| format!("not a valid driver: {e} (see DEVICE_JSON_SCHEMA)"))?;
+    let (name, vendor, prefix) = (&dev.device.name, &dev.device.vendor, &dev.device.osc_prefix);
+    if name.trim().is_empty() || vendor.trim().is_empty() || !prefix.starts_with('/') || prefix.len() < 2 {
+        return Err("device.name, device.vendor and device.osc_prefix ('/slug') are required".into());
+    }
+    let has_surface = !dev.commands.is_empty() || dev.cc_params.as_ref().is_some_and(|t| !t.entries.is_empty())
+        || dev.params.as_ref().is_some_and(|t| !t.entries.is_empty()) || dev.triggers.as_ref().is_some_and(|t| !t.entries.is_empty());
+    if !has_surface {
+        return Err("the driver maps nothing: add cc_params, params, commands or triggers".into());
+    }
+    let firmware = args.get("firmware").and_then(Value::as_str).map(str::trim).filter(|f| !f.is_empty()).unwrap_or("unknown");
+    let note = args.get("note").and_then(Value::as_str).map(|n| n.chars().take(500).collect::<String>());
+    let source = json!({
+        "type": "agent-contributed",
+        "submitted": chrono::Utc::now().format("%Y-%m-%d").to_string(),
+        "firmware": firmware,
+        "how": args.get("source").and_then(Value::as_str).map(|s| s.chars().take(300).collect::<String>()),
+    });
+    doc["_sources"] = json!([source]);
+    let path = format!("devices/{}/{}.agent-contributed.fw-{}.json", vendor_dir(index, vendor), slugify(name, '_'), slugify(firmware, '_'));
+    queue_contribution(caller, path, &doc, "driver", note)
+}
+
+/// A corrected variant of a driver, built from the mappings the catalogue
+/// learned for one firmware where they differ from it.
+fn submit_fix(index: &DeviceIndex, args: &Value, caller: Caller) -> Result<Value, String> {
+    use crate::reports::Sends;
+    let ledger = caller.ledger.ok_or("contributions go to the hosted server")?;
+    let device = args.get("device").and_then(Value::as_str).ok_or("missing device")?;
+    let entry = index.find(device).ok_or_else(|| format!("no device '{device}'"))?;
+    let wanted = args.get("firmware").and_then(Value::as_str);
+    let differing: Vec<Value> = mappings_against_driver(ledger, entry)?.into_iter()
+        .filter(|m| m["differs"] == true && wanted.is_none_or(|w| m["firmware"] == w)).collect();
+    let firmwares: std::collections::BTreeSet<&str> = differing.iter().filter_map(|m| m["firmware"].as_str()).collect();
+    let firmware = match firmwares.len() {
+        0 => return Err(format!("no learned mapping differs from {} yet (see get_trust)", entry.id)),
+        1 => firmwares.into_iter().next().unwrap_or_default().to_string(),
+        _ => return Err(format!("learned mappings differ on several firmwares ({}): pass firmware", firmwares.into_iter().collect::<Vec<_>>().join(", "))),
+    };
+    let raw = std::fs::read_to_string(&entry.path).map_err(|e| format!("read {}: {e}", entry.id))?;
+    let mut doc: Value = serde_json::from_str(&raw).map_err(|e| format!("parse {}: {e}", entry.id))?;
+    let prefix = doc["device"]["osc_prefix"].as_str().unwrap_or("").to_string();
+    let mut applied = Vec::new();
+    for m in differing.iter().filter(|m| m["firmware"] == firmware.as_str()) {
+        let Ok(sends) = serde_json::from_value::<Sends>(m["learned"].clone()) else { continue };
+        let control = m["control"].as_str().unwrap_or("");
+        let entries = doc["cc_params"]["entries"].as_array_mut();
+        let target: Option<&mut Value> = match (control.strip_prefix(&prefix), entries) {
+            (Some(rel), Some(list)) => list.iter_mut().find(|e| e["osc"] == rel),
+            (None, Some(list)) if control.starts_with("label:") => {
+                let label = &control["label:".len()..];
+                list.push(json!({ "osc": format!("/learned/{}", slugify(label, '_')), "label": label, "range": [0, 127] }));
+                list.last_mut()
+            }
+            _ => None,
+        };
+        let Some(e) = target else { continue };
+        let obj = e.as_object_mut().ok_or("bad cc_params entry")?;
+        match sends {
+            Sends::Cc { cc } => { obj.insert("cc".into(), json!(cc)); obj.remove("nrpn_msb"); obj.remove("nrpn_lsb"); }
+            Sends::Nrpn { msb, lsb } => { obj.insert("nrpn_msb".into(), json!(msb)); obj.insert("nrpn_lsb".into(), json!(lsb)); obj.remove("cc"); }
+            Sends::Note { .. } => continue,
+        }
+        applied.push(control.to_string());
+    }
+    if applied.is_empty() {
+        return Err("the differing mappings are on controls this driver cannot express as CC or NRPN".into());
+    }
+    let original = doc["_sources"].get(0).cloned().unwrap_or(json!({}));
+    doc["_sources"] = json!([{
+        "type": "agent-contributed",
+        "submitted": chrono::Utc::now().format("%Y-%m-%d").to_string(),
+        "firmware": firmware,
+        "derived_from": entry.id,
+        "how": format!("{} with the mappings learned from usage on firmware {firmware}: {}", entry.id, applied.join(", ")),
+        "license": original.get("license"),
+        "attribution": original.get("attribution"),
+    }]);
+    let stem = entry.id.rsplit('/').next().unwrap_or(&entry.id).split('.').next().unwrap_or("driver").to_string();
+    let path = format!("devices/{}/{stem}.agent-contributed.fw-{}.json", entry.id.split('/').next().unwrap_or("misc"), slugify(&firmware, '_'));
+    queue_contribution(caller, path, &doc, "fix", Some(format!("learned mappings: {}", applied.join(", "))))
+}
+
 fn load_device_by_slug(index: &DeviceIndex, slug: &str) -> Result<Device, String> {
     let path = index.find_path(slug)
         .ok_or_else(|| format!("no device with slug '{slug}'"))?;
@@ -1899,6 +2086,7 @@ mod tests {
             relays: std::sync::Arc::new(crate::relay::Relays::default()),
             usage: UsageLog::open(None).unwrap(),
             admin_token: Some("x".repeat(16)),
+            sync_token: Some("s".repeat(16)),
         }
     }
 
@@ -2123,6 +2311,50 @@ mod tests {
         assert_eq!(gone["isError"], true);
         assert!(split_midi(&[0xB0, 0x2B]).is_err());
         assert_eq!(split_midi(&[0xF0, 0x7E, 0xF7, 0xC0, 5]).unwrap(), vec![vec![0xF0, 0x7E, 0xF7], vec![0xC0, 5]]);
+    }
+
+    #[test]
+    fn agents_contribute_drivers_and_fixes_and_the_merge_job_settles_them() {
+        let opts = McpOptions { hosted: true, ..test_opts() };
+        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let hosted = hosted_for_tests();
+        let users: Vec<String> = (0..3).map(|_| hosted.ledger.issue_account().unwrap()).collect();
+        let call = |user: &str, tool: &str, args: Value| {
+            let body = json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": tool, "arguments": args}});
+            let r = exchange(&opts, &idx, &hosted, "POST", "/mcp", Some(user), None, &body.to_string());
+            serde_json::from_str::<Value>(&r.body.unwrap()).unwrap()["result"].clone()
+        };
+        let driver = json!({
+            "device": {"name": "Box 1", "vendor": "Moog", "revision": "1", "osc_prefix": "/box1", "manufacturer_id": [4], "device_id": []},
+            "sysex": {"header": [], "footer": []},
+            "cc_params": {"channel": 0, "entries": [{"osc": "/filter/cutoff", "cc": 19, "range": [0, 127]}]}
+        });
+        let r = call(&users[0], "submit_driver", json!({"driver": driver, "firmware": "1.0", "source": "manual p. 3"}));
+        assert_eq!(r["structuredContent"]["path"], "devices/moog/box_1.agent-contributed.fw-1_0.json", "{r}");
+        let empty = call(&users[0], "submit_driver", json!({"driver": {"device": {"name": "X", "vendor": "Y", "osc_prefix": "/x"}}}));
+        assert_eq!(empty["isError"], true, "{empty}");
+        // Learned: the minilogue's cutoff sends CC 74 on firmware 2.1, not 43.
+        for u in &users {
+            call(u, "report_mapping", json!({"device": "korg/minilogue", "address": "/filter/cutoff", "cc": 74, "firmware": "2.1"}));
+        }
+        let fix = call(&users[1], "submit_fix", json!({"device": "korg/minilogue"}));
+        assert_eq!(fix["structuredContent"]["path"], "devices/korg/minilogue.agent-contributed.fw-2_1.json", "{fix}");
+        // The merge job takes them with its token, and reports back.
+        let sync = "s".repeat(16);
+        assert_eq!(exchange(&opts, &idx, &hosted, "GET", "/admin/contributions", None, None, "").status, 401);
+        assert_eq!(exchange(&opts, &idx, &hosted, "GET", "/admin/pending", None, Some(&sync), "").status, 401, "the sync token opens contributions only");
+        let pending: Value = serde_json::from_str(&exchange(&opts, &idx, &hosted, "GET", "/admin/contributions", None, Some(&sync), "").body.unwrap()).unwrap();
+        let list = pending["contributions"].as_array().unwrap();
+        assert_eq!(list.len(), 2);
+        let fixed: Value = serde_json::from_str(list.iter().find(|c| c["kind"] == "fix").unwrap()["content"].as_str().unwrap()).unwrap();
+        let cutoff = fixed["cc_params"]["entries"].as_array().unwrap().iter().find(|e| e["osc"] == "/filter/cutoff").unwrap();
+        assert_eq!(cutoff["cc"], 74);
+        assert_eq!(fixed["_sources"][0]["derived_from"], "korg/minilogue");
+        let id = list[0]["id"].as_u64().unwrap();
+        let settle = json!({"state": "merged", "pr": "https://github.com/roomi-fields/osc-bridge/pull/9"}).to_string();
+        assert_eq!(exchange(&opts, &idx, &hosted, "POST", &format!("/admin/contributions/{id}"), None, Some(&sync), &settle).status, 200);
+        let status = call(&users[0], "get_contribution", json!({"id": id}));
+        assert_eq!(status["structuredContent"]["state"], "merged");
     }
 
     #[test]

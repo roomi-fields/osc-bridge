@@ -63,6 +63,12 @@ addressable by sound name — and its community data is now properly licensed.
   `get_trust`): which CC / NRPN / note a control really sends, observed
   while the user moves it; learned per control and firmware when 3 accounts
   agree, compared with the driver.
+- Contributions (`submit_driver`, `submit_fix`, `get_contribution`): agents
+  submit a driver file, or a corrected variant built from learned mappings;
+  a merge job (`.github/workflows/contributions.yml`,
+  `scripts/apply_contributions.py`) checks each one (parse, lint, catalogue
+  regenerated, library tests, nothing else touched) and merges it as a pull
+  request. New source tier `agent-contributed` (🤖), ranked last.
 - Hosted instance: https://mcp.osc-bridge.roomi-fields.com/mcp.
 - The site publishes a static JSON API: `/api/v1/index.json` (every driver
   with source, firmware and coverage) and each driver file under
