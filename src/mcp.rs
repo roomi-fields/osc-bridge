@@ -45,8 +45,8 @@ pub struct McpOptions {
 
 /// The tools of a server reached over the network: reading the catalogue
 /// and reporting on it. None touches the host's MIDI ports.
-const HOSTED_TOOLS: [&str; 9] = ["list_devices", "get_device_docs", "list_routes", "report_result", "get_trust",
-    "relay_status", "relay_detect", "relay_send", "relay_listen"];
+const HOSTED_TOOLS: [&str; 10] = ["list_devices", "get_device_docs", "list_routes", "report_result", "get_trust",
+    "report_mapping", "relay_status", "relay_detect", "relay_send", "relay_listen"];
 
 /// Who is calling, as far as the hosted server knows: the account (an id
 /// the server issued), the ledger, the relay doors and the usage log. All
@@ -479,6 +479,7 @@ fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex, host
              Trust of every reported driver: GET /v1/trust. \
              Docs: https://osc-bridge.roomi-fields.com/api/\n", HOSTED_TOOLS.join(", ")))),
         ("GET", "/v1/trust") => HttpReply::new(200, Some(ledger.all().to_string())),
+        ("GET", "/v1/learned") => HttpReply::new(200, Some(json!({ "mappings": ledger.learned(None) }).to_string())),
         (_, p) if p.starts_with("/admin/") => admin_exchange(req, hosted),
         ("GET", "/healthz") => HttpReply::new(200, Some("ok\n".into())),
         ("GET", "/u/new") => match ledger.issue_account() {
@@ -1012,6 +1013,28 @@ fn all_tools() -> Value {
                 }
             },
             {
+                "name": "report_mapping",
+                "description": "Teach the catalogue which MIDI message a control really sends: after the user moved one control on the device (see relay_listen), give the driver address it is (from list_routes) — or, for a control the driver lacks, its panel label — and the CC, NRPN or note it sent, with the firmware and the device's Identity Reply when you have them. When several accounts observe the same thing on one firmware the mapping is learned; get_trust shows learned mappings and where they differ from the driver.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "device": { "type": "string", "description": "Driver id or slug." },
+                        "address": { "type": "string", "description": "The driver's OSC address for the control." },
+                        "label": { "type": "string", "description": "The control's panel label, when the driver has no address for it." },
+                        "cc": { "type": "integer", "minimum": 0, "maximum": 127 },
+                        "nrpn_msb": { "type": "integer", "minimum": 0, "maximum": 127 },
+                        "nrpn_lsb": { "type": "integer", "minimum": 0, "maximum": 127 },
+                        "note": { "type": "integer", "minimum": 0, "maximum": 127 },
+                        "channel": { "type": "integer", "minimum": 1, "maximum": 16 },
+                        "firmware": { "type": "string" },
+                        "identity_hex": { "type": "string", "description": "The device's reply to the MIDI Identity Request, in hex." }
+                    },
+                    "required": ["device"],
+                    "additionalProperties": false
+                },
+                "annotations": { "title": "Report what a control sends", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false }
+            },
+            {
                 "name": "relay_status",
                 "description": "Check a relay: the user opened https://osc-bridge.roomi-fields.com/connect/ (or ran osc-bridge connect) and gave you its pairing code. Returns the MIDI output and input ports of their machine. Nothing is sent to the hardware.",
                 "inputSchema": { "type": "object", "properties": { "code": { "type": "string", "description": "The pairing code the relay page or program shows (e.g. 'K7QM-2XPA')." } }, "required": ["code"], "additionalProperties": false },
@@ -1039,7 +1062,7 @@ fn all_tools() -> Value {
             },
             {
                 "name": "relay_listen",
-                "description": "Listen to what the user's hardware sends through a relay for a few seconds: notes, CC, NRPN, SysEx, decoded. With a device, each CC or NRPN that moved is matched to the driver's OSC addresses — ask the user to move one control on the device while listening to learn which address it is, or to check that the driver's map is right (if a control sends a number the driver does not map, report it with report_result).",
+                "description": "Listen to what the user's hardware sends through a relay for a few seconds: notes, CC, NRPN, SysEx, decoded. With a device, each CC or NRPN that moved is matched to the driver's OSC addresses — ask the user to move one control on the device while listening to learn which address it is, or to check that the driver's map is right (then record what you saw with report_mapping, so the catalogue learns it).",
                 "inputSchema": { "type": "object", "properties": { "code": { "type": "string", "description": "The pairing code the relay page or program shows (e.g. 'K7QM-2XPA')." },
                     "seconds": { "type": "integer", "minimum": 1, "maximum": 15, "description": "How long to listen (default 3)." },
                     "device": { "type": "string", "description": "Driver id or slug, to match what moved to its addresses." } },
@@ -1062,6 +1085,7 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, c
     match name {
         "list_devices" => list_devices(index, &DeviceFilter::from_args(args), caller.ledger),
         "report_result" => report_result(index, args, caller),
+        "report_mapping" => report_mapping(index, args, caller),
         "relay_status" | "relay_detect" | "relay_send" | "relay_listen" => {
             let relays = caller.relays.ok_or("the relay runs on the hosted server only")?;
             let code = args.get("code").and_then(Value::as_str).ok_or("missing code (the pairing code shown by the door)")?;
@@ -1079,7 +1103,8 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, c
             let ledger = caller.ledger.ok_or("trust is kept by the hosted server only")?;
             let device = args.get("device").and_then(Value::as_str).ok_or("missing device")?;
             let entry = index.find(device).ok_or_else(|| format!("no device '{device}'"))?;
-            let trust = ledger.trust(&entry.id);
+            let mut trust = ledger.trust(&entry.id);
+            trust["mappings"] = json!(mappings_against_driver(ledger, entry)?);
             Ok(content_structured(&serde_json::to_string_pretty(&trust).unwrap_or_default(), trust))
         }
         "get_device_docs" => {
@@ -1581,6 +1606,88 @@ fn nrpn_numbers(received: &[crate::relay::Inbound]) -> Vec<(u8, u8)> {
     out
 }
 
+/// What a driver says a control sends: its CC / NRPN / note, None when it
+/// does not map that address.
+fn driver_sends(dev: &Device, control: &str) -> Option<crate::reports::Sends> {
+    use crate::reports::Sends;
+    let rel = control.strip_prefix(dev.device.osc_prefix.as_str())?;
+    if let Some(e) = dev.cc_params.iter().flat_map(|t| t.entries.iter()).find(|e| e.osc == rel) {
+        return match (e.nrpn_msb, e.nrpn_lsb, e.cc) {
+            (Some(msb), Some(lsb), _) => Some(Sends::Nrpn { msb, lsb }),
+            (_, _, Some(cc)) => Some(Sends::Cc { cc }),
+            _ => None,
+        };
+    }
+    let t = dev.triggers.iter().flat_map(|t| t.entries.iter()).find(|e| e.osc == rel)?;
+    t.note.or(Some(t.note_range[0])).map(|note| Sends::Note { note })
+}
+
+/// The ledger's learned mappings of a driver, each with what the driver
+/// itself says and whether they differ.
+fn mappings_against_driver(ledger: &crate::reports::Ledger, entry: &DeviceIndexEntry) -> Result<Vec<Value>, String> {
+    let dev = Device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.id))?;
+    Ok(ledger.learned(Some(&entry.id)).into_iter().map(|mut m| {
+        let driver = m["control"].as_str().and_then(|c| driver_sends(&dev, c));
+        m["driver"] = json!(driver);
+        m["differs"] = json!(!m["learned"].is_null() && serde_json::to_value(&driver).ok() != Some(m["learned"].clone()));
+        m
+    }).collect())
+}
+
+/// Record which MIDI message a control sent while the user moved it (seen
+/// with `relay_listen`, or any other way).
+fn report_mapping(index: &DeviceIndex, args: &Value, caller: Caller) -> Result<Value, String> {
+    use crate::reports::{DeviceIdentity, Observation, Sends};
+    let ledger = caller.ledger.ok_or("mappings go to the hosted server: https://mcp.osc-bridge.roomi-fields.com/mcp")?;
+    let user = caller.user.ok_or("no account: initialize the session first, or pass the user_id the server gave you")?;
+    let text = |k: &str| args.get(k).and_then(Value::as_str).map(str::trim).filter(|s| !s.is_empty());
+    let num = |k: &str| args.get(k).and_then(Value::as_u64).filter(|n| *n < 128).map(|n| n as u8);
+    let device = text("device").ok_or("missing device")?;
+    let entry = index.find(device).ok_or_else(|| format!("no device '{device}' (use the id or slug from list_devices)"))?;
+    let dev = Device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.id))?;
+    let control = match (text("address"), text("label")) {
+        (Some(a), _) => {
+            let full = if a.starts_with(&format!("{}/", dev.device.osc_prefix)) { a.to_string() } else { format!("{}{a}", dev.device.osc_prefix) };
+            if !surface_addresses(&dev).contains(&full) {
+                return Err(format!("'{a}' is not an address of {}; for a control the driver lacks, give its panel label instead", entry.id));
+            }
+            full
+        }
+        (None, Some(l)) => format!("label:{}", l.chars().take(60).collect::<String>()),
+        (None, None) => return Err("give the control's address (from list_routes) or, if the driver lacks it, its panel label".into()),
+    };
+    let sends = match (num("cc"), num("nrpn_msb"), num("nrpn_lsb"), num("note")) {
+        (Some(cc), None, None, None) => Sends::Cc { cc },
+        (None, Some(msb), Some(lsb), None) => Sends::Nrpn { msb, lsb },
+        (None, None, None, Some(note)) => Sends::Note { note },
+        _ => return Err("give exactly one of: cc, nrpn_msb + nrpn_lsb, note (0-127)".into()),
+    };
+    let identity = match text("identity_hex") {
+        Some(h) => {
+            let bytes = crate::librarian::parse_hex(h).map_err(|e| format!("identity_hex: {e}"))?;
+            let id = crate::detect::parse_identity_reply(&bytes).ok_or("identity_hex is not a MIDI Identity Reply")?;
+            if !entry.manufacturer_id.is_empty() && id.manufacturer != entry.manufacturer_id {
+                return Err(format!("the device that answered is not from {}'s manufacturer", entry.id));
+            }
+            Some(DeviceIdentity::from(&id))
+        }
+        None => None,
+    };
+    ledger.observe(Observation {
+        ts: chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
+        user: user.to_string(),
+        device: entry.id.clone(),
+        control: control.clone(),
+        sends,
+        channel: num("channel").filter(|c| (1..=16).contains(c)),
+        firmware: text("firmware").map(|f| f.chars().take(40).collect()),
+        identity,
+    })?;
+    let mappings: Vec<Value> = mappings_against_driver(ledger, entry)?.into_iter().filter(|m| m["control"] == control.as_str()).collect();
+    let text = format!("Observation recorded for {} {control}.\n\n{}", entry.id, serde_json::to_string_pretty(&mappings).unwrap_or_default());
+    Ok(content_structured(&text, json!({ "recorded": true, "mappings": mappings })))
+}
+
 fn load_device_by_slug(index: &DeviceIndex, slug: &str) -> Result<Device, String> {
     let path = index.find_path(slug)
         .ok_or_else(|| format!("no device with slug '{slug}'"))?;
@@ -2003,6 +2110,11 @@ mod tests {
         assert_eq!(moved["cc"], 43, "{listening}");
         assert_eq!(moved["driver_addresses"][0], "/minilogue/filter/cutoff");
         assert_eq!(door.join().unwrap(), vec![vec![0xB0, 43, 45], vec![0x90, 0x3C, 0x64]]);
+        let mapped = call("report_mapping", json!({"device": "korg/minilogue", "address": "/filter/cutoff", "cc": 43, "firmware": "2.1"}));
+        assert_eq!(mapped["structuredContent"]["mappings"][0]["driver"], json!({"kind": "cc", "cc": 43}), "{mapped}");
+        assert_eq!(mapped["structuredContent"]["mappings"][0]["differs"], false);
+        let unmapped = call("report_mapping", json!({"device": "korg/minilogue", "address": "/nope", "cc": 1}));
+        assert_eq!(unmapped["isError"], true);
         let other = hosted.ledger.issue_account().unwrap();
         let body = json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "relay_status", "arguments": {"code": code}}});
         let stolen: Value = serde_json::from_str(&exchange(&opts, &idx, &hosted, "POST", "/mcp", Some(&other), None, &body.to_string()).body.unwrap()).unwrap();
