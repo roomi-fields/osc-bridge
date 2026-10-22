@@ -115,4 +115,4 @@ DrivenByMoss, Reaper's OSC control surface, etc.
 - [`DEVICE_JSON_SCHEMA.md`](DEVICE_JSON_SCHEMA.md) — how device drivers are written.
 - [`TUTORIAL_FIRST_DEVICE.md`](TUTORIAL_FIRST_DEVICE.md) — write your first driver in 30 minutes.
 - [Main README](../README.md) — osc-bridge as a standalone bridge, the orchestrator, the device catalogue.
-- Interactive device browser: <https://roomi-fields.github.io/osc-bridge/>
+- Interactive device browser: <https://osc-bridge.roomi-fields.com/>
