@@ -108,6 +108,8 @@ fn set_read_timeout(ws: &WebSocket<MaybeTlsStream<TcpStream>>, t: Duration) -> R
 /// Connect this machine's MIDI ports to the relay at `server` until the
 /// connection closes or the process is stopped.
 pub fn run(server: &str, share: bool) -> Result<()> {
+    // One TLS crypto provider for the process (several may be compiled in).
+    let _ = rustls::crypto::ring::default_provider().install_default();
     let file = account_file();
     let known = file.as_ref().and_then(|f| std::fs::read_to_string(f).ok()).map(|s| s.trim().to_string());
     let url = match &known {
