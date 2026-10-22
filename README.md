@@ -58,7 +58,7 @@ Each synth is described by one JSON file. No Rust recompile required to add a de
 ## What makes it different
 
 - **One JSON = one driver.** Adding a synth is ~30 lines of declarative JSON — CC numbers, SysEx frame templates, optional parameter tables. No Rust, no bindings, no build step. Ship a PR, `osc-bridge run` picks it up.
-- **963 devices out of the box.** Every Prophet, every Oberheim, every Yamaha DX-family, MatrixBrute, Hydrasynth, Virus TI, Digitone, Matrix-1000… most of the catalogue is usable today. Fully searchable at [roomi-fields.github.io/osc-bridge](https://roomi-fields.github.io/osc-bridge/).
+- **963 devices out of the box.** Every Prophet, every Oberheim, every Yamaha DX-family, MatrixBrute, Hydrasynth, Virus TI, Digitone, Matrix-1000… most of the catalogue is usable today. Fully searchable at [osc-bridge.roomi-fields.com](https://osc-bridge.roomi-fields.com/).
 - **Hardware *and* software.** The same named OSC surface drives a hardware synth over MIDI/SysEx *or* a DAW / live-coding environment over OSC — Ableton, Bitwig, Reaper, Sonic Pi, SuperCollider, Pure Data, TouchDesigner, VCV Rack. See [§ Software targets](#software-targets--daws-and-live-coding-environments).
 - **An MCP server built in.** `osc-bridge mcp` exposes the whole catalogue to Claude (or any MCP client) — a MIDI MCP *and* OSC MCP. Discover devices, read a device's OSC surface, send OSC to synths and DAWs. See [`docs/MCP.md`](docs/MCP.md).
 - **Honest provenance.** Each device declares its source in `_sources[]`: `✅ hardware-verified`, `✅ software-verified`, `📘 vendor-doc`, `📡 vendor-osc-api` / `📡 third-party-osc`, `🎛️ electra-preset`, `📦 pencilresearch`. You always know whether a mapping was tested on the device or lifted from a spec sheet.
@@ -82,7 +82,7 @@ Each synth is described by one JSON file. No Rust recompile required to add a de
 | 🚧 **WIP / 📝 stub** | **2** | GR Mega (placeholder) |
 
 **Searching for your device?**
-- 🔎 Interactive browser → **<https://roomi-fields.github.io/osc-bridge/>** (live search by vendor / model / author / source).
+- 🔎 Interactive browser → **<https://osc-bridge.roomi-fields.com/>** (live search by vendor / model / author / source).
 - 📄 Full catalogue as Markdown → [`docs/SUPPORTED_DEVICES.md`](docs/SUPPORTED_DEVICES.md) (auto-generated, organised by vendor).
 
 Your synth isn't there, or a doc-derived entry (`📘` / `📡` / `🎛️` / `📦`) needs promoting to `✅` after you test it on hardware? See the next section.
