@@ -231,14 +231,20 @@ impl RateLimiter {
     }
 }
 
-/// Who is asking: the TCP peer, or behind a reverse proxy the first address
-/// of `X-Forwarded-For` (the peer is then the proxy itself).
+/// Who is asking: the TCP peer, or behind a reverse proxy the address the
+/// proxy saw (the peer is then the proxy itself).
 fn client_key(req: &tiny_http::Request, behind_proxy: bool) -> String {
     let forwarded = behind_proxy.then(|| req.headers().iter()
         .find(|h| h.field.equiv("X-Forwarded-For"))
-        .and_then(|h| h.value.as_str().split(',').next().map(|v| v.trim().to_string())))
+        .and_then(|h| proxy_seen_address(h.value.as_str())))
         .flatten();
     forwarded.unwrap_or_else(|| req.remote_addr().map(|a| a.ip().to_string()).unwrap_or_default())
+}
+
+/// The last address of an `X-Forwarded-For` list: the one our proxy appended.
+/// Earlier entries come from the client and may be forged.
+fn proxy_seen_address(header: &str) -> Option<String> {
+    header.rsplit(',').next().map(str::trim).filter(|a| !a.is_empty()).map(str::to_string)
 }
 
 /// Serve MCP over HTTP on `bind`: `POST /mcp` with one JSON-RPC message,
@@ -1531,6 +1537,13 @@ mod tests {
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
         let err = call_tool("report_result", &json!({"device": "korg/minilogue", "outcome": "works"}), &test_opts(), &idx, Caller::default()).unwrap_err();
         assert!(err.contains("hosted"), "{err}");
+    }
+
+    #[test]
+    fn the_client_is_the_address_our_proxy_appended() {
+        assert_eq!(proxy_seen_address("6.6.6.6, 203.0.113.7").as_deref(), Some("203.0.113.7"));
+        assert_eq!(proxy_seen_address("203.0.113.7").as_deref(), Some("203.0.113.7"));
+        assert_eq!(proxy_seen_address(" "), None);
     }
 
     #[test]
