@@ -110,6 +110,10 @@ human review:
 | `failing` | Only failures reported |
 | `disputed` | Users disagree on the same firmware, or a contrary report gives no firmware |
 
+Limits: 100 reports per user and 30 per connection per day (the
+connection count is kept in memory only, never written), 5,000 per day for
+the whole server.
+
 When a disagreement involves a report without firmware, `get_trust` sets
 `needs_firmware` and the server asks the next reporters to identify their
 device. The identities seen for each firmware are kept, so the catalogue

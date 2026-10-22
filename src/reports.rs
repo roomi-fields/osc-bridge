@@ -35,6 +35,18 @@ pub const MIN_CONCORDANT: usize = 3;
 /// Reports one user may file per UTC day.
 pub const DAILY_CAP: usize = 100;
 
+/// Reports one network client (address, as seen by the server) may file per
+/// UTC day, whatever user ids it presents — user ids are free to mint, so
+/// this is what bounds one source. Counted in memory only, never written.
+pub const CLIENT_DAILY_CAP: usize = 30;
+
+/// Reports the whole server accepts per UTC day.
+pub const GLOBAL_DAILY_CAP: usize = 5000;
+
+/// Size the report file may reach; past it, new reports are refused. It
+/// bounds the disk used and the replay at startup (well under a second).
+pub const MAX_FILE_BYTES: u64 = 50 * 1024 * 1024;
+
 /// Longest free-text note kept with a report.
 pub const MAX_NOTE: usize = 500;
 
@@ -304,12 +316,19 @@ struct State {
     devices: BTreeMap<String, DeviceVotes>,
     /// Reports filed per (user, UTC day), for `DAILY_CAP`.
     per_day: HashMap<(String, String), usize>,
+    /// Reports filed per (network client, UTC day), for `CLIENT_DAILY_CAP`.
+    per_client_day: HashMap<(String, String), usize>,
+    /// Reports filed per UTC day, for `GLOBAL_DAILY_CAP`.
+    per_global_day: HashMap<String, usize>,
+    /// Size of the report file.
+    bytes: u64,
 }
 
 impl State {
     fn apply(&mut self, r: &Report) {
         self.devices.entry(r.device.clone()).or_default().cast(r);
         *self.per_day.entry((r.user.clone(), day(&r.ts))).or_default() += 1;
+        *self.per_global_day.entry(day(&r.ts)).or_default() += 1;
     }
 }
 
@@ -334,6 +353,7 @@ impl ReportStore {
         };
         if let Ok(f) = std::fs::File::open(path) {
             for line in std::io::BufReader::new(f).lines().map_while(Result::ok) {
+                state.bytes += line.len() as u64 + 1;
                 if let Ok(r) = serde_json::from_str::<Report>(&line) {
                     state.apply(&r);
                 }
@@ -347,17 +367,31 @@ impl ReportStore {
         Ok(Self { file: Some(Mutex::new(file)), state: Mutex::new(state) })
     }
 
-    /// Record a report, unless its user has reached `DAILY_CAP` today.
-    pub fn add(&self, r: Report) -> std::result::Result<(), String> {
+    /// Record a report from network `client`, within the daily caps (per
+    /// user, per client, server-wide) and `MAX_FILE_BYTES`.
+    pub fn add(&self, r: Report, client: &str) -> std::result::Result<(), String> {
         let mut state = self.state.lock().map_err(|_| "report store unavailable")?;
-        if state.per_day.get(&(r.user.clone(), day(&r.ts))).copied().unwrap_or(0) >= DAILY_CAP {
+        let today = day(&r.ts);
+        if state.per_day.get(&(r.user.clone(), today.clone())).copied().unwrap_or(0) >= DAILY_CAP {
             return Err(format!("daily limit of {DAILY_CAP} reports reached for this user"));
         }
+        if state.per_client_day.get(&(client.to_string(), today.clone())).copied().unwrap_or(0) >= CLIENT_DAILY_CAP {
+            return Err(format!("daily limit of {CLIENT_DAILY_CAP} reports reached from this connection"));
+        }
+        if state.per_global_day.get(&today).copied().unwrap_or(0) >= GLOBAL_DAILY_CAP {
+            return Err("the server takes no more reports today; try again tomorrow".into());
+        }
+        let line = serde_json::to_string(&r).map_err(|e| e.to_string())?;
+        if state.bytes + line.len() as u64 + 1 > MAX_FILE_BYTES {
+            return Err("the report store is full".into());
+        }
         if let Some(file) = &self.file {
-            let line = serde_json::to_string(&r).map_err(|e| e.to_string())?;
             let mut f = file.lock().map_err(|_| "report file unavailable")?;
             writeln!(f, "{line}").map_err(|e| format!("write report: {e}"))?;
         }
+        state.bytes += line.len() as u64 + 1;
+        state.per_client_day.retain(|(_, d), _| *d == today);
+        *state.per_client_day.entry((client.to_string(), today)).or_default() += 1;
         state.apply(&r);
         Ok(())
     }
@@ -419,12 +453,12 @@ mod tests {
     fn three_concordant_users_with_one_identified_device_verify_a_driver() {
         let store = ReportStore::open(None).unwrap();
         assert_eq!(overall(&store)["status"], "unreported");
-        store.add(report("a", None, Outcome::Works, Some("2.1"), false)).unwrap();
-        store.add(report("b", None, Outcome::Works, Some("2.1"), false)).unwrap();
+        store.add(report("a", None, Outcome::Works, Some("2.1"), false), "net").unwrap();
+        store.add(report("b", None, Outcome::Works, Some("2.1"), false), "net").unwrap();
         assert_eq!(overall(&store)["status"], "unconfirmed");
-        store.add(report("c", None, Outcome::Works, Some("2.1"), false)).unwrap();
+        store.add(report("c", None, Outcome::Works, Some("2.1"), false), "net").unwrap();
         assert_eq!(overall(&store)["status"], "unconfirmed", "no identified device yet");
-        store.add(report("c", None, Outcome::Works, Some("2.1"), true)).unwrap();
+        store.add(report("c", None, Outcome::Works, Some("2.1"), true), "net").unwrap();
         assert_eq!(overall(&store)["status"], "usage-verified");
         assert_eq!(overall(&store)["works"], 3, "a user counts once");
         assert_eq!(overall(&store)["identities"]["2.1"][0], "42 002c 0001 02010000");
@@ -434,9 +468,9 @@ mod tests {
     fn a_failure_on_another_firmware_does_not_demote() {
         let store = ReportStore::open(None).unwrap();
         for u in ["a", "b", "c"] {
-            store.add(report(u, None, Outcome::Works, Some("2.1"), true)).unwrap();
+            store.add(report(u, None, Outcome::Works, Some("2.1"), true), "net").unwrap();
         }
-        store.add(report("d", Some("/minilogue/filter/cutoff"), Outcome::Fails, Some("1.0"), false)).unwrap();
+        store.add(report("d", Some("/minilogue/filter/cutoff"), Outcome::Fails, Some("1.0"), false), "net").unwrap();
         let o = overall(&store);
         assert_eq!(o["status"], "firmware-dependent");
         assert_eq!(o["firmwares"]["2.1"]["status"], "usage-verified");
@@ -448,13 +482,13 @@ mod tests {
     fn a_failure_on_the_same_firmware_disputes_and_a_correction_restores() {
         let store = ReportStore::open(None).unwrap();
         for u in ["a", "b", "c"] {
-            store.add(report(u, None, Outcome::Works, Some("2.1"), true)).unwrap();
+            store.add(report(u, None, Outcome::Works, Some("2.1"), true), "net").unwrap();
         }
-        store.add(report("d", Some("/minilogue/filter/cutoff"), Outcome::Fails, Some("2.1"), false)).unwrap();
+        store.add(report("d", Some("/minilogue/filter/cutoff"), Outcome::Fails, Some("2.1"), false), "net").unwrap();
         assert_eq!(overall(&store)["status"], "disputed");
         let t = store.trust("korg/minilogue");
         assert_eq!(t["addresses"]["/minilogue/filter/cutoff"]["status"], "failing");
-        store.add(report("d", Some("/minilogue/filter/cutoff"), Outcome::Works, Some("2.1"), false)).unwrap();
+        store.add(report("d", Some("/minilogue/filter/cutoff"), Outcome::Works, Some("2.1"), false), "net").unwrap();
         assert_eq!(overall(&store)["status"], "usage-verified");
     }
 
@@ -462,9 +496,9 @@ mod tests {
     fn a_failure_of_unknown_firmware_disputes_and_asks_to_learn_it() {
         let store = ReportStore::open(None).unwrap();
         for u in ["a", "b", "c"] {
-            store.add(report(u, None, Outcome::Works, Some("2.1"), true)).unwrap();
+            store.add(report(u, None, Outcome::Works, Some("2.1"), true), "net").unwrap();
         }
-        store.add(report("d", None, Outcome::Fails, None, false)).unwrap();
+        store.add(report("d", None, Outcome::Fails, None, false), "net").unwrap();
         let o = overall(&store);
         assert_eq!(o["status"], "disputed");
         assert_eq!(o["needs_firmware"], true);
@@ -473,11 +507,22 @@ mod tests {
         // is placed on its firmware and is no longer a contradiction.
         let mut placed = report("d", None, Outcome::Fails, None, true);
         placed.identity = identity("01000000");
-        store.add(placed).unwrap();
+        store.add(placed, "net").unwrap();
         let o = overall(&store);
         assert_eq!(o["needs_firmware"], false);
         assert_eq!(o["status"], "firmware-dependent");
         assert_eq!(o["firmwares"]["identity 01000000"]["status"], "failing");
+    }
+
+    #[test]
+    fn one_connection_cannot_pose_as_many_users() {
+        let store = ReportStore::open(None).unwrap();
+        for i in 0..CLIENT_DAILY_CAP {
+            store.add(report(&format!("u{i}"), None, Outcome::Works, Some("2.1"), true), "net").unwrap();
+        }
+        let err = store.add(report("fresh", None, Outcome::Works, Some("2.1"), true), "net").unwrap_err();
+        assert!(err.contains("connection"), "{err}");
+        assert!(store.add(report("fresh", None, Outcome::Works, Some("2.1"), true), "elsewhere").is_ok());
     }
 
     #[test]
@@ -487,16 +532,16 @@ mod tests {
         {
             let store = ReportStore::open(Some(&path)).unwrap();
             for u in ["a", "b", "c"] {
-                store.add(report(u, None, Outcome::Works, Some("2.1"), true)).unwrap();
+                store.add(report(u, None, Outcome::Works, Some("2.1"), true), "net").unwrap();
             }
         }
         let store = ReportStore::open(Some(&path)).unwrap();
         assert_eq!(overall(&store)["status"], "usage-verified");
-        for _ in 0..DAILY_CAP - 1 {
-            store.add(report("a", None, Outcome::Works, Some("2.1"), true)).unwrap();
+        for i in 0..DAILY_CAP - 1 {
+            store.add(report("a", None, Outcome::Works, Some("2.1"), true), &format!("net{i}")).unwrap();
         }
-        assert!(store.add(report("a", None, Outcome::Works, Some("2.1"), true)).is_err());
-        assert!(store.add(report("b", None, Outcome::Works, Some("2.1"), true)).is_ok());
+        assert!(store.add(report("a", None, Outcome::Works, Some("2.1"), true), "other").is_err(), "user cap");
+        assert!(store.add(report("b", None, Outcome::Works, Some("2.1"), true), "other").is_ok());
         std::fs::remove_file(path).ok();
     }
 }
