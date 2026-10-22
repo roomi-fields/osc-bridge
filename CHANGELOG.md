@@ -9,6 +9,46 @@ additive minor bumps every time a new device class surfaces something
 the JSON can't yet express. Backwards-compat of existing device JSONs
 is tracked explicitly under each release.
 
+## [0.13.0] — 2026-10-22
+
+The catalogue catches up with MIDI Guide — 132 new drivers, drum machines
+addressable by sound name — and its community data is now properly licensed.
+
+### Added — named drum sounds (`triggers`)
+- New optional `triggers` block in device JSONs: each note-triggered sound
+  (drum voice, sample slot) gets an OSC address, e.g. `/tr8s/drum/kick`.
+  `<address> [velocity] [note] [channel]` sends the documented Note On; the
+  note is range-checked, velocity defaults to 100.
+- `list_routes` (MCP) returns the triggers of a device.
+- 15 drum machines ship with their drum map (476 named sounds): Roland
+  TR-8S, TR-1000, T-8; Elektron Analog Rytm MKII, Digitakt II, Syntakt,
+  Model:Samples; KORG drumlogue; Behringer LM Drum; Vermona DRM1 MKIV;
+  Alesis SR-16; Novation DrumStation; and more.
+
+### Changed — catalogue
+- Resynchronised with MIDI Guide (pencilresearch/midi @ 91299d6): 244
+  drivers refreshed, 132 devices added as
+  `<slug>.pencilresearch.fw-unknown.json` (one source per file). Catalogue:
+  963 devices, 212 vendors, 981 driver files.
+- `scripts/import_pencilresearch.py --sync` replaces `--bulk`, which
+  overwrote existing files. The sync refreshes MIDI Guide-only drivers in
+  place (following upstream renames), keeps hand-added fields such as
+  `expects`, never touches the data of drivers mixing several sources, and
+  applies the catalogue's structural `expects` rule to new entries.
+- MCP: when several driver files share a slug, the most trustworthy source
+  now wins (verified, then vendor doc, then OSC API, then Electra, then
+  MIDI Guide) instead of whichever file was read first.
+- Modbap Trinity moved from `devices/unknown/` to `devices/modbap/`.
+
+### Fixed — licensing
+- MIDI Guide data is CC BY-SA 4.0 (it was declared MIT in `sources.toml`).
+  Every MIDI Guide source entry now records `license` and `attribution`, and
+  the README credits MIDI Guide and documents the adaptation.
+
+### Compatibility
+- Device JSONs: additive (`triggers` is optional). Existing driver paths are
+  unchanged except Modbap Trinity.
+
 ## [0.12.0] — 2026-08-20
 
 Browser clients join the bridge: a WebSocket transport carries OSC to and

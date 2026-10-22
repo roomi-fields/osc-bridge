@@ -5,7 +5,7 @@ Short-list of follow-ups. Move to an issue when picked up.
 ## Data hygiene
 - [ ] Fix `infer_vendor()` in `scripts/import_electra_preset.py` — still misses `matrixbrute`, `equator2`, `hydrasynthv1`, etc. (had to be rebucketed manually). Broaden `KNOWN_VENDORS` + substring/token match with accent-stripping.
 - [ ] Identify the 23 remaining `devices/electra-community/` entries (bacara, modnetic, eikon, rs_6, viper, vector_synth, ser_2020, destiny_model_q2, dl_8000r_v_1_1, division_department, the_runner, urbanspaceman_gfx, vidos, x_space, dekrispator, evadeluxe, exst1, flash_synth, gemini, polyexciter_13, revision_15_of_king_of_fm, vkeys_editor_mk2_25, biolux_fx_rack).
-- [ ] Deduplicate the 15 `_sources[]` entries accumulated on `devices/arturia/matrixbrute.json` — the importer adds one per merge; cap / coalesce.
+- [x] Deduplicate the 15 `_sources[]` entries accumulated on `devices/arturia/matrixbrute.json` — the importer adds one per merge; cap / coalesce.
 - [ ] Re-run the bulk Electra extraction with a higher `msgs >= N` threshold to see if 50 is the right floor (some 50-msg presets may be low-value WIP).
 
 ## Coverage
