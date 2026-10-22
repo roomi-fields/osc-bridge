@@ -165,7 +165,13 @@ fn handle_request(req: &Value, opts: &McpOptions, index: &DeviceIndex) -> Option
         "tools/list" => Ok(tools_list()),
         "tools/call" => match req.get("params").and_then(|p| Some((p.get("name")?.as_str()?, p.get("arguments").cloned().unwrap_or(json!({})))))
         {
-            Some((name, args)) => call_tool(name, &args, opts, index).map_err(|e| (-32602, e)),
+            // An unknown tool is a protocol error; a tool that fails reports
+            // it in its result, so the model can read it and react (MCP spec).
+            Some((name, _)) if !tool_names().contains(&name) => Err((-32602, format!("unknown tool: {name}"))),
+            Some((name, args)) => Ok(call_tool(name, &args, opts, index).unwrap_or_else(|e| json!({
+                "content": [ { "type": "text", "text": e } ],
+                "isError": true,
+            }))),
             None => Err((-32602, "missing params.name".into())),
         },
         "ping" => Ok(json!({})),
@@ -487,6 +493,11 @@ fn tools_list() -> Value {
             }
         ]
     })
+}
+
+fn tool_names() -> Vec<&'static str> {
+    vec!["list_devices", "get_device_docs", "list_routes", "send", "get_status",
+         "detect_hardware", "backup_presets", "restore_presets"]
 }
 
 fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex) -> Result<Value, String> {
@@ -955,6 +966,23 @@ mod tests {
             checked += 1;
         }
         assert!(checked > 0, "catalogue should contain shared slugs");
+    }
+
+    #[test]
+    fn tool_failure_is_a_result_and_unknown_tool_a_protocol_error() {
+        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let opts = McpOptions { devices_dir: PathBuf::from("devices"), default_target: "127.0.0.1:7777".parse().unwrap() };
+        let call = |name: &str| handle_request(&json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
+            "params": {"name": name, "arguments": {"slug": "no-such-device"}}}), &opts, &idx).unwrap();
+        let failed = call("list_routes");
+        assert_eq!(failed["result"]["isError"], json!(true));
+        assert!(failed["result"]["content"][0]["text"].as_str().unwrap().contains("no-such-device"));
+        let unknown = call("no_such_tool");
+        assert_eq!(unknown["error"]["code"], json!(-32602));
+        let listed: Vec<String> = tools_list()["tools"].as_array().unwrap().iter()
+            .map(|t| t["name"].as_str().unwrap().to_string()).collect();
+        assert_eq!(listed.len(), tool_names().len());
+        assert!(tool_names().iter().all(|n| listed.iter().any(|l| l == n)));
     }
 
     #[test]
