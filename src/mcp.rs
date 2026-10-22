@@ -10,8 +10,15 @@
 //!  - `send`           — emit an OSC message to a running osc-bridge bind port
 //!  - `get_status`     — round-trip `/bridge/status` to a running bridge
 //!
-//! The server reads one JSON-RPC request per line from stdin and writes one
-//! response per line to stdout. Logging goes to stderr.
+//!  - `detect_hardware`, `backup_presets`, `restore_presets` — the MIDI
+//!    ports of the machine the server runs on
+//!
+//! Two transports. On stdio (`run`) the server reads one JSON-RPC request per
+//! line from stdin and writes one response per line to stdout; logging goes
+//! to stderr. Over HTTP (`run_http`, MCP "streamable HTTP" without the
+//! optional event stream) each POST carries one request and gets its
+//! response as JSON; only the catalogue tools are offered there, since the
+//! others act on the machine hosting the server, not the caller's.
 
 use anyhow::Result;
 use serde_json::{json, Value};
@@ -30,7 +37,13 @@ const SERVER_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub struct McpOptions {
     pub devices_dir: PathBuf,
     pub default_target: SocketAddr,
+    /// Offer only the read-only catalogue tools (`CATALOGUE_TOOLS`).
+    pub catalogue_only: bool,
 }
+
+/// The tools that read the catalogue and nothing else — the whole surface
+/// of a server reached over the network.
+const CATALOGUE_TOOLS: [&str; 3] = ["list_devices", "get_device_docs", "list_routes"];
 
 /// One lightweight catalogue entry. The full `Device` is loaded on demand
 /// (per `get_device_docs` / `list_routes` call) — only this metadata is held
@@ -43,6 +56,7 @@ struct DeviceIndexEntry {
     kind: String,
     revision: String,
     tier: String,
+    firmware: Option<String>,
     manufacturer_id: Vec<u8>,
 }
 
@@ -66,10 +80,11 @@ impl DeviceIndex {
             let device = doc.get("device");
             let get = |k: &str| device.and_then(|d| d.get(k)).and_then(Value::as_str);
             let slug = get("osc_prefix").unwrap_or("").trim_start_matches('/').to_string();
-            let tier = doc.get("_sources").and_then(Value::as_array)
-                .and_then(|a| a.first())
-                .and_then(|s| s.get("type").and_then(Value::as_str))
+            let source = doc.get("_sources").and_then(Value::as_array).and_then(|a| a.first());
+            let tier = source.and_then(|s| s.get("type").and_then(Value::as_str))
                 .unwrap_or("unknown").to_string();
+            let firmware = source.and_then(|s| s.get("firmware").and_then(Value::as_str))
+                .filter(|f| *f != "unknown").map(str::to_string);
             let idx = entries.len();
             if !slug.is_empty() {
                 let better = match by_slug.get(&slug) {
@@ -89,6 +104,7 @@ impl DeviceIndex {
                 kind: get("kind").unwrap_or("hardware").to_string(),
                 revision: get("revision").unwrap_or("").to_string(),
                 tier,
+                firmware,
                 manufacturer_id: device.and_then(|d| d.get("manufacturer_id"))
                     .and_then(Value::as_array)
                     .map(|a| a.iter().filter_map(Value::as_u64).map(|b| b as u8).collect())
@@ -116,14 +132,19 @@ fn tier_rank(tier: &str) -> u8 {
     }
 }
 
-pub fn run(opts: McpOptions) -> Result<()> {
-    eprintln!("MCP server starting (devices_dir={}, default_target={})",
-        crate::catalogue::resolve(&opts.devices_dir).display(), opts.default_target);
-    // Build the catalogue index once — every device tool reads from it
-    // instead of re-walking the tree.
+/// Build the catalogue index once — every device tool reads from it
+/// instead of re-walking the tree.
+fn build_index(opts: &McpOptions) -> DeviceIndex {
     let devices_dir = crate::catalogue::resolve(&opts.devices_dir);
+    eprintln!("MCP server starting (devices_dir={}, default_target={})",
+        devices_dir.display(), opts.default_target);
     let index = DeviceIndex::build(&devices_dir);
     eprintln!("indexed {} device file(s)", index.entries.len());
+    index
+}
+
+pub fn run(opts: McpOptions) -> Result<()> {
+    let index = build_index(&opts);
 
     let stdin = std::io::stdin();
     let stdout = std::io::stdout();
@@ -151,6 +172,105 @@ pub fn run(opts: McpOptions) -> Result<()> {
     Ok(())
 }
 
+/// Largest request body accepted over HTTP. A tool call is a few hundred
+/// bytes; this only stops a client from making the server buffer garbage.
+const MAX_HTTP_BODY: usize = 64 * 1024;
+
+/// Worker threads answering HTTP requests. Calls are short reads of the
+/// in-memory index and of one driver file.
+const HTTP_WORKERS: usize = 4;
+
+/// Serve MCP over HTTP on `bind`: `POST /mcp` with one JSON-RPC message,
+/// answered as `application/json` (202 with no body for a notification).
+/// The catalogue is public data and no tool has an effect, so any origin
+/// may call it (CORS `*`). `GET /` returns a one-line description for people
+/// who open the URL in a browser.
+pub fn run_http(opts: McpOptions, bind: &str) -> Result<()> {
+    let opts = McpOptions { catalogue_only: true, ..opts };
+    let index = build_index(&opts);
+    let server = tiny_http::Server::http(bind).map_err(|e| anyhow::anyhow!("bind HTTP {bind}: {e}"))?;
+    eprintln!("MCP over HTTP on http://{}/mcp (catalogue tools only)", server.server_addr());
+    let shared = std::sync::Arc::new((server, opts, index));
+    let workers: Vec<_> = (0..HTTP_WORKERS).map(|_| {
+        let shared = shared.clone();
+        std::thread::spawn(move || {
+            let (server, opts, index) = &*shared;
+            for mut req in server.incoming_requests() {
+                let (status, body) = http_exchange(&read_request(&mut req), opts, index);
+                respond(req, status, body);
+            }
+        })
+    }).collect();
+    for w in workers { let _ = w.join(); }
+    Ok(())
+}
+
+/// One HTTP request, read into memory so the exchange is a plain function.
+struct HttpRequest {
+    method: String,
+    path: String,
+    body: Result<String, String>,
+}
+
+fn read_request(req: &mut tiny_http::Request) -> HttpRequest {
+    use std::io::Read;
+    let method = req.method().as_str().to_ascii_uppercase();
+    let path = req.url().split('?').next().unwrap_or("").to_string();
+    let mut text = String::new();
+    let body = match req.as_reader().take(MAX_HTTP_BODY as u64 + 1).read_to_string(&mut text) {
+        Ok(n) if n > MAX_HTTP_BODY => Err("request body too large".into()),
+        Ok(_) => Ok(text),
+        Err(e) => Err(format!("read body: {e}")),
+    };
+    HttpRequest { method, path, body }
+}
+
+/// Status code and body (None = empty) for one HTTP request.
+fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex) -> (u16, Option<String>) {
+    let rpc_error = |code: i64, msg: String| json!({
+        "jsonrpc": "2.0", "id": null, "error": { "code": code, "message": msg },
+    }).to_string();
+    match (req.method.as_str(), req.path.as_str()) {
+        ("OPTIONS", _) => (204, None),
+        ("GET", "/") => (200, Some(format!(
+            "osc-bridge {SERVER_VERSION} MCP server (catalogue tools: {}). POST JSON-RPC to /mcp. \
+             Docs: https://osc-bridge.roomi-fields.com/api/\n", CATALOGUE_TOOLS.join(", ")))),
+        // No server-initiated event stream (optional in the spec).
+        ("GET", "/mcp") => (405, None),
+        ("POST", "/mcp") => {
+            let body = match &req.body {
+                Ok(b) => b,
+                Err(e) => return (413, Some(rpc_error(-32600, e.clone()))),
+            };
+            match serde_json::from_str::<Value>(body) {
+                Ok(msg) if msg.is_object() => match handle_request(&msg, opts, index) {
+                    Some(resp) => (200, Some(resp.to_string())),
+                    None => (202, None),
+                },
+                Ok(_) => (400, Some(rpc_error(-32600, "expected one JSON-RPC object".into()))),
+                Err(e) => (400, Some(rpc_error(-32700, format!("parse error: {e}")))),
+            }
+        }
+        _ => (404, None),
+    }
+}
+
+fn respond(req: tiny_http::Request, status: u16, body: Option<String>) {
+    use tiny_http::{Header, Response};
+    let header = |k: &str, v: &str| Header::from_bytes(k.as_bytes(), v.as_bytes()).expect("static header");
+    let kind = match &body {
+        Some(b) if b.starts_with('{') => "application/json",
+        _ => "text/plain; charset=utf-8",
+    };
+    let resp = Response::from_string(body.unwrap_or_default())
+        .with_status_code(status)
+        .with_header(header("Content-Type", kind))
+        .with_header(header("Access-Control-Allow-Origin", "*"))
+        .with_header(header("Access-Control-Allow-Methods", "POST, GET, OPTIONS"))
+        .with_header(header("Access-Control-Allow-Headers", "content-type, mcp-protocol-version, mcp-session-id"));
+    let _ = req.respond(resp);
+}
+
 fn handle_request(req: &Value, opts: &McpOptions, index: &DeviceIndex) -> Option<Value> {
     let id = req.get("id").cloned();
     let method = req.get("method").and_then(Value::as_str).unwrap_or("");
@@ -162,12 +282,12 @@ fn handle_request(req: &Value, opts: &McpOptions, index: &DeviceIndex) -> Option
 
     let result: Result<Value, (i64, String)> = match method {
         "initialize" => Ok(init_result()),
-        "tools/list" => Ok(tools_list()),
+        "tools/list" => Ok(tools_list(opts)),
         "tools/call" => match req.get("params").and_then(|p| Some((p.get("name")?.as_str()?, p.get("arguments").cloned().unwrap_or(json!({})))))
         {
             // An unknown tool is a protocol error; a tool that fails reports
             // it in its result, so the model can read it and react (MCP spec).
-            Some((name, _)) if !tool_names().contains(&name) => Err((-32602, format!("unknown tool: {name}"))),
+            Some((name, _)) if !tool_names(opts).contains(&name) => Err((-32602, format!("unknown tool: {name}"))),
             Some((name, args)) => Ok(call_tool(name, &args, opts, index).unwrap_or_else(|e| json!({
                 "content": [ { "type": "text", "text": e } ],
                 "isError": true,
@@ -203,17 +323,35 @@ fn init_result() -> Value {
     })
 }
 
-fn tools_list() -> Value {
+fn tools_list(opts: &McpOptions) -> Value {
+    let mut all = all_tools();
+    if let Some(tools) = all["tools"].as_array_mut() {
+        let offered = tool_names(opts);
+        tools.retain(|t| t["name"].as_str().is_some_and(|n| offered.contains(&n)));
+    }
+    all
+}
+
+fn all_tools() -> Value {
     json!({
         "tools": [
             {
                 "name": "list_devices",
-                "description": "Enumerate every device driver JSON. Returns name, vendor, OSC prefix, kind (hardware/software), and source tier for each.",
-                "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false },
+                "description": "Find device drivers in the catalogue (about 980 synths, drum machines, controllers and DAWs). Without arguments it lists them all; `query` keeps drivers whose vendor, name or slug contain every word (e.g. 'korg minilogue'). Returns name, vendor, OSC prefix (slug), kind, source tier and firmware version when the source states one. Pass the slug to list_routes for the full CC/NRPN/SysEx map.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "query": { "type": "string", "description": "Words that must all appear in the vendor, name or slug (case-insensitive)." },
+                        "vendor": { "type": "string", "description": "Exact vendor name, case-insensitive (e.g. 'Moog')." },
+                        "kind": { "type": "string", "enum": ["hardware", "software"] },
+                        "limit": { "type": "integer", "minimum": 1, "description": "Return at most this many drivers." }
+                    },
+                    "additionalProperties": false
+                },
                 "outputSchema": {
                     "type": "object",
                     "properties": {
-                        "count": { "type": "integer", "description": "Number of device drivers found." },
+                        "count": { "type": "integer", "description": "Number of matching drivers, before `limit`." },
                         "devices": {
                             "type": "array",
                             "items": {
@@ -225,6 +363,7 @@ fn tools_list() -> Value {
                                     "kind": { "type": "string", "description": "'hardware' or 'software'." },
                                     "revision": { "type": "string" },
                                     "source_tier": { "type": "string" },
+                                    "firmware": { "type": ["string", "null"], "description": "Firmware the source documents; null when it does not say." },
                                     "file": { "type": "string" }
                                 },
                                 "required": ["name", "vendor", "slug", "kind"]
@@ -495,14 +634,17 @@ fn tools_list() -> Value {
     })
 }
 
-fn tool_names() -> Vec<&'static str> {
+fn tool_names(opts: &McpOptions) -> Vec<&'static str> {
+    if opts.catalogue_only {
+        return CATALOGUE_TOOLS.to_vec();
+    }
     vec!["list_devices", "get_device_docs", "list_routes", "send", "get_status",
          "detect_hardware", "backup_presets", "restore_presets"]
 }
 
 fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex) -> Result<Value, String> {
     match name {
-        "list_devices" => list_devices(index),
+        "list_devices" => list_devices(index, &DeviceFilter::from_args(args)),
         "get_device_docs" => {
             let slug = args.get("slug").and_then(Value::as_str).ok_or("missing slug")?;
             get_device_docs(index, slug)
@@ -659,17 +801,48 @@ pub fn print_detection(devices_dir: &Path, probe: bool) -> Result<()> {
     Ok(())
 }
 
-fn list_devices(index: &DeviceIndex) -> Result<Value, String> {
-    let devices: Vec<Value> = index.entries.iter().map(|e| json!({
+/// The `list_devices` arguments. Everything is optional; nothing given
+/// keeps every driver.
+#[derive(Default)]
+struct DeviceFilter {
+    words: Vec<String>,
+    vendor: Option<String>,
+    kind: Option<String>,
+    limit: Option<usize>,
+}
+
+impl DeviceFilter {
+    fn from_args(args: &Value) -> Self {
+        let text = |k: &str| args.get(k).and_then(Value::as_str).map(str::to_lowercase);
+        Self {
+            words: text("query").unwrap_or_default().split_whitespace().map(str::to_string).collect(),
+            vendor: text("vendor"),
+            kind: text("kind"),
+            limit: args.get("limit").and_then(Value::as_u64).map(|n| n.max(1) as usize),
+        }
+    }
+
+    fn keeps(&self, e: &DeviceIndexEntry) -> bool {
+        let haystack = format!("{} {} {}", e.vendor, e.name, e.slug).to_lowercase();
+        self.words.iter().all(|w| haystack.contains(w.as_str()))
+            && self.vendor.as_ref().is_none_or(|v| e.vendor.to_lowercase() == *v)
+            && self.kind.as_ref().is_none_or(|k| e.kind == *k)
+    }
+}
+
+fn list_devices(index: &DeviceIndex, filter: &DeviceFilter) -> Result<Value, String> {
+    let matching: Vec<&DeviceIndexEntry> = index.entries.iter().filter(|e| filter.keeps(e)).collect();
+    let count = matching.len();
+    let devices: Vec<Value> = matching.into_iter().take(filter.limit.unwrap_or(usize::MAX)).map(|e| json!({
         "name": e.name,
         "vendor": e.vendor,
         "slug": e.slug,
         "kind": e.kind,
         "revision": e.revision,
         "source_tier": e.tier,
+        "firmware": e.firmware,
         "file": e.path.display().to_string(),
     })).collect();
-    let count = devices.len();
     let structured = json!({ "count": count, "devices": devices });
     let text = format!("{count} devices found.\n\n{}",
         serde_json::to_string_pretty(&structured["devices"]).unwrap_or_default());
@@ -881,6 +1054,62 @@ mod tests {
         DeviceIndex { entries: Vec::new(), by_slug: HashMap::new() }
     }
 
+    fn test_opts() -> McpOptions {
+        McpOptions {
+            devices_dir: PathBuf::from("devices"),
+            default_target: "127.0.0.1:7777".parse().unwrap(),
+            catalogue_only: false,
+        }
+    }
+
+    #[test]
+    fn list_devices_filters_by_words_vendor_kind_and_limit() {
+        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let run = |args: Value| list_devices(&idx, &DeviceFilter::from_args(&args)).unwrap()["structuredContent"].clone();
+        let all = run(json!({}));
+        assert_eq!(all["count"].as_u64().unwrap() as usize, idx.entries.len());
+        let mini = run(json!({"query": "KORG minilogue"}));
+        let names: Vec<&str> = mini["devices"].as_array().unwrap().iter().map(|d| d["name"].as_str().unwrap()).collect();
+        assert!(names.iter().any(|n| n.eq_ignore_ascii_case("minilogue")), "{names:?}");
+        assert!(names.iter().all(|n| n.to_lowercase().contains("minilogue")), "{names:?}");
+        let moog = run(json!({"vendor": "moog", "limit": 2}));
+        assert!(moog["count"].as_u64().unwrap() > 2);
+        assert_eq!(moog["devices"].as_array().unwrap().len(), 2);
+        let software = run(json!({"kind": "software"}));
+        assert!(software["devices"].as_array().unwrap().iter().all(|d| d["kind"] == "software"));
+    }
+
+    #[test]
+    fn catalogue_only_server_offers_and_runs_only_catalogue_tools() {
+        let opts = McpOptions { catalogue_only: true, ..test_opts() };
+        let listed: Vec<String> = tools_list(&opts)["tools"].as_array().unwrap().iter()
+            .map(|t| t["name"].as_str().unwrap().to_string()).collect();
+        assert_eq!(listed, CATALOGUE_TOOLS);
+        let resp = handle_request(&json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
+            "params": {"name": "send", "arguments": {"addr": "/x"}}}), &opts, &empty_index()).unwrap();
+        assert_eq!(resp["error"]["code"], json!(-32602));
+    }
+
+    #[test]
+    fn http_exchange_answers_posts_notifications_and_rejects_the_rest() {
+        let opts = McpOptions { catalogue_only: true, ..test_opts() };
+        let idx = empty_index();
+        let req = |method: &str, path: &str, body: &str| HttpRequest {
+            method: method.into(), path: path.into(), body: Ok(body.into()),
+        };
+        let (status, body) = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":7,"method":"tools/list"}"#), &opts, &idx);
+        assert_eq!(status, 200);
+        let v: Value = serde_json::from_str(&body.unwrap()).unwrap();
+        assert_eq!(v["id"], json!(7));
+        assert_eq!(v["result"]["tools"].as_array().unwrap().len(), CATALOGUE_TOOLS.len());
+        let (status, body) = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#), &opts, &idx);
+        assert_eq!((status, body), (202, None));
+        assert_eq!(http_exchange(&req("POST", "/mcp", "not json"), &opts, &idx).0, 400);
+        assert_eq!(http_exchange(&req("GET", "/mcp", ""), &opts, &idx).0, 405);
+        assert_eq!(http_exchange(&req("GET", "/", ""), &opts, &idx).0, 200);
+        assert_eq!(http_exchange(&req("POST", "/other", ""), &opts, &idx).0, 404);
+    }
+
     #[test]
     fn device_index_builds_from_devices_dir() {
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
@@ -894,7 +1123,7 @@ mod tests {
 
     #[test]
     fn tools_list_has_eight_tools() {
-        let t = tools_list();
+        let t = tools_list(&test_opts());
         let arr = t.get("tools").unwrap().as_array().unwrap();
         assert_eq!(arr.len(), 8);
         let names: Vec<&str> = arr.iter().map(|t| t.get("name").unwrap().as_str().unwrap()).collect();
@@ -906,7 +1135,7 @@ mod tests {
 
     #[test]
     fn every_tool_declares_schema_and_annotations() {
-        let t = tools_list();
+        let t = tools_list(&test_opts());
         for tool in t.get("tools").unwrap().as_array().unwrap() {
             let name = tool.get("name").and_then(Value::as_str).unwrap();
             assert!(tool.get("inputSchema").map(Value::is_object).unwrap_or(false),
@@ -922,7 +1151,7 @@ mod tests {
     #[test]
     fn list_devices_result_carries_structured_content() {
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
-        let res = list_devices(&idx).unwrap();
+        let res = list_devices(&idx, &DeviceFilter::default()).unwrap();
         let sc = res.get("structuredContent").expect("structuredContent present");
         assert!(sc.get("count").and_then(Value::as_u64).unwrap() > 100);
         assert!(sc.get("devices").and_then(Value::as_array).unwrap().len() > 100);
@@ -971,7 +1200,7 @@ mod tests {
     #[test]
     fn tool_failure_is_a_result_and_unknown_tool_a_protocol_error() {
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
-        let opts = McpOptions { devices_dir: PathBuf::from("devices"), default_target: "127.0.0.1:7777".parse().unwrap() };
+        let opts = test_opts();
         let call = |name: &str| handle_request(&json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
             "params": {"name": name, "arguments": {"slug": "no-such-device"}}}), &opts, &idx).unwrap();
         let failed = call("list_routes");
@@ -979,16 +1208,16 @@ mod tests {
         assert!(failed["result"]["content"][0]["text"].as_str().unwrap().contains("no-such-device"));
         let unknown = call("no_such_tool");
         assert_eq!(unknown["error"]["code"], json!(-32602));
-        let listed: Vec<String> = tools_list()["tools"].as_array().unwrap().iter()
+        let listed: Vec<String> = tools_list(&test_opts())["tools"].as_array().unwrap().iter()
             .map(|t| t["name"].as_str().unwrap().to_string()).collect();
-        assert_eq!(listed.len(), tool_names().len());
-        assert!(tool_names().iter().all(|n| listed.iter().any(|l| l == n)));
+        assert_eq!(listed.len(), tool_names(&test_opts()).len());
+        assert!(tool_names(&test_opts()).iter().all(|n| listed.iter().any(|l| l == n)));
     }
 
     #[test]
     fn restore_refuses_without_explicit_confirmation() {
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
-        let opts = McpOptions { devices_dir: PathBuf::from("devices"), default_target: "127.0.0.1:7777".parse().unwrap() };
+        let opts = test_opts();
         let err = call_tool("restore_presets", &json!({"out_port": "0", "file": "x.syx"}), &opts, &idx).unwrap_err();
         assert!(err.contains("confirm_overwrite"), "{err}");
     }
@@ -1014,10 +1243,7 @@ mod tests {
     #[test]
     fn handle_initialize() {
         let req = json!({"jsonrpc":"2.0","id":1,"method":"initialize","params":{}});
-        let opts = McpOptions {
-            devices_dir: PathBuf::from("devices"),
-            default_target: "127.0.0.1:7777".parse().unwrap(),
-        };
+        let opts = test_opts();
         let resp = handle_request(&req, &opts, &empty_index()).unwrap();
         assert_eq!(resp.get("id"), Some(&json!(1)));
         assert!(resp.get("result").is_some());
@@ -1026,20 +1252,14 @@ mod tests {
     #[test]
     fn handle_initialized_notification_returns_nothing() {
         let req = json!({"jsonrpc":"2.0","method":"notifications/initialized"});
-        let opts = McpOptions {
-            devices_dir: PathBuf::from("devices"),
-            default_target: "127.0.0.1:7777".parse().unwrap(),
-        };
+        let opts = test_opts();
         assert!(handle_request(&req, &opts, &empty_index()).is_none());
     }
 
     #[test]
     fn handle_unknown_method_returns_error() {
         let req = json!({"jsonrpc":"2.0","id":99,"method":"foo/bar","params":{}});
-        let opts = McpOptions {
-            devices_dir: PathBuf::from("devices"),
-            default_target: "127.0.0.1:7777".parse().unwrap(),
-        };
+        let opts = test_opts();
         let resp = handle_request(&req, &opts, &empty_index()).unwrap();
         assert!(resp.get("error").is_some());
     }

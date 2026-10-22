@@ -8,14 +8,14 @@ Catalogue: 963 devices from 212 vendors. Each driver states its source: ✅ test
 
 Commands: `osc-bridge detect` (find connected devices with the MIDI Identity Request and match drivers), `run` (bridge one device; OSC on 127.0.0.1:7777; `--osc-client` for MIDI-in → OSC; `--ws-bind` for browser clients over WebSocket), `orchestrate` (several devices, inter-device routes), `backup` / `restore` (SysEx preset librarian, .syx files), `inspect`, `lint`, `osc-send`, `osc-listen`, `mcp`.
 
-MCP tools: list_devices, get_device_docs, list_routes, send, get_status, detect_hardware, backup_presets, restore_presets (refuses without confirm_overwrite: true).
+MCP tools: list_devices (filters: query, vendor, kind, limit), get_device_docs, list_routes, send, get_status, detect_hardware, backup_presets, restore_presets (refuses without confirm_overwrite: true).
 
 ## Documentation
 
 - [Home]({site_url}): what osc-bridge does
 - [Getting started]({site_url}getting-started/): install, detect, run, send
 - [Device catalogue]({site_url}catalogue/): search every driver; one page per device at {site_url}devices/<vendor>/<driver>/ with its OSC, CC and NRPN map
-- [Catalogue as JSON]({site_url}devices.json): machine-readable index of every driver
+- [API for agents]({site_url}api/): static JSON API — [index of every driver]({site_url}api/v1/index.json) (source tier, firmware, coverage) and each driver file at {site_url}api/v1/devices/<vendor>/<driver>.json; MCP over HTTP with `osc-bridge mcp --http`
 - [MCP server]({site_url}MCP/): configuration and the eight tools
 - [Device JSON schema]({site_url}DEVICE_JSON_SCHEMA/): CC/NRPN params, SysEx commands, drum triggers, replies, OSC transport
 - [Your first device JSON]({site_url}TUTORIAL_FIRST_DEVICE/): write a driver in about 30 minutes

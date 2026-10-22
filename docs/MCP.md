@@ -59,12 +59,15 @@ The server speaks JSON-RPC 2.0 over stdio.
 - `--default-target <host:port>` — where `send` / `get_status` point when no
   `target` argument is given (default `127.0.0.1:7777`, the standard
   `osc-bridge run` bind).
+- `--http <host:port>` — serve MCP over HTTP (endpoint `/mcp`) instead of
+  stdio, for agents that reach the catalogue over the network. Only the three
+  read-only catalogue tools are offered; see [API for agents](api.md).
 
 ## The eight tools
 
 | Tool | What it does |
 |---|---|
-| `list_devices` | Enumerate every device driver — name, vendor, slug, kind (hardware/software), source tier. |
+| `list_devices` | Find device drivers — name, vendor, slug, kind (hardware/software), source tier, documented firmware. Optional `query` (words matched in vendor, name and slug), `vendor`, `kind`, `limit`. |
 | `get_device_docs` | Fetch the markdown companion guide for one device (by slug). |
 | `list_routes` | Return a device's full OSC surface — declarative commands, CC/NRPN params, SysEx params, named drum sounds, reply patterns. |
 | `send` | Send a single OSC message to a running `osc-bridge` instance (typed args: int, float, string, bool). |

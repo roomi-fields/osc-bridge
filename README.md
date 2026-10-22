@@ -83,6 +83,7 @@ Each synth is described by one JSON file. No Rust recompile required to add a de
 
 **Searching for your device?**
 - 🔎 Interactive browser → **<https://osc-bridge.roomi-fields.com/>** (live search by vendor / model / author / source).
+- 🤖 For scripts and AI agents → JSON API at <https://osc-bridge.roomi-fields.com/api/v1/index.json> (each driver at `/api/v1/devices/<vendor>/<driver>.json`), or MCP over HTTP with `osc-bridge mcp --http` — see [`docs/api.md`](docs/api.md).
 - 📄 Full catalogue as Markdown → [`docs/SUPPORTED_DEVICES.md`](docs/SUPPORTED_DEVICES.md) (auto-generated, organised by vendor).
 
 Your synth isn't there, or a doc-derived entry (`📘` / `📡` / `🎛️` / `📦`) needs promoting to `✅` after you test it on hardware? See the next section.
@@ -454,8 +455,8 @@ send OSC to synths and DAWs.
 }
 ```
 
-Five tools — `list_devices`, `get_device_docs`, `list_routes`, `send`,
-`get_status`. Then in conversation: *"What can the MatrixBrute do? Sweep its
+Eight tools — `list_devices`, `get_device_docs`, `list_routes`, `send`,
+`get_status`, `detect_hardware`, `backup_presets`, `restore_presets`. Then in conversation: *"What can the MatrixBrute do? Sweep its
 filter cutoff."* — the model calls `list_routes("matrixbrute")`, then `send`.
 No glue code.
 

@@ -26,6 +26,15 @@ addressable by sound name — and its community data is now properly licensed.
   Alesis SR-16; Novation DrumStation; and more, plus the General MIDI
   percussion map.
 
+### Added — catalogue API for agents
+- `list_devices` (MCP) takes optional `query`, `vendor`, `kind` and `limit`,
+  and reports the firmware version a driver's source documents.
+- `osc-bridge mcp --http <host:port>`: MCP over HTTP (endpoint `/mcp`,
+  JSON responses), offering only the read-only catalogue tools.
+- The site publishes a static JSON API: `/api/v1/index.json` (every driver
+  with source, firmware and coverage) and each driver file under
+  `/api/v1/devices/`.
+
 ### Added — hardware detection
 - `osc-bridge detect` and the `detect_hardware` MCP tool: list MIDI ports,
   send the standard Identity Request, read manufacturer / model / firmware,
