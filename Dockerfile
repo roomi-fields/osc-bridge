@@ -16,7 +16,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends libasound2 \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=build /src/target/release/osc-bridge /opt/osc-bridge/bin/osc-bridge
 COPY devices /opt/osc-bridge/devices
-RUN useradd --system --no-create-home --shell /usr/sbin/nologin osc-bridge
+RUN useradd --system --no-create-home --shell /usr/sbin/nologin osc-bridge \
+    && install -d -o osc-bridge -g osc-bridge /data
 USER osc-bridge
 EXPOSE 8080
 ENTRYPOINT ["/opt/osc-bridge/bin/osc-bridge", "mcp"]

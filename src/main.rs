@@ -142,6 +142,10 @@ enum Cmd {
         /// X-Forwarded-For for the per-client rate limit.
         #[arg(long, requires = "http")]
         behind_proxy: bool,
+        /// With --http: also append each tool call's usage record (JSON
+        /// line, anonymous id, no address) to this file.
+        #[arg(long, requires = "http")]
+        usage_log: Option<PathBuf>,
     },
 }
 
@@ -165,12 +169,12 @@ fn main() -> Result<()> {
         Cmd::OscListen { bind } => cmd_osc_listen(bind),
         Cmd::Lint { device } => cmd_lint(device),
         Cmd::Orchestrate { config } => osc_bridge::orchestrator::Orchestrator::run(&config),
-        Cmd::Mcp { devices_dir, default_target, http, behind_proxy } => {
+        Cmd::Mcp { devices_dir, default_target, http, behind_proxy, usage_log } => {
             let default_target = default_target.parse::<std::net::SocketAddr>()
                 .with_context(|| format!("parse --default-target {default_target}"))?;
             let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, catalogue_only: false };
             match http {
-                Some(bind) => osc_bridge::mcp::run_http(opts, &bind, behind_proxy),
+                Some(bind) => osc_bridge::mcp::run_http(opts, &bind, behind_proxy, usage_log.as_deref()),
                 None => osc_bridge::mcp::run(opts),
             }
         }

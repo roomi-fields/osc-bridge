@@ -77,8 +77,14 @@ returned in the `Mcp-Session-Id` header and in the server's instructions. To
 be recognised from one session to the next, keep it: connect to your
 personal endpoint `https://mcp.osc-bridge.roomi-fields.com/u/<id>/mcp`
 (`GET /u/new` hands out a fresh one), or pass `user_id` in tool calls. The id
-is random and tied to nothing else; the server logs which tools it calls,
-not your address.
+is random and tied to nothing else.
+
+What the hosted server records: for each tool call, the time, the
+anonymous id, the tool and its catalogue arguments (search words, vendor,
+device slug), kept to improve the catalogue. It does not record your
+address. Like any site, the web server in front of it keeps a short access
+log (address, URL, time) for a few days for traffic statistics; the search
+words are not in it.
 
 **Over HTTP on your own machine**, read-only: `osc-bridge mcp --http 0.0.0.0:8080` serves MCP on
 `/mcp` with the three catalogue tools only — `list_devices` (with `query`,

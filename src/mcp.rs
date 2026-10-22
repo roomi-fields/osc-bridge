@@ -225,22 +225,26 @@ fn client_key(req: &tiny_http::Request, behind_proxy: bool) -> String {
 /// URL in a browser, `GET /healthz` answers `ok`. With `behind_proxy`, the
 /// client is identified by `X-Forwarded-For` — only set it when a proxy that
 /// overwrites that header is the sole way in.
-pub fn run_http(opts: McpOptions, bind: &str, behind_proxy: bool) -> Result<()> {
+pub fn run_http(opts: McpOptions, bind: &str, behind_proxy: bool, usage_log: Option<&Path>) -> Result<()> {
     let opts = McpOptions { catalogue_only: true, ..opts };
+    let usage = UsageLog::open(usage_log)?;
     let index = build_index(&opts);
     let server = tiny_http::Server::http(bind).map_err(|e| anyhow::anyhow!("bind HTTP {bind}: {e}"))?;
     eprintln!("MCP over HTTP on http://{}/mcp (catalogue tools only)", server.server_addr());
-    let shared = std::sync::Arc::new((server, opts, index, RateLimiter::default()));
+    let shared = std::sync::Arc::new((server, opts, index, RateLimiter::default(), usage));
     let workers: Vec<_> = (0..HTTP_WORKERS).map(|_| {
         let shared = shared.clone();
         std::thread::spawn(move || {
-            let (server, opts, index, limiter) = &*shared;
+            let (server, opts, index, limiter, usage) = &*shared;
             for mut req in server.incoming_requests() {
                 if !limiter.allow(&client_key(&req, behind_proxy)) {
                     respond(req, HttpReply::new(429, Some("rate limit: 120 requests per minute\n".into())));
                     continue;
                 }
                 let reply = http_exchange(&read_request(&mut req), opts, index);
+                if let Some(line) = &reply.usage {
+                    usage.write(line);
+                }
                 respond(req, reply);
             }
         })
@@ -265,11 +269,36 @@ struct HttpReply {
     status: u16,
     body: Option<String>,
     session: Option<String>,
+    /// The usage record of a tool call (`usage_record`), for the worker to
+    /// write out.
+    usage: Option<String>,
 }
 
 impl HttpReply {
     fn new(status: u16, body: Option<String>) -> Self {
-        Self { status, body, session: None }
+        Self { status, body, session: None, usage: None }
+    }
+}
+
+/// Where usage records go: always stderr, and appended to a file when the
+/// server was given one (`--usage-log`), so they outlive the container.
+struct UsageLog(Option<std::sync::Mutex<std::fs::File>>);
+
+impl UsageLog {
+    fn open(path: Option<&Path>) -> Result<Self> {
+        let Some(path) = path else { return Ok(Self(None)) };
+        let file = std::fs::OpenOptions::new().create(true).append(true).open(path)
+            .map_err(|e| anyhow::anyhow!("open usage log {}: {e}", path.display()))?;
+        Ok(Self(Some(std::sync::Mutex::new(file))))
+    }
+
+    fn write(&self, line: &str) {
+        eprintln!("{line}");
+        if let Some(file) = &self.0 {
+            if let Ok(mut f) = file.lock() {
+                let _ = writeln!(f, "{line}");
+            }
+        }
     }
 }
 
@@ -352,18 +381,16 @@ fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex) -> H
                 (None, "initialize") => Some(new_user_id()),
                 (None, _) => None,
             };
-            if method == "tools/call" {
-                log_usage(user.as_deref(), &msg);
-            }
+            let usage = (method == "tools/call").then(|| usage_record(user.as_deref(), &msg));
             let session = if method == "initialize" { user } else { None };
             match handle_request(&msg, opts, index) {
                 Some(mut resp) => {
                     if let (Some(id), Some(result)) = (&session, resp.get_mut("result")) {
                         result["instructions"] = json!(keep_id_instructions(id));
                     }
-                    HttpReply { status: 200, body: Some(resp.to_string()), session }
+                    HttpReply { status: 200, body: Some(resp.to_string()), session, usage }
                 }
-                None => HttpReply { status: 202, body: None, session },
+                None => HttpReply { status: 202, body: None, session, usage },
             }
         }
         _ => HttpReply::new(404, None),
@@ -381,24 +408,24 @@ fn keep_id_instructions(id: &str) -> String {
         on this server, or pass user_id: \"{id}\" in tool calls; keep it if you can store it.")
 }
 
-/// One JSON line per tool call on stderr: when, which anonymous user, which
-/// tool and the catalogue arguments. No address, no other request data.
-fn log_usage(user: Option<&str>, msg: &Value) {
+/// One JSON line per tool call: when, which anonymous user, which tool and
+/// the catalogue arguments. No address, no other request data.
+fn usage_record(user: Option<&str>, msg: &Value) -> String {
     let params = msg.get("params");
     let args = params.and_then(|p| p.get("arguments"));
     let pick = |k: &str| args.and_then(|a| a.get(k)).cloned().unwrap_or(Value::Null);
-    eprintln!("{}", json!({
+    json!({
         "event": "tool_call",
         "ts": chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
         "user": user,
         "tool": params.and_then(|p| p.get("name")),
         "query": pick("query"), "vendor": pick("vendor"), "kind": pick("kind"), "slug": pick("slug"),
-    }));
+    }).to_string()
 }
 
 fn respond(req: tiny_http::Request, reply: HttpReply) {
     use tiny_http::{Header, Response};
-    let HttpReply { status, body, session } = reply;
+    let HttpReply { status, body, session, .. } = reply;
     let header = |k: &str, v: &str| Header::from_bytes(k.as_bytes(), v.as_bytes()).expect("static header");
     let kind = match &body {
         Some(b) if b.starts_with('{') => "application/json",
@@ -1265,6 +1292,10 @@ mod tests {
         assert_eq!(status("GET", "/", ""), 200);
         assert_eq!(status("GET", "/healthz", ""), 200);
         assert_eq!(status("POST", "/other", ""), 404);
+        let call = r#"{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"list_devices","arguments":{"query":"moog"}}}"#;
+        let usage: Value = serde_json::from_str(&http_exchange(&req("POST", "/mcp", call), &opts, &idx).usage.unwrap()).unwrap();
+        assert_eq!((usage["tool"].as_str(), usage["query"].as_str()), (Some("list_devices"), Some("moog")));
+        assert!(http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":4,"method":"tools/list"}"#), &opts, &idx).usage.is_none());
     }
 
     #[test]
