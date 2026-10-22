@@ -69,8 +69,10 @@ The same catalogue as MCP tools, for Claude, Cursor and other MCP clients.
 detection and sending to a running bridge: see the [MCP guide](MCP.md).
 
 **Hosted, nothing to install**: add `https://mcp.osc-bridge.roomi-fields.com/mcp`
-as a remote MCP server (a "custom connector" in Claude). It offers the three
-catalogue tools below, at most 120 requests per minute per client.
+as a remote MCP server (a "custom connector" in Claude). It offers five
+tools, at most 120 requests per minute per client: the catalogue tools
+`list_devices` (with `query`, `vendor`, `kind`, `limit`), `list_routes` and
+`get_device_docs`, plus `report_result` and `get_trust` (below).
 
 No account is needed. Each client gets an anonymous id when it connects,
 returned in the `Mcp-Session-Id` header and in the server's instructions. To
@@ -81,16 +83,45 @@ is random and tied to nothing else.
 
 What the hosted server records: for each tool call, the time, the
 anonymous id, the tool and its catalogue arguments (search words, vendor,
-device slug), kept to improve the catalogue. It does not record your
+device slug); and the reports sent with `report_result`. Both are kept to
+improve the catalogue. It does not record your
 address. Like any site, the web server in front of it keeps a short access
 log (address, URL, time) for a few days for traffic statistics; the search
 words are not in it.
 
-**Over HTTP on your own machine**, read-only: `osc-bridge mcp --http 0.0.0.0:8080` serves MCP on
-`/mcp` with the three catalogue tools only — `list_devices` (with `query`,
-`vendor`, `kind`, `limit`), `list_routes` and `get_device_docs`. The tools
-that open MIDI ports are left out, since they would act on the server's
-machine, not the caller's. The container image runs it the same way:
+### Reports and trust
+
+After testing a driver on the real device, an agent calls `report_result`:
+`works`, `fails` or `partial`, for the whole driver or one OSC address, with
+the firmware version and the device's reply to the MIDI Identity Request
+(`F0 7E 7F 06 01 F7`) as `identity_hex`. That reply proves the device was
+connected and carries the firmware as the device reports it; it must come
+from the driver's manufacturer.
+
+Trust is counted per firmware, from each user's latest report, with no
+human review:
+
+| Status | Meaning |
+|--------|---------|
+| `unreported` | No report yet |
+| `unconfirmed` | Reported working, by fewer than 3 users on one firmware or none with an identified device |
+| `usage-verified` | 3 users or more agree it works on one firmware, one of them with an identified device, and nobody reports otherwise there |
+| `firmware-dependent` | Works on some firmware, fails on another |
+| `failing` | Only failures reported |
+| `disputed` | Users disagree on the same firmware, or a contrary report gives no firmware |
+
+When a disagreement involves a report without firmware, `get_trust` sets
+`needs_firmware` and the server asks the next reporters to identify their
+device. The identities seen for each firmware are kept, so the catalogue
+learns how each device reports its versions. The trust of every reported
+driver is public at
+[`/v1/trust`](https://mcp.osc-bridge.roomi-fields.com/v1/trust).
+
+**Over HTTP on your own machine**: `osc-bridge mcp --http 0.0.0.0:8080` serves MCP on
+`/mcp` with the same five tools; `--data-dir <dir>` keeps the usage records
+and reports on disk (in memory otherwise). The tools that open MIDI ports
+are left out, since they would act on the server's machine, not the
+caller's. The container image runs it the same way:
 
 ```bash
 docker build -t osc-bridge .

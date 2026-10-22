@@ -134,7 +134,7 @@ enum Cmd {
         #[arg(long, default_value = "127.0.0.1:7777")]
         default_target: String,
         /// Serve over HTTP on this address (e.g. 0.0.0.0:8080, endpoint
-        /// `/mcp`) instead of stdio. Only the read-only catalogue tools are
+        /// `/mcp`) instead of stdio. Only the catalogue and report tools are
         /// offered: the others would act on this machine's MIDI ports.
         #[arg(long)]
         http: Option<String>,
@@ -142,10 +142,12 @@ enum Cmd {
         /// X-Forwarded-For for the per-client rate limit.
         #[arg(long, requires = "http")]
         behind_proxy: bool,
-        /// With --http: also append each tool call's usage record (JSON
-        /// line, anonymous id, no address) to this file.
+        /// With --http: keep the server's records in this directory —
+        /// `usage.jsonl` (one line per tool call: anonymous id, tool,
+        /// catalogue arguments, no address) and `reports.jsonl` (usage
+        /// reports, replayed at startup). Without it they live in memory only.
         #[arg(long, requires = "http")]
-        usage_log: Option<PathBuf>,
+        data_dir: Option<PathBuf>,
     },
 }
 
@@ -169,12 +171,12 @@ fn main() -> Result<()> {
         Cmd::OscListen { bind } => cmd_osc_listen(bind),
         Cmd::Lint { device } => cmd_lint(device),
         Cmd::Orchestrate { config } => osc_bridge::orchestrator::Orchestrator::run(&config),
-        Cmd::Mcp { devices_dir, default_target, http, behind_proxy, usage_log } => {
+        Cmd::Mcp { devices_dir, default_target, http, behind_proxy, data_dir } => {
             let default_target = default_target.parse::<std::net::SocketAddr>()
                 .with_context(|| format!("parse --default-target {default_target}"))?;
-            let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, catalogue_only: false };
+            let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, hosted: false };
             match http {
-                Some(bind) => osc_bridge::mcp::run_http(opts, &bind, behind_proxy, usage_log.as_deref()),
+                Some(bind) => osc_bridge::mcp::run_http(opts, &bind, behind_proxy, data_dir.as_deref()),
                 None => osc_bridge::mcp::run(opts),
             }
         }

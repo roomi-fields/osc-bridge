@@ -60,8 +60,10 @@ The server speaks JSON-RPC 2.0 over stdio.
   `target` argument is given (default `127.0.0.1:7777`, the standard
   `osc-bridge run` bind).
 - `--http <host:port>` — serve MCP over HTTP (endpoint `/mcp`) instead of
-  stdio, for agents that reach the catalogue over the network. Only the three
-  read-only catalogue tools are offered; see [API for agents](api.md).
+  stdio, for agents that reach the catalogue over the network. Only the
+  catalogue tools and the usage reports (`report_result`, `get_trust`) are
+  offered, and `--data-dir <dir>` keeps the records on disk; see
+  [API for agents](api.md).
 
 ## The eight tools
 

@@ -12,13 +12,15 @@
 //!
 //!  - `detect_hardware`, `backup_presets`, `restore_presets` — the MIDI
 //!    ports of the machine the server runs on
+//!  - `report_result`, `get_trust` — hosted server only: usage reports and
+//!    the trust they earn a driver (`crate::reports`)
 //!
 //! Two transports. On stdio (`run`) the server reads one JSON-RPC request per
 //! line from stdin and writes one response per line to stdout; logging goes
 //! to stderr. Over HTTP (`run_http`, MCP "streamable HTTP" without the
 //! optional event stream) each POST carries one request and gets its
-//! response as JSON; only the catalogue tools are offered there, since the
-//! others act on the machine hosting the server, not the caller's.
+//! response as JSON; only the catalogue and report tools are offered there,
+//! since the others act on the machine hosting the server, not the caller's.
 
 use anyhow::Result;
 use serde_json::{json, Value};
@@ -37,19 +39,30 @@ const SERVER_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub struct McpOptions {
     pub devices_dir: PathBuf,
     pub default_target: SocketAddr,
-    /// Offer only the read-only catalogue tools (`CATALOGUE_TOOLS`).
-    pub catalogue_only: bool,
+    /// Served over the network: offer `HOSTED_TOOLS` only.
+    pub hosted: bool,
 }
 
-/// The tools that read the catalogue and nothing else — the whole surface
-/// of a server reached over the network.
-const CATALOGUE_TOOLS: [&str; 3] = ["list_devices", "get_device_docs", "list_routes"];
+/// The tools of a server reached over the network: reading the catalogue
+/// and reporting on it. None touches the host's MIDI ports.
+const HOSTED_TOOLS: [&str; 5] = ["list_devices", "get_device_docs", "list_routes", "report_result", "get_trust"];
+
+/// Who is calling, as far as the hosted server knows: the anonymous user id
+/// and the report store. Both are absent on stdio.
+#[derive(Clone, Copy, Default)]
+pub struct Caller<'a> {
+    pub user: Option<&'a str>,
+    pub reports: Option<&'a crate::reports::ReportStore>,
+}
 
 /// One lightweight catalogue entry. The full `Device` is loaded on demand
 /// (per `get_device_docs` / `list_routes` call) — only this metadata is held
 /// resident.
 struct DeviceIndexEntry {
     path: PathBuf,
+    /// Path under the catalogue root without `.json` (`korg/minilogue`),
+    /// the same id as the site's API.
+    id: String,
     slug: String,
     name: String,
     vendor: String,
@@ -98,6 +111,8 @@ impl DeviceIndex {
             }
             entries.push(DeviceIndexEntry {
                 path: path.to_path_buf(),
+                id: path.strip_prefix(dir).unwrap_or(path).with_extension("")
+                    .to_string_lossy().replace('\\', "/"),
                 slug,
                 name: get("name").unwrap_or("?").to_string(),
                 vendor: get("vendor").unwrap_or("?").to_string(),
@@ -116,6 +131,12 @@ impl DeviceIndex {
 
     fn find_path(&self, slug: &str) -> Option<&Path> {
         self.by_slug.get(slug).map(|&i| self.entries[i].path.as_path())
+    }
+
+    /// A driver by its id (`korg/minilogue`) or, failing that, its slug.
+    fn find(&self, id_or_slug: &str) -> Option<&DeviceIndexEntry> {
+        self.entries.iter().find(|e| e.id == id_or_slug)
+            .or_else(|| self.by_slug.get(id_or_slug).map(|&i| &self.entries[i]))
     }
 }
 
@@ -163,7 +184,7 @@ pub fn run(opts: McpOptions) -> Result<()> {
                 continue;
             }
         };
-        if let Some(resp) = handle_request(&req, &opts, &index) {
+        if let Some(resp) = handle_request(&req, &opts, &index, Caller::default()) {
             let s = serde_json::to_string(&resp)?;
             writeln!(out, "{s}")?;
             out.flush()?;
@@ -225,23 +246,24 @@ fn client_key(req: &tiny_http::Request, behind_proxy: bool) -> String {
 /// URL in a browser, `GET /healthz` answers `ok`. With `behind_proxy`, the
 /// client is identified by `X-Forwarded-For` — only set it when a proxy that
 /// overwrites that header is the sole way in.
-pub fn run_http(opts: McpOptions, bind: &str, behind_proxy: bool, usage_log: Option<&Path>) -> Result<()> {
-    let opts = McpOptions { catalogue_only: true, ..opts };
-    let usage = UsageLog::open(usage_log)?;
+pub fn run_http(opts: McpOptions, bind: &str, behind_proxy: bool, data_dir: Option<&Path>) -> Result<()> {
+    let opts = McpOptions { hosted: true, ..opts };
+    let usage = UsageLog::open(data_dir.map(|d| d.join("usage.jsonl")).as_deref())?;
+    let reports = crate::reports::ReportStore::open(data_dir.map(|d| d.join("reports.jsonl")).as_deref())?;
     let index = build_index(&opts);
     let server = tiny_http::Server::http(bind).map_err(|e| anyhow::anyhow!("bind HTTP {bind}: {e}"))?;
     eprintln!("MCP over HTTP on http://{}/mcp (catalogue tools only)", server.server_addr());
-    let shared = std::sync::Arc::new((server, opts, index, RateLimiter::default(), usage));
+    let shared = std::sync::Arc::new((server, opts, index, RateLimiter::default(), usage, reports));
     let workers: Vec<_> = (0..HTTP_WORKERS).map(|_| {
         let shared = shared.clone();
         std::thread::spawn(move || {
-            let (server, opts, index, limiter, usage) = &*shared;
+            let (server, opts, index, limiter, usage, reports) = &*shared;
             for mut req in server.incoming_requests() {
                 if !limiter.allow(&client_key(&req, behind_proxy)) {
                     respond(req, HttpReply::new(429, Some("rate limit: 120 requests per minute\n".into())));
                     continue;
                 }
-                let reply = http_exchange(&read_request(&mut req), opts, index);
+                let reply = http_exchange(&read_request(&mut req), opts, index, reports);
                 if let Some(line) = &reply.usage {
                     usage.write(line);
                 }
@@ -280,8 +302,8 @@ impl HttpReply {
     }
 }
 
-/// Where usage records go: always stderr, and appended to a file when the
-/// server was given one (`--usage-log`), so they outlive the container.
+/// Where usage records go: always stderr, and appended to `usage.jsonl` in
+/// the server's data directory when it has one, so they outlive the container.
 struct UsageLog(Option<std::sync::Mutex<std::fs::File>>);
 
 impl UsageLog {
@@ -351,7 +373,7 @@ fn read_request(req: &mut tiny_http::Request) -> HttpRequest {
 }
 
 /// The reply to one HTTP request.
-fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex) -> HttpReply {
+fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex, reports: &crate::reports::ReportStore) -> HttpReply {
     let rpc_error = |code: i64, msg: String| json!({
         "jsonrpc": "2.0", "id": null, "error": { "code": code, "message": msg },
     }).to_string();
@@ -360,7 +382,9 @@ fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex) -> H
         ("GET", "/") => HttpReply::new(200, Some(format!(
             "osc-bridge {SERVER_VERSION} MCP server (catalogue tools: {}). POST JSON-RPC to /mcp; \
              a personal endpoint that keeps your anonymous id: GET /u/new. \
-             Docs: https://osc-bridge.roomi-fields.com/api/\n", CATALOGUE_TOOLS.join(", ")))),
+             Trust of every reported driver: GET /v1/trust. \
+             Docs: https://osc-bridge.roomi-fields.com/api/\n", HOSTED_TOOLS.join(", ")))),
+        ("GET", "/v1/trust") => HttpReply::new(200, Some(reports.all().to_string())),
         ("GET", "/healthz") => HttpReply::new(200, Some("ok\n".into())),
         ("GET", "/u/new") => {
             let id = new_user_id();
@@ -387,8 +411,8 @@ fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex) -> H
                 (None, _) => None,
             };
             let usage = (method == "tools/call").then(|| usage_record(user.as_deref(), &msg));
-            let session = if method == "initialize" { user } else { None };
-            match handle_request(&msg, opts, index) {
+            let session = if method == "initialize" { user.clone() } else { None };
+            match handle_request(&msg, opts, index, Caller { user: user.as_deref(), reports: Some(reports) }) {
                 Some(mut resp) => {
                     if let (Some(id), Some(result)) = (&session, resp.get_mut("result")) {
                         result["instructions"] = json!(keep_id_instructions(id));
@@ -408,7 +432,9 @@ fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex) -> H
 fn keep_id_instructions(id: &str) -> String {
     format!("osc-bridge catalogue of MIDI implementations (CC, NRPN, SysEx, drum maps) for about \
         980 synths, drum machines and DAWs. Start with list_devices (query: 'korg minilogue'), then \
-        list_routes with the slug. Your anonymous id is {id} (no account, no personal data). \
+        list_routes with the slug; get_trust tells how far other users confirmed a driver, per firmware. \
+        After testing a driver on the real device, call report_result with the firmware and the \
+        device's Identity Reply. Your anonymous id is {id} (no account, no personal data). \
         To stay the same user in later sessions, connect to the personal endpoint /u/{id}/mcp \
         on this server, or pass user_id: \"{id}\" in tool calls; keep it if you can store it.")
 }
@@ -450,7 +476,7 @@ fn respond(req: tiny_http::Request, reply: HttpReply) {
     let _ = req.respond(resp);
 }
 
-fn handle_request(req: &Value, opts: &McpOptions, index: &DeviceIndex) -> Option<Value> {
+fn handle_request(req: &Value, opts: &McpOptions, index: &DeviceIndex, caller: Caller) -> Option<Value> {
     let id = req.get("id").cloned();
     let method = req.get("method").and_then(Value::as_str).unwrap_or("");
 
@@ -467,7 +493,7 @@ fn handle_request(req: &Value, opts: &McpOptions, index: &DeviceIndex) -> Option
             // An unknown tool is a protocol error; a tool that fails reports
             // it in its result, so the model can read it and react (MCP spec).
             Some((name, _)) if !tool_names(opts).contains(&name) => Err((-32602, format!("unknown tool: {name}"))),
-            Some((name, args)) => Ok(call_tool(name, &args, opts, index).unwrap_or_else(|e| json!({
+            Some((name, args)) => Ok(call_tool(name, &args, opts, index, caller).unwrap_or_else(|e| json!({
                 "content": [ { "type": "text", "text": e } ],
                 "isError": true,
             }))),
@@ -507,7 +533,7 @@ fn tools_list(opts: &McpOptions) -> Value {
     if let Some(tools) = all["tools"].as_array_mut() {
         let offered = tool_names(opts);
         tools.retain(|t| t["name"].as_str().is_some_and(|n| offered.contains(&n)));
-        if opts.catalogue_only {
+        if opts.hosted {
             for t in tools.iter_mut() {
                 t["inputSchema"]["properties"]["user_id"] = json!({
                     "type": "string",
@@ -544,6 +570,8 @@ fn all_tools() -> Value {
                             "items": {
                                 "type": "object",
                                 "properties": {
+                                    "id": { "type": "string", "description": "Driver id (path in the catalogue), e.g. 'korg/minilogue'." },
+                                    "usage_status": { "type": ["string", "null"], "description": "Hosted server only: trust from usage reports (see get_trust)." },
                                     "name": { "type": "string" },
                                     "vendor": { "type": "string" },
                                     "slug": { "type": "string", "description": "OSC prefix without the leading slash." },
@@ -816,22 +844,89 @@ fn all_tools() -> Value {
                     "idempotentHint": true,
                     "openWorldHint": true
                 }
+            },
+            {
+                "name": "report_result",
+                "description": "Tell the catalogue how a driver behaved on a real device, after testing it: 'works', 'fails' or 'partial', for the whole driver or one OSC address (from list_routes). Give the firmware version, and the device's reply to the MIDI Identity Request (F0 7E 7F 06 01 F7) as identity_hex when you can: trust is counted per firmware, so a failure on another firmware does not count against the driver, and a report of unknown firmware cannot be placed. Several users who agree on one firmware mark the driver usage-verified there. Report only what was actually tested.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or slug, from list_devices." },
+                        "outcome": { "type": "string", "enum": ["works", "fails", "partial"] },
+                        "address": { "type": "string", "description": "One OSC address of the driver (e.g. '/minilogue/filter/cutoff'); omit to report on the whole driver." },
+                        "firmware": { "type": "string", "description": "Firmware version of the tested device." },
+                        "identity_hex": { "type": "string", "description": "The device's reply to the MIDI Identity Request, in hex (e.g. 'F0 7E 00 06 02 42 2C 01 00 00 02 01 00 00 F7'). Proves the device was connected and carries its firmware version." },
+                        "note": { "type": "string", "description": "What happened, briefly (500 characters at most): wrong range, no effect, other parameter moved…" }
+                    },
+                    "required": ["device", "outcome"],
+                    "additionalProperties": false
+                },
+                "outputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "recorded": { "type": "boolean" },
+                        "trust": { "type": "object", "description": "The driver's trust after this report (see get_trust)." }
+                    },
+                    "required": ["recorded", "trust"]
+                },
+                "annotations": {
+                    "title": "Report a test result",
+                    "readOnlyHint": false,
+                    "destructiveHint": false,
+                    "idempotentHint": true,
+                    "openWorldHint": false
+                }
+            },
+            {
+                "name": "get_trust",
+                "description": "How far a driver has been confirmed by people who used it, per firmware: status (unreported, unconfirmed, usage-verified, firmware-dependent, failing, disputed), how many users report it works / fails / partly works, each firmware's own status, the device identities seen for each firmware, and the same per OSC address. needs_firmware: true means reports disagree and some have no firmware — identify the device before reporting (see learn). Check it before relying on a driver, together with its source_tier.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or slug, from list_devices." }
+                    },
+                    "required": ["device"],
+                    "additionalProperties": false
+                },
+                "outputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "device": { "type": "string" },
+                        "overall": { "type": "object" },
+                        "addresses": { "type": "object" }
+                    },
+                    "required": ["device", "overall", "addresses"]
+                },
+                "annotations": {
+                    "title": "Get a driver's trust",
+                    "readOnlyHint": true,
+                    "idempotentHint": true,
+                    "openWorldHint": false
+                }
             }
         ]
     })
 }
 
 fn tool_names(opts: &McpOptions) -> Vec<&'static str> {
-    if opts.catalogue_only {
-        return CATALOGUE_TOOLS.to_vec();
+    if opts.hosted {
+        return HOSTED_TOOLS.to_vec();
     }
     vec!["list_devices", "get_device_docs", "list_routes", "send", "get_status",
          "detect_hardware", "backup_presets", "restore_presets"]
 }
 
-fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex) -> Result<Value, String> {
+fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, caller: Caller) -> Result<Value, String> {
     match name {
-        "list_devices" => list_devices(index, &DeviceFilter::from_args(args)),
+        "list_devices" => list_devices(index, &DeviceFilter::from_args(args), caller.reports),
+        "report_result" => report_result(index, args, caller),
+        "get_trust" => {
+            let reports = caller.reports.ok_or("trust is kept by the hosted server only")?;
+            let device = args.get("device").and_then(Value::as_str).ok_or("missing device")?;
+            let entry = index.find(device).ok_or_else(|| format!("no device '{device}'"))?;
+            let trust = reports.trust(&entry.id);
+            Ok(content_structured(&serde_json::to_string_pretty(&trust).unwrap_or_default(), trust))
+        }
         "get_device_docs" => {
             let slug = args.get("slug").and_then(Value::as_str).ok_or("missing slug")?;
             get_device_docs(index, slug)
@@ -1017,10 +1112,12 @@ impl DeviceFilter {
     }
 }
 
-fn list_devices(index: &DeviceIndex, filter: &DeviceFilter) -> Result<Value, String> {
+fn list_devices(index: &DeviceIndex, filter: &DeviceFilter, reports: Option<&crate::reports::ReportStore>) -> Result<Value, String> {
     let matching: Vec<&DeviceIndexEntry> = index.entries.iter().filter(|e| filter.keeps(e)).collect();
     let count = matching.len();
     let devices: Vec<Value> = matching.into_iter().take(filter.limit.unwrap_or(usize::MAX)).map(|e| json!({
+        "id": e.id,
+        "usage_status": reports.map(|r| r.status(&e.id)),
         "name": e.name,
         "vendor": e.vendor,
         "slug": e.slug,
@@ -1034,6 +1131,67 @@ fn list_devices(index: &DeviceIndex, filter: &DeviceFilter) -> Result<Value, Str
     let text = format!("{count} devices found.\n\n{}",
         serde_json::to_string_pretty(&structured["devices"]).unwrap_or_default());
     Ok(content_structured(&text, structured))
+}
+
+/// Every OSC address a driver answers to: commands, CC/NRPN and SysEx
+/// parameters, drum sounds.
+fn surface_addresses(dev: &Device) -> Vec<String> {
+    let prefix = &dev.device.osc_prefix;
+    let cc = dev.cc_params.iter().flat_map(|t| t.entries.iter().map(|e| e.osc.clone()));
+    let params = dev.params.iter().flat_map(|t| t.entries.iter().map(|e| e.osc.clone()));
+    let triggers = dev.triggers.iter().flat_map(|t| t.entries.iter().map(|e| e.osc.clone()));
+    dev.commands.iter().map(|c| c.osc.clone()).chain(cc).chain(params).chain(triggers)
+        .map(|a| format!("{prefix}{a}")).collect()
+}
+
+fn report_result(index: &DeviceIndex, args: &Value, caller: Caller) -> Result<Value, String> {
+    use crate::reports::{DeviceIdentity, Outcome, Report, LEARN_FIRMWARE, MAX_NOTE};
+    let reports = caller.reports.ok_or("reports go to the hosted server: https://mcp.osc-bridge.roomi-fields.com/mcp")?;
+    let user = caller.user.ok_or("no user id: initialize the session first, or pass user_id")?;
+    let text = |k: &str| args.get(k).and_then(Value::as_str).map(str::trim).filter(|s| !s.is_empty());
+    let device = text("device").ok_or("missing device")?;
+    let entry = index.find(device).ok_or_else(|| format!("no device '{device}' (use the id or slug from list_devices)"))?;
+    let outcome = text("outcome").and_then(Outcome::parse).ok_or("outcome must be works, fails or partial")?;
+    let address = match text("address") {
+        Some(a) => {
+            let dev = Device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.id))?;
+            if !surface_addresses(&dev).iter().any(|s| s == a) {
+                return Err(format!("'{a}' is not an address of {} (see list_routes)", entry.id));
+            }
+            Some(a.to_string())
+        }
+        None => None,
+    };
+    let identity = match text("identity_hex") {
+        Some(hex) => {
+            let bytes = crate::librarian::parse_hex(hex).map_err(|e| format!("identity_hex: {e}"))?;
+            let id = crate::detect::parse_identity_reply(&bytes)
+                .ok_or("identity_hex is not a MIDI Identity Reply (F0 7E <dev> 06 02 …)")?;
+            if !entry.manufacturer_id.is_empty() && id.manufacturer != entry.manufacturer_id {
+                return Err(format!("the device that answered is not from {}'s manufacturer", entry.id));
+            }
+            Some(DeviceIdentity::from(&id))
+        }
+        None => None,
+    };
+    let report = Report {
+        ts: chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
+        user: user.to_string(),
+        device: entry.id.clone(),
+        address,
+        outcome,
+        firmware: text("firmware").map(|f| f.chars().take(40).collect()),
+        identity,
+        note: text("note").map(|n| n.chars().take(MAX_NOTE).collect()),
+    };
+    let unplaced = report.firmware.is_none() && report.identity.is_none();
+    reports.add(report)?;
+    let trust = reports.trust(&entry.id);
+    let mut text = format!("Report recorded for {}. Driver status: {}.", entry.id, trust["overall"]["status"].as_str().unwrap_or("?"));
+    if unplaced || trust["overall"]["needs_firmware"] == true {
+        text.push_str(&format!("\n\n{LEARN_FIRMWARE}"));
+    }
+    Ok(content_structured(&text, json!({ "recorded": true, "trust": trust })))
 }
 
 fn load_device_by_slug(index: &DeviceIndex, slug: &str) -> Result<Device, String> {
@@ -1245,14 +1403,14 @@ mod tests {
         McpOptions {
             devices_dir: PathBuf::from("devices"),
             default_target: "127.0.0.1:7777".parse().unwrap(),
-            catalogue_only: false,
+            hosted: false,
         }
     }
 
     #[test]
     fn list_devices_filters_by_words_vendor_kind_and_limit() {
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
-        let run = |args: Value| list_devices(&idx, &DeviceFilter::from_args(&args)).unwrap()["structuredContent"].clone();
+        let run = |args: Value| list_devices(&idx, &DeviceFilter::from_args(&args), None).unwrap()["structuredContent"].clone();
         let all = run(json!({}));
         assert_eq!(all["count"].as_u64().unwrap() as usize, idx.entries.len());
         let mini = run(json!({"query": "KORG minilogue"}));
@@ -1267,50 +1425,52 @@ mod tests {
     }
 
     #[test]
-    fn catalogue_only_server_offers_and_runs_only_catalogue_tools() {
-        let opts = McpOptions { catalogue_only: true, ..test_opts() };
+    fn hosted_server_offers_and_runs_only_hosted_tools() {
+        let opts = McpOptions { hosted: true, ..test_opts() };
         let listed: Vec<String> = tools_list(&opts)["tools"].as_array().unwrap().iter()
             .map(|t| t["name"].as_str().unwrap().to_string()).collect();
-        assert_eq!(listed, CATALOGUE_TOOLS);
+        assert_eq!(listed, HOSTED_TOOLS);
         let resp = handle_request(&json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
-            "params": {"name": "send", "arguments": {"addr": "/x"}}}), &opts, &empty_index()).unwrap();
+            "params": {"name": "send", "arguments": {"addr": "/x"}}}), &opts, &empty_index(), Caller::default()).unwrap();
         assert_eq!(resp["error"]["code"], json!(-32602));
     }
 
     #[test]
     fn http_exchange_answers_posts_notifications_and_rejects_the_rest() {
-        let opts = McpOptions { catalogue_only: true, ..test_opts() };
+        let opts = McpOptions { hosted: true, ..test_opts() };
         let idx = empty_index();
+        let store = crate::reports::ReportStore::open(None).unwrap();
         let req = |method: &str, path: &str, body: &str| HttpRequest {
             method: method.into(), path: path.into(), body: Ok(body.into()), user: None,
         };
-        let r = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":7,"method":"tools/list"}"#), &opts, &idx);
+        let r = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":7,"method":"tools/list"}"#), &opts, &idx, &store);
         assert_eq!(r.status, 200);
         let v: Value = serde_json::from_str(&r.body.unwrap()).unwrap();
         assert_eq!(v["id"], json!(7));
-        assert_eq!(v["result"]["tools"].as_array().unwrap().len(), CATALOGUE_TOOLS.len());
-        let r = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#), &opts, &idx);
+        assert_eq!(v["result"]["tools"].as_array().unwrap().len(), HOSTED_TOOLS.len());
+        let r = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#), &opts, &idx, &store);
         assert_eq!((r.status, r.body), (202, None));
-        let status = |m: &str, p: &str, b: &str| http_exchange(&req(m, p, b), &opts, &idx).status;
+        let status = |m: &str, p: &str, b: &str| http_exchange(&req(m, p, b), &opts, &idx, &store).status;
         assert_eq!(status("POST", "/mcp", "not json"), 400);
         assert_eq!(status("GET", "/mcp", ""), 405);
         assert_eq!(status("GET", "/", ""), 200);
         assert_eq!(status("GET", "/healthz", ""), 200);
         assert_eq!(status("POST", "/other", ""), 404);
         let call = r#"{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"list_devices","arguments":{"query":"moog"}}}"#;
-        let usage: Value = serde_json::from_str(&http_exchange(&req("POST", "/mcp", call), &opts, &idx).usage.unwrap()).unwrap();
+        let usage: Value = serde_json::from_str(&http_exchange(&req("POST", "/mcp", call), &opts, &idx, &store).usage.unwrap()).unwrap();
         assert_eq!((usage["tool"].as_str(), usage["query"].as_str()), (Some("list_devices"), Some("moog")));
-        assert!(http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":4,"method":"tools/list"}"#), &opts, &idx).usage.is_none());
+        assert!(http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":4,"method":"tools/list"}"#), &opts, &idx, &store).usage.is_none());
     }
 
     #[test]
     fn anonymous_users_get_an_id_and_keep_it_through_a_personal_path() {
-        let opts = McpOptions { catalogue_only: true, ..test_opts() };
+        let opts = McpOptions { hosted: true, ..test_opts() };
         let idx = empty_index();
+        let store = crate::reports::ReportStore::open(None).unwrap();
         let init = r#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}"#;
         let post = |path: &str, header: Option<&str>| {
             let (path, user) = user_id(path, header);
-            http_exchange(&HttpRequest { method: "POST".into(), path, body: Ok(init.into()), user }, &opts, &idx)
+            http_exchange(&HttpRequest { method: "POST".into(), path, body: Ok(init.into()), user }, &opts, &idx, &store)
         };
         let fresh = post("/mcp", None).session.expect("initialize hands out an id");
         assert!(is_user_id(&fresh));
@@ -1321,14 +1481,52 @@ mod tests {
         let body: Value = serde_json::from_str(&post("/mcp", None).body.unwrap()).unwrap();
         assert!(body["result"]["instructions"].as_str().unwrap().contains("/u/"));
         let with_arg = format!(r#"{{"jsonrpc":"2.0","id":1,"method":"initialize","params":{{"arguments":{{"user_id":"{fresh}"}}}}}}"#);
-        let r = http_exchange(&HttpRequest { method: "POST".into(), path: "/mcp".into(), body: Ok(with_arg), user: None }, &opts, &idx);
+        let r = http_exchange(&HttpRequest { method: "POST".into(), path: "/mcp".into(), body: Ok(with_arg), user: None }, &opts, &idx, &store);
         assert_eq!(r.session.unwrap(), fresh);
         let schema = &tools_list(&opts)["tools"][0]["inputSchema"]["properties"]["user_id"];
         assert_eq!(schema["type"], "string");
         assert_eq!(user_id("/u/not-an-id/mcp", None), ("/u/not-an-id/mcp".to_string(), None));
-        let new = http_exchange(&HttpRequest { method: "GET".into(), path: "/u/new".into(), body: Ok(String::new()), user: None }, &opts, &idx);
+        let new = http_exchange(&HttpRequest { method: "GET".into(), path: "/u/new".into(), body: Ok(String::new()), user: None }, &opts, &idx, &store);
         let v: Value = serde_json::from_str(&new.body.unwrap()).unwrap();
         assert!(is_user_id(v["user_id"].as_str().unwrap()));
+    }
+
+    #[test]
+    fn reports_over_http_build_trust_and_reject_unknown_addresses() {
+        let opts = McpOptions { hosted: true, ..test_opts() };
+        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let store = crate::reports::ReportStore::open(None).unwrap();
+        let call = |user: &str, tool: &str, args: Value| {
+            let body = json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": tool, "arguments": args}});
+            let r = http_exchange(&HttpRequest { method: "POST".into(), path: "/mcp".into(),
+                body: Ok(body.to_string()), user: Some(user.into()) }, &opts, &idx, &store);
+            serde_json::from_str::<Value>(&r.body.unwrap()).unwrap()["result"].clone()
+        };
+        let users = ["a".repeat(32), "b".repeat(32), "c".repeat(32)];
+        for u in &users {
+            let r = call(u, "report_result", json!({"device": "korg/minilogue", "outcome": "works", "firmware": "2.1", "identity_hex": "F0 7E 00 06 02 42 2C 01 00 00 02 01 00 00 F7"}));
+            assert_eq!(r["structuredContent"]["recorded"], true, "{r}");
+        }
+        let trust = call(&users[0], "get_trust", json!({"device": "minilogue"}));
+        assert_eq!(trust["structuredContent"]["overall"]["status"], "usage-verified");
+        let bad = call(&users[0], "report_result", json!({"device": "korg/minilogue", "outcome": "works", "address": "/minilogue/nope"}));
+        assert_eq!(bad["isError"], true);
+        let addr = call(&users[1], "report_result", json!({"device": "korg/minilogue", "outcome": "fails", "firmware": "2.1", "address": "/minilogue/filter/cutoff"}));
+        assert_eq!(addr["structuredContent"]["trust"]["overall"]["status"], "disputed");
+        let listed = call(&users[0], "list_devices", json!({"query": "korg minilogue", "limit": 50}));
+        let entry = listed["structuredContent"]["devices"].as_array().unwrap().iter()
+            .find(|d| d["id"] == "korg/minilogue").cloned().unwrap();
+        assert_eq!(entry["usage_status"], "disputed");
+        let all = http_exchange(&HttpRequest { method: "GET".into(), path: "/v1/trust".into(), body: Ok(String::new()), user: None }, &opts, &idx, &store);
+        let all: Value = serde_json::from_str(&all.body.unwrap()).unwrap();
+        assert_eq!(all["devices"]["korg/minilogue"]["status"], "disputed");
+    }
+
+    #[test]
+    fn report_tools_refuse_without_the_hosted_store() {
+        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let err = call_tool("report_result", &json!({"device": "korg/minilogue", "outcome": "works"}), &test_opts(), &idx, Caller::default()).unwrap_err();
+        assert!(err.contains("hosted"), "{err}");
     }
 
     #[test]
@@ -1380,7 +1578,7 @@ mod tests {
     #[test]
     fn list_devices_result_carries_structured_content() {
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
-        let res = list_devices(&idx, &DeviceFilter::default()).unwrap();
+        let res = list_devices(&idx, &DeviceFilter::default(), None).unwrap();
         let sc = res.get("structuredContent").expect("structuredContent present");
         assert!(sc.get("count").and_then(Value::as_u64).unwrap() > 100);
         assert!(sc.get("devices").and_then(Value::as_array).unwrap().len() > 100);
@@ -1431,7 +1629,7 @@ mod tests {
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
         let opts = test_opts();
         let call = |name: &str| handle_request(&json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
-            "params": {"name": name, "arguments": {"slug": "no-such-device"}}}), &opts, &idx).unwrap();
+            "params": {"name": name, "arguments": {"slug": "no-such-device"}}}), &opts, &idx, Caller::default()).unwrap();
         let failed = call("list_routes");
         assert_eq!(failed["result"]["isError"], json!(true));
         assert!(failed["result"]["content"][0]["text"].as_str().unwrap().contains("no-such-device"));
@@ -1447,7 +1645,7 @@ mod tests {
     fn restore_refuses_without_explicit_confirmation() {
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
         let opts = test_opts();
-        let err = call_tool("restore_presets", &json!({"out_port": "0", "file": "x.syx"}), &opts, &idx).unwrap_err();
+        let err = call_tool("restore_presets", &json!({"out_port": "0", "file": "x.syx"}), &opts, &idx, Caller::default()).unwrap_err();
         assert!(err.contains("confirm_overwrite"), "{err}");
     }
 
@@ -1473,7 +1671,7 @@ mod tests {
     fn handle_initialize() {
         let req = json!({"jsonrpc":"2.0","id":1,"method":"initialize","params":{}});
         let opts = test_opts();
-        let resp = handle_request(&req, &opts, &empty_index()).unwrap();
+        let resp = handle_request(&req, &opts, &empty_index(), Caller::default()).unwrap();
         assert_eq!(resp.get("id"), Some(&json!(1)));
         assert!(resp.get("result").is_some());
     }
@@ -1482,14 +1680,14 @@ mod tests {
     fn handle_initialized_notification_returns_nothing() {
         let req = json!({"jsonrpc":"2.0","method":"notifications/initialized"});
         let opts = test_opts();
-        assert!(handle_request(&req, &opts, &empty_index()).is_none());
+        assert!(handle_request(&req, &opts, &empty_index(), Caller::default()).is_none());
     }
 
     #[test]
     fn handle_unknown_method_returns_error() {
         let req = json!({"jsonrpc":"2.0","id":99,"method":"foo/bar","params":{}});
         let opts = test_opts();
-        let resp = handle_request(&req, &opts, &empty_index()).unwrap();
+        let resp = handle_request(&req, &opts, &empty_index(), Caller::default()).unwrap();
         assert!(resp.get("error").is_some());
     }
 }
