@@ -52,6 +52,9 @@ const HOSTED_TOOLS: [&str; 5] = ["list_devices", "get_device_docs", "list_routes
 #[derive(Clone, Copy, Default)]
 pub struct Caller<'a> {
     pub user: Option<&'a str>,
+    /// The network client (address as the server sees it), for the
+    /// per-connection report cap. Held in memory only.
+    pub client: Option<&'a str>,
     pub reports: Option<&'a crate::reports::ReportStore>,
 }
 
@@ -263,7 +266,8 @@ pub fn run_http(opts: McpOptions, bind: &str, behind_proxy: bool, data_dir: Opti
                     respond(req, HttpReply::new(429, Some("rate limit: 120 requests per minute\n".into())));
                     continue;
                 }
-                let reply = http_exchange(&read_request(&mut req), opts, index, reports);
+                let client = client_key(&req, behind_proxy);
+                let reply = http_exchange(&read_request(&mut req), opts, index, reports, &client);
                 if let Some(line) = &reply.usage {
                     usage.write(line);
                 }
@@ -373,7 +377,7 @@ fn read_request(req: &mut tiny_http::Request) -> HttpRequest {
 }
 
 /// The reply to one HTTP request.
-fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex, reports: &crate::reports::ReportStore) -> HttpReply {
+fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex, reports: &crate::reports::ReportStore, client: &str) -> HttpReply {
     let rpc_error = |code: i64, msg: String| json!({
         "jsonrpc": "2.0", "id": null, "error": { "code": code, "message": msg },
     }).to_string();
@@ -412,7 +416,7 @@ fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex, repo
             };
             let usage = (method == "tools/call").then(|| usage_record(user.as_deref(), &msg));
             let session = if method == "initialize" { user.clone() } else { None };
-            match handle_request(&msg, opts, index, Caller { user: user.as_deref(), reports: Some(reports) }) {
+            match handle_request(&msg, opts, index, Caller { user: user.as_deref(), client: Some(client), reports: Some(reports) }) {
                 Some(mut resp) => {
                     if let (Some(id), Some(result)) = (&session, resp.get_mut("result")) {
                         result["instructions"] = json!(keep_id_instructions(id));
@@ -1185,7 +1189,7 @@ fn report_result(index: &DeviceIndex, args: &Value, caller: Caller) -> Result<Va
         note: text("note").map(|n| n.chars().take(MAX_NOTE).collect()),
     };
     let unplaced = report.firmware.is_none() && report.identity.is_none();
-    reports.add(report)?;
+    reports.add(report, caller.client.unwrap_or(user))?;
     let trust = reports.trust(&entry.id);
     let mut text = format!("Report recorded for {}. Driver status: {}.", entry.id, trust["overall"]["status"].as_str().unwrap_or("?"));
     if unplaced || trust["overall"]["needs_firmware"] == true {
@@ -1443,23 +1447,23 @@ mod tests {
         let req = |method: &str, path: &str, body: &str| HttpRequest {
             method: method.into(), path: path.into(), body: Ok(body.into()), user: None,
         };
-        let r = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":7,"method":"tools/list"}"#), &opts, &idx, &store);
+        let r = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":7,"method":"tools/list"}"#), &opts, &idx, &store, "test-client");
         assert_eq!(r.status, 200);
         let v: Value = serde_json::from_str(&r.body.unwrap()).unwrap();
         assert_eq!(v["id"], json!(7));
         assert_eq!(v["result"]["tools"].as_array().unwrap().len(), HOSTED_TOOLS.len());
-        let r = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#), &opts, &idx, &store);
+        let r = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#), &opts, &idx, &store, "test-client");
         assert_eq!((r.status, r.body), (202, None));
-        let status = |m: &str, p: &str, b: &str| http_exchange(&req(m, p, b), &opts, &idx, &store).status;
+        let status = |m: &str, p: &str, b: &str| http_exchange(&req(m, p, b), &opts, &idx, &store, "test-client").status;
         assert_eq!(status("POST", "/mcp", "not json"), 400);
         assert_eq!(status("GET", "/mcp", ""), 405);
         assert_eq!(status("GET", "/", ""), 200);
         assert_eq!(status("GET", "/healthz", ""), 200);
         assert_eq!(status("POST", "/other", ""), 404);
         let call = r#"{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"list_devices","arguments":{"query":"moog"}}}"#;
-        let usage: Value = serde_json::from_str(&http_exchange(&req("POST", "/mcp", call), &opts, &idx, &store).usage.unwrap()).unwrap();
+        let usage: Value = serde_json::from_str(&http_exchange(&req("POST", "/mcp", call), &opts, &idx, &store, "test-client").usage.unwrap()).unwrap();
         assert_eq!((usage["tool"].as_str(), usage["query"].as_str()), (Some("list_devices"), Some("moog")));
-        assert!(http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":4,"method":"tools/list"}"#), &opts, &idx, &store).usage.is_none());
+        assert!(http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":4,"method":"tools/list"}"#), &opts, &idx, &store, "test-client").usage.is_none());
     }
 
     #[test]
@@ -1470,7 +1474,7 @@ mod tests {
         let init = r#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}"#;
         let post = |path: &str, header: Option<&str>| {
             let (path, user) = user_id(path, header);
-            http_exchange(&HttpRequest { method: "POST".into(), path, body: Ok(init.into()), user }, &opts, &idx, &store)
+            http_exchange(&HttpRequest { method: "POST".into(), path, body: Ok(init.into()), user }, &opts, &idx, &store, "test-client")
         };
         let fresh = post("/mcp", None).session.expect("initialize hands out an id");
         assert!(is_user_id(&fresh));
@@ -1481,12 +1485,12 @@ mod tests {
         let body: Value = serde_json::from_str(&post("/mcp", None).body.unwrap()).unwrap();
         assert!(body["result"]["instructions"].as_str().unwrap().contains("/u/"));
         let with_arg = format!(r#"{{"jsonrpc":"2.0","id":1,"method":"initialize","params":{{"arguments":{{"user_id":"{fresh}"}}}}}}"#);
-        let r = http_exchange(&HttpRequest { method: "POST".into(), path: "/mcp".into(), body: Ok(with_arg), user: None }, &opts, &idx, &store);
+        let r = http_exchange(&HttpRequest { method: "POST".into(), path: "/mcp".into(), body: Ok(with_arg), user: None }, &opts, &idx, &store, "test-client");
         assert_eq!(r.session.unwrap(), fresh);
         let schema = &tools_list(&opts)["tools"][0]["inputSchema"]["properties"]["user_id"];
         assert_eq!(schema["type"], "string");
         assert_eq!(user_id("/u/not-an-id/mcp", None), ("/u/not-an-id/mcp".to_string(), None));
-        let new = http_exchange(&HttpRequest { method: "GET".into(), path: "/u/new".into(), body: Ok(String::new()), user: None }, &opts, &idx, &store);
+        let new = http_exchange(&HttpRequest { method: "GET".into(), path: "/u/new".into(), body: Ok(String::new()), user: None }, &opts, &idx, &store, "test-client");
         let v: Value = serde_json::from_str(&new.body.unwrap()).unwrap();
         assert!(is_user_id(v["user_id"].as_str().unwrap()));
     }
@@ -1499,7 +1503,7 @@ mod tests {
         let call = |user: &str, tool: &str, args: Value| {
             let body = json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": tool, "arguments": args}});
             let r = http_exchange(&HttpRequest { method: "POST".into(), path: "/mcp".into(),
-                body: Ok(body.to_string()), user: Some(user.into()) }, &opts, &idx, &store);
+                body: Ok(body.to_string()), user: Some(user.into()) }, &opts, &idx, &store, user);
             serde_json::from_str::<Value>(&r.body.unwrap()).unwrap()["result"].clone()
         };
         let users = ["a".repeat(32), "b".repeat(32), "c".repeat(32)];
@@ -1517,7 +1521,7 @@ mod tests {
         let entry = listed["structuredContent"]["devices"].as_array().unwrap().iter()
             .find(|d| d["id"] == "korg/minilogue").cloned().unwrap();
         assert_eq!(entry["usage_status"], "disputed");
-        let all = http_exchange(&HttpRequest { method: "GET".into(), path: "/v1/trust".into(), body: Ok(String::new()), user: None }, &opts, &idx, &store);
+        let all = http_exchange(&HttpRequest { method: "GET".into(), path: "/v1/trust".into(), body: Ok(String::new()), user: None }, &opts, &idx, &store, "test-client");
         let all: Value = serde_json::from_str(&all.body.unwrap()).unwrap();
         assert_eq!(all["devices"]["korg/minilogue"]["status"], "disputed");
     }
