@@ -214,8 +214,8 @@ cargo build --release
 ### Minimal MiniLab 3 workflow
 
 ```bash
-# 1. Find your MIDI port indices
-osc-bridge list
+# 1. Find your synth, its driver and its MIDI ports
+osc-bridge detect
 
 # 2. Start the bridge
 osc-bridge run --device devices/arturia/minilab3.json \
@@ -287,6 +287,27 @@ classified it as non-blocking. Polyend's firmware-side fix is not
 announced at the time of writing.
 
 ## Ergonomics
+
+### Which synth is plugged in, and which driver fits?
+```
+osc-bridge detect
+```
+Lists MIDI ports, asks each device who it is (the standard MIDI Identity
+Request — harmless), matches the catalogue and prints a ready-to-run
+`osc-bridge run` line. `--no-probe` matches by port name only.
+
+### Back up and restore presets (SysEx librarian)
+```
+osc-bridge backup  --in-port minilab --out backups/minilab3.syx   # then start the dump on the device
+osc-bridge restore --out-port minilab backups/minilab3.syx        # overwrites the device's memory
+```
+Ports take an index or a name fragment. `backup --request "F0 … F7" --out-port …`
+sends a dump request first; `restore --gap-ms` paces older devices.
+
+### Drum machines: play sounds by name
+Drivers with a drum map expose each voice: `/tr_8s/drum/kick 110` fires the
+kick at velocity 110 on the right note and channel. See
+[`DEVICE_JSON_SCHEMA.md`](docs/DEVICE_JSON_SCHEMA.md#triggers--named-drum-sounds-osc--midi-note).
 
 ### Explore a device spec without connecting anything
 ```

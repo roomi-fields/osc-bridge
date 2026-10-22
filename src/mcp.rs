@@ -43,6 +43,7 @@ struct DeviceIndexEntry {
     kind: String,
     revision: String,
     tier: String,
+    manufacturer_id: Vec<u8>,
 }
 
 /// Built once at startup. Without it, every device tool call would re-walk
@@ -88,6 +89,10 @@ impl DeviceIndex {
                 kind: get("kind").unwrap_or("hardware").to_string(),
                 revision: get("revision").unwrap_or("").to_string(),
                 tier,
+                manufacturer_id: device.and_then(|d| d.get("manufacturer_id"))
+                    .and_then(Value::as_array)
+                    .map(|a| a.iter().filter_map(Value::as_u64).map(|b| b as u8).collect())
+                    .unwrap_or_default(),
             });
         });
         Self { entries, by_slug }
@@ -377,6 +382,107 @@ fn tools_list() -> Value {
                     "idempotentHint": true,
                     "openWorldHint": true
                 }
+            },
+            {
+                "name": "backup_presets",
+                "description": "Back up a hardware device's presets as a .syx file. Listens on the device's MIDI input and records every SysEx message it sends (a 'bulk dump'), stopping 3 s after the last one. Either the user starts the dump from the device's menu during the call, or pass request_hex (the device's dump-request message, from its manual or driver) with out_port. Use detect_hardware first to find the ports.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "in_port": { "type": "string", "description": "MIDI IN port of the device: index or name fragment (e.g. 'minilab')." },
+                        "file": { "type": "string", "description": "Path of the .syx file to write." },
+                        "request_hex": { "type": "string", "description": "Optional dump-request SysEx as hex, e.g. 'F0 43 20 00 F7'." },
+                        "out_port": { "type": "string", "description": "MIDI OUT port for request_hex: index or name fragment." },
+                        "max_seconds": { "type": "integer", "description": "Give up after this long, 1-600 (default 60)." }
+                    },
+                    "required": ["in_port", "file"]
+                },
+                "outputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "file": { "type": "string" },
+                        "messages": { "type": "integer" },
+                        "bytes": { "type": "integer" }
+                    },
+                    "required": ["file", "messages", "bytes"]
+                },
+                "annotations": {
+                    "title": "Back up device presets",
+                    "readOnlyHint": false,
+                    "destructiveHint": false,
+                    "idempotentHint": false,
+                    "openWorldHint": true
+                }
+            },
+            {
+                "name": "restore_presets",
+                "description": "Send a .syx file to a hardware device, e.g. to restore a preset backup. This OVERWRITES the device's memory: confirm with the user first, then pass confirm_overwrite: true. Messages are paced (gap_ms) because older devices drop fast dumps.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "out_port": { "type": "string", "description": "MIDI OUT port of the device: index or name fragment." },
+                        "file": { "type": "string", "description": "Path of the .syx file to send." },
+                        "gap_ms": { "type": "integer", "description": "Pause between messages, 0-2000 ms (default 50)." },
+                        "confirm_overwrite": { "type": "boolean", "description": "Must be true: the user agreed to overwrite the device's memory." }
+                    },
+                    "required": ["out_port", "file", "confirm_overwrite"]
+                },
+                "outputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "file": { "type": "string" },
+                        "messages": { "type": "integer" },
+                        "bytes": { "type": "integer" }
+                    },
+                    "required": ["file", "messages", "bytes"]
+                },
+                "annotations": {
+                    "title": "Restore device presets",
+                    "readOnlyHint": false,
+                    "destructiveHint": true,
+                    "idempotentHint": true,
+                    "openWorldHint": true
+                }
+            },
+            {
+                "name": "detect_hardware",
+                "description": "Find the MIDI devices plugged into this computer and match them to catalogue drivers. Lists MIDI ports, sends the standard MIDI Identity Request (harmless: it changes nothing on the device) and reads each device's manufacturer, model and firmware. Returns, per device, the best matching drivers and a ready-to-run 'osc-bridge run' command with the right port numbers.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "probe": { "type": "boolean", "description": "Send the Identity Request (default true). False only lists ports and matches by port name." },
+                        "timeout_ms": { "type": "integer", "description": "How long to wait for identity replies, 100-5000 ms (default 800)." }
+                    }
+                },
+                "outputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "probed": { "type": "boolean" },
+                        "devices": {
+                            "type": "array",
+                            "description": "One entry per physical device (an output port paired with its input port by name).",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "port": { "type": "string" },
+                                    "out_port": { "type": ["integer", "null"] },
+                                    "in_port": { "type": ["integer", "null"] },
+                                    "identity": { "type": ["object", "null"], "description": "Identity Reply, when the device answered." },
+                                    "candidates": { "type": "array", "items": { "type": "object" } },
+                                    "run_command": { "type": ["string", "null"] }
+                                },
+                                "required": ["port", "candidates"]
+                            }
+                        }
+                    },
+                    "required": ["probed", "devices"]
+                },
+                "annotations": {
+                    "title": "Detect connected hardware",
+                    "readOnlyHint": true,
+                    "idempotentHint": true,
+                    "openWorldHint": true
+                }
             }
         ]
     })
@@ -409,8 +515,136 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex) -
             };
             get_status(target)
         }
+        "backup_presets" => {
+            let in_port = args.get("in_port").and_then(Value::as_str).ok_or("missing in_port")?;
+            let file = args.get("file").and_then(Value::as_str).ok_or("missing file")?;
+            let request = args.get("request_hex").and_then(Value::as_str);
+            let out_port = args.get("out_port").and_then(Value::as_str);
+            let max = args.get("max_seconds").and_then(Value::as_u64).unwrap_or(60).clamp(1, 600);
+            backup_presets(in_port, Path::new(file), request, out_port, max)
+        }
+        "restore_presets" => {
+            if args.get("confirm_overwrite").and_then(Value::as_bool) != Some(true) {
+                return Err("restore overwrites the device's memory: ask the user, then pass confirm_overwrite: true".into());
+            }
+            let out_port = args.get("out_port").and_then(Value::as_str).ok_or("missing out_port")?;
+            let file = args.get("file").and_then(Value::as_str).ok_or("missing file")?;
+            let gap = args.get("gap_ms").and_then(Value::as_u64).unwrap_or(50).min(2000);
+            restore_presets(out_port, Path::new(file), gap)
+        }
+        "detect_hardware" => {
+            let probe = args.get("probe").and_then(Value::as_bool).unwrap_or(true);
+            let wait = args.get("timeout_ms").and_then(Value::as_u64).unwrap_or(800).clamp(100, 5000);
+            detect_hardware(index, probe, std::time::Duration::from_millis(wait))
+        }
         other => Err(format!("unknown tool: {other}")),
     }
+}
+
+/// The hardware drivers of the catalogue, in the shape `detect::rank` scores.
+fn hardware_candidates(index: &DeviceIndex) -> Vec<crate::detect::Candidate> {
+    index.entries.iter().filter(|e| e.kind != "software").map(|e| crate::detect::Candidate {
+        slug: e.slug.clone(),
+        name: e.name.clone(),
+        vendor: e.vendor.clone(),
+        file: e.path.display().to_string(),
+        tier: e.tier.clone(),
+        manufacturer_id: e.manufacturer_id.clone(),
+    }).collect()
+}
+
+fn detect_hardware(index: &DeviceIndex, probe: bool, wait: std::time::Duration) -> Result<Value, String> {
+    let found = crate::detect::scan(probe, wait).map_err(|e| format!("MIDI scan: {e}"))?;
+    let catalogue = hardware_candidates(index);
+    let devices: Vec<Value> = found.iter().map(|d| {
+        let ranked = crate::detect::rank(d.label(), d.identity.as_ref(), &catalogue, 3);
+        let candidates: Vec<Value> = ranked.iter().map(|(score, i)| {
+            let c = &catalogue[*i];
+            json!({ "slug": c.slug, "name": c.name, "vendor": c.vendor, "file": c.file,
+                    "source_tier": c.tier, "score": score })
+        }).collect();
+        let run_command = match (ranked.first(), d.out_index) {
+            (Some((_, i)), Some(out)) => Some(format!("osc-bridge run --device {} --out-port {out}{}",
+                catalogue[*i].file, d.in_index.map(|n| format!(" --in-port {n}")).unwrap_or_default())),
+            _ => None,
+        };
+        json!({
+            "port": d.label(),
+            "out_port": d.out_index,
+            "in_port": d.in_index,
+            "identity": d.identity.as_ref().map(|id| json!({
+                "manufacturer_id": id.manufacturer_hex(),
+                "manufacturer": crate::detect::manufacturer_name(&id.manufacturer),
+                "family": id.family,
+                "model": id.model,
+                "firmware": id.version.iter().map(u8::to_string).collect::<Vec<_>>().join("."),
+            })),
+            "candidates": candidates,
+            "run_command": run_command,
+        })
+    }).collect();
+    let structured = json!({ "probed": probe, "devices": devices });
+    let text = serde_json::to_string_pretty(&structured).unwrap_or_default();
+    Ok(content_structured(&text, structured))
+}
+
+fn backup_presets(in_port: &str, file: &Path, request: Option<&str>, out_port: Option<&str>, max_secs: u64) -> Result<Value, String> {
+    use crate::librarian::{capture, parse_hex, write_syx};
+    let req = match (request, out_port) {
+        (Some(hex), Some(port)) => Some((port, parse_hex(hex).map_err(|e| e.to_string())?)),
+        (Some(_), None) => return Err("request_hex needs out_port".into()),
+        _ => None,
+    };
+    let cap = capture(in_port, req.as_ref().map(|(p, b)| (*p, b.as_slice())),
+                      Duration::from_secs(3), Duration::from_secs(max_secs)).map_err(|e| e.to_string())?;
+    if cap.messages.is_empty() {
+        return Err(format!("no SysEx received within {max_secs} s — start the dump from the device's menu, or pass request_hex"));
+    }
+    write_syx(file, &cap.messages).map_err(|e| e.to_string())?;
+    let structured = json!({ "file": file.display().to_string(), "messages": cap.messages.len(), "bytes": cap.bytes });
+    Ok(content_structured(&format!("Saved {} SysEx message(s), {} bytes, to {}", cap.messages.len(), cap.bytes, file.display()), structured))
+}
+
+fn restore_presets(out_port: &str, file: &Path, gap_ms: u64) -> Result<Value, String> {
+    use crate::librarian::{read_syx, send_messages};
+    let msgs = read_syx(file).map_err(|e| e.to_string())?;
+    let bytes: usize = msgs.iter().map(Vec::len).sum();
+    send_messages(out_port, &msgs, Duration::from_millis(gap_ms)).map_err(|e| e.to_string())?;
+    let structured = json!({ "file": file.display().to_string(), "messages": msgs.len(), "bytes": bytes });
+    Ok(content_structured(&format!("Sent {} SysEx message(s), {} bytes, from {}", msgs.len(), bytes, file.display()), structured))
+}
+
+/// `osc-bridge detect`: the same report as the `detect_hardware` tool, for a
+/// terminal.
+pub fn print_detection(devices_dir: &Path, probe: bool) -> Result<()> {
+    let index = DeviceIndex::build(devices_dir);
+    let report = detect_hardware(&index, probe, std::time::Duration::from_millis(800))
+        .map_err(|e| anyhow::anyhow!(e))?;
+    let devices = report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default();
+    if devices.is_empty() {
+        println!("No MIDI port found.");
+    }
+    for d in devices {
+        println!("{}  (out {}, in {})", d["port"].as_str().unwrap_or("?"),
+            d["out_port"].as_u64().map(|n| n.to_string()).unwrap_or("-".into()),
+            d["in_port"].as_u64().map(|n| n.to_string()).unwrap_or("-".into()));
+        match d["identity"].as_object() {
+            Some(id) => println!("  identity: {} [{}], family {}, model {}, firmware {}",
+                id["manufacturer"].as_str().unwrap_or("unknown manufacturer"),
+                id["manufacturer_id"].as_str().unwrap_or(""), id["family"], id["model"],
+                id["firmware"].as_str().unwrap_or("")),
+            None if probe => println!("  identity: no reply"),
+            None => {}
+        }
+        for c in d["candidates"].as_array().into_iter().flatten() {
+            println!("  match: {} — {} ({}, score {})", c["slug"].as_str().unwrap_or(""),
+                c["file"].as_str().unwrap_or(""), c["source_tier"].as_str().unwrap_or(""), c["score"]);
+        }
+        if let Some(cmd) = d["run_command"].as_str() {
+            println!("  run:   {cmd}");
+        }
+    }
+    Ok(())
 }
 
 fn list_devices(index: &DeviceIndex) -> Result<Value, String> {
@@ -647,12 +881,13 @@ mod tests {
     }
 
     #[test]
-    fn tools_list_has_five_tools() {
+    fn tools_list_has_eight_tools() {
         let t = tools_list();
         let arr = t.get("tools").unwrap().as_array().unwrap();
-        assert_eq!(arr.len(), 5);
+        assert_eq!(arr.len(), 8);
         let names: Vec<&str> = arr.iter().map(|t| t.get("name").unwrap().as_str().unwrap()).collect();
-        for expected in ["list_devices", "get_device_docs", "list_routes", "send", "get_status"] {
+        for expected in ["list_devices", "get_device_docs", "list_routes", "send", "get_status",
+                         "detect_hardware", "backup_presets", "restore_presets"] {
             assert!(names.contains(&expected), "tool {expected} missing");
         }
     }
@@ -719,6 +954,25 @@ mod tests {
             checked += 1;
         }
         assert!(checked > 0, "catalogue should contain shared slugs");
+    }
+
+    #[test]
+    fn restore_refuses_without_explicit_confirmation() {
+        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let opts = McpOptions { devices_dir: PathBuf::from("devices"), default_target: "127.0.0.1:7777".parse().unwrap() };
+        let err = call_tool("restore_presets", &json!({"out_port": "0", "file": "x.syx"}), &opts, &idx).unwrap_err();
+        assert!(err.contains("confirm_overwrite"), "{err}");
+    }
+
+    #[test]
+    fn real_port_names_resolve_to_their_catalogue_driver() {
+        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let cat = hardware_candidates(&idx);
+        for (port, want) in [("Minilab3 MIDI", "minilab3"), ("TR-8S", "tr_8s"), ("Digitakt II", "digitakt_ii")] {
+            let best = crate::detect::rank(port, None, &cat, 1);
+            assert!(!best.is_empty(), "{port}: no candidate");
+            assert_eq!(cat[best[0].1].slug, want, "{port}");
+        }
     }
 
     #[test]

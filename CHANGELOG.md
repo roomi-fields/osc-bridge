@@ -25,6 +25,19 @@ addressable by sound name — and its community data is now properly licensed.
   Model:Samples; KORG drumlogue; Behringer LM Drum; Vermona DRM1 MKIV;
   Alesis SR-16; Novation DrumStation; and more.
 
+### Added — hardware detection
+- `osc-bridge detect` and the `detect_hardware` MCP tool: list MIDI ports,
+  send the standard Identity Request, read manufacturer / model / firmware,
+  match the catalogue (port name, manufacturer ID, driver slug) and return a
+  ready-to-run `osc-bridge run` command with the right port numbers.
+
+### Added — SysEx librarian
+- `osc-bridge backup` / `restore` and the `backup_presets` /
+  `restore_presets` MCP tools: record a device's dump to a `.syx` file and
+  send it back, paced. Ports by index or name fragment. `restore_presets`
+  refuses unless `confirm_overwrite: true` (destructive hint set).
+- The MCP server now exposes eight tools.
+
 ### Changed — catalogue
 - Resynchronised with MIDI Guide (pencilresearch/midi @ 91299d6): 244
   drivers refreshed, 132 devices added as

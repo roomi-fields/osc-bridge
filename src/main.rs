@@ -16,6 +16,49 @@ struct Cli {
 enum Cmd {
     /// List MIDI input and output ports.
     List,
+    /// Back up a device's presets: record the SysEx it sends into a .syx file.
+    /// Start the dump from the device's menu, or pass --request.
+    Backup {
+        /// MIDI IN port the device sends on (index or name fragment).
+        #[arg(long)]
+        in_port: String,
+        /// Output .syx file.
+        #[arg(long)]
+        out: PathBuf,
+        /// Dump-request SysEx to send first, as hex ("F0 43 20 00 F7").
+        #[arg(long)]
+        request: Option<String>,
+        /// MIDI OUT port for --request (index or name fragment).
+        #[arg(long)]
+        out_port: Option<String>,
+        /// Stop this many seconds after the last message.
+        #[arg(long, default_value_t = 3)]
+        idle_secs: u64,
+        /// Give up after this many seconds in any case.
+        #[arg(long, default_value_t = 120)]
+        max_secs: u64,
+    },
+    /// Restore presets from a .syx file. Overwrites the device's memory.
+    Restore {
+        /// MIDI OUT port of the device (index or name fragment).
+        #[arg(long)]
+        out_port: String,
+        /// The .syx file to send.
+        file: PathBuf,
+        /// Pause between messages, for devices that drop fast dumps.
+        #[arg(long, default_value_t = 50)]
+        gap_ms: u64,
+    },
+    /// Find connected MIDI devices and the catalogue drivers that match them.
+    /// Sends the standard MIDI Identity Request unless --no-probe.
+    Detect {
+        /// Only list ports and match by name; send nothing.
+        #[arg(long)]
+        no_probe: bool,
+        /// Root directory of the device catalogue.
+        #[arg(long, default_value = "devices")]
+        devices_dir: PathBuf,
+    },
     /// Print summary of a device JSON spec without starting the bridge.
     Inspect {
         device: PathBuf,
@@ -91,6 +134,16 @@ enum Cmd {
 fn main() -> Result<()> {
     match Cli::parse().cmd {
         Cmd::List => cmd_list(),
+        Cmd::Backup { in_port, out, request, out_port, idle_secs, max_secs } =>
+            cmd_backup(in_port, out, request, out_port, idle_secs, max_secs),
+        Cmd::Restore { out_port, file, gap_ms } => {
+            use osc_bridge::librarian::{read_syx, send_messages};
+            let msgs = read_syx(&file)?;
+            send_messages(&out_port, &msgs, std::time::Duration::from_millis(gap_ms))?;
+            eprintln!("Sent {} SysEx message(s) from {}", msgs.len(), file.display());
+            Ok(())
+        }
+        Cmd::Detect { no_probe, devices_dir } => osc_bridge::mcp::print_detection(&devices_dir, !no_probe),
         Cmd::Inspect { device } => cmd_inspect(device),
         Cmd::Run { device, out_port, in_port, bind, osc_clients, ws_bind } =>
             cmd_run(device, out_port, in_port, bind, osc_clients, ws_bind),
@@ -107,6 +160,28 @@ fn main() -> Result<()> {
             })
         }
     }
+}
+
+fn cmd_backup(in_port: String, out: PathBuf, request: Option<String>, out_port: Option<String>,
+              idle_secs: u64, max_secs: u64) -> Result<()> {
+    use osc_bridge::librarian::{capture, parse_hex, write_syx};
+    use std::time::Duration;
+    let req = match (&request, &out_port) {
+        (Some(hex), Some(port)) => Some((port.as_str(), parse_hex(hex)?)),
+        (Some(_), None) => anyhow::bail!("--request needs --out-port"),
+        _ => None,
+    };
+    if req.is_none() {
+        eprintln!("Listening — start the SysEx dump from the device's menu now.");
+    }
+    let cap = capture(&in_port, req.as_ref().map(|(p, b)| (*p, b.as_slice())),
+                      Duration::from_secs(idle_secs), Duration::from_secs(max_secs))?;
+    if cap.messages.is_empty() {
+        anyhow::bail!("no SysEx received within {max_secs} s");
+    }
+    write_syx(&out, &cap.messages)?;
+    eprintln!("Saved {} message(s), {} bytes to {}", cap.messages.len(), cap.bytes, out.display());
+    Ok(())
 }
 
 fn cmd_lint(path: PathBuf) -> Result<()> {

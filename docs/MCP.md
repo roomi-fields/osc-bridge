@@ -60,27 +60,35 @@ The server speaks JSON-RPC 2.0 over stdio.
   `target` argument is given (default `127.0.0.1:7777`, the standard
   `osc-bridge run` bind).
 
-## The five tools
+## The eight tools
 
 | Tool | What it does |
 |---|---|
 | `list_devices` | Enumerate every device driver — name, vendor, slug, kind (hardware/software), source tier. |
 | `get_device_docs` | Fetch the markdown companion guide for one device (by slug). |
-| `list_routes` | Return a device's full OSC surface — declarative commands, CC/NRPN params, SysEx params, reply patterns. |
+| `list_routes` | Return a device's full OSC surface — declarative commands, CC/NRPN params, SysEx params, named drum sounds, reply patterns. |
 | `send` | Send a single OSC message to a running `osc-bridge` instance (typed args: int, float, string, bool). |
 | `get_status` | Round-trip `/bridge/status` to a running bridge and report the replies. |
+| `detect_hardware` | Find the MIDI devices plugged into this computer: list ports, ask each device who it is (standard MIDI Identity Request — changes nothing on the device), match the catalogue, and return a ready-to-run `osc-bridge run` command with the right port numbers. |
+| `backup_presets` | Record a device's SysEx dump (its presets) into a `.syx` file — the dump is started from the device's menu, or by a dump-request message. |
+| `restore_presets` | Send a `.syx` file back to a device. Overwrites its memory, so the tool refuses unless `confirm_overwrite: true` (the client should ask the user). |
 
 The catalogue is indexed once at startup, so `list_devices` and slug lookups
 are instant — no per-call directory walk.
 
 ## Typical workflow
 
-The four-step path from cold start to controlling a device:
+The path from cold start to controlling a device:
 
-1. `list_devices` — find the device you want (e.g. search "matrixbrute").
+1. `detect_hardware` — see what is plugged in and which driver matches
+   (or `list_devices` to search the catalogue by name).
 2. `list_routes("matrixbrute")` — see every OSC address it accepts.
-3. (separately) start the bridge: `osc-bridge run --device devices/arturia/matrixbrute.json --out-port <N>`
+3. (separately) start the bridge with the command `detect_hardware` returned,
+   e.g. `osc-bridge run --device devices/arturia/matrixbrute.json --out-port 3 --in-port 2`
 4. `send("/matrixbrute/filter/cutoff", [0.7])` — drive it.
+
+Before an experiment on a device's sounds, `backup_presets` saves its memory
+to a `.syx` file; `restore_presets` puts it back.
 
 `get_device_docs` fills in the device-specific quirks (port conventions,
 argument formats, host-side setup for software targets).
