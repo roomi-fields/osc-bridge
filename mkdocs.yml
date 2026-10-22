@@ -1,0 +1,146 @@
+site_name: osc-bridge
+site_url: https://roomi-fields.github.io/osc-bridge/
+site_description: >-
+  osc-bridge — an open-source OSC ↔ MIDI/SysEx bridge and MCP server for 963
+  hardware synthesizers, drum machines and DAWs. Control any synth by
+  parameter name from Claude, SuperCollider, Sonic Pi, TouchDesigner or a web
+  page. Free, GPL-3.0.
+site_author: roomi-fields
+repo_name: roomi-fields/osc-bridge
+repo_url: https://github.com/roomi-fields/osc-bridge
+edit_uri: edit/main/docs/
+copyright: GPL-3.0 — built by roomi-fields. Source on GitHub.
+
+docs_dir: docs
+
+# Device pages generated from devices/*.json, per-page structured data,
+# robots/llms files filled and checked after the build.
+hooks:
+  - scripts/mkdocs_hooks.py
+
+theme:
+  name: material
+  language: en
+  custom_dir: docs/overrides
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.tracking
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.action.edit
+    - content.tabs.link
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/roomi-fields/osc-bridge
+      name: osc-bridge on GitHub
+    - icon: fontawesome/brands/npm
+      link: https://www.npmjs.com/package/@roomi-fields/osc-bridge
+      name: osc-bridge on npm
+  generator: false
+
+extra_css:
+  - assets/catalogue.css
+extra_javascript:
+  - assets/catalogue.js
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - toc:
+      permalink: true
+      title: On this page
+
+plugins:
+  - search:
+      lang: en
+  - blog:
+      blog_dir: blog
+      post_url_format: "{slug}"
+      post_excerpt: required
+      archive: false
+      categories: false
+
+# Repo docs written for GitHub link to files outside the site (README,
+# CONTRIBUTING, device JSONs): reported, not fatal.
+validation:
+  omitted_files: info
+  absolute_links: info
+  unrecognized_links: info
+  anchors: info
+  links:
+    not_found: info
+
+exclude_docs: |
+  README.md
+  CR-*.md
+  MCP_DIRECTORIES.md
+  PROPOSAL_OSC_TRANSPORT.md
+  SUPPORTED_DEVICES.md
+  demo/*.py
+  demo/__pycache__/
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Device catalogue: catalogue.md
+  - Guides:
+      - MCP server (Claude & co.): MCP.md
+      - Your first device JSON: TUTORIAL_FIRST_DEVICE.md
+      - Device JSON schema: DEVICE_JSON_SCHEMA.md
+      - Lua escape hatch: scripting.md
+  - Deep dives:
+      - MiniLab 3 protocol: MINILAB3_PROTOCOL.md
+      - MiniLab 3 SysEx surface: MINILAB3_SYSEX_SURFACE.md
+      - MiniLab 3 firmware reverse engineering: MINILAB3_FIRMWARE_COMPLETE_RE.md
+      - Arturia SysEx (generic): ARTURIA_SYSEX_GENERIC.md
+      - MatrixBrute SysEx: MATRIXBRUTE_SYSEX.md
+  - Blog:
+      - blog/index.md
+  - Changelog: changelog.md

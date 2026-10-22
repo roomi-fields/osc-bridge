@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block extrahead %}
+  <meta property="og:type" content="{% if page and page.file and page.file.src_uri.startswith('blog/posts/') %}article{% else %}website{% endif %}">
+  <meta property="og:site_name" content="osc-bridge">
+  <meta property="og:title" content="{{ page.meta.title or page.title if page else config.site_name }}">
+  <meta property="og:description" content="{{ (page.meta.description if page and page.meta.description else config.site_description) | trim }}">
+  <meta property="og:url" content="{{ page.canonical_url if page else config.site_url }}">
+  <meta property="og:image" content="{{ config.site_url }}assets/og-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="{{ config.site_url }}assets/og-card.png">
+{% endblock %}

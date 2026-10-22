@@ -41,6 +41,7 @@ def coverage(doc: dict) -> dict:
         "cc": len(cc), "sysex_params": len(params), "commands": len(cmds),
         "cc14": n_14bit, "nrpn": n_nrpn,
         "replies": len(doc.get("replies") or []),
+        "triggers": len((doc.get("triggers") or {}).get("entries") or []),
     }
     if typed:
         cov["expects"] = dict(sorted(typed.items()))
