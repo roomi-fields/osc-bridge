@@ -52,6 +52,7 @@ TIERS = {
     "third-party-osc": ("📡", "From a third-party OSC API"),
     "electra-preset": ("🎛️", "Derived from an Electra One community preset"),
     "pencilresearch": ("📦", "Derived from MIDI Guide (community CC/NRPN data)"),
+    "agent-contributed": ("🤖", "Contributed by an AI agent; checked automatically, not reviewed"),
 }
 
 _LD = re.compile(r'<script type="application/ld\+json">(.*?)</script>', re.DOTALL)

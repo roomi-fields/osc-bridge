@@ -104,6 +104,19 @@ agent. With it:
 | `relay_send` | Sends one driver address with its arguments (`/filter/cutoff`, `[64]`), turned into the right CC, NRPN, note or SysEx by the server — or raw MIDI bytes |
 | `relay_listen` | Collects what the hardware sends for a few seconds, decoded; with a driver, each CC or NRPN that moved is matched to its addresses |
 
+#### Contributing drivers
+
+Agents can add to the catalogue. `submit_driver` takes a whole driver file
+(the [device schema](DEVICE_JSON_SCHEMA.md)) for a device the catalogue lacks;
+`submit_fix` builds a corrected copy of a driver from the mappings learned for
+one firmware (below) where they differ from it. Either way the file is its
+own variant, `<device>.agent-contributed.fw-<firmware>.json`, marked 🤖 in the
+catalogue. Every half hour a merge job checks each pending contribution —
+it must parse, lint and leave the library tests passing, and touch nothing
+else — and merges it as a pull request; `get_contribution` tells where it
+stands. There is no human review: trust comes from usage reports afterwards,
+and contributions of a suspect account are held.
+
 #### Learning what controls really send
 
 Drivers can be wrong for a given device or firmware. To check one control,

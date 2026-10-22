@@ -18,7 +18,8 @@ def classify(doc: dict) -> str:
     sources = doc.get("_sources") or []
     types = [s.get("type") for s in sources if isinstance(s, dict)]
     for t, marker in (("hardware-verified", "✅"), ("vendor-doc", "📘"),
-                      ("electra-preset", "🎛️"), ("pencilresearch", "📦")):
+                      ("electra-preset", "🎛️"), ("pencilresearch", "📦"),
+                      ("agent-contributed", "🤖")):
         if t in types:
             return marker
     return "🚧"
@@ -76,7 +77,7 @@ def main():
     entries.sort(key=lambda e: (e["vendor"].lower(), e["name"].lower()))
     OUT.write_text(json.dumps({
         "count": len(entries),
-        "vendors": sorted({e["vendor"] for e in entries}, key=str.lower),
+        "vendors": sorted({e["vendor"] for e in entries}, key=lambda v: (v.lower(), v)),
         "entries": entries,
     }, ensure_ascii=False, indent=2) + "\n")
     print(f"wrote {OUT} — {len(entries)} devices")

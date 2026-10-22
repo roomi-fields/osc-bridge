@@ -28,6 +28,7 @@ community data (CC BY-SA 4.0).
       <button type="button" class="ob-chip" data-m="📡">📡 OSC API</button>
       <button type="button" class="ob-chip" data-m="🎛️">🎛️ Electra</button>
       <button type="button" class="ob-chip" data-m="📦">📦 MIDI Guide</button>
+      <button type="button" class="ob-chip" data-m="🤖">🤖 agent</button>
     </div>
   </div>
   <p class="ob-stats" id="ob-stats">Loading the catalogue…</p>

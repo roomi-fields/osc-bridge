@@ -10,6 +10,7 @@
 - **📡 OSC-API (software targets)** — 7 (vendor-OSC or third-party OSC shim like AbletonOSC — DAWs and live coding environments)
 - **🎛️ electra-preset derived** — 588 (from a community Electra One preset — covers SysEx + CC/NRPN, but reflects the preset author's editorial choices)
 - **📦 pencilresearch derived** — 376 (community canonical CSVs — CC/NRPN only, no SysEx)
+- **🤖 agent-contributed** — 0 (submitted by an AI agent through the hosted server — parsed, linted and tested automatically, not reviewed)
 - **🚧 WIP** — 1
 - **📝 stub** — 1
 
