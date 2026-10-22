@@ -68,7 +68,19 @@ The same catalogue as MCP tools, for Claude, Cursor and other MCP clients.
 **On your machine (stdio)**, with all eight tools including hardware
 detection and sending to a running bridge: see the [MCP guide](MCP.md).
 
-**Over HTTP**, read-only: `osc-bridge mcp --http 0.0.0.0:8080` serves MCP on
+**Hosted, nothing to install**: add `https://mcp.osc-bridge.roomi-fields.com/mcp`
+as a remote MCP server (a "custom connector" in Claude). It offers the three
+catalogue tools below, at most 120 requests per minute per client.
+
+No account is needed. Each client gets an anonymous id when it connects,
+returned in the `Mcp-Session-Id` header and in the server's instructions. To
+be recognised from one session to the next, keep it: connect to your
+personal endpoint `https://mcp.osc-bridge.roomi-fields.com/u/<id>/mcp`
+(`GET /u/new` hands out a fresh one), or pass `user_id` in tool calls. The id
+is random and tied to nothing else; the server logs which tools it calls,
+not your address.
+
+**Over HTTP on your own machine**, read-only: `osc-bridge mcp --http 0.0.0.0:8080` serves MCP on
 `/mcp` with the three catalogue tools only — `list_devices` (with `query`,
 `vendor`, `kind`, `limit`), `list_routes` and `get_device_docs`. The tools
 that open MIDI ports are left out, since they would act on the server's
