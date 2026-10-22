@@ -10,6 +10,12 @@
 //! SysEx replies, `/bridge/status` responses), and every binary frame it sends
 //! goes through the exact same dispatch as OSC received over UDP.
 //!
+//! Origin check: a browser sends the page's origin with the handshake, and
+//! any site open in that browser could otherwise reach the bridge. Accepted:
+//! clients that send no origin (scripts, native apps), pages served from this
+//! machine (`localhost`, `127.0.0.1`, `[::1]`, any port or scheme), and the
+//! origins listed with `--ws-allow-origin` (`*` accepts all). Others get 403.
+//!
 //! Implementation: synchronous `tungstenite`, matching the thread-based
 //! architecture of the rest of the runtime (no async runtime). One accept
 //! thread plus one thread per connection. Each connection thread multiplexes
@@ -22,6 +28,7 @@ use rosc::OscPacket;
 use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
+use tungstenite::handshake::server::{ErrorResponse, Request, Response};
 use tungstenite::{HandshakeError, Message, WebSocket};
 
 /// Callback invoked for every OSC packet decoded from an incoming WS frame.
@@ -92,16 +99,18 @@ impl WsClients {
 /// Bind `bind` and serve WebSocket clients. Returns the bound address once
 /// the listener is up (fail-fast on port conflicts); accepting runs on a
 /// background thread for the lifetime of the process.
-pub fn serve(bind: &str, clients: WsClients, dispatch: WsDispatch) -> Result<SocketAddr> {
+pub fn serve(bind: &str, clients: WsClients, dispatch: WsDispatch, allowed_origins: Vec<String>) -> Result<SocketAddr> {
     let listener = TcpListener::bind(bind).with_context(|| format!("bind WS {bind}"))?;
     let local = listener.local_addr()?;
+    let allowed = Arc::new(allowed_origins);
     std::thread::spawn(move || {
         for stream in listener.incoming() {
             let Ok(stream) = stream else { continue };
             let clients = clients.clone();
             let dispatch = dispatch.clone();
+            let allowed = allowed.clone();
             std::thread::spawn(move || {
-                if let Err(e) = handle_conn(stream, clients, dispatch) {
+                if let Err(e) = handle_conn(stream, clients, dispatch, &allowed) {
                     eprintln!("WS conn: {e}");
                 }
             });
@@ -110,11 +119,36 @@ pub fn serve(bind: &str, clients: WsClients, dispatch: WsDispatch) -> Result<Soc
     Ok(local)
 }
 
-fn handle_conn(stream: TcpStream, clients: WsClients, dispatch: WsDispatch) -> Result<()> {
+/// True when a page from `origin` may connect (see the module docs).
+pub fn origin_allowed(origin: Option<&str>, allowed: &[String]) -> bool {
+    let Some(origin) = origin else { return true };
+    if allowed.iter().any(|a| a == "*" || a.eq_ignore_ascii_case(origin)) {
+        return true;
+    }
+    let host = origin.split_once("://").map(|(_, rest)| rest).unwrap_or("");
+    let host = if host.starts_with('[') {
+        host.split_once(']').map(|(h, _)| &h[1..]).unwrap_or("")
+    } else {
+        host.split(':').next().unwrap_or("")
+    };
+    matches!(host, "localhost" | "127.0.0.1" | "::1")
+}
+
+fn handle_conn(stream: TcpStream, clients: WsClients, dispatch: WsDispatch, allowed: &[String]) -> Result<()> {
     let peer = stream.peer_addr().context("WS peer_addr")?;
     stream.set_read_timeout(Some(HANDSHAKE_TIMEOUT))?;
     stream.set_write_timeout(Some(WRITE_TIMEOUT))?;
-    let mut ws: WebSocket<TcpStream> = match tungstenite::accept(stream) {
+    let check = |req: &Request, resp: Response| -> std::result::Result<Response, ErrorResponse> {
+        let origin = req.headers().get("origin").and_then(|v| v.to_str().ok());
+        if origin_allowed(origin, allowed) {
+            return Ok(resp);
+        }
+        eprintln!("WS refused origin {} from {peer} (allow it with --ws-allow-origin)", origin.unwrap_or("?"));
+        let mut deny = ErrorResponse::new(Some("origin not allowed".into()));
+        *deny.status_mut() = tungstenite::http::StatusCode::FORBIDDEN;
+        Err(deny)
+    };
+    let mut ws: WebSocket<TcpStream> = match tungstenite::accept_hdr(stream, check) {
         Ok(ws) => ws,
         Err(HandshakeError::Interrupted(_)) => bail!("WS handshake timeout from {peer}"),
         Err(HandshakeError::Failure(e)) => bail!("WS handshake with {peer}: {e}"),

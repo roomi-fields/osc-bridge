@@ -173,7 +173,7 @@ Omit the `midi_out` section entirely for pure-configuration devices
 ## Triggers — named drum sounds (OSC → MIDI note)
 
 Drum machines and samplers fire sounds from MIDI **notes**, not CCs. A
-`triggers` block names each sound, so `/tr8s/drum/kick` plays the kick
+`triggers` block names each sound, so `/drm1_mkiv/drum/kick` plays the kick
 without the caller knowing it is note 36 on channel 10.
 
 ```jsonc
@@ -281,7 +281,7 @@ instead of a MIDI port. Same JSON schema, two extra blocks at the top, and the
 
 `device.kind` is informational (filtering in the catalogue). `transport.kind`
 is what flips the runtime branch. When absent, the driver behaves as a
-classical MIDI driver — the 840 hardware drivers ship without any of these
+classical MIDI driver — the hardware drivers ship without any of these
 fields and stay unchanged.
 
 ### Command — OSC forward

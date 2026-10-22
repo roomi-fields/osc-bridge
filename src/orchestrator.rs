@@ -52,7 +52,7 @@ use std::sync::OnceLock;
 
 use crate::device::Device;
 use crate::runtime::{
-    bridge_docs_replies, bridge_status_replies, build_forward_msg, dispatch_osc_to_device,
+    answer_query, bridge_docs_replies, bridge_status_replies, build_forward_msg, dispatch_osc_to_device,
     dispatch_to_device, handle_midi_in, match_osc_path, parse_osc_tpl, run_osc_reply_loop,
     send_osc_to_target, DeviceDispatch, OscDeviceHandle, Part, SendOsc,
 };
@@ -206,6 +206,10 @@ pub struct OscConfig {
     /// prefix-routing as UDP.
     #[serde(default)]
     pub ws_bind: Option<String>,
+    /// Extra browser origins allowed on the WebSocket (`"*"` for any). Local
+    /// pages and non-browser clients are always accepted.
+    #[serde(default)]
+    pub ws_allow_origins: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -436,7 +440,7 @@ impl Orchestrator {
                     orch_dispatch(pkt, &devices, &prefix_map, &routes, &send, from);
                 })
             };
-            let local = crate::ws::serve(bind, wsc.clone(), dispatch_cb)?;
+            let local = crate::ws::serve(bind, wsc.clone(), dispatch_cb, cfg.osc.ws_allow_origins.clone())?;
             eprintln!("WS IN    {local}");
         }
 
@@ -511,7 +515,13 @@ impl Orchestrator {
                 Err(e) => { eprintln!("recv: {e}"); continue; }
             };
             match rosc::decoder::decode_udp(&buf[..n]) {
-                Ok((_, pkt)) => orch_dispatch(pkt, &devices, &prefix_map, &routes, &routed_send, from),
+                Ok((_, pkt)) => {
+                    if matches!(&pkt, OscPacket::Message(m) if m.addr.starts_with("/bridge/")) {
+                        let devs: Vec<Device> = devices.iter().map(|d| d.device().clone()).collect();
+                        answer_query(&sock, &pkt, from, &devs, &client_addrs);
+                    }
+                    orch_dispatch(pkt, &devices, &prefix_map, &routes, &routed_send, from)
+                }
                 Err(e) => eprintln!("OSC decode err: {e}"),
             }
         }

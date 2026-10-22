@@ -31,7 +31,7 @@ npm install -g @roomi-fields/osc-bridge      # downloads the prebuilt binary
 osc-bridge run --device devices/arturia/minilab3.json --out-port 4
 ```
 
-MCP client config and the five tools → [`docs/MCP.md`](docs/MCP.md). Full
+MCP client config and the eight tools → [`docs/MCP.md`](docs/MCP.md). Full
 quick-start with MIDI port discovery → [§ Install & quick start](#install--quick-start).
 
 ## Why a bridge?
@@ -78,7 +78,7 @@ Each synth is described by one JSON file. No Rust recompile required to add a de
 | 📘 **Vendor-doc derived** (from manufacturer programmer's references — bytes match the spec) | **3** | Novation Launch Control XL 3 · Polyend Synth · … |
 | 📡 **OSC-API (software targets)** — DAWs and live coding environments, declarative or passthrough | **7** | Bitwig Studio · Reaper · Sonic Pi · SuperCollider · Pure Data · TouchDesigner · VCV Rack |
 | 🎛️ **Electra-preset derived** (from the [Electra One community preset library](https://app.electra.one/) — covers SysEx + CC/NRPN, author's editorial choices) | **588** | Prophet 5/10 · Prophet 6 · OB-6 · OB-X8 · Matriarch · Hydrasynth · Virus TI · Digitone · … |
-| 📦 **MIDI Guide derived** (from [MIDI Guide](https://midi.guide) / [pencilresearch/midi](https://github.com/pencilresearch/midi), CC BY-SA 4.0 — CC/NRPN, plus named drum sounds on 15 drum machines) | **376** | Moog · Sequential · DSI · Roland · Yamaha · Waldorf · Behringer · Dreadbox · Elektron · … |
+| 📦 **MIDI Guide derived** (from [MIDI Guide](https://midi.guide) / [pencilresearch/midi](https://github.com/pencilresearch/midi), CC BY-SA 4.0 — CC/NRPN, plus 15 drum maps with named sounds) | **376** | Moog · Sequential · DSI · Roland · Yamaha · Waldorf · Behringer · Dreadbox · Elektron · … |
 | 🚧 **WIP / 📝 stub** | **2** | GR Mega (placeholder) |
 
 **Searching for your device?**
@@ -256,6 +256,13 @@ Under `orchestrate`, set `ws_bind = "127.0.0.1:7890"` in the `[osc]`
 section of `bridge.toml`. Disabled by default; keep it on `127.0.0.1`
 unless you really want LAN clients.
 
+Only pages served from this machine (`localhost`, `127.0.0.1`) and
+non-browser clients may connect: any other website open in your browser is
+refused (HTTP 403), so it cannot reach your synths. Allow a specific site
+with `--ws-allow-origin https://example.org` (repeatable; `null` for
+`file://` pages; `*` for any), or `ws_allow_origins = [...]` in
+`bridge.toml`.
+
 ### Device not showing up? (Windows 11 24H2+)
 
 Since the March 2026 cumulative update (KB5079473), Windows 11 ships
@@ -305,8 +312,10 @@ Ports take an index or a name fragment. `backup --request "F0 … F7" --out-port
 sends a dump request first; `restore --gap-ms` paces older devices.
 
 ### Drum machines: play sounds by name
-Drivers with a drum map expose each voice: `/tr_8s/drum/kick 110` fires the
-kick at velocity 110 on the right note and channel. See
+Drivers with a drum map expose each voice: `/drm1_mkiv/drum/kick 110` fires
+the Vermona DRM1 MKIV kick at velocity 110 (note 36, channel 10). When a
+device documents several trigger modes, the address carries the mode, e.g.
+`/tr_8s/drum/default_note_map/bass_drum`. See
 [`DEVICE_JSON_SCHEMA.md`](docs/DEVICE_JSON_SCHEMA.md#triggers--named-drum-sounds-osc--midi-note).
 
 ### Explore a device spec without connecting anything
@@ -416,6 +425,9 @@ clients = ["127.0.0.1:8888"]
 spec = "devices/arturia/minilab3.json"
 midi_out_port = 4
 midi_in_port = 0
+
+[[devices]]
+spec = "devices/ableton/live.third-party-osc.fw-12.2.json"   # AbletonOSC: no MIDI port needed
 
 [[routes]]
 from = "/minilab3/cc/74"

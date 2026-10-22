@@ -10,6 +10,9 @@ clients = ["127.0.0.1:8888"]
 # Optional WebSocket listener for browser clients. Binary WS frames carry
 # raw OSC packets; each connected client acts as an extra `clients` entry.
 # ws_bind = "127.0.0.1:7890"
+# Browser pages from other sites than localhost are refused; list the ones
+# you trust ("null" for file:// pages, "*" for any).
+# ws_allow_origins = ["https://example.org"]
 
 [[devices]]
 spec          = "devices/moog/subsequent-37.json"

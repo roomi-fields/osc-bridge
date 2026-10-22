@@ -71,7 +71,7 @@ fn ws_binary_frames_reach_dispatch_and_broadcasts_reach_client() {
         if let OscPacket::Message(m) = pkt { let _ = tx.send(m); }
     });
     let clients = WsClients::new();
-    let addr = ws::serve("127.0.0.1:0", clients.clone(), dispatch).unwrap();
+    let addr = ws::serve("127.0.0.1:0", clients.clone(), dispatch, vec![]).unwrap();
 
     let mut socket = connect(addr.port());
     wait_until("client registration", || clients.has_clients());
@@ -105,7 +105,7 @@ fn ws_binary_frames_reach_dispatch_and_broadcasts_reach_client() {
 fn ws_broadcast_fans_out_to_every_client_and_prunes_on_disconnect() {
     let dispatch: WsDispatch = Arc::new(|_pkt, _from| {});
     let clients = WsClients::new();
-    let addr = ws::serve("127.0.0.1:0", clients.clone(), dispatch).unwrap();
+    let addr = ws::serve("127.0.0.1:0", clients.clone(), dispatch, vec![]).unwrap();
 
     let mut a = connect(addr.port());
     let mut b = connect(addr.port());
@@ -190,6 +190,7 @@ fn ws_client_end_to_end_on_osc_passthrough_runtime() {
         osc_bind: format!("127.0.0.1:{bridge_in_port}"),
         osc_clients: vec![],
         ws_bind: Some(format!("127.0.0.1:{ws_port}")),
+        ws_allow_origins: vec![],
     };
     std::thread::spawn(move || { let _ = Runtime::run(opts); });
     std::thread::sleep(Duration::from_millis(300));
@@ -219,4 +220,39 @@ fn ws_client_end_to_end_on_osc_passthrough_runtime() {
     let m = decode(&next_binary(&mut socket));
     assert_eq!(m.addr, "/sonicpi/trigger/foo");
     assert!(matches!(m.args[0], OscType::Float(f) if (f - 1.5).abs() < 0.01));
+}
+
+// ---- Origin check: a site open in the browser must not reach the bridge ----
+
+#[test]
+fn origin_rule_accepts_local_pages_and_listed_sites_only() {
+    use osc_bridge::ws::origin_allowed;
+    assert!(origin_allowed(None, &[]), "scripts and native apps send no origin");
+    for local in ["http://localhost:5173", "https://127.0.0.1", "http://[::1]:8080"] {
+        assert!(origin_allowed(Some(local), &[]), "{local}");
+    }
+    assert!(!origin_allowed(Some("https://evil.example"), &[]));
+    assert!(!origin_allowed(Some("http://localhost.evil.example"), &[]));
+    assert!(!origin_allowed(Some("null"), &[]), "sandboxed or file:// pages need an explicit allow");
+    assert!(origin_allowed(Some("https://app.example"), &["https://app.example".into()]));
+    assert!(origin_allowed(Some("null"), &["null".into()]));
+    assert!(origin_allowed(Some("https://evil.example"), &["*".into()]));
+}
+
+fn connect_with_origin(port: u16, origin: &str) -> Result<(), tungstenite::Error> {
+    use tungstenite::client::IntoClientRequest;
+    let mut req = format!("ws://127.0.0.1:{port}").into_client_request().unwrap();
+    req.headers_mut().insert("Origin", origin.parse().unwrap());
+    tungstenite::connect(req).map(|_| ())
+}
+
+#[test]
+fn foreign_origin_handshake_is_refused_with_403() {
+    let dispatch: WsDispatch = Arc::new(|_pkt, _from| {});
+    let addr = ws::serve("127.0.0.1:0", WsClients::new(), dispatch, vec![]).unwrap();
+    match connect_with_origin(addr.port(), "https://evil.example") {
+        Err(tungstenite::Error::Http(resp)) => assert_eq!(resp.status(), 403),
+        other => panic!("expected a 403, got {other:?}"),
+    }
+    assert!(connect_with_origin(addr.port(), "http://localhost:5173").is_ok());
 }

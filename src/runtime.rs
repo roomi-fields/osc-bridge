@@ -27,6 +27,9 @@ pub struct RuntimeOptions {
     /// browser clients can connect; each one behaves like a dynamic
     /// `--osc-client` (binary WS frames = raw OSC packets, both directions).
     pub ws_bind: Option<String>,
+    /// Extra browser origins allowed on the WebSocket (`*` for any). Local
+    /// pages and non-browser clients are always accepted.
+    pub ws_allow_origins: Vec<String>,
 }
 
 pub struct Runtime;
@@ -34,7 +37,7 @@ pub struct Runtime;
 impl Runtime {
     pub fn run(opts: RuntimeOptions) -> Result<()> {
         // Software (OSC-out) drivers bypass midir entirely. Branch early so
-        // the rest of run() stays unchanged for the 840 hardware drivers.
+        // the rest of run() stays unchanged for hardware (MIDI) drivers.
         if opts.device.device.transport.as_ref().map(|t| t.kind.as_str())
             == Some("osc")
         {
@@ -142,7 +145,7 @@ impl Runtime {
                              &scripts, &tx, &send_osc, from);
                 })
             };
-            let local = crate::ws::serve(bind, wsc.clone(), dispatch_cb)?;
+            let local = crate::ws::serve(bind, wsc.clone(), dispatch_cb, opts.ws_allow_origins.clone())?;
             eprintln!("WS IN    {local}");
         }
 
@@ -157,7 +160,10 @@ impl Runtime {
                 Err(e) => { eprintln!("recv: {e}"); continue; }
             };
             match rosc::decoder::decode_udp(&buf[..n]) {
-                Ok((_, pkt)) => dispatch(pkt, &dev, &cmds, &params, &cc_params, &routes, &script_engine, &tx, &send_osc, from),
+                Ok((_, pkt)) => {
+                    answer_query(&sock, &pkt, from, std::slice::from_ref(dev.as_ref()), &opts.osc_clients);
+                    dispatch(pkt, &dev, &cmds, &params, &cc_params, &routes, &script_engine, &tx, &send_osc, from)
+                }
                 Err(e) => eprintln!("OSC decode err from {from}: {e}"),
             }
         }
@@ -197,6 +203,30 @@ pub fn bridge_docs_replies(devices: &[Device]) -> Vec<OscMessage> {
             ],
         })
     }).collect()
+}
+
+/// Replies to a `/bridge/status` or `/bridge/docs` query, None for any other
+/// address.
+pub fn bridge_query_replies(addr: &str, devices: &[Device]) -> Option<Vec<OscMessage>> {
+    match addr {
+        "/bridge/status" => Some(bridge_status_replies(devices)),
+        "/bridge/docs" => Some(bridge_docs_replies(devices)),
+        _ => None,
+    }
+}
+
+/// Send the answer to a `/bridge/*` query straight back to whoever asked —
+/// a one-off caller such as the MCP `get_status` tool is not an
+/// `--osc-client`. Configured clients already get it through the broadcast.
+pub fn answer_query(sock: &UdpSocket, pkt: &OscPacket, from: SocketAddr, devices: &[Device], clients: &[SocketAddr]) {
+    let OscPacket::Message(m) = pkt else { return };
+    if clients.contains(&from) { return; }
+    let Some(replies) = bridge_query_replies(&m.addr, devices) else { return };
+    for r in replies {
+        if let Ok(bytes) = rosc::encoder::encode(&OscPacket::Message(r)) {
+            let _ = sock.send_to(&bytes, from);
+        }
+    }
 }
 
 /// Test helper — given a Device and an OscMessage, return the MIDI bytes that
@@ -1274,7 +1304,7 @@ fn run_osc(opts: RuntimeOptions) -> Result<()> {
                 dispatch_osc(pkt, &dev, &cmds, &target_sock, target_addr, &send_osc, from);
             })
         };
-        let local = crate::ws::serve(bind, wsc.clone(), dispatch_cb)?;
+        let local = crate::ws::serve(bind, wsc.clone(), dispatch_cb, opts.ws_allow_origins.clone())?;
         eprintln!("WS IN    {local}");
     }
 
@@ -1289,7 +1319,10 @@ fn run_osc(opts: RuntimeOptions) -> Result<()> {
             Err(e) => { eprintln!("recv: {e}"); continue; }
         };
         match rosc::decoder::decode_udp(&buf[..n]) {
-            Ok((_, pkt)) => dispatch_osc(pkt, &dev, &cmds, &target_sock, target_addr, &send_osc, from),
+            Ok((_, pkt)) => {
+                answer_query(&sock, &pkt, from, std::slice::from_ref(dev.as_ref()), &opts.osc_clients);
+                dispatch_osc(pkt, &dev, &cmds, &target_sock, target_addr, &send_osc, from)
+            }
             Err(e) => eprintln!("OSC decode err from {from}: {e}"),
         }
     }
