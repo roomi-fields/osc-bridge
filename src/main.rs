@@ -143,9 +143,10 @@ enum Cmd {
         #[arg(long, requires = "http")]
         behind_proxy: bool,
         /// With --http: keep the server's records in this directory —
-        /// `usage.jsonl` (one line per tool call: anonymous id, tool,
-        /// catalogue arguments, no address) and `reports.jsonl` (usage
-        /// reports, replayed at startup). Without it they live in memory only.
+        /// `usage.jsonl` (one line per tool call: account, tool, catalogue
+        /// arguments, no address) and `ledger.jsonl` (accounts issued,
+        /// reports, decisions; replayed at startup). Without it they live
+        /// in memory only. `/admin/*` needs OSC_BRIDGE_ADMIN_TOKEN.
         #[arg(long, requires = "http")]
         data_dir: Option<PathBuf>,
     },

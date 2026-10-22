@@ -31,10 +31,10 @@ addressable by sound name — and its community data is now properly licensed.
   and reports the firmware version a driver's source documents.
 - `osc-bridge mcp --http <host:port>`: MCP over HTTP (endpoint `/mcp`,
   JSON responses), offering the catalogue tools plus `report_result` and
-  `get_trust`, 120 requests per minute per client. No account: each client gets an
-  anonymous id (`Mcp-Session-Id`, kept across sessions through a personal
-  endpoint `/u/<id>/mcp` or a `user_id` argument), and each tool call is
-  logged with that id only.
+  `get_trust`, 120 requests per minute per client. No sign-up: the server
+  issues each client an account (`Mcp-Session-Id`, kept across sessions
+  through a personal endpoint `/u/<id>/mcp` or a `user_id` argument) and
+  refuses ids it did not issue; each tool call is logged with that id only.
 - Usage reports and trust (`report_result`, `get_trust`, `GET /v1/trust`):
   works / fails / partial per driver or OSC address, with firmware and the
   device's Identity Reply. Trust is counted per firmware by concordance of
@@ -42,7 +42,13 @@ addressable by sound name — and its community data is now properly licensed.
   a failure on another firmware gives `firmware-dependent`, not a
   demotion; a contrary report without firmware gives `disputed` with
   `needs_firmware`, asking reporters to identify their device.
-  `--data-dir` keeps usage records and reports on disk.
+- Automatic rollback: a report that 3 other accounts or more contradict on
+  the same firmware is rolled back, its account becomes suspect and its
+  other and new reports wait for approval. `/admin/pending` and
+  `/admin/decide` (token `OSC_BRIDGE_ADMIN_TOKEN`) approve, reject, suspect
+  or clear.
+- `--data-dir` keeps usage records (`usage.jsonl`) and the ledger of
+  accounts, reports and decisions (`ledger.jsonl`) on disk.
 - `list_devices` returns each driver's `id` (its path in the catalogue) and,
   on the hosted server, its `usage_status`.
 - Hosted instance: https://mcp.osc-bridge.roomi-fields.com/mcp.
