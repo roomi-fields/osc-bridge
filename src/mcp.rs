@@ -287,7 +287,12 @@ struct UsageLog(Option<std::sync::Mutex<std::fs::File>>);
 impl UsageLog {
     fn open(path: Option<&Path>) -> Result<Self> {
         let Some(path) = path else { return Ok(Self(None)) };
-        let file = std::fs::OpenOptions::new().create(true).append(true).open(path)
+        let mut options = std::fs::OpenOptions::new();
+        options.create(true).append(true);
+        // Readable by the server's own user only.
+        #[cfg(unix)]
+        std::os::unix::fs::OpenOptionsExt::mode(&mut options, 0o600);
+        let file = options.open(path)
             .map_err(|e| anyhow::anyhow!("open usage log {}: {e}", path.display()))?;
         Ok(Self(Some(std::sync::Mutex::new(file))))
     }
