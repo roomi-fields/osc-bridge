@@ -72,7 +72,7 @@ def check(c: dict, binary: str) -> str | None:
         return f"not JSON: {e}"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(c["content"])
-    lint = sh(binary, "lint", "--device", path, check=False)
+    lint = sh(binary, "lint", path, check=False)
     if lint.returncode != 0:
         return "lint failed: " + (lint.stderr or lint.stdout).strip()[-800:]
     for script in ("scripts/regen_supported_devices.py", "scripts/build_device_index.py"):
