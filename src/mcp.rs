@@ -271,15 +271,9 @@ impl RateLimiter {
 fn client_key(req: &tiny_http::Request, behind_proxy: bool) -> String {
     let forwarded = behind_proxy.then(|| req.headers().iter()
         .find(|h| h.field.equiv("X-Forwarded-For"))
-        .and_then(|h| proxy_seen_address(h.value.as_str())))
+        .and_then(|h| crate::ws::proxy_seen_address(h.value.as_str())))
         .flatten();
     forwarded.unwrap_or_else(|| req.remote_addr().map(|a| a.ip().to_string()).unwrap_or_default())
-}
-
-/// The last address of an `X-Forwarded-For` list: the one our proxy appended.
-/// Earlier entries come from the client and may be forged.
-fn proxy_seen_address(header: &str) -> Option<String> {
-    header.rsplit(',').next().map(str::trim).filter(|a| !a.is_empty()).map(str::to_string)
 }
 
 /// Serve MCP over HTTP on `bind`: `POST /mcp` with one JSON-RPC message,
@@ -302,7 +296,8 @@ pub fn run_http(opts: McpOptions, bind: &str, behind_proxy: bool, data_dir: Opti
     };
     if let Some(rb) = relay_bind {
         let addr = crate::relay::serve(rb, hosted.relays.clone(),
-            std::sync::Arc::new(LedgerAccounts(hosted.ledger.clone())), RELAY_ORIGINS.iter().map(|o| o.to_string()).collect())?;
+            std::sync::Arc::new(LedgerAccounts(hosted.ledger.clone())),
+            RELAY_ORIGINS.iter().map(|o| o.to_string()).collect(), behind_proxy)?;
         eprintln!("relay doors on ws://{addr}");
     }
     if hosted.admin_token.is_none() {
@@ -1072,6 +1067,7 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, c
             let code = args.get("code").and_then(Value::as_str).ok_or("missing code (the pairing code shown by the door)")?;
             let session = relays.get(code).ok_or_else(|| format!(
                 "no relay with code '{code}': open https://osc-bridge.roomi-fields.com/connect/ and read the code it shows"))?;
+            session.claim(caller.user.ok_or("no account: initialize the session first")?)?;
             match name {
                 "relay_status" => Ok(relay_status(&session)),
                 "relay_detect" => relay_detect(index, &session, args, caller),
@@ -1952,7 +1948,7 @@ mod tests {
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
         let hosted = hosted_for_tests();
         let addr = crate::relay::serve("127.0.0.1:0", hosted.relays.clone(),
-            std::sync::Arc::new(LedgerAccounts(hosted.ledger.clone())), vec![]).unwrap();
+            std::sync::Arc::new(LedgerAccounts(hosted.ledger.clone())), vec![], false).unwrap();
         // A door that owns a minilogue: answers the Identity Request, and
         // turns the cutoff knob when asked to play anything.
         let (mut ws, _) = tungstenite::connect(format!("ws://{addr}/relay")).unwrap();
@@ -1965,6 +1961,7 @@ mod tests {
             while let Ok(m) = ws.read() {
                 let Message::Text(t) = m else { continue };
                 let v: Value = serde_json::from_str(&t).unwrap();
+                if v["type"] != "midi_out" { continue; }
                 let data: Vec<u8> = v["data"].as_array().unwrap().iter().map(|b| b.as_u64().unwrap() as u8).collect();
                 let reply = if data == crate::detect::IDENTITY_REQUEST {
                     vec![0xF0, 0x7E, 0x00, 0x06, 0x02, 0x42, 0x2C, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0xF7]
@@ -2006,6 +2003,10 @@ mod tests {
         assert_eq!(moved["cc"], 43, "{listening}");
         assert_eq!(moved["driver_addresses"][0], "/minilogue/filter/cutoff");
         assert_eq!(door.join().unwrap(), vec![vec![0xB0, 43, 45], vec![0x90, 0x3C, 0x64]]);
+        let other = hosted.ledger.issue_account().unwrap();
+        let body = json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "relay_status", "arguments": {"code": code}}});
+        let stolen: Value = serde_json::from_str(&exchange(&opts, &idx, &hosted, "POST", "/mcp", Some(&other), None, &body.to_string()).body.unwrap()).unwrap();
+        assert_eq!(stolen["result"]["isError"], true, "another agent cannot drive a paired door");
         let gone = call("relay_status", json!({"code": "ZZZZ-ZZZZ"}));
         assert_eq!(gone["isError"], true);
         assert!(split_midi(&[0xB0, 0x2B]).is_err());
@@ -2017,13 +2018,6 @@ mod tests {
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
         let err = call_tool("report_result", &json!({"device": "korg/minilogue", "outcome": "works"}), &test_opts(), &idx, Caller::default()).unwrap_err();
         assert!(err.contains("hosted"), "{err}");
-    }
-
-    #[test]
-    fn the_client_is_the_address_our_proxy_appended() {
-        assert_eq!(proxy_seen_address("6.6.6.6, 203.0.113.7").as_deref(), Some("203.0.113.7"));
-        assert_eq!(proxy_seen_address("203.0.113.7").as_deref(), Some("203.0.113.7"));
-        assert_eq!(proxy_seen_address(" "), None);
     }
 
     #[test]

@@ -32,6 +32,8 @@ of 963 drivers.
       <li>Tell the agent: <code id="ob-connect-say"></code> <button type="button" class="ob-connect-copy" data-copy="ob-connect-say">copy</button></li>
       <li>Keep this tab open while you play. Closing it ends the session.</li>
     </ol>
+    <p><button type="button" id="ob-connect-new" class="md-button">New code</button>
+      The first agent to use a code is the only one that can drive your devices; a new code ends the session and pairs again.</p>
     <p class="ob-connect-ports" id="ob-connect-ports"></p>
   </div>
   <div class="ob-connect-log" id="ob-connect-log" aria-live="polite"></div>

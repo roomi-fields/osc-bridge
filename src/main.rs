@@ -49,6 +49,17 @@ enum Cmd {
         #[arg(long, default_value_t = 50)]
         gap_ms: u64,
     },
+    /// Let an AI agent reach this machine's MIDI devices through the hosted
+    /// relay: prints a pairing code to give the agent, then carries MIDI
+    /// between the relay and every port until stopped.
+    Connect {
+        /// Relay WebSocket address.
+        #[arg(long, default_value = osc_bridge::connect::DEFAULT_RELAY)]
+        server: String,
+        /// Do not record the identity (model, firmware) of the devices seen.
+        #[arg(long)]
+        no_share: bool,
+    },
     /// Find connected MIDI devices and the catalogue drivers that match them.
     /// Sends the standard MIDI Identity Request unless --no-probe.
     Detect {
@@ -169,6 +180,7 @@ fn main() -> Result<()> {
             eprintln!("Sent {} SysEx message(s) from {}", msgs.len(), file.display());
             Ok(())
         }
+        Cmd::Connect { server, no_share } => osc_bridge::connect::run(&server, !no_share),
         Cmd::Detect { no_probe, devices_dir } => osc_bridge::mcp::print_detection(&devices_dir, !no_probe),
         Cmd::Inspect { device } => cmd_inspect(device),
         Cmd::Run { device, out_port, in_port, bind, osc_clients, ws_bind, ws_allow_origins } =>

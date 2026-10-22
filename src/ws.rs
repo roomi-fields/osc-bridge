@@ -119,6 +119,12 @@ pub fn serve(bind: &str, clients: WsClients, dispatch: WsDispatch, allowed_origi
     Ok(local)
 }
 
+/// The last address of an `X-Forwarded-For` list: the one our proxy appended.
+/// Earlier entries come from the client and may be forged.
+pub fn proxy_seen_address(header: &str) -> Option<String> {
+    header.rsplit(',').next().map(str::trim).filter(|a| !a.is_empty()).map(str::to_string)
+}
+
 /// True when a page from `origin` may connect (see the module docs).
 pub fn origin_allowed(origin: Option<&str>, allowed: &[String]) -> bool {
     let Some(origin) = origin else { return true };
@@ -194,5 +200,17 @@ fn conn_loop(
             | Err(tungstenite::Error::AlreadyClosed) => return Ok(()),
             Err(e) => bail!("WS read from {peer}: {e}"),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn the_client_is_the_address_our_proxy_appended() {
+        assert_eq!(proxy_seen_address("6.6.6.6, 203.0.113.7").as_deref(), Some("203.0.113.7"));
+        assert_eq!(proxy_seen_address("203.0.113.7").as_deref(), Some("203.0.113.7"));
+        assert_eq!(proxy_seen_address(" "), None);
     }
 }
