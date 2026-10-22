@@ -18,6 +18,7 @@ pub mod ws;
 pub mod detect;
 pub mod librarian;
 pub mod catalogue;
+pub mod reports;
 
 pub use device::Device;
 pub use runtime::{Runtime, RuntimeOptions};

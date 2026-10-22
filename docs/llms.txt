@@ -8,7 +8,9 @@ Catalogue: 963 devices from 212 vendors. Each driver states its source: ✅ test
 
 Commands: `osc-bridge detect` (find connected devices with the MIDI Identity Request and match drivers), `run` (bridge one device; OSC on 127.0.0.1:7777; `--osc-client` for MIDI-in → OSC; `--ws-bind` for browser clients over WebSocket), `orchestrate` (several devices, inter-device routes), `backup` / `restore` (SysEx preset librarian, .syx files), `inspect`, `lint`, `osc-send`, `osc-listen`, `mcp`.
 
-MCP tools: list_devices (filters: query, vendor, kind, limit), get_device_docs, list_routes, send, get_status, detect_hardware, backup_presets, restore_presets (refuses without confirm_overwrite: true).
+Hosted MCP server (no account): https://mcp.osc-bridge.roomi-fields.com/mcp — catalogue tools plus report_result (works / fails / partial, per firmware, with the device's Identity Reply) and get_trust (usage-verified, firmware-dependent, disputed…); every driver's trust at https://mcp.osc-bridge.roomi-fields.com/v1/trust.
+
+MCP tools on your machine: list_devices (filters: query, vendor, kind, limit), get_device_docs, list_routes, send, get_status, detect_hardware, backup_presets, restore_presets (refuses without confirm_overwrite: true).
 
 ## Documentation
 
