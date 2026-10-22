@@ -237,11 +237,11 @@ pub fn run_http(opts: McpOptions, bind: &str, behind_proxy: bool) -> Result<()> 
             let (server, opts, index, limiter) = &*shared;
             for mut req in server.incoming_requests() {
                 if !limiter.allow(&client_key(&req, behind_proxy)) {
-                    respond(req, 429, Some("rate limit: 120 requests per minute\n".into()));
+                    respond(req, HttpReply::new(429, Some("rate limit: 120 requests per minute\n".into())));
                     continue;
                 }
-                let (status, body) = http_exchange(&read_request(&mut req), opts, index);
-                respond(req, status, body);
+                let reply = http_exchange(&read_request(&mut req), opts, index);
+                respond(req, reply);
             }
         })
     }).collect();
@@ -254,54 +254,151 @@ struct HttpRequest {
     method: String,
     path: String,
     body: Result<String, String>,
+    /// The anonymous user id the client presents: from a personal URL
+    /// (`/u/<id>/mcp`) or the `Mcp-Session-Id` header (see `user_id`).
+    user: Option<String>,
+}
+
+/// What the server sends back. `session` is the id to return in the
+/// `Mcp-Session-Id` header, set when the server hands one out.
+struct HttpReply {
+    status: u16,
+    body: Option<String>,
+    session: Option<String>,
+}
+
+impl HttpReply {
+    fn new(status: u16, body: Option<String>) -> Self {
+        Self { status, body, session: None }
+    }
+}
+
+/// A fresh anonymous user id: 128 random bits, hex.
+fn new_user_id() -> String {
+    let mut bytes = [0u8; 16];
+    getrandom::fill(&mut bytes).expect("system random source");
+    bytes.iter().map(|b| format!("{b:02x}")).collect()
+}
+
+fn is_user_id(s: &str) -> bool {
+    s.len() == 32 && s.bytes().all(|b| b.is_ascii_hexdigit())
+}
+
+/// Anonymous users, no account. Every client that initializes gets an id
+/// back in `Mcp-Session-Id`, which MCP clients repeat on each request of the
+/// session. To stay the same user across sessions, a client uses a personal
+/// endpoint `/u/<id>/mcp` (a fresh one from `GET /u/new`); that id then
+/// serves as the session id too. Returns the path without the id prefix,
+/// and the id when one was presented and well formed.
+fn user_id(path: &str, session_header: Option<&str>) -> (String, Option<String>) {
+    if let Some(rest) = path.strip_prefix("/u/") {
+        if let Some((id, tail)) = rest.split_once('/') {
+            if is_user_id(id) {
+                return (format!("/{tail}"), Some(id.to_ascii_lowercase()));
+            }
+        }
+    }
+    (path.to_string(), session_header.filter(|h| is_user_id(h)).map(str::to_ascii_lowercase))
 }
 
 fn read_request(req: &mut tiny_http::Request) -> HttpRequest {
     use std::io::Read;
     let method = req.method().as_str().to_ascii_uppercase();
-    let path = req.url().split('?').next().unwrap_or("").to_string();
+    let session = req.headers().iter().find(|h| h.field.equiv("Mcp-Session-Id"))
+        .map(|h| h.value.as_str().trim().to_string());
+    let (path, user) = user_id(req.url().split('?').next().unwrap_or(""), session.as_deref());
     let mut text = String::new();
     let body = match req.as_reader().take(MAX_HTTP_BODY as u64 + 1).read_to_string(&mut text) {
         Ok(n) if n > MAX_HTTP_BODY => Err("request body too large".into()),
         Ok(_) => Ok(text),
         Err(e) => Err(format!("read body: {e}")),
     };
-    HttpRequest { method, path, body }
+    HttpRequest { method, path, body, user }
 }
 
-/// Status code and body (None = empty) for one HTTP request.
-fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex) -> (u16, Option<String>) {
+/// The reply to one HTTP request.
+fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex) -> HttpReply {
     let rpc_error = |code: i64, msg: String| json!({
         "jsonrpc": "2.0", "id": null, "error": { "code": code, "message": msg },
     }).to_string();
     match (req.method.as_str(), req.path.as_str()) {
-        ("OPTIONS", _) => (204, None),
-        ("GET", "/") => (200, Some(format!(
-            "osc-bridge {SERVER_VERSION} MCP server (catalogue tools: {}). POST JSON-RPC to /mcp. \
+        ("OPTIONS", _) => HttpReply::new(204, None),
+        ("GET", "/") => HttpReply::new(200, Some(format!(
+            "osc-bridge {SERVER_VERSION} MCP server (catalogue tools: {}). POST JSON-RPC to /mcp; \
+             a personal endpoint that keeps your anonymous id: GET /u/new. \
              Docs: https://osc-bridge.roomi-fields.com/api/\n", CATALOGUE_TOOLS.join(", ")))),
-        ("GET", "/healthz") => (200, Some("ok\n".into())),
+        ("GET", "/healthz") => HttpReply::new(200, Some("ok\n".into())),
+        ("GET", "/u/new") => {
+            let id = new_user_id();
+            HttpReply::new(200, Some(json!({ "user_id": id, "mcp_path": format!("/u/{id}/mcp") }).to_string()))
+        }
         // No server-initiated event stream (optional in the spec).
-        ("GET", "/mcp") => (405, None),
+        ("GET", "/mcp") => HttpReply::new(405, None),
         ("POST", "/mcp") => {
             let body = match &req.body {
                 Ok(b) => b,
-                Err(e) => return (413, Some(rpc_error(-32600, e.clone()))),
+                Err(e) => return HttpReply::new(413, Some(rpc_error(-32600, e.clone()))),
             };
-            match serde_json::from_str::<Value>(body) {
-                Ok(msg) if msg.is_object() => match handle_request(&msg, opts, index) {
-                    Some(resp) => (200, Some(resp.to_string())),
-                    None => (202, None),
-                },
-                Ok(_) => (400, Some(rpc_error(-32600, "expected one JSON-RPC object".into()))),
-                Err(e) => (400, Some(rpc_error(-32700, format!("parse error: {e}")))),
+            let msg = match serde_json::from_str::<Value>(body) {
+                Ok(msg) if msg.is_object() => msg,
+                Ok(_) => return HttpReply::new(400, Some(rpc_error(-32600, "expected one JSON-RPC object".into()))),
+                Err(e) => return HttpReply::new(400, Some(rpc_error(-32700, format!("parse error: {e}")))),
+            };
+            let method = msg.get("method").and_then(Value::as_str).unwrap_or("");
+            let from_args = msg.pointer("/params/arguments/user_id").and_then(Value::as_str)
+                .filter(|id| is_user_id(id)).map(str::to_ascii_lowercase);
+            let user = match (req.user.clone().or(from_args), method) {
+                (Some(id), _) => Some(id),
+                (None, "initialize") => Some(new_user_id()),
+                (None, _) => None,
+            };
+            if method == "tools/call" {
+                log_usage(user.as_deref(), &msg);
+            }
+            let session = if method == "initialize" { user } else { None };
+            match handle_request(&msg, opts, index) {
+                Some(mut resp) => {
+                    if let (Some(id), Some(result)) = (&session, resp.get_mut("result")) {
+                        result["instructions"] = json!(keep_id_instructions(id));
+                    }
+                    HttpReply { status: 200, body: Some(resp.to_string()), session }
+                }
+                None => HttpReply { status: 202, body: None, session },
             }
         }
-        _ => (404, None),
+        _ => HttpReply::new(404, None),
     }
 }
 
-fn respond(req: tiny_http::Request, status: u16, body: Option<String>) {
+/// Sent with `initialize`: the client's anonymous id and how to keep it.
+/// Nothing guarantees a client keeps it; this gives the ones that can (a
+/// saved server URL, an agent with memory) the means to.
+fn keep_id_instructions(id: &str) -> String {
+    format!("osc-bridge catalogue of MIDI implementations (CC, NRPN, SysEx, drum maps) for about \
+        980 synths, drum machines and DAWs. Start with list_devices (query: 'korg minilogue'), then \
+        list_routes with the slug. Your anonymous id is {id} (no account, no personal data). \
+        To stay the same user in later sessions, connect to the personal endpoint /u/{id}/mcp \
+        on this server, or pass user_id: \"{id}\" in tool calls; keep it if you can store it.")
+}
+
+/// One JSON line per tool call on stderr: when, which anonymous user, which
+/// tool and the catalogue arguments. No address, no other request data.
+fn log_usage(user: Option<&str>, msg: &Value) {
+    let params = msg.get("params");
+    let args = params.and_then(|p| p.get("arguments"));
+    let pick = |k: &str| args.and_then(|a| a.get(k)).cloned().unwrap_or(Value::Null);
+    eprintln!("{}", json!({
+        "event": "tool_call",
+        "ts": chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
+        "user": user,
+        "tool": params.and_then(|p| p.get("name")),
+        "query": pick("query"), "vendor": pick("vendor"), "kind": pick("kind"), "slug": pick("slug"),
+    }));
+}
+
+fn respond(req: tiny_http::Request, reply: HttpReply) {
     use tiny_http::{Header, Response};
+    let HttpReply { status, body, session } = reply;
     let header = |k: &str, v: &str| Header::from_bytes(k.as_bytes(), v.as_bytes()).expect("static header");
     let kind = match &body {
         Some(b) if b.starts_with('{') => "application/json",
@@ -312,7 +409,12 @@ fn respond(req: tiny_http::Request, status: u16, body: Option<String>) {
         .with_header(header("Content-Type", kind))
         .with_header(header("Access-Control-Allow-Origin", "*"))
         .with_header(header("Access-Control-Allow-Methods", "POST, GET, OPTIONS"))
-        .with_header(header("Access-Control-Allow-Headers", "content-type, mcp-protocol-version, mcp-session-id"));
+        .with_header(header("Access-Control-Allow-Headers", "content-type, mcp-protocol-version, mcp-session-id"))
+        .with_header(header("Access-Control-Expose-Headers", "mcp-session-id"));
+    let resp = match session {
+        Some(id) => resp.with_header(header("Mcp-Session-Id", &id)),
+        None => resp,
+    };
     let _ = req.respond(resp);
 }
 
@@ -373,6 +475,14 @@ fn tools_list(opts: &McpOptions) -> Value {
     if let Some(tools) = all["tools"].as_array_mut() {
         let offered = tool_names(opts);
         tools.retain(|t| t["name"].as_str().is_some_and(|n| offered.contains(&n)));
+        if opts.catalogue_only {
+            for t in tools.iter_mut() {
+                t["inputSchema"]["properties"]["user_id"] = json!({
+                    "type": "string",
+                    "description": "Your anonymous osc-bridge id, if you kept it from an earlier session (see the server instructions). Optional.",
+                });
+            }
+        }
     }
     all
 }
@@ -1140,20 +1250,49 @@ mod tests {
         let opts = McpOptions { catalogue_only: true, ..test_opts() };
         let idx = empty_index();
         let req = |method: &str, path: &str, body: &str| HttpRequest {
-            method: method.into(), path: path.into(), body: Ok(body.into()),
+            method: method.into(), path: path.into(), body: Ok(body.into()), user: None,
         };
-        let (status, body) = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":7,"method":"tools/list"}"#), &opts, &idx);
-        assert_eq!(status, 200);
-        let v: Value = serde_json::from_str(&body.unwrap()).unwrap();
+        let r = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":7,"method":"tools/list"}"#), &opts, &idx);
+        assert_eq!(r.status, 200);
+        let v: Value = serde_json::from_str(&r.body.unwrap()).unwrap();
         assert_eq!(v["id"], json!(7));
         assert_eq!(v["result"]["tools"].as_array().unwrap().len(), CATALOGUE_TOOLS.len());
-        let (status, body) = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#), &opts, &idx);
-        assert_eq!((status, body), (202, None));
-        assert_eq!(http_exchange(&req("POST", "/mcp", "not json"), &opts, &idx).0, 400);
-        assert_eq!(http_exchange(&req("GET", "/mcp", ""), &opts, &idx).0, 405);
-        assert_eq!(http_exchange(&req("GET", "/", ""), &opts, &idx).0, 200);
-        assert_eq!(http_exchange(&req("GET", "/healthz", ""), &opts, &idx).0, 200);
-        assert_eq!(http_exchange(&req("POST", "/other", ""), &opts, &idx).0, 404);
+        let r = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#), &opts, &idx);
+        assert_eq!((r.status, r.body), (202, None));
+        let status = |m: &str, p: &str, b: &str| http_exchange(&req(m, p, b), &opts, &idx).status;
+        assert_eq!(status("POST", "/mcp", "not json"), 400);
+        assert_eq!(status("GET", "/mcp", ""), 405);
+        assert_eq!(status("GET", "/", ""), 200);
+        assert_eq!(status("GET", "/healthz", ""), 200);
+        assert_eq!(status("POST", "/other", ""), 404);
+    }
+
+    #[test]
+    fn anonymous_users_get_an_id_and_keep_it_through_a_personal_path() {
+        let opts = McpOptions { catalogue_only: true, ..test_opts() };
+        let idx = empty_index();
+        let init = r#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}"#;
+        let post = |path: &str, header: Option<&str>| {
+            let (path, user) = user_id(path, header);
+            http_exchange(&HttpRequest { method: "POST".into(), path, body: Ok(init.into()), user }, &opts, &idx)
+        };
+        let fresh = post("/mcp", None).session.expect("initialize hands out an id");
+        assert!(is_user_id(&fresh));
+        assert_ne!(post("/mcp", None).session.unwrap(), fresh, "ids are random");
+        let mine = "0123456789abcdef0123456789ABCDEF";
+        assert_eq!(post(&format!("/u/{mine}/mcp"), None).session.unwrap(), mine.to_lowercase());
+        assert_eq!(post("/mcp", Some(&fresh)).session.unwrap(), fresh);
+        let body: Value = serde_json::from_str(&post("/mcp", None).body.unwrap()).unwrap();
+        assert!(body["result"]["instructions"].as_str().unwrap().contains("/u/"));
+        let with_arg = format!(r#"{{"jsonrpc":"2.0","id":1,"method":"initialize","params":{{"arguments":{{"user_id":"{fresh}"}}}}}}"#);
+        let r = http_exchange(&HttpRequest { method: "POST".into(), path: "/mcp".into(), body: Ok(with_arg), user: None }, &opts, &idx);
+        assert_eq!(r.session.unwrap(), fresh);
+        let schema = &tools_list(&opts)["tools"][0]["inputSchema"]["properties"]["user_id"];
+        assert_eq!(schema["type"], "string");
+        assert_eq!(user_id("/u/not-an-id/mcp", None), ("/u/not-an-id/mcp".to_string(), None));
+        let new = http_exchange(&HttpRequest { method: "GET".into(), path: "/u/new".into(), body: Ok(String::new()), user: None }, &opts, &idx);
+        let v: Value = serde_json::from_str(&new.body.unwrap()).unwrap();
+        assert!(is_user_id(v["user_id"].as_str().unwrap()));
     }
 
     #[test]

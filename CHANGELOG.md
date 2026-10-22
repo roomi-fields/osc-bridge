@@ -30,7 +30,12 @@ addressable by sound name — and its community data is now properly licensed.
 - `list_devices` (MCP) takes optional `query`, `vendor`, `kind` and `limit`,
   and reports the firmware version a driver's source documents.
 - `osc-bridge mcp --http <host:port>`: MCP over HTTP (endpoint `/mcp`,
-  JSON responses), offering only the read-only catalogue tools.
+  JSON responses), offering only the read-only catalogue tools, 120
+  requests per minute per client. No account: each client gets an
+  anonymous id (`Mcp-Session-Id`, kept across sessions through a personal
+  endpoint `/u/<id>/mcp` or a `user_id` argument), and each tool call is
+  logged with that id only.
+- Hosted instance: https://mcp.osc-bridge.roomi-fields.com/mcp.
 - The site publishes a static JSON API: `/api/v1/index.json` (every driver
   with source, firmware and coverage) and each driver file under
   `/api/v1/devices/`.
