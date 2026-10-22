@@ -180,22 +180,66 @@ const MAX_HTTP_BODY: usize = 64 * 1024;
 /// in-memory index and of one driver file.
 const HTTP_WORKERS: usize = 4;
 
+/// Requests one client may make per `RATE_WINDOW` before getting 429.
+const RATE_LIMIT: u32 = 120;
+const RATE_WINDOW: Duration = Duration::from_secs(60);
+
+/// Fixed-window request counter per client. The map is pruned of expired
+/// windows whenever it grows past a few thousand clients.
+#[derive(Default)]
+struct RateLimiter {
+    windows: std::sync::Mutex<HashMap<String, (std::time::Instant, u32)>>,
+}
+
+impl RateLimiter {
+    fn allow(&self, client: &str) -> bool {
+        let now = std::time::Instant::now();
+        let Ok(mut map) = self.windows.lock() else { return true };
+        if map.len() > 4096 {
+            map.retain(|_, (start, _)| now.duration_since(*start) < RATE_WINDOW);
+        }
+        let slot = map.entry(client.to_string()).or_insert((now, 0));
+        if now.duration_since(slot.0) >= RATE_WINDOW {
+            *slot = (now, 0);
+        }
+        slot.1 += 1;
+        slot.1 <= RATE_LIMIT
+    }
+}
+
+/// Who is asking: the TCP peer, or behind a reverse proxy the first address
+/// of `X-Forwarded-For` (the peer is then the proxy itself).
+fn client_key(req: &tiny_http::Request, behind_proxy: bool) -> String {
+    let forwarded = behind_proxy.then(|| req.headers().iter()
+        .find(|h| h.field.equiv("X-Forwarded-For"))
+        .and_then(|h| h.value.as_str().split(',').next().map(|v| v.trim().to_string())))
+        .flatten();
+    forwarded.unwrap_or_else(|| req.remote_addr().map(|a| a.ip().to_string()).unwrap_or_default())
+}
+
 /// Serve MCP over HTTP on `bind`: `POST /mcp` with one JSON-RPC message,
 /// answered as `application/json` (202 with no body for a notification).
 /// The catalogue is public data and no tool has an effect, so any origin
-/// may call it (CORS `*`). `GET /` returns a one-line description for people
-/// who open the URL in a browser.
-pub fn run_http(opts: McpOptions, bind: &str) -> Result<()> {
+/// may call it (CORS `*`); each client is held to `RATE_LIMIT` requests per
+/// minute. `GET /` returns a one-line description for people who open the
+/// URL in a browser, `GET /healthz` answers `ok`. With `behind_proxy`, the
+/// client is identified by `X-Forwarded-For` — only set it when a proxy that
+/// overwrites that header is the sole way in.
+pub fn run_http(opts: McpOptions, bind: &str, behind_proxy: bool) -> Result<()> {
     let opts = McpOptions { catalogue_only: true, ..opts };
     let index = build_index(&opts);
     let server = tiny_http::Server::http(bind).map_err(|e| anyhow::anyhow!("bind HTTP {bind}: {e}"))?;
     eprintln!("MCP over HTTP on http://{}/mcp (catalogue tools only)", server.server_addr());
-    let shared = std::sync::Arc::new((server, opts, index));
+    let shared = std::sync::Arc::new((server, opts, index, RateLimiter::default()));
     let workers: Vec<_> = (0..HTTP_WORKERS).map(|_| {
         let shared = shared.clone();
         std::thread::spawn(move || {
-            let (server, opts, index) = &*shared;
+            let (server, opts, index, limiter) = &*shared;
             for mut req in server.incoming_requests() {
+                if !limiter.allow(&client_key(&req, behind_proxy)) {
+                    respond(req, 429, Some("rate limit: 120 requests per minute\n".into()));
+                    continue;
+                }
                 let (status, body) = http_exchange(&read_request(&mut req), opts, index);
                 respond(req, status, body);
             }
@@ -235,6 +279,7 @@ fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex) -> (
         ("GET", "/") => (200, Some(format!(
             "osc-bridge {SERVER_VERSION} MCP server (catalogue tools: {}). POST JSON-RPC to /mcp. \
              Docs: https://osc-bridge.roomi-fields.com/api/\n", CATALOGUE_TOOLS.join(", ")))),
+        ("GET", "/healthz") => (200, Some("ok\n".into())),
         // No server-initiated event stream (optional in the spec).
         ("GET", "/mcp") => (405, None),
         ("POST", "/mcp") => {
@@ -1107,7 +1152,16 @@ mod tests {
         assert_eq!(http_exchange(&req("POST", "/mcp", "not json"), &opts, &idx).0, 400);
         assert_eq!(http_exchange(&req("GET", "/mcp", ""), &opts, &idx).0, 405);
         assert_eq!(http_exchange(&req("GET", "/", ""), &opts, &idx).0, 200);
+        assert_eq!(http_exchange(&req("GET", "/healthz", ""), &opts, &idx).0, 200);
         assert_eq!(http_exchange(&req("POST", "/other", ""), &opts, &idx).0, 404);
+    }
+
+    #[test]
+    fn rate_limiter_caps_each_client_separately() {
+        let limiter = RateLimiter::default();
+        assert!((0..RATE_LIMIT).all(|_| limiter.allow("a")));
+        assert!(!limiter.allow("a"));
+        assert!(limiter.allow("b"));
     }
 
     #[test]
