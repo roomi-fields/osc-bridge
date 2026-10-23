@@ -32,7 +32,7 @@ and that the description/keywords landed correctly.
 
 | Directory | Status | Notes |
 |---|---|---|
-| Glama.ai | ⚠️ | listed, no quality score ("cannot be deployed"), which blocks punkpeye. A Glama-hosted copy is not pursued: agents should reach the hosted server itself (2026-10-23; `Dockerfile` and `glama.json` removed) |
+| Glama.ai | ⚠️ | listed, no quality score ("cannot be deployed"), which blocks punkpeye. A Glama-hosted copy is not pursued: agents should reach the hosted server itself. `glama.json` (maintainers only, 2026-10-23) claims the listing to keep its text right; if their build stalls, clear the Python version they infer |
 | PulseMCP | 🔄 | auto-indexed from the registry |
 | mcpservers.org | 🔄 | auto-indexed |
 | LobeHub | 🔄 | auto-indexed |
