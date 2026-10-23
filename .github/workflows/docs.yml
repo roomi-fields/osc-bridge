@@ -1,15 +1,12 @@
-name: Deploy site to GitHub Pages
+# osc-bridge's site and its device catalogue live at
+# https://synthhub.roomi-fields.com/. GitHub Pages only publishes a page that
+# points there.
+name: Pages pointer
 
 on:
   push:
     branches: [main]
     paths:
-      - 'docs/**'
-      - 'devices/**'
-      - 'mkdocs.yml'
-      - 'scripts/mkdocs_hooks.py'
-      - 'CHANGELOG.md'
-      - 'Cargo.toml'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
 
@@ -26,23 +23,26 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0   # page dates come from git history
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install MkDocs Material
-        run: pip install "mkdocs-material>=9.5"
-
-      - name: Build site (device pages generated from devices/*.json)
-        env:
-          DISABLE_MKDOCS_2_WARNING: "true"
-        run: mkdocs build --strict
+      - name: Write the page
+        run: |
+          mkdir -p site
+          cat > site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>osc-bridge</title>
+            <link rel="canonical" href="https://synthhub.roomi-fields.com/">
+            <meta http-equiv="refresh" content="0; url=https://synthhub.roomi-fields.com/">
+          </head>
+          <body>
+            <p>osc-bridge's documentation and its device catalogue are at
+              <a href="https://synthhub.roomi-fields.com/">synthhub.roomi-fields.com</a>.</p>
+          </body>
+          </html>
+          HTML
+          cp site/index.html site/404.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

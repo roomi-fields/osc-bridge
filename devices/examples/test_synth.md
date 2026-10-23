@@ -1,7 +1,7 @@
 # Test Synth (virtual)
 
 Not a real instrument: the synth that `osc-bridge connect --test-synth` and
-the [connect page](https://osc-bridge.roomi-fields.com/connect/) can simulate,
+the [connect page](https://synthhub.roomi-fields.com/connect/) can simulate,
 so the whole chain — relay, detection, sending, listening, reports, learned
 mappings, contributions — can be tested without hardware.
 
