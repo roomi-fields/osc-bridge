@@ -6,6 +6,9 @@ on:
   pull_request:
   release:
     types: [published]
+  # Re-publishes the npm wrapper of an existing release (binaries already
+  # attached), e.g. when the release's own publish step failed.
+  workflow_dispatch:
 
 jobs:
   test:
@@ -13,7 +16,7 @@ jobs:
     # Only run the test suite on push / PR. Releases reuse whatever main-branch
     # CI previously validated; we don't want a retroactively-tagged historical
     # commit (with a since-fixed bug) to fail CI here.
-    if: github.event_name != 'release'
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -94,15 +97,21 @@ jobs:
     name: Publish npm wrapper
     # Runs after every binary leg of `release` so the prebuilt binaries are
     # attached before the wrapper goes live — the npm postinstall downloads
-    # them from the release. Needs the NPM_TOKEN repo secret.
-    if: github.event_name == 'release'
+    # them from the release. Published by npm trusted publishing (this
+    # repository + ci.yml are the package's trusted publisher): no token.
+    if: >-
+      !cancelled() && needs.release.result != 'failure' &&
+      (github.event_name == 'release' || github.event_name == 'workflow_dispatch')
     needs: release
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
       - name: Version mirrors are in sync with Cargo.toml
         run: python3 scripts/sync_version.py --check
@@ -113,5 +122,3 @@ jobs:
       - name: Publish @roomi-fields/osc-bridge
         working-directory: npm
         run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
