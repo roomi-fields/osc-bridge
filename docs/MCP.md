@@ -18,7 +18,21 @@ The MCP server is one consumption mode of osc-bridge — the same bridge is also
 usable from OSC clients, the CLI, and the multi-device orchestrator. See the
 [main README](../README.md) for the whole picture.
 
-## Install
+## Hosted, nothing to install
+
+The SynthHub server runs this MCP server for you, with the up-to-date
+catalogue, trust from real use, and a relay to the hardware on your machine:
+
+- **Claude** (web, desktop): Settings → Connectors → *Add custom connector* →
+  `https://mcp.osc-bridge.roomi-fields.com/mcp`
+- **Claude Code**: `claude mcp add --transport http synthhub https://mcp.osc-bridge.roomi-fields.com/mcp`
+- **Cursor and other clients**: `{"mcpServers": {"synthhub": {"url": "https://mcp.osc-bridge.roomi-fields.com/mcp"}}}`
+
+Your synth joins through the relay page,
+[synthhub.roomi-fields.com/connect](https://synthhub.roomi-fields.com/connect/).
+Tools and what the server records: [API for agents](https://synthhub.roomi-fields.com/api/).
+
+## On your machine
 
 No global install needed — the MCP server runs straight from npm:
 
@@ -28,8 +42,6 @@ npx -y @roomi-fields/osc-bridge mcp
 
 `npm install` downloads the prebuilt native binary for your platform
 (Linux x64, Windows x64, macOS arm64 / x64) from the matching GitHub release.
-
-## Configure your MCP client
 
 ### Claude Desktop
 
