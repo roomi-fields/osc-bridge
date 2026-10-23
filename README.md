@@ -474,7 +474,8 @@ page, [synthhub.roomi-fields.com/connect](https://synthhub.roomi-fields.com/conn
 
 Eight local tools — `list_devices`, `get_device_docs`, `list_routes`, `send`,
 `get_status`, `detect_hardware`, `backup_presets`, `restore_presets` — plus
-six run on the server (reports, trust, contributions). Then in conversation:
+the server's: reports, trust, contributions and shared presets (find, load,
+share). Then in conversation:
 *"What can the MatrixBrute do? Sweep its filter cutoff."* — the model calls
 `list_routes("matrixbrute")`, then `send`. No glue code.
 

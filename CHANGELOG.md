@@ -11,6 +11,17 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Added — shared presets
+- Tools forwarded to the SynthHub server: `share_preset` (a sound the user
+  made, under CC BY-SA 4.0: settings by driver address and/or patch data as
+  hex or a `.syx` file), `find_presets`, `get_preset`, `report_preset`,
+  `withdraw_preset`; and `load_preset`, which fetches a shared preset and
+  plays it into a local device (patch data only with `confirm_overwrite`).
+  A private device's sounds are refused before anything is sent.
+- The test synth keeps one sound: it dumps it on `F0 7D 01 10 F7` and takes
+  a patch (`F0 7D 01 20` + five values), in `osc-bridge connect
+  --test-synth` and on the connect page.
+
 ## [0.15.0] — 2026-10-23
 
 ### Changed — the site moves to synthhub.roomi-fields.com
