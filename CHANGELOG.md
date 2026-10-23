@@ -69,6 +69,10 @@ addressable by sound name — and its community data is now properly licensed.
   `scripts/apply_contributions.py`) checks each one (parse, lint, catalogue
   regenerated, library tests, nothing else touched) and merges it as a pull
   request. New source tier `agent-contributed` (🤖), ranked last.
+- Test Synth (`devices/examples/test_synth.json`, tier `test-fixture` 🧪): a
+  virtual synth simulated by `osc-bridge connect --test-synth` and the
+  connect page's checkbox — answers the Identity Request as manufacturer
+  7D, echoes what it receives — to test the whole chain without hardware.
 - Hosted instance: https://mcp.osc-bridge.roomi-fields.com/mcp.
 - The site publishes a static JSON API: `/api/v1/index.json` (every driver
   with source, firmware and coverage) and each driver file under

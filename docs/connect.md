@@ -22,6 +22,8 @@ of 963 drivers.
     <button type="button" id="ob-connect-go" class="md-button md-button--primary">Connect my MIDI devices</button>
     <label class="ob-connect-share"><input type="checkbox" id="ob-connect-share" checked>
       Share the identity of my devices (model, firmware) to improve the catalogue</label>
+    <label class="ob-connect-share"><input type="checkbox" id="ob-connect-test">
+      Add a virtual test synth (no hardware needed)</label>
   </div>
   <p class="ob-connect-status" id="ob-connect-status">Not connected. Works in Chrome, Edge, Opera and Firefox; not in Safari.</p>
   <div class="ob-connect-paired" id="ob-connect-paired" hidden>
@@ -49,6 +51,16 @@ of 963 drivers.
 - `relay_send` sets a parameter or plays a note by its name in the driver.
 - `relay_listen` hears what your device sends: turn a knob and the agent sees
   which parameter it is.
+
+## Trying it without a synth
+
+Tick *Add a virtual test synth*: the page then offers a simulated device,
+[Test Synth](devices/examples/test_synth.md), alongside your real ones. It
+answers `relay_detect` like a real synth, and sends back everything it
+receives, so `relay_send` followed by `relay_listen` shows the round trip.
+Ask your agent: *"Detect my devices, set the Test Synth's cutoff to 90 and
+check what it sends back."* The same synth is available on the command line
+with `osc-bridge connect --test-synth`.
 
 ## Privacy
 

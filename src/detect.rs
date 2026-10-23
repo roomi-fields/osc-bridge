@@ -58,6 +58,7 @@ pub fn parse_identity_reply(msg: &[u8]) -> Option<Identity> {
 pub fn manufacturer_name(id: &[u8]) -> Option<&'static str> {
     Some(match id {
         [0x01] => "Sequential",
+        [0x7D] => "non-commercial (test device)",
         [0x04] => "Moog",
         [0x06] => "Lexicon",
         [0x07] => "Kurzweil",

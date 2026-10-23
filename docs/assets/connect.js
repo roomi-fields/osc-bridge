@@ -14,6 +14,18 @@
   const hex = data => Array.from(data, b => b.toString(16).toUpperCase().padStart(2, "0")).join(" ");
   let access = null;
   let ws = null;
+  // Virtual test synth (devices/examples/test_synth): answers the Identity
+  // Request as manufacturer 7D, echoes channel messages. Same as
+  // osc-bridge connect --test-synth.
+  const TEST_SYNTH = "osc-bridge Test Synth";
+  const IDENTITY_REQUEST = [0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7];
+  const IDENTITY_REPLY = [0xF0, 0x7E, 0x00, 0x06, 0x02, 0x7D, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0xF7];
+  const testSynth = () => $("ob-connect-test").checked;
+  function testSynthAnswer(data) {
+    if (data.length === 6 && data.every((b, i) => b === IDENTITY_REQUEST[i])) return IDENTITY_REPLY;
+    if (data[0] >= 0x80 && data[0] <= 0xEF) return data;
+    return null;
+  }
 
   function status(text) { $("ob-connect-status").textContent = text; }
   function log(dir, port, data) {
@@ -23,16 +35,21 @@
     box.prepend(line);
     while (box.childElementCount > 40) box.lastChild.remove();
   }
-  function names(map) { return Array.from(map.values(), p => p.name); }
+  function names(map) {
+    const list = map ? Array.from(map.values(), p => p.name) : [];
+    if (testSynth()) list.push(TEST_SYNTH);
+    return list;
+  }
   function send(obj) { if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj)); }
   function sendPorts() {
-    const outputs = names(access.outputs), inputs = names(access.inputs);
+    const outputs = names(access && access.outputs), inputs = names(access && access.inputs);
     send({ type: "ports", outputs, inputs });
     $("ob-connect-ports").textContent = outputs.length || inputs.length
       ? "Devices: " + Array.from(new Set(outputs.concat(inputs))).join(", ")
       : "No MIDI device found: plug one in, it will appear here.";
   }
   function listen() {
+    if (!access) return;
     access.inputs.forEach(input => {
       input.onmidimessage = e => {
         if (e.data[0] === 0xF8 || e.data[0] === 0xFE) return; // clock, active sensing
@@ -59,7 +76,16 @@
         send({ type: "share", enabled: $("ob-connect-share").checked });
         sendPorts();
       } else if (msg.type === "midi_out") {
-        const out = Array.from(access.outputs.values()).find(o => o.name === msg.port);
+        if (msg.port === TEST_SYNTH) {
+          log("→", msg.port, msg.data);
+          const reply = testSynthAnswer(msg.data);
+          if (reply) setTimeout(() => {
+            send({ type: "midi_in", port: TEST_SYNTH, data: Array.from(reply) });
+            log("←", TEST_SYNTH, reply);
+          }, 5);
+          return;
+        }
+        const out = access ? Array.from(access.outputs.values()).find(o => o.name === msg.port) : null;
         if (!out) return log("✕", msg.port, msg.data);
         try { out.send(msg.data); log("→", msg.port, msg.data); }
         catch (e) { log("✕ " + e.message, msg.port, msg.data); }
@@ -77,11 +103,16 @@
   }
 
   $("ob-connect-go").addEventListener("click", async () => {
+    $("ob-connect-go").disabled = true;
     if (!navigator.requestMIDIAccess) {
-      status("This browser gives no MIDI access to web pages (Safari, iOS). Use Chrome or Edge, or osc-bridge connect.");
+      if (!testSynth()) {
+        status("This browser gives no MIDI access to web pages (Safari, iOS). Use Chrome or Edge, or osc-bridge connect — or tick the virtual test synth.");
+        $("ob-connect-go").disabled = false;
+        return;
+      }
+      open();
       return;
     }
-    $("ob-connect-go").disabled = true;
     try {
       access = await navigator.requestMIDIAccess({ sysex: true });
     } catch (e) {
@@ -103,6 +134,7 @@
     ws.onclose = () => open();
     ws.close();
   });
+  $("ob-connect-test").addEventListener("change", () => { if (ws) sendPorts(); });
   $("ob-connect-share").addEventListener("change", e => send({ type: "share", enabled: e.target.checked }));
   root.querySelectorAll(".ob-connect-copy").forEach(b => b.addEventListener("click", () => {
     const text = $(b.dataset.copy).textContent;

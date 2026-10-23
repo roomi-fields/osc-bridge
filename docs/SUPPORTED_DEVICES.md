@@ -3,7 +3,7 @@
 
 # Supported devices
 
-**963 devices** across **212 vendors** — shipped as **981 driver files** (a device may have several variants: per firmware, per source).
+**964 devices** across **212 vendors** — shipped as **982 driver files** (a device may have several variants: per firmware, per source).
 
 - **✅ hardware-verified** — 5 (tested on the physical device — scope varies per driver, see `_sources` in each JSON for what was exercised)
 - **📘 vendor-doc derived** — 3 (from a manufacturer programmer's reference / official MIDI spec — bytes match the spec, still beta until tested)
@@ -11,6 +11,7 @@
 - **🎛️ electra-preset derived** — 588 (from a community Electra One preset — covers SysEx + CC/NRPN, but reflects the preset author's editorial choices)
 - **📦 pencilresearch derived** — 376 (community canonical CSVs — CC/NRPN only, no SysEx)
 - **🤖 agent-contributed** — 0 (submitted by an AI agent through the hosted server — parsed, linted and tested automatically, not reviewed)
+- **🧪 test device** — 1 (virtual, for testing the relay and the hosted server without hardware)
 - **🚧 WIP** — 1
 - **📝 stub** — 1
 
@@ -155,7 +156,7 @@
 - [NUX](#nux) (1)
 - [Oberheim](#oberheim) (18)
 - [Orla](#orla) (1)
-- [osc-bridge](#osc-bridge) (1)
+- [osc-bridge](#osc-bridge) (2)
 - [OTO Machines](#oto-machines) (2)
 - [OTO Machines FX](#oto-machines-fx) (4)
 - [OXI](#oxi) (1)
@@ -8308,6 +8309,17 @@
 - **Revision**: v0.1
 - **Source**: —
 - **Coverage**: 1 SysEx command · 1 CC
+
+### 🧪 Test Synth
+
+- **OSC prefix**: `/test_synth`
+- **Variants**: 1
+
+#### 🧪 [`test_synth.json`](../devices/examples/test_synth.json) — firmware `1.0`
+
+- **Revision**: 1.0
+- **Source**: [virtual test device](https://osc-bridge.roomi-fields.com/connect/)
+- **Coverage**: 6 CC (1 NRPN) · midi_out
 
 ## OTO Machines
 
