@@ -59,17 +59,30 @@ pub fn settings_file() -> Option<PathBuf> {
     Some(account_file()?.with_file_name("settings.toml"))
 }
 
-/// The user's privacy choices on this machine, written by `osc-bridge
-/// privacy` only. The default shares: linked to the server, no device private.
+/// The user's privacy choices on this machine: a commented file the user may
+/// edit by hand, or through `osc-bridge privacy`. The default shares: linked
+/// to the server, no device private.
 #[derive(Debug, Default, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct Settings {
     /// Cut the link to the server.
     #[serde(default)]
     pub offline: bool,
-    /// Drivers (by catalogue id) whose reports and fixes stay on this machine.
+    /// Devices whose reports, fixes and trust lookups stay on this machine:
+    /// a catalogue id (`korg/minilogue`), a slug (`minilogue`, every variant
+    /// of the device) or a whole vendor (`korg/*`).
     #[serde(default)]
     pub private: Vec<String>,
 }
+
+const SETTINGS_HELP: &str = "\
+# osc-bridge — what this machine shares with the osc-bridge server.
+# Edit this file freely, or use `osc-bridge privacy`. Read when osc-bridge starts.
+#
+# Sharing is on by default: the catalogue stays up to date with the drivers
+# other users and agents fixed and confirmed, and your reports and fixes go to
+# the server under an anonymous account. MIDI ports and the traffic of your
+# devices never leave this machine.
+";
 
 impl Settings {
     /// The settings at `path`, or the defaults when there are none.
@@ -82,9 +95,41 @@ impl Settings {
         }
     }
 
+    /// The file's text: the settings, each with what it does.
+    pub fn render(&self) -> String {
+        let list = self.private.iter().map(|p| format!("  {},\n", toml::Value::String(p.clone()))).collect::<String>();
+        format!("{SETTINGS_HELP}
+# true: do not contact the server at all (bundled catalogue, nothing sent).
+offline = {}
+
+# Devices kept private: nothing about them is sent to the server (reports,
+# fixes, trust lookups). Each entry is a catalogue id (\"korg/minilogue\"), a
+# slug for every variant of a device (\"minilogue\"), or a vendor (\"korg/*\").
+private = [
+{list}]
+", self.offline)
+    }
+
     pub fn save(&self, path: &Path) -> Result<()> {
         if let Some(dir) = path.parent() { std::fs::create_dir_all(dir)?; }
-        std::fs::write(path, toml::to_string(self)?).with_context(|| format!("write {}", path.display()))
+        std::fs::write(path, self.render()).with_context(|| format!("write {}", path.display()))
+    }
+
+    /// The settings at `path`, writing the defaults there first when the
+    /// file does not exist yet, so the user finds it ready to edit.
+    pub fn load_or_create(path: &Path) -> Result<Self> {
+        if !path.exists() {
+            Self::default().save(path)?;
+        }
+        Self::load(Some(path))
+    }
+
+    /// Whether `private` covers a driver, by its id and slug.
+    pub fn covers(private: &[String], id: &str, slug: &str) -> bool {
+        private.iter().any(|p| match p.strip_suffix("/*") {
+            Some(vendor) => id.starts_with(&format!("{vendor}/")),
+            None => p == id || p == slug,
+        })
     }
 }
 
@@ -309,6 +354,17 @@ mod tests {
         assert_eq!(Settings::load(Some(&path)).unwrap(), mine);
         std::fs::write(&path, "private = [\"arturia/minilab3\"]\n").unwrap();
         assert_eq!(Settings::load(Some(&path)).unwrap(), Settings { offline: false, private: vec!["arturia/minilab3".into()] });
+        let text = mine.render();
+        assert!(text.contains("# true: do not contact the server") && text.contains("\"korg/minilogue\","), "{text}");
+        assert_eq!(toml::from_str::<Settings>(&text).unwrap(), mine, "the commented file reads back");
+        let fresh = dir.join("fresh/settings.toml");
+        assert_eq!(Settings::load_or_create(&fresh).unwrap(), Settings::default());
+        assert!(std::fs::read_to_string(&fresh).unwrap().contains("Edit this file freely"));
+        let p = vec!["korg/*".to_string(), "minilab3".to_string(), "moog/sub37".to_string()];
+        assert!(Settings::covers(&p, "korg/minilogue", "minilogue"));
+        assert!(Settings::covers(&p, "arturia/minilab3.vendor.fw-1", "minilab3"));
+        assert!(Settings::covers(&p, "moog/sub37", "sub37"));
+        assert!(!Settings::covers(&p, "korgish/x", "x") && !Settings::covers(&p, "moog/sub37_v2", "sub37_v2"));
         std::fs::remove_dir_all(dir).ok();
     }
 

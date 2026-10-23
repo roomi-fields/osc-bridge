@@ -12,13 +12,14 @@ is tracked explicitly under each release.
 ## [Unreleased]
 
 ### Added — privacy choices, sharing on by default
-- `osc-bridge privacy` shows and changes what this machine shares:
-  `--offline on|off` cuts or restores the link to the server for every
-  `osc-bridge mcp` run, `--private <device>` keeps a device's
-  `report_result`, `report_mapping` and `submit_fix` on the machine (refused
-  locally, with how to share it again), `--public <device>` shares it again.
-  Kept in `<config>/osc-bridge/settings.toml`; `mcp --offline` and
-  `OSC_BRIDGE_OFFLINE` still apply to one run.
+- A commented settings file, `<config>/osc-bridge/settings.toml`, created
+  at first start and editable by hand: `offline = true` cuts the link to the
+  server, `private = [...]` lists devices (catalogue id, slug, or `vendor/*`)
+  about which nothing is sent — `report_result`, `report_mapping`,
+  `submit_fix` and `submit_driver` are refused locally, and `get_trust` is
+  answered from the trust fetched at startup. `osc-bridge privacy` shows the
+  settings and changes them (`--offline on|off`, `--private`, `--public`);
+  `mcp --offline` and `OSC_BRIDGE_OFFLINE` still apply to one run.
 - Relay: one device can be kept private — a *private* box per device on the
   `/connect` page (remembered by the browser), `osc-bridge connect
   --private-port <name>` — and its identity is never recorded; `relay_detect`

@@ -49,13 +49,15 @@ pub struct McpOptions {
     /// catalogue (when `devices_dir` is the default one) and forward the
     /// report and contribution tools to it.
     pub online: bool,
-    /// Drivers (catalogue ids) the user keeps private on this machine
-    /// (`osc-bridge privacy --private`): their reports and fixes are not sent.
+    /// Devices the user keeps private on this machine (ids, slugs or
+    /// `vendor/*`, see `online::Settings`): nothing about them is sent.
     pub private: Vec<String>,
 }
 
-/// Report and fix tools a private device keeps on the machine.
-const PRIVATE_REFUSED: [&str; 3] = ["report_result", "report_mapping", "submit_fix"];
+/// Tools a private device keeps on the machine: refused before anything is
+/// sent. `get_trust` on a private device is answered from the trust fetched
+/// at startup instead.
+const PRIVATE_REFUSED: [&str; 4] = ["report_result", "report_mapping", "submit_fix", "submit_driver"];
 
 /// The tools of a server reached over the network: reading the catalogue
 /// and reporting on it. None touches the host's MIDI ports.
@@ -1289,10 +1291,17 @@ fn tool_names(opts: &McpOptions) -> Vec<&'static str> {
 fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, caller: Caller) -> Result<Value, String> {
     if let (None, Some(link)) = (caller.ledger, caller.online) {
         if crate::online::FORWARDED_TOOLS.contains(&name) {
-            if PRIVATE_REFUSED.contains(&name) {
-                if let Some(id) = private_device(index, opts, args) {
+            if let Some(id) = private_device(index, opts, args) {
+                if name == "get_trust" {
+                    let trust = link.trust.read().map(|t| t["devices"][&id].clone()).unwrap_or(Value::Null);
+                    let structured = json!({ "device": id, "private": true,
+                        "overall": if trust.is_null() { json!({ "status": "unreported" }) } else { trust } });
+                    return Ok(content_structured(&format!("{id} is private on this machine: trust as fetched when osc-bridge \
+                        started, nothing asked of the server.\n{}", serde_json::to_string_pretty(&structured).unwrap_or_default()), structured));
+                }
+                if PRIVATE_REFUSED.contains(&name) {
                     return Err(format!("{id} is private on this machine: {name} is not sent to the osc-bridge server. \
-                        To share it, run: osc-bridge privacy --public {id}"));
+                        To share it, remove it from the private list (osc-bridge privacy shows the settings file)."));
                 }
             }
             return link.forward(name, args);
@@ -1385,13 +1394,22 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, c
     }
 }
 
-/// The driver a tool call is about, when the user keeps it private: by its
-/// id, or another variant of the same device (same slug).
+/// The driver a tool call is about, when the user keeps it private: the
+/// `device` argument, or the device of a submitted driver. A private id also
+/// covers the other variants of the same device (same slug).
 fn private_device(index: &DeviceIndex, opts: &McpOptions, args: &Value) -> Option<String> {
-    let wanted = args.get("device").and_then(Value::as_str)?;
-    let entry = index.find(wanted)?;
-    opts.private.iter().any(|p| *p == entry.id || index.find(p).is_some_and(|e| e.slug == entry.slug))
-        .then(|| entry.id.clone())
+    let private = &opts.private;
+    let covers = |id: &str, slug: &str| crate::online::Settings::covers(private, id, slug)
+        || private.iter().any(|p| index.find(p).is_some_and(|e| e.slug == slug));
+    if let Some(wanted) = args.get("device").and_then(Value::as_str) {
+        let entry = index.find(wanted)?;
+        return covers(&entry.id, &entry.slug).then(|| entry.id.clone());
+    }
+    let dev = args.get("driver")?.get("device")?;
+    let (vendor, name) = (dev.get("vendor")?.as_str()?, dev.get("name")?.as_str()?);
+    let slug = dev.get("osc_prefix")?.as_str()?.trim_start_matches('/');
+    let id = format!("{}/{}", vendor_dir(index, vendor), slugify(name, '_'));
+    covers(&id, slug).then_some(id)
 }
 
 /// `osc-bridge privacy`: change the settings at `path` — `offline`, devices
@@ -1400,8 +1418,12 @@ fn private_device(index: &DeviceIndex, opts: &McpOptions, args: &Value) -> Optio
 pub fn privacy(path: &Path, devices_dir: &Path, offline: Option<bool>, private: &[String], public: &[String]) -> Result<String> {
     let mut settings = crate::online::Settings::load(Some(path))?;
     let index = DeviceIndex::build(devices_dir);
-    let id_of = |name: &str| index.find(name).map(|e| e.id.clone())
-        .ok_or_else(|| anyhow::anyhow!("no device '{name}' in the catalogue (use an id or slug from list_devices)"));
+    let id_of = |name: &str| match name.strip_suffix("/*") {
+        Some(vendor) => index.entries.iter().any(|e| e.id.starts_with(&format!("{vendor}/"))).then(|| name.to_string())
+            .ok_or_else(|| anyhow::anyhow!("no vendor '{vendor}' in the catalogue")),
+        None => index.find(name).map(|e| e.id.clone())
+            .ok_or_else(|| anyhow::anyhow!("no device '{name}' in the catalogue (use an id or slug from list_devices, or vendor/*)")),
+    };
     let changed = offline.is_some() || !private.is_empty() || !public.is_empty();
     if let Some(o) = offline { settings.offline = o; }
     for name in private {
@@ -1422,13 +1444,13 @@ pub fn privacy(path: &Path, devices_dir: &Path, offline: Option<bool>, private: 
     if settings.private.is_empty() {
         out.push_str("Private devices: none.\n");
     } else {
-        out.push_str("Private devices (their reports and fixes stay on this machine):\n");
+        out.push_str("Private devices (nothing about them is sent to the server):\n");
         for id in &settings.private {
             let name = index.find(id).map(|e| if e.name.to_lowercase().starts_with(&e.vendor.to_lowercase()) {
                 e.name.clone()
             } else {
                 format!("{} {}", e.vendor, e.name)
-            }).unwrap_or_default();
+            }).unwrap_or_else(|| if id.ends_with("/*") { "every device of this vendor".into() } else { String::new() });
             out.push_str(&format!("  {id}  {name}\n"));
         }
     }
@@ -2659,9 +2681,16 @@ mod tests {
                              ("report_mapping", json!({"device": "minilogue", "address": "/filter/cutoff", "cc": 43})),
                              ("submit_fix", json!({"device": "korg/minilogue", "content": "{}"}))] {
             let err = call_tool(tool, &args, &opts, &index, caller).unwrap_err();
-            assert!(err.contains("private on this machine") && err.contains("osc-bridge privacy --public korg/minilogue"), "{tool}: {err}");
+            assert!(err.contains("private on this machine") && err.contains("private list"), "{tool}: {err}");
         }
-        let other = call_tool("report_result", &json!({"device": "arturia/minilab3", "outcome": "works"}), &opts, &index, caller).unwrap_err();
+        let driver = json!({"driver": {"device": {"name": "minilogue", "vendor": "KORG", "osc_prefix": "/minilogue"}}});
+        assert!(call_tool("submit_driver", &driver, &opts, &index, caller).unwrap_err().contains("private"));
+        let trust = call_tool("get_trust", &json!({"device": "korg/minilogue"}), &opts, &index, caller).unwrap();
+        assert_eq!(trust["structuredContent"]["private"], json!(true), "answered on the machine, the server is never asked");
+        let vendor = McpOptions { private: vec!["korg/*".into()], ..opts };
+        assert!(call_tool("report_result", &json!({"device": "korg/ms2000", "outcome": "works"}), &vendor, &index, caller)
+            .unwrap_err().contains("private"));
+        let other = call_tool("report_result", &json!({"device": "arturia/minilab3", "outcome": "works"}), &vendor, &index, caller).unwrap_err();
         assert!(other.contains("could not be reached"), "another device is shared: {other}");
     }
 
