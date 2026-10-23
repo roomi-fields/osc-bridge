@@ -12,12 +12,17 @@ is tracked explicitly under each release.
 ## [Unreleased]
 
 ### Added — shared presets
-- Tools forwarded to the SynthHub server: `share_preset` (a sound the user
-  made, under CC BY-SA 4.0: settings by driver address and/or patch data as
-  hex or a `.syx` file), `find_presets`, `get_preset`, `report_preset`,
-  `withdraw_preset`; and `load_preset`, which fetches a shared preset and
-  plays it into a local device (patch data only with `confirm_overwrite`).
-  A private device's sounds are refused before anything is sent.
+- Tools forwarded to the SynthHub server, for what users make on their
+  devices, shared under CC BY-SA 4.0: `share_preset` (a sound, sequence,
+  kit, project, bank or MIDI clip: device data as hex or a `.syx` file,
+  settings by driver address, a MIDI file; category, genres, tags, tempo,
+  key, playing tips; `derived_from` for a remix; an audio preview, uploaded
+  from this machine), `update_preset` (new versions with a change note),
+  `find_presets`, `get_preset`, `report_preset`, `withdraw_preset`,
+  `comment_preset`, `favorite_preset`, `preset_collection`, `follow_author`,
+  `set_profile`; and `load_preset`, which fetches a shared preset and plays it
+  into a local device (device data only with `confirm_overwrite`). A private
+  device's sounds are refused before anything is sent.
 - The test synth keeps one sound: it dumps it on `F0 7D 01 10 F7` and takes
   a patch (`F0 7D 01 20` + five values), in `osc-bridge connect
   --test-synth` and on the connect page.
