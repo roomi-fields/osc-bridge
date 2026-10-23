@@ -121,4 +121,19 @@ jobs:
         run: cp -r devices npm/devices
       - name: Publish @roomi-fields/osc-bridge
         working-directory: npm
-        run: npm publish --access public
+        # Skipped when this version is already on npm (a re-run that only
+        # needs the registry step below).
+        run: |
+          v=$(node -p "require('./package.json').version")
+          if [ "$(npm view "@roomi-fields/osc-bridge@$v" version 2>/dev/null)" = "$v" ]; then
+            echo "$v is already on npm."
+          else
+            npm publish --access public
+          fi
+      - name: Publish to the official MCP Registry
+        # server.json names the npm package just published; the registry
+        # checks it, so this runs after npm. Authenticated through OIDC.
+        run: |
+          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/download/v1.7.9/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish
