@@ -6,6 +6,9 @@
 //!
 //! See `docs/DEVICE_JSON_SCHEMA.md` for the schema reference.
 
+// The MCP tool schemas are one large `json!` literal.
+#![recursion_limit = "512"]
+
 pub mod device;
 pub mod frame;
 pub mod runtime;
