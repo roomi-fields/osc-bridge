@@ -5,6 +5,7 @@ Mirrors kept in sync:
   - npm/package.json              "version"
   - .claude-plugin/plugin.json    "version" + the npx pin in mcpServers.args
   - server.json                   "version" (top-level) + packages[].version
+  - mcpb/manifest.json            "version"
 
 Each mirror is patched with a targeted regex replace, never parse-then-dump —
 re-serialising a JSON file reflows it and produces phantom diffs.
@@ -43,6 +44,7 @@ MIRRORS = [
     ("npm/package.json", [_VERSION_FIELD]),
     (".claude-plugin/plugin.json", [_VERSION_FIELD, _NPX_PIN]),
     ("server.json", [_VERSION_FIELD]),
+    ("mcpb/manifest.json", [_VERSION_FIELD]),
 ]
 
 
