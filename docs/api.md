@@ -191,25 +191,13 @@ learns how each device reports its versions. The trust of every reported
 driver is public at
 [`/v1/trust`](https://mcp.osc-bridge.roomi-fields.com/v1/trust).
 
-**Over HTTP on your own machine**: `osc-bridge mcp --http 0.0.0.0:8080` serves MCP on
-`/mcp` with the same five tools; `--data-dir <dir>` keeps the usage records
-(`usage.jsonl`) and the ledger of accounts, reports and decisions
-(`ledger.jsonl`) on disk, in memory otherwise. With `OSC_BRIDGE_ADMIN_TOKEN`
-set (16 characters or more), `GET /admin/pending` lists pending reports and
-suspect accounts and `POST /admin/decide` takes
-`{"decision": "approve" | "reject", "report": <id>}` or
-`{"decision": "suspect" | "clear", "user": "<id>"}`, both with
-`Authorization: Bearer <token>`. The tools that open MIDI ports
-are left out, since they would act on the server's machine, not the
-caller's. The container image runs it the same way:
+Reports waiting for approval and suspect accounts are reviewed by the
+server's administrator. The tools that open MIDI ports are not offered by the
+hosted server, since they would act on its machine, not the caller's; the
+relay tools reach the caller's own hardware instead.
 
 ```bash
-docker build -t osc-bridge .
-docker run --rm -p 8080:8080 osc-bridge --http 0.0.0.0:8080
-```
-
-```bash
-curl -s -X POST http://localhost:8080/mcp -H 'content-type: application/json' \
+curl -s -X POST https://mcp.osc-bridge.roomi-fields.com/mcp -H 'content-type: application/json' \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/call",
        "params":{"name":"list_devices","arguments":{"query":"moog sub"}}}'
 ```

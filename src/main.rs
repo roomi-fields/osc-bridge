@@ -169,27 +169,6 @@ enum Cmd {
         /// (matching the standard `osc-bridge run` bind).
         #[arg(long, default_value = "127.0.0.1:7777")]
         default_target: String,
-        /// Serve over HTTP on this address (e.g. 0.0.0.0:8080, endpoint
-        /// `/mcp`) instead of stdio. Only the catalogue and report tools are
-        /// offered: the others would act on this machine's MIDI ports.
-        #[arg(long)]
-        http: Option<String>,
-        /// With --http behind a reverse proxy: identify clients by
-        /// X-Forwarded-For for the per-client rate limit.
-        #[arg(long, requires = "http")]
-        behind_proxy: bool,
-        /// With --http: keep the server's records in this directory —
-        /// `usage.jsonl` (one line per tool call: account, tool, catalogue
-        /// arguments, no address) and `ledger.jsonl` (accounts issued,
-        /// reports, decisions; replayed at startup). Without it they live
-        /// in memory only. `/admin/*` needs OSC_BRIDGE_ADMIN_TOKEN.
-        #[arg(long, requires = "http")]
-        data_dir: Option<PathBuf>,
-        /// With --http: also accept relay doors (the /connect page,
-        /// `osc-bridge connect`) as WebSockets on this address, so agents can
-        /// reach MIDI devices on the user's machine through the relay tools.
-        #[arg(long, requires = "http")]
-        relay_bind: Option<String>,
         /// Do not contact the osc-bridge server for this run (also
         /// OSC_BRIDGE_OFFLINE=1; `osc-bridge privacy --offline on` for good).
         /// By default a local copy keeps its catalogue up to date from the
@@ -197,7 +176,7 @@ enum Cmd {
         /// shows how far each driver is confirmed, and sends report_result
         /// and the contribution tools there, under an anonymous account kept
         /// on this machine. MIDI ports are never shared.
-        #[arg(long, conflicts_with = "http")]
+        #[arg(long)]
         offline: bool,
     },
 }
@@ -231,22 +210,16 @@ fn main() -> Result<()> {
         Cmd::OscListen { bind } => cmd_osc_listen(bind),
         Cmd::Lint { device } => cmd_lint(device),
         Cmd::Orchestrate { config } => osc_bridge::orchestrator::Orchestrator::run(&config),
-        Cmd::Mcp { devices_dir, default_target, http, behind_proxy, data_dir, relay_bind, offline } => {
+        Cmd::Mcp { devices_dir, default_target, offline } => {
             let default_target = default_target.parse::<std::net::SocketAddr>()
                 .with_context(|| format!("parse --default-target {default_target}"))?;
-            let settings = match http {
-                Some(_) => osc_bridge::online::Settings::default(),
-                None => match osc_bridge::online::settings_file() {
-                    Some(path) => osc_bridge::online::Settings::load_or_create(&path)?,
-                    None => osc_bridge::online::Settings::default(),
-                },
+            let settings = match osc_bridge::online::settings_file() {
+                Some(path) => osc_bridge::online::Settings::load_or_create(&path)?,
+                None => osc_bridge::online::Settings::default(),
             };
-            let online = http.is_none() && !offline && !settings.offline && !osc_bridge::online::offline_by_env();
-            let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, hosted: false, online, private: settings.private };
-            match http {
-                Some(bind) => osc_bridge::mcp::run_http(opts, &bind, behind_proxy, data_dir.as_deref(), relay_bind.as_deref()),
-                None => osc_bridge::mcp::run(opts),
-            }
+            let online = !offline && !settings.offline && !osc_bridge::online::offline_by_env();
+            let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, online, private: settings.private };
+            osc_bridge::mcp::run(opts)
         }
     }
 }

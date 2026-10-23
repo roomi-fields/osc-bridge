@@ -29,7 +29,7 @@ and that the description/keywords landed correctly.
 
 | Directory | Status | Notes |
 |---|---|---|
-| Glama.ai | ⚠️ | listed, but **no quality score** ("cannot be deployed") — blocks punkpeye. `Dockerfile` + `glama.json` added 2026-10-22: claim the server in Glama's Admin tab and request an evaluation |
+| Glama.ai | ⚠️ | listed, no quality score ("cannot be deployed"), which blocks punkpeye. A Glama-hosted copy is not pursued: agents should reach the hosted server itself (2026-10-23; `Dockerfile` and `glama.json` removed) |
 | PulseMCP | 🔄 | auto-indexed from the registry |
 | mcpservers.org | 🔄 | auto-indexed |
 | LobeHub | 🔄 | auto-indexed |

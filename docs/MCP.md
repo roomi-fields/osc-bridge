@@ -61,11 +61,6 @@ The server speaks JSON-RPC 2.0 over stdio.
   `osc-bridge run` bind).
 - `--offline` — do not contact the osc-bridge server (also
   `OSC_BRIDGE_OFFLINE=1`); see *Linked to the osc-bridge server* below.
-- `--http <host:port>` — serve MCP over HTTP (endpoint `/mcp`) instead of
-  stdio, for agents that reach the catalogue over the network. Only the
-  catalogue tools and the usage reports (`report_result`, `get_trust`) are
-  offered, and `--data-dir <dir>` keeps the records on disk; see
-  [API for agents](api.md).
 
 ## The eight tools
 
