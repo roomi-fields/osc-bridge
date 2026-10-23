@@ -11,10 +11,17 @@
 //!
 //! Protocol: JSON text frames.
 //! - server → door: `{"type":"hello","code","user"}` once, then
-//!   `{"type":"midi_out","port","data":[bytes]}` for each message to send.
+//!   `{"type":"midi_out","port","data":[bytes]}` for each message to send,
+//!   and `{"type":"confirm","id","port","messages":[[bytes]],"bytes","gap_ms"}`
+//!   for a batch that may overwrite the device's memory (`needs_confirmation`):
+//!   the door asks the person, sends the batch only if they accept (waiting
+//!   `gap_ms` between messages), and answers
+//!   `{"type":"confirm_reply","id","accepted":bool}`. A `confirm_cancel`
+//!   `{"type":"confirm_cancel","id"}` withdraws an unanswered request. A door
+//!   never sends such a message from a plain `midi_out`.
 //! - door → server: `{"type":"ports","outputs":[names],"inputs":[names]}`
 //!   whenever its ports change, `{"type":"midi_in","port","data":[bytes]}`
-//!   for each message a device sends, and optionally
+//!   for each message a device sends, `confirm_reply`, and optionally
 //!   `{"type":"share","enabled":bool}` (default true): whether the device
 //!   identities seen in the session may be recorded for the catalogue.
 //!
@@ -61,6 +68,31 @@ pub const MAX_DOORS_PER_CLIENT: usize = 4;
 /// A ping every so often keeps proxies from closing a quiet session.
 const KEEPALIVE: Duration = Duration::from_secs(30);
 
+/// How long `Session::send` waits for the person at the door to accept or
+/// refuse a batch that may overwrite the device's memory.
+pub const CONFIRM_WAIT: Duration = Duration::from_secs(120);
+
+/// The MIDI Identity Request, whatever device id it addresses.
+pub fn is_identity_request(msg: &[u8]) -> bool {
+    matches!(msg, [0xF0, 0x7E, _, 0x06, 0x01, 0xF7])
+}
+
+/// Whether a message may change what the device keeps in memory: every
+/// SysEx (patch dumps, stores, settings) but the Identity Request. The door
+/// sends these only once the person accepts.
+pub fn needs_confirmation(msg: &[u8]) -> bool {
+    msg.first() == Some(&0xF0) && !is_identity_request(msg)
+}
+
+/// How a batch reached the door.
+#[derive(Debug, PartialEq)]
+pub enum Delivery {
+    /// Sent at once.
+    Sent,
+    /// Sent after the person at the door accepted it.
+    Accepted,
+}
+
 /// One MIDI message received from the door.
 #[derive(Clone, Debug)]
 pub struct Inbound {
@@ -79,6 +111,9 @@ pub struct Session {
     share: Mutex<bool>,
     /// The agent account driving this door, from its first relay call.
     owner: Mutex<Option<String>>,
+    /// Batches waiting for the person's answer, by request id.
+    confirms: Mutex<HashMap<u64, Sender<bool>>>,
+    next_confirm: std::sync::atomic::AtomicU64,
     tx: Sender<String>,
 }
 
@@ -127,13 +162,39 @@ impl Session {
         }
     }
 
-    /// Queue MIDI messages for the door to send on `port`.
-    pub fn send(&self, port: &str, messages: &[Vec<u8>]) -> std::result::Result<(), String> {
-        for m in messages {
-            let frame = json!({ "type": "midi_out", "port": port, "data": m }).to_string();
-            self.tx.try_send(frame).map_err(|_| "the relay is not taking messages (disconnected or stuck)".to_string())?;
+    /// Have the door send MIDI messages on `port`. A batch holding a message
+    /// that may overwrite the device's memory goes as one request the person
+    /// at the door accepts or refuses; this waits for the answer (at most
+    /// `CONFIRM_WAIT`) and fails unless they accept. `gap_ms` spaces the
+    /// messages of such a batch.
+    pub fn send(&self, port: &str, messages: &[Vec<u8>], gap_ms: u64) -> std::result::Result<Delivery, String> {
+        use std::sync::atomic::Ordering;
+        let stuck = |_| "the relay is not taking messages (disconnected or stuck)".to_string();
+        if !messages.iter().any(|m| needs_confirmation(m)) {
+            for m in messages {
+                self.tx.try_send(json!({ "type": "midi_out", "port": port, "data": m }).to_string()).map_err(stuck)?;
+            }
+            return Ok(Delivery::Sent);
         }
-        Ok(())
+        let id = self.next_confirm.fetch_add(1, Ordering::SeqCst);
+        let (answer_tx, answer) = bounded(1);
+        self.confirms.lock().map_err(|_| "relay unavailable")?.insert(id, answer_tx);
+        let bytes: usize = messages.iter().map(Vec::len).sum();
+        let frame = json!({ "type": "confirm", "id": id, "port": port, "messages": messages, "bytes": bytes, "gap_ms": gap_ms });
+        let outcome = match self.tx.try_send(frame.to_string()) {
+            Err(e) => Err(stuck(e)),
+            Ok(()) => match answer.recv_timeout(CONFIRM_WAIT) {
+                Ok(true) => Ok(Delivery::Accepted),
+                Ok(false) => Err("the person at the relay refused these messages: nothing was sent".into()),
+                Err(crossbeam_channel::RecvTimeoutError::Timeout) => {
+                    let _ = self.tx.try_send(json!({ "type": "confirm_cancel", "id": id }).to_string());
+                    Err(format!("no answer from the person at the relay within {} s: nothing was sent", CONFIRM_WAIT.as_secs()))
+                }
+                Err(crossbeam_channel::RecvTimeoutError::Disconnected) => Err("the relay disconnected: nothing was sent".into()),
+            },
+        };
+        if let Ok(mut g) = self.confirms.lock() { g.remove(&id); }
+        outcome
     }
 
     /// The MIDI messages received since `since`.
@@ -165,6 +226,12 @@ impl Session {
                     if g.len() >= INBOUND_KEPT { g.pop_front(); }
                     g.push_back(Inbound { at: Instant::now(), port, data });
                 }
+            }
+            Some("confirm_reply") => {
+                let id = v.get("id").and_then(Value::as_u64);
+                let accepted = v.get("accepted").and_then(Value::as_bool).unwrap_or(false);
+                let waiting = id.and_then(|id| self.confirms.lock().ok()?.remove(&id));
+                if let Some(tx) = waiting { let _ = tx.try_send(accepted); }
             }
             Some("share") => {
                 if let Ok(mut g) = self.share.lock() {
@@ -233,6 +300,8 @@ impl Relays {
             inbound: Mutex::new(VecDeque::new()),
             share: Mutex::new(true),
             owner: Mutex::new(None),
+            confirms: Mutex::new(HashMap::new()),
+            next_confirm: std::sync::atomic::AtomicU64::new(1),
             tx,
         });
         sessions.insert(code, session.clone());
@@ -373,6 +442,8 @@ fn door(stream: TcpStream, relays: &Relays, accounts: &dyn Accounts, allowed: &[
         }
     })();
     relays.close(&session.code);
+    // Requests still waiting end at once: their answers will not come.
+    if let Ok(mut g) = session.confirms.lock() { g.clear(); }
     drop(slot);
     outcome
 }
@@ -413,7 +484,7 @@ mod tests {
         }).expect("session with ports");
         assert_eq!(session.output(None).unwrap(), "minilogue SOUND");
         assert_eq!(session.output(Some("sound")).unwrap(), "minilogue SOUND");
-        session.send("minilogue SOUND", &[vec![0xB0, 43, 45]]).unwrap();
+        assert_eq!(session.send("minilogue SOUND", &[vec![0xB0, 43, 45]], 0).unwrap(), Delivery::Sent);
         let out = text(&mut ws);
         assert_eq!(out, json!({"type": "midi_out", "port": "minilogue SOUND", "data": [0xB0, 43, 45]}));
         let t0 = Instant::now();
@@ -427,6 +498,35 @@ mod tests {
         ws.close(None).unwrap();
         let closed = (0..200).any(|_| { std::thread::sleep(Duration::from_millis(5)); relays.get(&code).is_none() });
         assert!(closed, "the session ends with its socket");
+    }
+
+    #[test]
+    fn memory_writing_sysex_waits_for_the_person_at_the_door() {
+        let relays = Arc::new(Relays::default());
+        let addr = serve("127.0.0.1:0", relays.clone(), Arc::new(AnyAccount), vec![], false).unwrap();
+        let (mut ws, _) = tungstenite::connect(format!("ws://{addr}/relay")).unwrap();
+        let code = text(&mut ws)["code"].as_str().unwrap().to_string();
+        let session = relays.get(&code).unwrap();
+        let identity = vec![0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7];
+        assert_eq!(session.send("synth", &[identity.clone()], 0).unwrap(), Delivery::Sent);
+        assert_eq!(text(&mut ws)["type"], "midi_out");
+        let dump = vec![vec![0xF0, 0x42, 0x30, 0x00, 0x01, 0x2C, 0x4C, 0x00, 0xF7], vec![0xC0, 5]];
+        for accept in [true, false] {
+            let (s, d) = (session.clone(), dump.clone());
+            let sender = std::thread::spawn(move || s.send("synth", &d, 40));
+            let ask = text(&mut ws);
+            assert_eq!(ask["type"], "confirm");
+            assert_eq!(ask["messages"], json!(dump));
+            assert_eq!((ask["bytes"].as_u64(), ask["gap_ms"].as_u64()), (Some(11), Some(40)));
+            ws.send(Message::Text(json!({"type": "confirm_reply", "id": ask["id"], "accepted": accept}).to_string().into())).unwrap();
+            let got = sender.join().unwrap();
+            if accept { assert_eq!(got.unwrap(), Delivery::Accepted) } else { assert!(got.unwrap_err().contains("refused")) }
+        }
+        let s = session.clone();
+        let sender = std::thread::spawn(move || s.send("synth", &[vec![0xF0, 0x43, 0x10, 0xF7]], 0));
+        assert_eq!(text(&mut ws)["type"], "confirm");
+        ws.close(None).unwrap();
+        assert!(sender.join().unwrap().unwrap_err().contains("disconnected"), "a closed door ends the wait");
     }
 
     #[test]

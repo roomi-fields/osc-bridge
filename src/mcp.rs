@@ -1107,13 +1107,14 @@ fn all_tools() -> Value {
             },
             {
                 "name": "relay_send",
-                "description": "Play or set something on the user's hardware through a relay: give a driver (id or slug) and one of its OSC addresses from list_routes with its arguments (e.g. address '/filter/cutoff', args [64]; '/note/on', args [60, 100]) — the server turns it into the right CC, NRPN, note or SysEx message. Or give raw MIDI bytes as hex. Values are the device's own numbers, clamped to the parameter's range. Sending a patch store or memory-writing SysEx overwrites the device: ask the user first.",
+                "description": "Play or set something on the user's hardware through a relay: give a driver (id or slug) and one of its OSC addresses from list_routes with its arguments (e.g. address '/filter/cutoff', args [64]; '/note/on', args [60, 100]) — the server turns it into the right CC, NRPN, note or SysEx message. Or give raw MIDI bytes as hex. Values are the device's own numbers, clamped to the parameter's range. Any SysEx but the Identity Request (patch dumps, stores, settings, preset restores) may overwrite the device's memory: the relay asks the user to accept it first and this call waits for the answer (up to 2 minutes), so tell the user what you are about to send.",
                 "inputSchema": { "type": "object", "properties": { "code": { "type": "string", "description": "The pairing code the relay page or program shows (e.g. 'K7QM-2XPA')." },
                     "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or slug." },
                     "address": { "type": "string", "description": "OSC address of the driver, with or without its prefix." },
                     "args": { "type": "array", "items": {}, "description": "OSC arguments (numbers, strings, booleans)." },
                     "hex": { "type": "string", "description": "Raw MIDI messages instead of device/address, e.g. 'B0 2B 40'." },
-                    "port": { "type": "string", "description": "Output port name (or part of it); needed when the relay has several." } },
+                    "port": { "type": "string", "description": "Output port name (or part of it); needed when the relay has several." },
+                    "gap_ms": { "type": "integer", "minimum": 0, "maximum": 2000, "description": "Pause between the SysEx messages of a dump, for devices that write slowly (default 50)." } },
                     "required": ["code"], "additionalProperties": false },
                 "annotations": { "title": "Send through a relay", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
             },
@@ -1478,7 +1479,7 @@ fn relay_detect(index: &DeviceIndex, session: &crate::relay::Session, args: &Val
     }
     let since = std::time::Instant::now();
     for out in &outputs {
-        session.send(out, &[IDENTITY_REQUEST.to_vec()])?;
+        session.send(out, &[IDENTITY_REQUEST.to_vec()], 0)?;
     }
     std::thread::sleep(wait_ms(args, "timeout_ms", 1000, 5000));
     let candidates = hardware_candidates(index);
@@ -1549,10 +1550,13 @@ fn relay_send(index: &DeviceIndex, session: &crate::relay::Session, args: &Value
             (encoded, full)
         }
     };
-    session.send(&port, &messages)?;
+    let gap = args.get("gap_ms").and_then(Value::as_u64).unwrap_or(50).min(2000);
+    let delivery = session.send(&port, &messages, gap)?;
+    let accepted = delivery == crate::relay::Delivery::Accepted;
     let sent: Vec<String> = messages.iter().map(|m| hex(m)).collect();
-    let text = format!("Sent {what} to {port}: {}", sent.join(" | "));
-    Ok(content_structured(&text, json!({ "port": port, "messages": sent })))
+    let text = format!("{}Sent {what} to {port}: {}",
+        if accepted { "The user accepted at the relay. " } else { "" }, sent.join(" | "));
+    Ok(content_structured(&text, json!({ "port": port, "messages": sent, "confirmed_by_user": accepted })))
 }
 
 /// Split raw bytes into MIDI messages, each starting with its status byte

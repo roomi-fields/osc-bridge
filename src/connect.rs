@@ -10,6 +10,10 @@
 //! The account the server issues is kept in `<config>/osc-bridge/user`, so
 //! the user stays the same from one run to the next.
 //!
+//! A message that may overwrite the device's memory (any SysEx but the
+//! Identity Request) arrives as a `confirm` request: the door asks in the
+//! terminal and sends it only if the person accepts.
+//!
 //! With `--test-synth`, the door also offers a virtual device, the catalogue's
 //! `examples/test_synth` driver (`TestSynth`), so everything can be tried
 //! without hardware.
@@ -18,7 +22,7 @@ use anyhow::{anyhow, Context, Result};
 use crossbeam_channel::{unbounded, Sender};
 use midir::{Ignore, MidiInput, MidiInputConnection, MidiOutput, MidiOutputConnection};
 use serde_json::{json, Value};
-use std::collections::HashMap;
+use std::collections::{HashMap, VecDeque};
 use std::net::TcpStream;
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
@@ -122,6 +126,42 @@ fn hex(data: &[u8]) -> String {
     data.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ")
 }
 
+/// Play one message on `port`: a real output, or the test synth, whose
+/// answer goes back as if received.
+fn deliver(ports: &mut Ports, incoming: &Sender<(String, Vec<u8>)>, test_synth: bool, port: &str, data: &[u8]) {
+    if test_synth && port == TEST_SYNTH_PORT {
+        println!("  -> {port}  {}", hex(data));
+        if let Some(reply) = TestSynth::answer(data) {
+            let _ = incoming.send((TEST_SYNTH_PORT.to_string(), reply));
+        }
+        return;
+    }
+    match ports.outputs.get_mut(port) {
+        Some(conn) => match conn.send(data) {
+            Ok(()) => println!("  -> {port}  {}", hex(data)),
+            Err(e) => println!("  x  {port}  {}  ({e})", hex(data)),
+        },
+        None => println!("  x  {port} (no such output)  {}", hex(data)),
+    }
+}
+
+/// The person's answers, one line each; `None` once the terminal is closed
+/// (nobody left to ask: every request is refused).
+fn answers() -> crossbeam_channel::Receiver<Option<String>> {
+    let (tx, rx) = unbounded();
+    std::thread::spawn(move || {
+        for line in std::io::stdin().lines() {
+            if tx.send(line.ok()).is_err() { return; }
+        }
+        let _ = tx.send(None);
+    });
+    rx
+}
+
+fn bytes_of(v: &Value) -> Vec<u8> {
+    v.as_array().map(|a| a.iter().filter_map(Value::as_u64).map(|b| b as u8).collect()).unwrap_or_default()
+}
+
 fn set_read_timeout(ws: &WebSocket<MaybeTlsStream<TcpStream>>, t: Duration) -> Result<()> {
     match ws.get_ref() {
         MaybeTlsStream::Plain(s) => s.set_read_timeout(Some(t))?,
@@ -172,6 +212,10 @@ pub fn run(server: &str, share: bool, test_synth: bool) -> Result<()> {
 
     let (in_tx, in_rx) = unbounded::<(String, Vec<u8>)>();
     let mut ports = open_ports(&in_tx)?;
+    let typed = answers();
+    let mut asking: VecDeque<Value> = VecDeque::new();
+    let mut asked = false;
+    let (mut always, mut nobody) = (false, false);
     let mut announce = true;
     let mut last_scan = Instant::now();
     loop {
@@ -198,6 +242,31 @@ pub fn run(server: &str, share: bool, test_synth: bool) -> Result<()> {
             println!("Devices: outputs [{}], inputs [{}]", outs.join(", "), ins.join(", "));
             ws.send(Message::Text(json!({ "type": "ports", "outputs": outs, "inputs": ins }).to_string().into()))?;
         }
+        while let Ok(line) = typed.try_recv() {
+            let word = line.as_deref().map(|l| l.trim().to_lowercase());
+            if word.is_none() { nobody = true; }
+            if !asked { continue; }
+            let accepted = matches!(word.as_deref(), Some("y" | "yes" | "a" | "always"));
+            always |= matches!(word.as_deref(), Some("a" | "always"));
+            if let Some(req) = asking.pop_front() {
+                asked = false;
+                answer(&mut ws, &mut ports, &in_tx, test_synth, &req, accepted)?;
+            }
+        }
+        if let Some(req) = asking.front() {
+            if always || nobody {
+                let req = asking.pop_front().expect("front");
+                if nobody && !always { println!("  x  refused (no terminal to ask)"); }
+                answer(&mut ws, &mut ports, &in_tx, test_synth, &req, always)?;
+            } else if !asked {
+                asked = true;
+                let n = req["messages"].as_array().map_or(0, Vec::len);
+                println!();
+                println!("Your agent wants to send {n} SysEx message(s) ({} bytes) to {}.", req["bytes"], req["port"].as_str().unwrap_or("?"));
+                println!("This can replace sounds or settings stored in the device.");
+                println!("Accept? [y]es / [n]o / [a]lways until this program stops");
+            }
+        }
         while let Ok((port, data)) = in_rx.try_recv() {
             println!("  <- {port}  {}", hex(&data));
             ws.send(Message::Text(json!({ "type": "midi_in", "port": port, "data": data }).to_string().into()))?;
@@ -208,20 +277,18 @@ pub fn run(server: &str, share: bool, test_synth: bool) -> Result<()> {
                 match v["type"].as_str() {
                     Some("midi_out") => {
                         let port = v["port"].as_str().unwrap_or("");
-                        let data: Vec<u8> = v["data"].as_array().map(|a| a.iter().filter_map(Value::as_u64).map(|b| b as u8).collect()).unwrap_or_default();
-                        if test_synth && port == TEST_SYNTH_PORT {
-                            println!("  -> {port}  {}", hex(&data));
-                            if let Some(reply) = TestSynth::answer(&data) {
-                                let _ = in_tx.send((TEST_SYNTH_PORT.to_string(), reply));
-                            }
+                        let data = bytes_of(&v["data"]);
+                        if crate::relay::needs_confirmation(&data) {
+                            println!("  x  {port}  {}  (not confirmed)", hex(&data));
                             continue;
                         }
-                        match ports.outputs.get_mut(port) {
-                            Some(conn) => match conn.send(&data) {
-                                Ok(()) => println!("  -> {port}  {}", hex(&data)),
-                                Err(e) => println!("  x  {port}  {}  ({e})", hex(&data)),
-                            },
-                            None => println!("  x  {port} (no such output)  {}", hex(&data)),
+                        deliver(&mut ports, &in_tx, test_synth, port, &data);
+                    }
+                    Some("confirm") => asking.push_back(v),
+                    Some("confirm_cancel") => {
+                        if let Some(i) = asking.iter().position(|r| r["id"] == v["id"]) {
+                            asking.remove(i);
+                            if i == 0 && asked { asked = false; println!("  (the agent withdrew its request)"); }
                         }
                     }
                     Some("paired") => println!("An agent is connected. Only it can use this code; restart for a new one."),
@@ -240,6 +307,24 @@ pub fn run(server: &str, share: bool, test_synth: bool) -> Result<()> {
             Err(e) => return Err(e.into()),
         }
     }
+}
+
+/// Send an accepted batch, spaced by its `gap_ms`, then tell the server.
+fn answer(ws: &mut WebSocket<MaybeTlsStream<TcpStream>>, ports: &mut Ports, incoming: &Sender<(String, Vec<u8>)>,
+          test_synth: bool, req: &Value, accepted: bool) -> Result<()> {
+    if accepted {
+        let port = req["port"].as_str().unwrap_or("");
+        let gap = Duration::from_millis(req["gap_ms"].as_u64().unwrap_or(0).min(2000));
+        let messages = req["messages"].as_array().cloned().unwrap_or_default();
+        for (i, m) in messages.iter().enumerate() {
+            if i > 0 { std::thread::sleep(gap); }
+            deliver(ports, incoming, test_synth, port, &bytes_of(m));
+        }
+    } else {
+        println!("  x  refused: nothing sent");
+    }
+    ws.send(Message::Text(json!({ "type": "confirm_reply", "id": req["id"], "accepted": accepted }).to_string().into()))?;
+    Ok(())
 }
 
 #[cfg(test)]
