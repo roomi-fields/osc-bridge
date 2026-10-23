@@ -28,9 +28,10 @@ use std::time::Duration;
 pub const SERVER: &str = "https://mcp.synthhub.roomi-fields.com";
 
 /// The tools a local copy forwards to the server.
-pub const FORWARDED_TOOLS: [&str; 11] = ["report_result", "report_mapping", "get_trust",
+pub const FORWARDED_TOOLS: [&str; 17] = ["report_result", "report_mapping", "get_trust",
     "submit_driver", "submit_fix", "get_contribution",
-    "share_preset", "find_presets", "get_preset", "report_preset", "withdraw_preset"];
+    "share_preset", "update_preset", "find_presets", "get_preset", "report_preset", "withdraw_preset",
+    "comment_preset", "favorite_preset", "preset_collection", "follow_author", "set_profile"];
 
 /// Files fetched per `POST /v1/catalogue/files` request.
 pub const FILES_PER_REQUEST: usize = 100;
@@ -286,6 +287,17 @@ impl Online {
             (None, Some(e)) => bail!("{}", e["message"].as_str().unwrap_or("error")),
             _ => bail!("the server answered HTTP {status}"),
         }
+    }
+
+    /// Attach a preview (`audio` or `image`) to a preset the account shared.
+    pub fn upload(&self, user: &str, preset: &str, kind: &str, bytes: &[u8]) -> Result<()> {
+        let path = format!("/u/{user}/v1/presets/{preset}/{kind}");
+        let resp = self.agent.put(format!("{}{path}", self.base))
+            .header("Content-Type", "application/octet-stream")
+            .send(bytes).with_context(|| format!("PUT {path}"))?;
+        let (status, v) = self.read(resp)?;
+        if status != 200 { bail!("{}", v["error"].as_str().unwrap_or("upload refused")); }
+        Ok(())
     }
 
     /// Trust of every reported driver (`GET /v1/trust`).

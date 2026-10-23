@@ -772,19 +772,28 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "share_preset",
-                "description": "Share a sound made on a device with every SynthHub user, under CC BY-SA 4.0: as the device's own patch data (SysEx, e.g. from backup_presets) and/or as settings by driver address (from list_routes, e.g. {'/filter/cutoff': [90]}), which also works for devices without patch dumps. Only sounds the user made: never factory presets or sounds bought or downloaded from others — set own_sound only after asking the user. Shared presets are public; the user can withdraw theirs (withdraw_preset). A sound already shared returns its existing id.",
+                "description": "Share something the user made on a device with every SynthHub user, under CC BY-SA 4.0: a sound, a sequence or pattern, a kit, a project, a bank of their own sounds, or a MIDI clip any device can play. Its content: the device's own data (SysEx, e.g. from backup_presets), settings by driver address (from list_routes, e.g. {'/filter/cutoff': [90]}, which also works for devices without dumps), and/or a standard MIDI file. Only what the user made: never factory presets, nor sounds or sequences bought or downloaded from others — set own_sound only after asking the user. Made from someone else's shared preset? Pass derived_from: it credits them, as the licence requires. Describe it well (category, genres, tags, tempo, key, tips): that is how people find it. The same content shared twice returns the existing id; the author publishes new versions with update_preset and can withdraw it (withdraw_preset).",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
                         "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or slug." },
-                        "name": { "type": "string", "description": "The sound's name (80 characters at most)." },
-                        "own_sound": { "type": "boolean", "description": "Must be true: the user made this sound (not a factory preset, not someone else's)." },
-                        "description": { "type": "string", "description": "What it sounds like, how to play it (500 characters at most)." },
-                        "tags": { "type": "array", "items": { "type": "string" }, "description": "A few words: 'bass', 'pad', 'warm'… (8 at most)." },
-                        "firmware": { "type": "string", "description": "Firmware version of the device the sound was made on." },
-                        "hex": { "type": "string", "description": "The patch as SysEx, in hex (one program, 32 KB at most)." },
-                        "file": { "type": "string", "description": "A .syx file holding the patch (e.g. written by backup_presets), instead of hex." },
-                        "settings": { "type": "object", "description": "Settings by driver address: {'/filter/cutoff': [90], '/amp/attack': [12]} (512 at most).", "additionalProperties": true }
+                        "name": { "type": "string", "description": "Its name (80 characters at most)." },
+                        "own_sound": { "type": "boolean", "description": "Must be true: the user made it (not a factory preset, not someone else's)." },
+                        "kind": { "type": "string", "enum": ["sound", "sequence", "kit", "project", "bank", "clip"], "description": "What it is (default sound)." },
+                        "category": { "type": "string", "enum": ["bass", "lead", "pad", "pluck", "keys", "organ", "brass", "strings", "bell", "arp", "sequence", "drums", "percussion", "fx", "texture", "vocal", "other"], "description": "The kind of sound or part." },
+                        "genres": { "type": "array", "items": { "type": "string" }, "description": "Musical styles: 'techno', 'ambient'… (8 at most)." },
+                        "tags": { "type": "array", "items": { "type": "string" }, "description": "Character and free words: 'warm', 'dark', 'evolving'… (8 at most)." },
+                        "description": { "type": "string", "description": "What it sounds like (500 characters at most)." },
+                        "tips": { "type": "string", "description": "How to play it: mod wheel, aftertouch, register… (500 characters at most)." },
+                        "tempo": { "type": "number", "description": "BPM, for sequences and clips." },
+                        "key": { "type": "string", "description": "Musical key, e.g. 'A minor'." },
+                        "firmware": { "type": "string", "description": "Firmware version of the device it was made on." },
+                        "derived_from": { "type": "string", "description": "Id of the shared preset it was made from." },
+                        "hex": { "type": "string", "description": "The device data as SysEx, in hex (64 KB at most)." },
+                        "file": { "type": "string", "description": "A .syx file on this machine (e.g. written by backup_presets), instead of hex." },
+                        "settings": { "type": "object", "description": "Settings by driver address: {'/filter/cutoff': [90], '/amp/attack': [12]} (512 at most).", "additionalProperties": true },
+                        "midi_file": { "type": "string", "description": "A standard MIDI file (.mid) on this machine." },
+                        "audio_file": { "type": "string", "description": "A short recording of it (MP3, Ogg, M4A or WebM, 1 MB at most) on this machine, as its preview." }
                     },
                     "required": ["device", "name", "own_sound"],
                     "additionalProperties": false
@@ -792,14 +801,40 @@ pub fn tool_schemas() -> Value {
                 "annotations": { "title": "Share a preset", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": true }
             },
             {
+                "name": "update_preset",
+                "description": "Publish a new version of a preset this account shared: new content (hex, file, settings or midi_file) makes a new version, kept with a change note — earlier versions stay available; the description fields alone change it in place. Someone else's preset: share yours with derived_from instead.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "id": { "type": "string" },
+                        "changelog": { "type": "string", "description": "What changed in this version (500 characters at most)." },
+                        "name": { "type": "string" }, "description": { "type": "string" }, "tips": { "type": "string" },
+                        "category": { "type": "string", "enum": ["bass", "lead", "pad", "pluck", "keys", "organ", "brass", "strings", "bell", "arp", "sequence", "drums", "percussion", "fx", "texture", "vocal", "other"] },
+                        "genres": { "type": "array", "items": { "type": "string" } }, "tags": { "type": "array", "items": { "type": "string" } },
+                        "tempo": { "type": "number" }, "key": { "type": "string" }, "firmware": { "type": "string" },
+                        "hex": { "type": "string" }, "file": { "type": "string" },
+                        "settings": { "type": "object", "additionalProperties": true }, "midi_file": { "type": "string" },
+                        "audio_file": { "type": "string", "description": "A new preview recording for the current version." }
+                    },
+                    "required": ["id"],
+                    "additionalProperties": false
+                },
+                "annotations": { "title": "Update a preset", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
+            },
+            {
                 "name": "find_presets",
-                "description": "Search the presets SynthHub users shared (CC BY-SA 4.0): by device, words in the name, description or tags, or one tag. Returns, per preset, its id, name, device, firmware, tags, whether it carries patch data (SysEx) or settings, and how far other users confirmed it loads and sounds right. Get one with get_preset.",
+                "description": "Search what SynthHub users shared (CC BY-SA 4.0): sounds, sequences, kits, projects, banks, MIDI clips. Filter by device, kind, category, genre, tag, author (pseudonym) or words; sort by newest, most popular (favorites and real loads) or most trusted (confirmed on real devices). Returns, per preset, its id, name, kind, device, description, author, version, whether it has device data, settings, a MIDI file or an audio preview (URL), and its counts. Get one with get_preset.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
                         "device": { "type": "string", "description": "Driver id or slug (its other variants are included)." },
-                        "query": { "type": "string", "description": "Words that must all appear in the name, description or tags." },
+                        "kind": { "type": "string", "enum": ["sound", "sequence", "kit", "project", "bank", "clip"] },
+                        "category": { "type": "string", "enum": ["bass", "lead", "pad", "pluck", "keys", "organ", "brass", "strings", "bell", "arp", "sequence", "drums", "percussion", "fx", "texture", "vocal", "other"] },
+                        "genre": { "type": "string" },
                         "tag": { "type": "string" },
+                        "author": { "type": "string", "description": "An author's pseudonym (e.g. 'u1a2b3c4d')." },
+                        "query": { "type": "string", "description": "Words that must all appear in the name, description, tags, genres or category." },
+                        "sort": { "type": "string", "enum": ["new", "popular", "trusted"], "description": "Default new." },
                         "limit": { "type": "integer", "minimum": 1, "maximum": 50, "description": "At most this many (default 20)." }
                     },
                     "additionalProperties": false
@@ -808,8 +843,11 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "get_preset",
-                "description": "One shared preset in full: its patch data (SysEx, hex) and/or settings by driver address, device, firmware, author (a pseudonym), licence and attribution line, reports. Load it with load_preset; credit it as the attribution line says when you publish something made from it.",
-                "inputSchema": { "type": "object", "properties": { "id": { "type": "string", "description": "Preset id from find_presets (e.g. 'p3fa9c1d2e4b7')." } }, "required": ["id"], "additionalProperties": false },
+                "description": "One shared preset in full: its content (SysEx hex, settings by driver address, MIDI file), description and playing tips, versions with their change notes, what it was derived from and its derivatives (remixes), comments, preview URLs, author, licence and attribution line, trust and counts. Load it with load_preset; credit it as the attribution line says when you publish something made from it.",
+                "inputSchema": { "type": "object", "properties": {
+                    "id": { "type": "string", "description": "Preset id from find_presets (e.g. 'p3fa9c1d2e4b7')." },
+                    "version": { "type": "integer", "minimum": 1, "description": "An earlier version (default the current one)." } },
+                    "required": ["id"], "additionalProperties": false },
                 "annotations": { "title": "Get a preset", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": true }
             },
             {
@@ -833,6 +871,51 @@ pub fn tool_schemas() -> Value {
                 "description": "Withdraw a preset this account shared: it is no longer listed nor served. Copies others already made stay under CC BY-SA.",
                 "inputSchema": { "type": "object", "properties": { "id": { "type": "string" } }, "required": ["id"], "additionalProperties": false },
                 "annotations": { "title": "Withdraw a preset", "readOnlyHint": false, "destructiveHint": true, "idempotentHint": true, "openWorldHint": false }
+            },
+            {
+                "name": "comment_preset",
+                "description": "Comment on a shared preset — how it sounds, how you used it, what you changed — optionally attaching your remix (a preset you shared with derived_from). Comments are public at once. Also: remove one of this account's comments (remove), or flag someone else's as abusive or off-topic (flag); comments several accounts flag are hidden until reviewed.",
+                "inputSchema": { "type": "object", "properties": {
+                    "id": { "type": "string", "description": "The preset to comment on." },
+                    "text": { "type": "string", "description": "The comment (2000 characters at most)." },
+                    "remix": { "type": "string", "description": "Id of your remix, to attach." },
+                    "remove": { "type": "integer", "description": "Id of this account's comment to remove (instead of commenting)." },
+                    "flag": { "type": "integer", "description": "Id of someone else's comment to flag (instead of commenting)." } },
+                    "additionalProperties": false },
+                "annotations": { "title": "Comment on a preset", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
+            },
+            {
+                "name": "favorite_preset",
+                "description": "Mark a shared preset as a favorite of this account (on: false to unmark). Without id, lists this account's favorites.",
+                "inputSchema": { "type": "object", "properties": { "id": { "type": "string" }, "on": { "type": "boolean", "description": "Default true." } },
+                    "additionalProperties": false },
+                "annotations": { "title": "Favorite a preset", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false }
+            },
+            {
+                "name": "preset_collection",
+                "description": "Collections of shared presets, public, made by one account (e.g. 'Dark basses for minilogue'). action: create (name, description), rename (collection, name, description), add or remove (collection, id), delete (collection), get (collection: its presets), list (this account's collections, or author: someone's).",
+                "inputSchema": { "type": "object", "properties": {
+                    "action": { "type": "string", "enum": ["create", "rename", "add", "remove", "delete", "get", "list"] },
+                    "collection": { "type": "string", "description": "Collection id (e.g. 'c1a2b3c4d5e6')." },
+                    "name": { "type": "string" }, "description": { "type": "string" },
+                    "id": { "type": "string", "description": "Preset id to add or remove." },
+                    "author": { "type": "string", "description": "With list: an author's pseudonym." } },
+                    "required": ["action"], "additionalProperties": false },
+                "annotations": { "title": "Preset collections", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": false }
+            },
+            {
+                "name": "follow_author",
+                "description": "Follow an author of shared presets (by pseudonym), or stop (on: false); with author alone and on omitted, shows their page: profile, presets, followers. Without author, lists the newest presets of the authors this account follows.",
+                "inputSchema": { "type": "object", "properties": { "author": { "type": "string" }, "on": { "type": "boolean" },
+                    "limit": { "type": "integer", "minimum": 1, "maximum": 50 } }, "additionalProperties": false },
+                "annotations": { "title": "Follow an author", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false }
+            },
+            {
+                "name": "set_profile",
+                "description": "Set the display name and link (https) shown with this account's shared presets and comments, instead of its pseudonym alone. Ask the user what they want shown; both are public.",
+                "inputSchema": { "type": "object", "properties": { "name": { "type": "string", "description": "40 characters at most." },
+                    "link": { "type": "string", "description": "An https:// address: their site, SoundCloud, Bandcamp…" } }, "additionalProperties": false },
+                "annotations": { "title": "Set the public profile", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false }
             },
             {
                 "name": "load_preset",
@@ -880,8 +963,8 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
                         To share it, remove it from the private list (osc-bridge privacy shows the settings file)."));
                 }
             }
-            if name == "share_preset" {
-                return link.forward(name, &with_syx_as_hex(args)?);
+            if name == "share_preset" || name == "update_preset" {
+                return share_with_files(link, name, args);
             }
             return link.forward(name, args);
         }
@@ -1086,17 +1169,52 @@ fn restore_presets(out_port: &str, file: &Path, gap_ms: u64) -> Result<Value, St
     Ok(content_structured(&format!("Sent {} SysEx message(s), {} bytes, from {}", msgs.len(), bytes, file.display()), structured))
 }
 
-/// A shared preset's `file` (a .syx on this machine) sent as `hex`.
-fn with_syx_as_hex(args: &Value) -> Result<Value, String> {
-    let Some(file) = args.get("file").and_then(Value::as_str) else { return Ok(args.clone()) };
-    if args.get("hex").is_some() {
-        return Err("give hex or file, not both".into());
-    }
-    let msgs = crate::librarian::read_syx(Path::new(file)).map_err(|e| e.to_string())?;
+/// A shared preset's files on this machine, read: `file` (a .syx) sent as
+/// `hex`, `midi_file` as `midi_base64`; `audio_file` read for the upload
+/// that follows the call.
+fn read_local_files(args: &Value) -> Result<(Value, Option<Vec<u8>>), String> {
+    use base64::Engine;
     let mut sent = args.clone();
-    sent.as_object_mut().map(|o| o.remove("file"));
-    sent["hex"] = json!(msgs.iter().flatten().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" "));
-    Ok(sent)
+    let Some(o) = sent.as_object_mut() else { return Ok((sent, None)) };
+    if let Some(file) = o.remove("file") {
+        if o.contains_key("hex") {
+            return Err("give hex or file, not both".into());
+        }
+        let msgs = crate::librarian::read_syx(Path::new(file.as_str().unwrap_or_default())).map_err(|e| e.to_string())?;
+        o.insert("hex".into(), json!(msgs.iter().flatten().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ")));
+    }
+    if let Some(file) = o.remove("midi_file") {
+        let path = file.as_str().unwrap_or_default();
+        let bytes = std::fs::read(path).map_err(|e| format!("read {path}: {e}"))?;
+        o.insert("midi_base64".into(), json!(base64::engine::general_purpose::STANDARD.encode(bytes)));
+    }
+    let audio = match o.remove("audio_file") {
+        Some(file) => {
+            let path = file.as_str().unwrap_or_default();
+            Some(std::fs::read(path).map_err(|e| format!("read {path}: {e}"))?)
+        }
+        None => None,
+    };
+    Ok((sent, audio))
+}
+
+/// Share or update a preset with its files on this machine, then upload its
+/// audio preview, if any.
+fn share_with_files(link: &Link, name: &str, args: &Value) -> Result<Value, String> {
+    let (sent, audio) = read_local_files(args)?;
+    let mut result = link.forward(name, &sent)?;
+    if let Some(bytes) = audio {
+        let id = result["structuredContent"]["id"].as_str().or(args["id"].as_str()).unwrap_or_default().to_string();
+        let user = link.user(false).map_err(|e| e.to_string())?;
+        let note = match link.client.upload(&user, &id, "audio", &bytes) {
+            Ok(()) => "Audio preview attached.".to_string(),
+            Err(e) => format!("The audio preview was not attached: {e}"),
+        };
+        if let Some(text) = result.pointer_mut("/content/0/text") {
+            *text = json!(format!("{} {note}", text.as_str().unwrap_or_default()));
+        }
+    }
+    Ok(result)
 }
 
 /// Fetch a shared preset from the server and play it into a local device:
@@ -1504,14 +1622,20 @@ mod tests {
     }
 
     #[test]
-    fn a_syx_file_is_shared_as_hex() {
-        let path = std::env::temp_dir().join(format!("osc-bridge-share-{}.syx", std::process::id()));
-        std::fs::write(&path, [0xF0, 0x42, 0x30, 0x01, 0xF7, 0xF0, 0x42, 0x30, 0x02, 0xF7]).unwrap();
-        let sent = with_syx_as_hex(&json!({"device": "korg/minilogue", "file": path.display().to_string()})).unwrap();
-        assert_eq!(sent, json!({"device": "korg/minilogue", "hex": "F0 42 30 01 F7 F0 42 30 02 F7"}));
-        let both = json!({"file": path.display().to_string(), "hex": "F0 F7"});
-        assert!(with_syx_as_hex(&both).unwrap_err().contains("not both"));
-        std::fs::remove_file(path).ok();
+    fn a_presets_files_on_this_machine_are_read_before_sharing() {
+        let dir = std::env::temp_dir().join(format!("osc-bridge-share-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let (syx, mid, ogg) = (dir.join("p.syx"), dir.join("p.mid"), dir.join("p.ogg"));
+        std::fs::write(&syx, [0xF0, 0x42, 0x30, 0x01, 0xF7, 0xF0, 0x42, 0x30, 0x02, 0xF7]).unwrap();
+        std::fs::write(&mid, b"MThd").unwrap();
+        std::fs::write(&ogg, b"OggS").unwrap();
+        let p = |f: &PathBuf| f.display().to_string();
+        let (sent, audio) = read_local_files(&json!({"device": "korg/minilogue", "file": p(&syx), "midi_file": p(&mid),
+            "audio_file": p(&ogg)})).unwrap();
+        assert_eq!(sent, json!({"device": "korg/minilogue", "hex": "F0 42 30 01 F7 F0 42 30 02 F7", "midi_base64": "TVRoZA=="}));
+        assert_eq!(audio.as_deref(), Some(&b"OggS"[..]));
+        assert!(read_local_files(&json!({"file": p(&syx), "hex": "F0 F7"})).unwrap_err().contains("not both"));
+        std::fs::remove_dir_all(dir).ok();
         let opts = McpOptions { online: true, ..test_opts() };
         assert!(tool_names(&opts).contains(&"load_preset") && !tool_names(&test_opts()).contains(&"load_preset"),
             "loading a shared preset is offered only when linked to the server");
