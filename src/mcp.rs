@@ -15,6 +15,10 @@
 //!  - `report_result`, `get_trust` — hosted server only: usage reports and
 //!    the trust they earn a driver (`crate::reports`)
 //!
+//! A local copy (stdio) is linked to the hosted server unless offline
+//! (`crate::online`): it mirrors the server's catalogue, shows each driver's
+//! trust, and forwards the report and contribution tools there.
+//!
 //! Two transports. On stdio (`run`) the server reads one JSON-RPC request per
 //! line from stdin and writes one response per line to stdout; logging goes
 //! to stderr. Over HTTP (`run_http`, MCP "streamable HTTP" without the
@@ -41,6 +45,10 @@ pub struct McpOptions {
     pub default_target: SocketAddr,
     /// Served over the network: offer `HOSTED_TOOLS` only.
     pub hosted: bool,
+    /// A local copy linked to the hosted server (`crate::online`): mirror its
+    /// catalogue (when `devices_dir` is the default one) and forward the
+    /// report and contribution tools to it.
+    pub online: bool,
 }
 
 /// The tools of a server reached over the network: reading the catalogue
@@ -58,6 +66,53 @@ pub struct Caller<'a> {
     pub ledger: Option<&'a crate::reports::Ledger>,
     pub relays: Option<&'a crate::relay::Relays>,
     usage: Option<&'a UsageLog>,
+    /// A local copy's link to the hosted server.
+    online: Option<&'a Link>,
+}
+
+/// A local copy's link to the hosted server: the client, the account kept on
+/// this machine, and the trust of every reported driver, as last fetched.
+struct Link {
+    client: crate::online::Online,
+    user: std::sync::Mutex<Option<String>>,
+    trust: std::sync::RwLock<Value>,
+}
+
+impl Link {
+    fn new(base: &str) -> Self {
+        Self { client: crate::online::Online::new(base), user: std::sync::Mutex::new(None), trust: std::sync::RwLock::new(Value::Null) }
+    }
+
+    /// The account, issued by the server on first use; `forget` replaces one
+    /// the server no longer knows.
+    fn user(&self, forget: bool) -> Result<String, String> {
+        let mut g = self.user.lock().map_err(|_| "account unavailable")?;
+        if let (Some(id), false) = (g.as_ref(), forget) {
+            return Ok(id.clone());
+        }
+        let id = self.client.account(forget).map_err(|e| e.to_string())?;
+        *g = Some(id.clone());
+        Ok(id)
+    }
+
+    fn forward(&self, name: &str, args: &Value) -> Result<Value, String> {
+        let unreachable = |e: anyhow::Error| format!("{name} goes to the osc-bridge server, which could not be reached: {e}");
+        let user = self.user(false).map_err(|e| unreachable(anyhow::anyhow!(e)))?;
+        match self.client.call_tool(&user, name, args) {
+            Err(e) if e.to_string() == "unknown account" => {
+                let user = self.user(true).map_err(|e| unreachable(anyhow::anyhow!(e)))?;
+                self.client.call_tool(&user, name, args).map_err(unreachable)
+            }
+            r => r.map_err(unreachable),
+        }
+    }
+
+    /// A driver's trust status, once trust has been fetched.
+    fn status(&self, id: &str) -> Option<String> {
+        let trust = self.trust.read().ok()?;
+        if trust.is_null() { return None; }
+        Some(trust["devices"][id]["status"].as_str().unwrap_or("unreported").to_string())
+    }
 }
 
 /// What only the hosted server has: the ledger, the relay doors, the usage
@@ -70,11 +125,19 @@ pub struct Hosted {
     usage: UsageLog,
     pub admin_token: Option<String>,
     pub sync_token: Option<String>,
+    /// The catalogue served to local copies (`GET /v1/catalogue`): its root
+    /// and, computed on first request, every file with its SHA-256.
+    catalogue_root: PathBuf,
+    catalogue: std::sync::OnceLock<BTreeMap<String, String>>,
 }
 
 impl Hosted {
     fn caller<'a>(&'a self, user: Option<&'a str>) -> Caller<'a> {
-        Caller { user, ledger: Some(&self.ledger), relays: Some(&self.relays), usage: Some(&self.usage) }
+        Caller { user, ledger: Some(&self.ledger), relays: Some(&self.relays), usage: Some(&self.usage), online: None }
+    }
+
+    fn catalogue(&self) -> &BTreeMap<String, String> {
+        self.catalogue.get_or_init(|| crate::online::catalogue_files(&self.catalogue_root))
     }
 }
 
@@ -194,17 +257,61 @@ fn tier_rank(tier: &str) -> u8 {
 
 /// Build the catalogue index once — every device tool reads from it
 /// instead of re-walking the tree.
-fn build_index(opts: &McpOptions) -> DeviceIndex {
-    let devices_dir = crate::catalogue::resolve(&opts.devices_dir);
+fn build_index(devices_dir: &Path, opts: &McpOptions) -> DeviceIndex {
     eprintln!("MCP server starting (devices_dir={}, default_target={})",
         devices_dir.display(), opts.default_target);
-    let index = DeviceIndex::build(&devices_dir);
+    let index = DeviceIndex::build(devices_dir);
     eprintln!("indexed {} device file(s)", index.entries.len());
     index
 }
 
+/// Sent with `initialize` by a linked local copy.
+const LINKED_INSTRUCTIONS: &str = "osc-bridge catalogue of MIDI implementations (CC, NRPN, SysEx, drum \
+    maps) for about 980 synths, drum machines and DAWs, kept up to date from the osc-bridge server with \
+    what other users and agents fixed and confirmed. Start with list_devices, then list_routes with the \
+    slug; usage_status and get_trust tell how far other users confirmed a driver, per firmware. After \
+    testing a driver on the real device, call report_result with the firmware and the device's Identity \
+    Reply: it improves the driver for everyone.";
+
+/// Link a local copy to the hosted server, in the background: fetch trust,
+/// mirror the catalogue when `sync` (then swap in an index of the mirror).
+fn link_in_background(link: std::sync::Arc<Link>, index: std::sync::Arc<std::sync::RwLock<std::sync::Arc<DeviceIndex>>>,
+                      sync: Option<(PathBuf, PathBuf, bool)>) {
+    std::thread::spawn(move || {
+        match link.client.trust() {
+            Ok(t) => if let Ok(mut g) = link.trust.write() { *g = t },
+            Err(e) => { eprintln!("osc-bridge server unreachable ({e}): offline catalogue"); return; }
+        }
+        let Some((bundled, cache, on_cache)) = sync else { return };
+        let user = match link.user(false) { Ok(u) => u, Err(e) => { eprintln!("no account: {e}"); return; } };
+        match link.client.sync_catalogue(&user, &bundled, &cache) {
+            Ok(done) => {
+                eprintln!("catalogue synced with the osc-bridge server: {} files, {} copied, {} downloaded, {} removed",
+                    done.files, done.copied, done.downloaded, done.removed);
+                if done.changed() || !on_cache {
+                    let fresh = DeviceIndex::build(&cache);
+                    eprintln!("indexed {} device file(s) from {}", fresh.entries.len(), cache.display());
+                    if let Ok(mut g) = index.write() { *g = std::sync::Arc::new(fresh); }
+                }
+            }
+            Err(e) => eprintln!("catalogue sync failed ({e}): keeping the current catalogue"),
+        }
+    });
+}
+
 pub fn run(opts: McpOptions) -> Result<()> {
-    let index = build_index(&opts);
+    use std::sync::{Arc, RwLock};
+    let bundled = crate::catalogue::resolve(&opts.devices_dir);
+    // Only the default catalogue is mirrored: one the user points to is theirs.
+    let mirror = (opts.online && opts.devices_dir == Path::new("devices"))
+        .then(crate::online::cache_dir).flatten();
+    let cached = mirror.as_ref().and(crate::online::usable_cache());
+    let start = cached.clone().unwrap_or_else(|| bundled.clone());
+    let index = Arc::new(RwLock::new(Arc::new(build_index(&start, &opts))));
+    let link = opts.online.then(|| Arc::new(Link::new(crate::online::SERVER)));
+    if let Some(link) = &link {
+        link_in_background(link.clone(), index.clone(), mirror.map(|m| (bundled, m, cached.is_some())));
+    }
 
     let stdin = std::io::stdin();
     let stdout = std::io::stdout();
@@ -223,7 +330,12 @@ pub fn run(opts: McpOptions) -> Result<()> {
                 continue;
             }
         };
-        if let Some(resp) = handle_request(&req, &opts, &index, Caller::default()) {
+        let current = index.read().map(|g| g.clone()).map_err(|_| anyhow::anyhow!("catalogue index poisoned"))?;
+        let caller = Caller { online: link.as_deref(), ..Caller::default() };
+        if let Some(mut resp) = handle_request(&req, &opts, &current, caller) {
+            if let (true, Some(result)) = (link.is_some() && req["method"] == "initialize", resp.get_mut("result")) {
+                result["instructions"] = json!(LINKED_INSTRUCTIONS);
+            }
             let s = serde_json::to_string(&resp)?;
             writeln!(out, "{s}")?;
             out.flush()?;
@@ -293,13 +405,16 @@ fn client_key(req: &tiny_http::Request, behind_proxy: bool) -> String {
 /// `usage.jsonl` and the ledger `ledger.jsonl` (accounts, reports,
 /// decisions); without it they live in memory only.
 pub fn run_http(opts: McpOptions, bind: &str, behind_proxy: bool, data_dir: Option<&Path>, relay_bind: Option<&str>) -> Result<()> {
-    let opts = McpOptions { hosted: true, ..opts };
+    let opts = McpOptions { hosted: true, online: false, ..opts };
+    let devices_dir = crate::catalogue::resolve(&opts.devices_dir);
     let hosted = Hosted {
         ledger: std::sync::Arc::new(crate::reports::Ledger::open(data_dir.map(|d| d.join("ledger.jsonl")).as_deref())?),
         relays: std::sync::Arc::new(crate::relay::Relays::default()),
         usage: UsageLog::open(data_dir.map(|d| d.join("usage.jsonl")).as_deref())?,
         admin_token: std::env::var("OSC_BRIDGE_ADMIN_TOKEN").ok().filter(|t| t.len() >= 16),
         sync_token: std::env::var("OSC_BRIDGE_SYNC_TOKEN").ok().filter(|t| t.len() >= 16),
+        catalogue_root: devices_dir.clone(),
+        catalogue: std::sync::OnceLock::new(),
     };
     if let Some(rb) = relay_bind {
         let addr = crate::relay::serve(rb, hosted.relays.clone(),
@@ -310,7 +425,7 @@ pub fn run_http(opts: McpOptions, bind: &str, behind_proxy: bool, data_dir: Opti
     if hosted.admin_token.is_none() {
         eprintln!("no OSC_BRIDGE_ADMIN_TOKEN (16+ characters): /admin endpoints disabled");
     }
-    let index = build_index(&opts);
+    let index = build_index(&devices_dir, &opts);
     let server = tiny_http::Server::http(bind).map_err(|e| anyhow::anyhow!("bind HTTP {bind}: {e}"))?;
     eprintln!("MCP over HTTP on http://{}/mcp ({})", server.server_addr(), HOSTED_TOOLS.join(", "));
     let shared = std::sync::Arc::new((server, opts, index, RateLimiter::default(), hosted));
@@ -346,6 +461,8 @@ struct HttpRequest {
     user: Option<String>,
     /// The bearer token of an `Authorization` header.
     bearer: Option<String>,
+    /// The client's `User-Agent` (`osc-bridge/0.14.0` for a local copy).
+    client: Option<String>,
 }
 
 /// What the server sends back. `session` is the id to return in the
@@ -392,9 +509,7 @@ impl UsageLog {
     }
 }
 
-fn is_user_id(s: &str) -> bool {
-    s.len() == 32 && s.bytes().all(|b| b.is_ascii_hexdigit())
-}
+use crate::online::is_user_id;
 
 /// Accounts without sign-up: the server issues every id and keeps it in the
 /// ledger. A client that initializes without one gets a new account, in
@@ -428,7 +543,9 @@ fn read_request(req: &mut tiny_http::Request) -> HttpRequest {
     };
     let bearer = req.headers().iter().find(|h| h.field.equiv("Authorization"))
         .and_then(|h| h.value.as_str().strip_prefix("Bearer ").map(|t| t.trim().to_string()));
-    HttpRequest { method, path, body, user, bearer }
+    let client = req.headers().iter().find(|h| h.field.equiv("User-Agent"))
+        .map(|h| h.value.as_str().chars().take(60).collect());
+    HttpRequest { method, path, body, user, bearer, client }
 }
 
 /// Compare a presented token with the expected one in time independent of
@@ -510,6 +627,28 @@ fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex, host
              Docs: https://osc-bridge.roomi-fields.com/api/ \
              Source (AGPL-3.0-or-later): https://github.com/roomi-fields/osc-bridge\n", HOSTED_TOOLS.join(", ")))),
         ("GET", "/v1/trust") => HttpReply::new(200, Some(ledger.all().to_string())),
+        ("GET", "/v1/catalogue") => {
+            let files: Vec<Value> = hosted.catalogue().iter().map(|(p, h)| json!({ "path": p, "sha256": h })).collect();
+            let user = req.user.as_deref().filter(|id| ledger.knows(id));
+            HttpReply { usage: Some(json!({
+                "event": "catalogue_sync",
+                "ts": chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
+                "user": user, "client": req.client,
+            }).to_string()), ..HttpReply::new(200, Some(json!({ "version": SERVER_VERSION, "files": files }).to_string())) }
+        }
+        ("POST", "/v1/catalogue/files") => {
+            let wanted = req.body.as_ref().ok().and_then(|b| serde_json::from_str::<Value>(b).ok())
+                .and_then(|v| v["paths"].as_array().cloned()).unwrap_or_default();
+            if wanted.len() > crate::online::FILES_PER_REQUEST {
+                return HttpReply::new(400, Some(json!({ "error": format!("at most {} paths per request", crate::online::FILES_PER_REQUEST) }).to_string()));
+            }
+            let known = hosted.catalogue();
+            let files: BTreeMap<&str, String> = wanted.iter().filter_map(Value::as_str)
+                .filter(|p| known.contains_key(*p))
+                .filter_map(|p| Some((p, std::fs::read_to_string(p.split('/').fold(hosted.catalogue_root.clone(), |d, c| d.join(c))).ok()?)))
+                .collect();
+            HttpReply::new(200, Some(json!({ "files": files }).to_string()))
+        }
         ("GET", "/v1/learned") => HttpReply::new(200, Some(json!({ "mappings": ledger.learned(None) }).to_string())),
         (_, p) if p.starts_with("/admin/") => admin_exchange(req, hosted),
         ("GET", "/healthz") => HttpReply::new(200, Some("ok\n".into())),
@@ -1135,13 +1274,24 @@ fn tool_names(opts: &McpOptions) -> Vec<&'static str> {
     if opts.hosted {
         return HOSTED_TOOLS.to_vec();
     }
-    vec!["list_devices", "get_device_docs", "list_routes", "send", "get_status",
-         "detect_hardware", "backup_presets", "restore_presets"]
+    let local = ["list_devices", "get_device_docs", "list_routes", "send", "get_status",
+         "detect_hardware", "backup_presets", "restore_presets"];
+    let forwarded = if opts.online { crate::online::FORWARDED_TOOLS.as_slice() } else { &[] };
+    local.iter().chain(forwarded).copied().collect()
 }
 
 fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, caller: Caller) -> Result<Value, String> {
+    if let (None, Some(link)) = (caller.ledger, caller.online) {
+        if crate::online::FORWARDED_TOOLS.contains(&name) {
+            return link.forward(name, args);
+        }
+    }
     match name {
-        "list_devices" => list_devices(index, &DeviceFilter::from_args(args), caller.ledger),
+        "list_devices" => list_devices(index, &DeviceFilter::from_args(args), &|id| match (caller.ledger, caller.online) {
+            (Some(l), _) => Some(l.status(id).to_string()),
+            (None, Some(link)) => link.status(id),
+            (None, None) => None,
+        }),
         "report_result" => report_result(index, args, caller),
         "report_mapping" => report_mapping(index, args, caller),
         "submit_driver" => submit_driver(index, args, caller),
@@ -1358,12 +1508,12 @@ impl DeviceFilter {
     }
 }
 
-fn list_devices(index: &DeviceIndex, filter: &DeviceFilter, ledger: Option<&crate::reports::Ledger>) -> Result<Value, String> {
+fn list_devices(index: &DeviceIndex, filter: &DeviceFilter, status: &dyn Fn(&str) -> Option<String>) -> Result<Value, String> {
     let matching: Vec<&DeviceIndexEntry> = index.entries.iter().filter(|e| filter.keeps(e)).collect();
     let count = matching.len();
     let devices: Vec<Value> = matching.into_iter().take(filter.limit.unwrap_or(usize::MAX)).map(|e| json!({
         "id": e.id,
-        "usage_status": ledger.map(|l| l.status(&e.id)),
+        "usage_status": status(&e.id),
         "name": e.name,
         "vendor": e.vendor,
         "slug": e.slug,
@@ -2093,6 +2243,8 @@ mod tests {
             usage: UsageLog::open(None).unwrap(),
             admin_token: Some("x".repeat(16)),
             sync_token: Some("s".repeat(16)),
+            catalogue_root: PathBuf::from("devices"),
+            catalogue: std::sync::OnceLock::new(),
         }
     }
 
@@ -2101,13 +2253,14 @@ mod tests {
             devices_dir: PathBuf::from("devices"),
             default_target: "127.0.0.1:7777".parse().unwrap(),
             hosted: false,
+            online: false,
         }
     }
 
     #[test]
     fn list_devices_filters_by_words_vendor_kind_and_limit() {
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
-        let run = |args: Value| list_devices(&idx, &DeviceFilter::from_args(&args), None).unwrap()["structuredContent"].clone();
+        let run = |args: Value| list_devices(&idx, &DeviceFilter::from_args(&args), &|_| None).unwrap()["structuredContent"].clone();
         let all = run(json!({}));
         assert_eq!(all["count"].as_u64().unwrap() as usize, idx.entries.len());
         let mini = run(json!({"query": "KORG minilogue"}));
@@ -2138,7 +2291,7 @@ mod tests {
         let idx = empty_index();
         let store = hosted_for_tests();
         let req = |method: &str, path: &str, body: &str| HttpRequest {
-            method: method.into(), path: path.into(), body: Ok(body.into()), user: None, bearer: None,
+            method: method.into(), path: path.into(), body: Ok(body.into()), user: None, bearer: None, client: None,
         };
         let r = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":7,"method":"tools/list"}"#), &opts, &idx, &store);
         assert_eq!(r.status, 200);
@@ -2165,7 +2318,7 @@ mod tests {
                 header: Option<&str>, bearer: Option<&str>, body: &str) -> HttpReply {
         let (path, user) = user_id(path, header);
         http_exchange(&HttpRequest { method: method.into(), path, body: Ok(body.into()), user,
-            bearer: bearer.map(str::to_string) }, opts, idx, hosted)
+            bearer: bearer.map(str::to_string), client: None }, opts, idx, hosted)
     }
 
     #[test]
@@ -2363,6 +2516,69 @@ mod tests {
         assert_eq!(status["structuredContent"]["state"], "merged");
     }
 
+    /// The hosted server, for real, on a free local port, serving the
+    /// catalogue under `root`.
+    fn serve_hosted(root: &Path) -> String {
+        let hosted = Hosted { catalogue_root: root.to_path_buf(), ..hosted_for_tests() };
+        let opts = McpOptions { hosted: true, devices_dir: root.to_path_buf(), ..test_opts() };
+        let index = DeviceIndex::build(root);
+        let server = tiny_http::Server::http("127.0.0.1:0").unwrap();
+        let base = format!("http://{}", server.server_addr());
+        std::thread::spawn(move || {
+            for mut req in server.incoming_requests() {
+                let reply = http_exchange(&read_request(&mut req), &opts, &index, &hosted);
+                respond(req, reply);
+            }
+        });
+        base
+    }
+
+    #[test]
+    fn a_local_copy_mirrors_the_server_catalogue_and_forwards_reports() {
+        let tmp = std::env::temp_dir().join(format!("osc-bridge-link-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&tmp);
+        let (served, bundled, cache) = (tmp.join("served"), tmp.join("bundled"), tmp.join("cache"));
+        for (dir, files) in [(&served, &["korg/minilogue.json", "examples/test_synth.md", "examples/test_synth.json"][..]),
+                             (&bundled, &["korg/minilogue.json"][..])] {
+            for f in files {
+                std::fs::create_dir_all(dir.join(f).parent().unwrap()).unwrap();
+                std::fs::copy(Path::new("devices").join(f), dir.join(f)).unwrap();
+            }
+        }
+        std::fs::create_dir_all(cache.join("old")).unwrap();
+        std::fs::write(cache.join("old/gone.json"), "{}").unwrap();
+        let link = Link {
+            client: crate::online::Online::keeping_account_in(&serve_hosted(&served), Some(tmp.join("user"))),
+            ..Link::new("unused")
+        };
+        let user = link.user(false).unwrap();
+        assert_eq!(std::fs::read_to_string(tmp.join("user")).unwrap(), user, "the account is kept");
+        let done = link.client.sync_catalogue(&user, &bundled, &cache).unwrap();
+        assert_eq!(done, crate::online::Synced { files: 3, copied: 1, downloaded: 2, removed: 1 });
+        assert_eq!(crate::online::catalogue_files(&cache), crate::online::catalogue_files(&served));
+        let again = link.client.sync_catalogue(&user, &bundled, &cache).unwrap();
+        assert!(!again.changed(), "nothing to do the second time");
+
+        let opts = McpOptions { online: true, ..test_opts() };
+        let index = DeviceIndex::build(&cache);
+        let caller = Caller { online: Some(&link), ..Caller::default() };
+        let reported = call_tool("report_result", &json!({"device": "korg/minilogue", "outcome": "works", "firmware": "2.10"}),
+            &opts, &index, caller).unwrap();
+        assert_ne!(reported["isError"], json!(true), "{reported}");
+        if let Ok(mut t) = link.trust.write() { *t = link.client.trust().unwrap(); }
+        let listed = call_tool("list_devices", &json!({"query": "minilogue"}), &opts, &index, caller).unwrap();
+        assert_eq!(listed["structuredContent"]["devices"][0]["usage_status"], "unconfirmed");
+        assert!(tool_names(&opts).contains(&"submit_fix") && !tool_names(&test_opts()).contains(&"submit_fix"));
+
+        std::fs::write(tmp.join("user"), "0".repeat(32)).unwrap();
+        let relinked = Link { client: crate::online::Online::keeping_account_in(link.client.base(), Some(tmp.join("user"))), ..Link::new("unused") };
+        let trust = call_tool("get_trust", &json!({"device": "korg/minilogue"}), &opts, &index,
+            Caller { online: Some(&relinked), ..Caller::default() }).unwrap();
+        assert_ne!(trust["isError"], json!(true), "an account the server forgot is replaced: {trust}");
+        assert_ne!(std::fs::read_to_string(tmp.join("user")).unwrap(), "0".repeat(32));
+        std::fs::remove_dir_all(&tmp).ok();
+    }
+
     #[test]
     fn report_tools_refuse_without_the_hosted_store() {
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
@@ -2419,7 +2635,7 @@ mod tests {
     #[test]
     fn list_devices_result_carries_structured_content() {
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
-        let res = list_devices(&idx, &DeviceFilter::default(), None).unwrap();
+        let res = list_devices(&idx, &DeviceFilter::default(), &|_| None).unwrap();
         let sc = res.get("structuredContent").expect("structuredContent present");
         assert!(sc.get("count").and_then(Value::as_u64).unwrap() > 100);
         assert!(sc.get("devices").and_then(Value::as_array).unwrap().len() > 100);

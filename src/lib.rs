@@ -20,6 +20,7 @@ pub mod librarian;
 pub mod catalogue;
 pub mod reports;
 pub mod relay;
+pub mod online;
 pub mod connect;
 
 pub use device::Device;
