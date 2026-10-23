@@ -108,12 +108,15 @@ it is linked to the SynthHub server.
   `get_trust`, `submit_driver`, `submit_fix` and `get_contribution`. What you
   report improves the drivers for everyone; see
   [API for agents](https://synthhub.roomi-fields.com/api/#reports-and-trust).
-- **Shared presets** (CC BY-SA 4.0): `find_presets` and `get_preset` search
-  the sounds other users shared, `load_preset` plays one into a device
-  plugged into your computer (patch data only once you agreed),
-  `report_preset` says how it went; `share_preset` shares a sound you made
-  (settings by driver address, or patch data as hex or a `.syx` file from
-  `backup_presets`), `withdraw_preset` takes it back. See
+- **Shared presets** (CC BY-SA 4.0): sounds, sequences, kits, projects,
+  banks and MIDI clips other users made. `find_presets` and `get_preset`
+  search them, `load_preset` plays one into a device plugged into your
+  computer (device data only once you agreed), `report_preset` says how it
+  went; `share_preset` shares what you made (from a `.syx`, a `.mid`,
+  settings by driver address, with an audio preview), `update_preset`
+  publishes a new version, `withdraw_preset` takes it back; `comment_preset`,
+  `favorite_preset`, `preset_collection`, `follow_author` and `set_profile`
+  for the rest. See
   [shared presets](https://synthhub.roomi-fields.com/api/#shared-presets).
 
 Your MIDI ports and your devices' traffic never leave your machine. Sharing
