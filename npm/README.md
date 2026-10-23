@@ -6,7 +6,7 @@ for driving it from an LLM.
 osc-bridge translates [OSC](https://opensoundcontrol.stanford.edu/) to and from
 the music world:
 
-- **849 hardware synthesizers** via MIDI / SysEx — every Prophet, Oberheim,
+- **964 hardware synthesizers** via MIDI / SysEx — every Prophet, Oberheim,
   Moog, Yamaha DX family, MatrixBrute, Hydrasynth, Virus TI, Digitone…
 - **Software targets** via native OSC — Ableton Live, Bitwig, Reaper, Sonic Pi,
   SuperCollider, Pure Data, TouchDesigner, VCV Rack.
@@ -50,7 +50,7 @@ Add to your MCP client config (e.g. Claude Desktop
 ```
 
 The MCP server exposes five tools — `list_devices`, `get_device_docs`,
-`list_routes`, `send`, `get_status` — so the model can discover the 849-device
+`list_routes`, `send`, `get_status` — so the model can discover the 964-device
 catalogue, read a device's OSC surface, and send OSC to a running bridge.
 
 It's both a **MIDI MCP** (hardware synths over MIDI/SysEx) and an **OSC MCP**
