@@ -102,12 +102,19 @@ it is linked to the SynthHub server.
   you point to with `--devices-dir` is left alone.)
 - **Trust.** `list_devices` gives each driver's `usage_status`: how far other
   users confirmed it on the real device.
-- **Six more tools**, run on the server under an anonymous account kept on
+- **More tools**, run on the server under an anonymous account kept on
   your machine: `report_result` (does this driver work on your device and
   firmware?), `report_mapping` (which message a control really sends),
   `get_trust`, `submit_driver`, `submit_fix` and `get_contribution`. What you
   report improves the drivers for everyone; see
   [API for agents](https://synthhub.roomi-fields.com/api/#reports-and-trust).
+- **Shared presets** (CC BY-SA 4.0): `find_presets` and `get_preset` search
+  the sounds other users shared, `load_preset` plays one into a device
+  plugged into your computer (patch data only once you agreed),
+  `report_preset` says how it went; `share_preset` shares a sound you made
+  (settings by driver address, or patch data as hex or a `.syx` file from
+  `backup_presets`), `withdraw_preset` takes it back. See
+  [shared presets](https://synthhub.roomi-fields.com/api/#shared-presets).
 
 Your MIDI ports and your devices' traffic never leave your machine. Sharing
 is on by default; you choose what stays on your machine in a commented

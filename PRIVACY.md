@@ -19,6 +19,10 @@ other users and agents fixed and confirmed:
 - **When your agent reports or contributes** (`report_result`,
   `report_mapping`, `submit_driver`, `submit_fix`), what it sends goes to the
   server under that account, to improve the catalogue for everyone.
+- **When your agent shares a preset** (`share_preset`, only a sound you
+  made, after asking you), it is published under CC BY-SA 4.0 with a
+  pseudonym for its author — never your account id. You can withdraw it
+  (`withdraw_preset`).
 - **Never sent:** your MIDI ports, your devices' traffic, your files, your
   address (beyond what any web server sees for a few days in its access log).
 
@@ -42,8 +46,8 @@ private = [
 - `offline = true` cuts the link: nothing is sent, and the catalogue bundled
   with your copy is used as is. For a single run: `osc-bridge mcp --offline`
   or `OSC_BRIDGE_OFFLINE=1`.
-- A private device: its reports, learned mappings, fixes and trust lookups
-  stay on your machine, while the catalogue and the trust fetched at startup
+- A private device: its reports, learned mappings, fixes, presets and trust
+  lookups stay on your machine, while the catalogue and the trust fetched at startup
   stay up to date.
 
 `osc-bridge privacy` shows the current settings and where the file is; it can
@@ -57,7 +61,9 @@ Through the relay (the `/connect` page or `osc-bridge connect`), the identity
 to improve the catalogue. Untick *Share the identity of my devices* (or
 `osc-bridge connect --no-share`) to record none, or keep one device private —
 the *private* box next to it on the page, `--private-port <name>` on the
-command line. MIDI messages passing through the relay are never recorded.
+command line. MIDI messages passing through the relay are never recorded,
+except a patch your agent captures to share as a preset (`share_preset`,
+after asking you) — never from a device kept private.
 
 What the server records — accounts, tool calls, reports, device identities —
 is described in the
