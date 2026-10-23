@@ -17,7 +17,18 @@ script, the CLI — or from Claude via the built-in **MCP server** (a **MIDI MCP
 
 ## Install
 
-As an **MCP server** — drive synths and DAWs from Claude, nothing to install:
+**Hosted MCP server, nothing to install** — the SynthHub server, run by the
+maintainer of osc-bridge, with the up-to-date catalogue, trust from real use
+and the relay to your own hardware:
+
+- **Claude** (web, desktop): Settings → Connectors → *Add custom connector* →
+  `https://mcp.osc-bridge.roomi-fields.com/mcp`
+- **Claude Code**: `claude mcp add --transport http synthhub https://mcp.osc-bridge.roomi-fields.com/mcp`
+- **Cursor and other clients**: `{"mcpServers": {"synthhub": {"url": "https://mcp.osc-bridge.roomi-fields.com/mcp"}}}`
+
+**On your machine** — the MCP server over stdio, with hardware detection and
+OSC to a running bridge (kept up to date from the server; you choose what it
+shares):
 
 ```bash
 npx -y @roomi-fields/osc-bridge mcp
@@ -31,7 +42,7 @@ npm install -g @roomi-fields/osc-bridge      # downloads the prebuilt binary
 osc-bridge run --device devices/arturia/minilab3.json --out-port 4
 ```
 
-MCP client config and the eight tools → [`docs/MCP.md`](docs/MCP.md). Full
+MCP client config and the tools → [`docs/MCP.md`](docs/MCP.md). Full
 quick-start with MIDI port discovery → [§ Install & quick start](#install--quick-start).
 
 ## Why a bridge?
@@ -444,6 +455,12 @@ server — a **MIDI MCP** *and* **OSC MCP**. Point any MCP client at it and the
 model can browse the 964-device catalogue, read a device's OSC surface, and
 send OSC to synths and DAWs.
 
+**Hosted** — add `https://mcp.osc-bridge.roomi-fields.com/mcp` as a remote MCP server (see
+[Install](#install)). Nothing to install; your synth joins through the relay
+page, [synthhub.roomi-fields.com/connect](https://synthhub.roomi-fields.com/connect/).
+
+**On your machine**:
+
 ```jsonc
 {
   "mcpServers": {
@@ -455,10 +472,11 @@ send OSC to synths and DAWs.
 }
 ```
 
-Eight tools — `list_devices`, `get_device_docs`, `list_routes`, `send`,
-`get_status`, `detect_hardware`, `backup_presets`, `restore_presets`. Then in conversation: *"What can the MatrixBrute do? Sweep its
-filter cutoff."* — the model calls `list_routes("matrixbrute")`, then `send`.
-No glue code.
+Eight local tools — `list_devices`, `get_device_docs`, `list_routes`, `send`,
+`get_status`, `detect_hardware`, `backup_presets`, `restore_presets` — plus
+six run on the server (reports, trust, contributions). Then in conversation:
+*"What can the MatrixBrute do? Sweep its filter cutoff."* — the model calls
+`list_routes("matrixbrute")`, then `send`. No glue code.
 
 Full setup — Claude Desktop / Cursor config, the workflow, driving software
 targets → **[`docs/MCP.md`](docs/MCP.md)**.

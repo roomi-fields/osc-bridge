@@ -6,6 +6,9 @@ social. This file tracks the directory half.
 
 **Package**: `@roomi-fields/osc-bridge` (npm) · `io.github.roomi-fields/osc-bridge` (registry)
 **Positioning everywhere**: *OSC ↔ MIDI bridge for 964 synths and DAWs — a MIDI MCP and OSC MCP.*
+**Hosted endpoint first** (since 2026-10-23): every listing leads with the hosted server,
+`https://mcp.osc-bridge.roomi-fields.com/mcp` (SynthHub), the local copy (`npx`) second. No
+copies hosted by third parties: agents should reach the hosted server itself.
 **Last sync**: 2026-10-23
 
 Legend: ✅ live · ⚠️ submitted, pending · 🔄 auto-indexing in progress · ❌ to do · 🚫 out of scope
@@ -16,11 +19,11 @@ Legend: ✅ live · ⚠️ submitted, pending · 🔄 auto-indexing in progress 
 
 | Channel | Status | Notes |
 |---|---|---|
-| npm — `@roomi-fields/osc-bridge` | ✅ | v0.13.0 (2026-10-23), catalogue bundled; published by npm trusted publishing from `ci.yml` (no token) |
-| Official MCP Registry — `io.github.roomi-fields/osc-bridge` | ✅ | v0.13.0 published 2026-10-23 by the release job (OIDC), with the hosted endpoint as a remote |
+| npm — `@roomi-fields/osc-bridge` | ✅ | v0.14.0 (2026-10-23), catalogue bundled; README leads with the hosted endpoint from the next release; published by npm trusted publishing from `ci.yml` (no token) |
+| Official MCP Registry — `io.github.roomi-fields/osc-bridge` | ✅ | v0.14.0 published 2026-10-23 by the release job (OIDC), with the hosted endpoint as a remote |
 | GitHub repo metadata | ✅ | public; About description + homepage (Pages site) set to the 3-strata framing; topics include `mcp`, `mcp-server`, `model-context-protocol`, `midi`, `osc`, `claude`, `ableton`, `bitwig`, `reaper`, `daw`, `live-coding` (20-topic cap reached — dropped the long-tail vendor topics) |
 | `roomi-fields/claude-plugins` marketplace | ✅ | entry added 2026-05-14 |
-| Pages site (GitHub Pages) | ✅ | MkDocs site since 2026-10-22: 981 device pages, 10 articles, JSON-LD per page, llms.txt |
+| Site — synthhub.roomi-fields.com | ✅ | built from SynthHub since 2026-10-23: a page per device, 10 articles, JSON-LD, llms.txt; GitHub Pages is a pointer page |
 
 ## Tier 1 — auto-indexed (verify, fix metadata if wrong)
 
@@ -39,7 +42,7 @@ and that the description/keywords landed correctly.
 
 | Directory | Status | Action |
 |---|---|---|
-| Smithery.ai | ✅ | `roomifields/osc-bridge` published 2026-05-14 as a stdio MCPB bundle; quality score 100% (output schemas + annotations shipped in v0.10.1); description + icon set via the registry API |
+| Smithery.ai | ⚠️ | `roomifields/osc-bridge` published 2026-05-14 as a stdio MCPB bundle (quality score 100%). To do: add the hosted endpoint as the listing's remote URL, ahead of the bundle |
 | awesome-mcp-servers (punkpeye, ~80k★) | ❌ | PR #6342 closed for inactivity — only missing a Glama quality score. Reopen once Glama has scored the server |
 | awesome-mcp-servers (TensorBlock, ~680★) | ✅ | PR #543 merged 2026-05-18 |
 | Cline Marketplace | ⚠️ | issue #1561 open, no answer since May |
@@ -73,11 +76,14 @@ and that the description/keywords landed correctly.
 2. ~~Smithery~~ — ✅ done 2026-05-14.
 3. ~~PR-able awesome lists~~ — ✅ punkpeye #6342 + TensorBlock #543 done. wong2
    and appcypher have no PR/issue path (web form / closed) — not actionable.
-4. **Verify Tier 1 auto-indexers** picked us up correctly (description, keywords) —
+4. **Hosted endpoint first in every listing** — our own pages done 2026-10-23 (README,
+   npm README, MCP guide, site); Smithery: remote URL to add; web forms below: submit
+   the hosted URL, not the npm command.
+5. **Verify Tier 1 auto-indexers** picked us up correctly (description, keywords) —
    give them a few days after the registry publish, then check.
-5. **Web forms (need a human)**: wong2 (mcpservers.org/submit), Cursor Directory,
+6. **Web forms (need a human)**: wong2 (mcpservers.org/submit), Cursor Directory,
    FindMCP.dev, MCPIndex.net, MCPList.ai, Windsurf.
-6. **Track PR #6342 (punkpeye) + PR #543 (TensorBlock) + issue #1561 (Cline)** —
+7. **Track PR #6342 (punkpeye) + PR #543 (TensorBlock) + issue #1561 (Cline)** —
    respond to maintainer feedback if any.
 
 ## Monitoring cadence (PLAYBOOK §6.2)

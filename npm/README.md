@@ -17,7 +17,13 @@ any MCP client) via the built-in MCP server**.
 
 ## Install
 
-As an MCP server (no global install needed):
+**Hosted MCP server, nothing to install** — add
+`https://mcp.osc-bridge.roomi-fields.com/mcp` as a remote MCP server (a custom
+connector in Claude; `claude mcp add --transport http synthhub https://mcp.osc-bridge.roomi-fields.com/mcp`
+in Claude Code). It serves the up-to-date catalogue, trust from real use, and
+a relay to your own hardware: <https://synthhub.roomi-fields.com/>.
+
+**On your machine**, as an MCP server over stdio:
 
 ```bash
 npx -y @roomi-fields/osc-bridge mcp
@@ -33,7 +39,7 @@ osc-bridge --help
 `npm install` downloads the prebuilt native binary for your platform
 (Linux x64, Windows x64, macOS arm64/x64) from the matching GitHub release.
 
-## Use as an MCP server
+## Use as a local MCP server
 
 Add to your MCP client config (e.g. Claude Desktop
 `claude_desktop_config.json`):
@@ -49,9 +55,10 @@ Add to your MCP client config (e.g. Claude Desktop
 }
 ```
 
-The MCP server exposes five tools — `list_devices`, `get_device_docs`,
-`list_routes`, `send`, `get_status` — so the model can discover the 964-device
-catalogue, read a device's OSC surface, and send OSC to a running bridge.
+Eight tools — `list_devices`, `get_device_docs`, `list_routes`, `send`,
+`get_status`, `detect_hardware`, `backup_presets`, `restore_presets` — plus six
+run on the server (reports, trust, contributions), so the model can discover
+the 964-device catalogue, read a device's OSC surface, and drive your devices.
 
 It's both a **MIDI MCP** (hardware synths over MIDI/SysEx) and an **OSC MCP**
 (DAWs and live-coding environments over OSC).
