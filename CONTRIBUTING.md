@@ -50,7 +50,10 @@ The rule going forward:
    cross-link the others from their `_limitations`.
 4. **Catalogue groups variants automatically.** `scripts/regen_supported_devices.py`
    groups files that share `device.name` + `device.vendor` into one catalogue
-   entry listing every variant with its firmware and tier.
+   entry listing every variant with its firmware and tier. A new device changes
+   the catalogue's size: run `python3 scripts/regen_supported_devices.py` and
+   `python3 scripts/sync_counts.py`, which writes the new numbers into the
+   README, the package descriptions and the guides (CI checks both).
 5. **Prefer the user's firmware at runtime.** The bridge takes a `--device`
    path, so users pick the variant that matches their hardware. If you have a
    vendor-doc variant that clearly supersedes a community one (newer firmware,
