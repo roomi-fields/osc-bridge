@@ -5,7 +5,7 @@ Per the PLAYBOOK, the growth engine is **MCP directories + Google SEO**, not
 social. This file tracks the directory half.
 
 **Package**: `@roomi-fields/osc-bridge` (npm) · `io.github.roomi-fields/osc-bridge` (registry)
-**Positioning everywhere**: *OSC ↔ MIDI bridge for 963 synths and DAWs — a MIDI MCP and OSC MCP.*
+**Positioning everywhere**: *OSC ↔ MIDI bridge for 964 synths and DAWs — a MIDI MCP and OSC MCP.*
 **Last sync**: 2026-10-23
 
 Legend: ✅ live · ⚠️ submitted, pending · 🔄 auto-indexing in progress · ❌ to do · 🚫 out of scope
