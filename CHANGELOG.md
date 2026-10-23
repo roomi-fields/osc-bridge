@@ -11,6 +11,8 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+## [0.15.0] — 2026-10-23
+
 ### Changed — the site moves to synthhub.roomi-fields.com
 - The documentation site and the device catalogue's pages are now built and
   served by SynthHub, at https://synthhub.roomi-fields.com/; osc-bridge keeps
