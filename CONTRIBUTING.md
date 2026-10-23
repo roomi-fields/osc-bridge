@@ -209,6 +209,8 @@ If you observe wrong bytes going out or a JSON that refuses to load:
 2. Attach a minimal OSC message that triggers the bug and the expected vs observed MIDI bytes.
 3. Open an issue. Don't skip the "expected vs observed" part — half the bug reports we can action have it, the other half we can't.
 
-## License
+## License and contributor agreement
 
-Contributions are accepted under AGPL-3.0-or-later, same as the rest of the project. You retain copyright on your contributions.
+You keep the copyright on your contributions. They are published here under the licence of the part they go into (AGPL-3.0-or-later for the code).
+
+Before your first pull request is merged, you sign the [Contributor License Agreement](CLA.md), once: a bot comments on the pull request with the sentence to post, and records your signature. In short, the agreement lets the maintainer also use your contribution in other programs and hosted services built on osc-bridge, under any licence; [CLA.md](CLA.md) explains it in plain words.

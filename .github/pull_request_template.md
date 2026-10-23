@@ -15,6 +15,7 @@ For a hardware-verification promotion, use promote_to_verified.md.
 - [ ] No stray `transform` / `script` — or it's justified in the PR description
 - [ ] If schema was extended: `docs/DEVICE_JSON_SCHEMA.md` and `CHANGELOG.md` updated
 - [ ] If a device was added / promoted: `README.md` table and `docs/SUPPORTED_DEVICES.md` updated
+- [ ] First contribution: I will sign the [Contributor License Agreement](../CLA.md) when the bot asks (once)
 
 ## Notes for the reviewer
 
