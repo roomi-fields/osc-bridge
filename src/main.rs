@@ -169,6 +169,14 @@ enum Cmd {
         /// reach MIDI devices on the user's machine through the relay tools.
         #[arg(long, requires = "http")]
         relay_bind: Option<String>,
+        /// Do not contact the osc-bridge server (also OSC_BRIDGE_OFFLINE=1).
+        /// By default a local copy keeps its catalogue up to date from the
+        /// server — the drivers other users and agents fixed and confirmed —
+        /// shows how far each driver is confirmed, and sends report_result
+        /// and the contribution tools there, under an anonymous account kept
+        /// on this machine. MIDI ports are never shared.
+        #[arg(long, conflicts_with = "http")]
+        offline: bool,
     },
 }
 
@@ -193,10 +201,11 @@ fn main() -> Result<()> {
         Cmd::OscListen { bind } => cmd_osc_listen(bind),
         Cmd::Lint { device } => cmd_lint(device),
         Cmd::Orchestrate { config } => osc_bridge::orchestrator::Orchestrator::run(&config),
-        Cmd::Mcp { devices_dir, default_target, http, behind_proxy, data_dir, relay_bind } => {
+        Cmd::Mcp { devices_dir, default_target, http, behind_proxy, data_dir, relay_bind, offline } => {
             let default_target = default_target.parse::<std::net::SocketAddr>()
                 .with_context(|| format!("parse --default-target {default_target}"))?;
-            let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, hosted: false };
+            let online = http.is_none() && !offline && !osc_bridge::online::offline_by_env();
+            let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, hosted: false, online };
             match http {
                 Some(bind) => osc_bridge::mcp::run_http(opts, &bind, behind_proxy, data_dir.as_deref(), relay_bind.as_deref()),
                 None => osc_bridge::mcp::run(opts),

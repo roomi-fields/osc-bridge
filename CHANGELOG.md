@@ -11,6 +11,19 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Added — every copy linked to the osc-bridge server
+- `osc-bridge mcp` on your machine now stays up to date with what the
+  community builds on the hosted server: at startup it mirrors the server's
+  catalogue in the background (only the files that changed, into
+  `<cache>/osc-bridge/catalogue`), shows each driver's trust in
+  `list_devices` (`usage_status`), and offers `report_result`,
+  `report_mapping`, `get_trust`, `submit_driver`, `submit_fix` and
+  `get_contribution`, run on the server under an anonymous account kept on
+  the machine (the one `osc-bridge connect` uses). MIDI ports never leave
+  the machine. `--offline` or `OSC_BRIDGE_OFFLINE=1` cuts the link.
+- Hosted server: `GET /v1/catalogue` (every driver file with its SHA-256)
+  and `POST /v1/catalogue/files` (their contents, 100 per request).
+
 ### Added — the person at the relay confirms memory writes
 - A message sent through the relay that may overwrite the device's memory —
   every SysEx but the Identity Request: patch dumps, stores, settings — goes

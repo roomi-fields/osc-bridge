@@ -67,6 +67,10 @@ The same catalogue as MCP tools, for Claude, Cursor and other MCP clients.
 
 **On your machine (stdio)**, with all eight tools including hardware
 detection and sending to a running bridge: see the [MCP guide](MCP.md).
+Such a copy is linked to this server unless `--offline`: it mirrors the
+catalogue (`GET /v1/catalogue` lists every driver file with its SHA-256;
+`POST /v1/catalogue/files` with `{"paths": [...]}`, 100 at most, returns
+their contents) and sends its reports and contributions here.
 
 **Hosted, nothing to install**: add `https://mcp.osc-bridge.roomi-fields.com/mcp`
 as a remote MCP server (a "custom connector" in Claude). It offers, at most

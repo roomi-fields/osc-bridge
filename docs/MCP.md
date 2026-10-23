@@ -59,6 +59,8 @@ The server speaks JSON-RPC 2.0 over stdio.
 - `--default-target <host:port>` — where `send` / `get_status` point when no
   `target` argument is given (default `127.0.0.1:7777`, the standard
   `osc-bridge run` bind).
+- `--offline` — do not contact the osc-bridge server (also
+  `OSC_BRIDGE_OFFLINE=1`); see *Linked to the osc-bridge server* below.
 - `--http <host:port>` — serve MCP over HTTP (endpoint `/mcp`) instead of
   stdio, for agents that reach the catalogue over the network. Only the
   catalogue tools and the usage reports (`report_result`, `get_trust`) are
@@ -80,6 +82,28 @@ The server speaks JSON-RPC 2.0 over stdio.
 
 The catalogue is indexed once at startup, so `list_devices` and slug lookups
 are instant — no per-call directory walk.
+
+## Linked to the osc-bridge server
+
+Your copy stays current with what the community builds: unless `--offline`,
+it is linked to the hosted osc-bridge server.
+
+- **An up-to-date catalogue.** At startup it fetches the list of the server's
+  drivers and downloads, in the background, the ones that changed since your
+  copy was released — drivers other users and agents added or fixed. They are
+  kept in `<cache>/osc-bridge/catalogue` and used from then on. (A catalogue
+  you point to with `--devices-dir` is left alone.)
+- **Trust.** `list_devices` gives each driver's `usage_status`: how far other
+  users confirmed it on the real device.
+- **Six more tools**, run on the server under an anonymous account kept on
+  your machine: `report_result` (does this driver work on your device and
+  firmware?), `report_mapping` (which message a control really sends),
+  `get_trust`, `submit_driver`, `submit_fix` and `get_contribution`. What you
+  report improves the drivers for everyone; see
+  [API for agents](api.md#reports-and-trust).
+
+Your MIDI ports and your devices' traffic never leave your machine. Details:
+[privacy](https://github.com/roomi-fields/osc-bridge/blob/main/PRIVACY.md).
 
 ## Typical workflow
 

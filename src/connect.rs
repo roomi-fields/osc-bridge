@@ -24,13 +24,11 @@ use midir::{Ignore, MidiInput, MidiInputConnection, MidiOutput, MidiOutputConnec
 use serde_json::{json, Value};
 use std::collections::{HashMap, VecDeque};
 use std::net::TcpStream;
-use std::path::PathBuf;
 use std::time::{Duration, Instant};
 use tungstenite::stream::MaybeTlsStream;
 use tungstenite::{Message, WebSocket};
 
 pub const DEFAULT_RELAY: &str = "wss://mcp.osc-bridge.roomi-fields.com/relay";
-const MCP: &str = "https://mcp.osc-bridge.roomi-fields.com";
 const RESCAN: Duration = Duration::from_secs(3);
 const READ_TIMEOUT: Duration = Duration::from_millis(5);
 
@@ -40,15 +38,6 @@ const CLIENT: &str = "osc-bridge-connect";
 
 fn is_ours(name: &str) -> bool {
     name.starts_with(CLIENT)
-}
-
-/// Where the account id is kept: `$XDG_CONFIG_HOME`, `~/.config` or
-/// `%APPDATA%`, under `osc-bridge/user`.
-fn account_file() -> Option<PathBuf> {
-    let base = std::env::var_os("XDG_CONFIG_HOME").map(PathBuf::from)
-        .or_else(|| std::env::var_os("APPDATA").map(PathBuf::from))
-        .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".config")))?;
-    Some(base.join("osc-bridge").join("user"))
 }
 
 /// The open MIDI ports, by name, and the names last sent to the server.
@@ -176,7 +165,7 @@ fn set_read_timeout(ws: &WebSocket<MaybeTlsStream<TcpStream>>, t: Duration) -> R
 pub fn run(server: &str, share: bool, test_synth: bool) -> Result<()> {
     // One TLS crypto provider for the process (several may be compiled in).
     let _ = rustls::crypto::ring::default_provider().install_default();
-    let file = account_file();
+    let file = crate::online::account_file();
     let known = file.as_ref().and_then(|f| std::fs::read_to_string(f).ok()).map(|s| s.trim().to_string());
     let url = match &known {
         Some(id) if !id.is_empty() => format!("{server}?user={id}"),
@@ -203,7 +192,7 @@ pub fn run(server: &str, share: bool, test_synth: bool) -> Result<()> {
     println!("Relay code: {code}");
     println!();
     println!("1. In your AI assistant, add this remote MCP server once:");
-    println!("   {MCP}/u/{user}/mcp");
+    println!("   {}/u/{user}/mcp", crate::online::SERVER);
     println!("2. Tell the agent: \"My osc-bridge relay code is {code}\"");
     println!("3. Keep this running while you play (Ctrl-C to stop).");
     println!();
