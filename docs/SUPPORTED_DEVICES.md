@@ -3,13 +3,14 @@
 
 # Supported devices
 
-**964 devices** across **212 vendors** — shipped as **982 driver files** (a device may have several variants: per firmware, per source).
+**986 devices** across **214 vendors** — shipped as **1004 driver files** (a device may have several variants: per firmware, per source).
 
 - **✅ hardware-verified** — 5 (tested on the physical device — scope varies per driver, see `_sources` in each JSON for what was exercised)
 - **📘 vendor-doc derived** — 3 (from a manufacturer programmer's reference / official MIDI spec — bytes match the spec, still beta until tested)
 - **📡 OSC-API (software targets)** — 7 (vendor-OSC or third-party OSC shim like AbletonOSC — DAWs and live coding environments)
 - **🎛️ electra-preset derived** — 588 (from a community Electra One preset — covers SysEx + CC/NRPN, but reflects the preset author's editorial choices)
 - **📦 pencilresearch derived** — 376 (community canonical CSVs — CC/NRPN only, no SysEx)
+- **💾 KnobKraft Orm derived** — 22 (sound exchange only — taking and loading sounds through a KnobKraft Orm adaptation; no control mapped)
 - **🤖 agent-contributed** — 0 (submitted by an AI agent through the hosted server — parsed, linted and tested automatically, not reviewed)
 - **🧪 test device** — 1 (virtual, for testing the relay and the hosted server without hardware)
 - **🚧 WIP** — 1
@@ -26,7 +27,7 @@
 - [Ableton](#ableton) (39)
 - [Access](#access) (6)
 - [AIR Music Tech](#air-music-tech) (1)
-- [Akai](#akai) (8)
+- [Akai](#akai) (9)
 - [Alesis](#alesis) (4)
 - [ALM Busy Circuits](#alm-busy-circuits) (1)
 - [Animal Factory Amplification](#animal-factory-amplification) (3)
@@ -41,13 +42,13 @@
 - [Beetlecrab.audio](#beetlecrabaudio) (2 devices, 4 files)
 - [Behringer](#behringer) (11)
 - [Bitwig](#bitwig) (4)
-- [Black Corporation](#black-corporation) (3)
+- [Black Corporation](#black-corporation) (4)
 - [Blokas](#blokas) (1)
 - [Bohm](#bohm) (1)
 - [BOSS](#boss) (7)
 - [Bradshaw Instruments](#bradshaw-instruments) (1)
 - [Camel Audio](#camel-audio) (1)
-- [Casio](#casio) (4)
+- [Casio](#casio) (5)
 - [Chase Bliss](#chase-bliss) (29)
 - [Cheetah](#cheetah) (1)
 - [Cherry Audio](#cherry-audio) (5)
@@ -60,7 +61,7 @@
 - [Cyma](#cyma) (2)
 - [D16 Group](#d16-group) (3)
 - [Darkglass](#darkglass) (1)
-- [Dave Smith Instruments](#dave-smith-instruments) (9)
+- [Dave Smith Instruments](#dave-smith-instruments) (11)
 - [Derivative](#derivative) (1)
 - [Dirtywave](#dirtywave) (3)
 - [discoDSP](#discodsp) (5)
@@ -69,13 +70,13 @@
 - [DSI](#dsi) (3)
 - [E-MU](#e-mu) (5)
 - [Electra Community](#electra-community) (23)
-- [Electra One](#electra-one) (1)
+- [Electra One](#electra-one) (2)
 - [Elektron](#elektron) (28 devices, 32 files)
 - [Elka](#elka) (1)
 - [Empress](#empress) (2)
 - [Endorphin.es](#endorphines) (1)
 - [Enjoy Electronics](#enjoy-electronics) (1)
-- [Ensoniq](#ensoniq) (3)
+- [Ensoniq](#ensoniq) (5)
 - [Eowave](#eowave) (2)
 - [Erica Synths](#erica-synths) (4)
 - [Eventide](#eventide) (20)
@@ -103,9 +104,10 @@
 - [Inphonik](#inphonik) (1)
 - [Instruō](#instruō) (1)
 - [Intellijel](#intellijel) (1)
+- [John Bowen Synth Design](#john-bowen-synth-design) (1)
 - [Jomox](#jomox) (6 devices, 7 files)
 - [Kasser Synths](#kasser-synths) (2)
-- [Kawai](#kawai) (7)
+- [Kawai](#kawai) (8)
 - [Kemper](#kemper) (5)
 - [Kinotone](#kinotone) (4)
 - [Kiviak Instruments](#kiviak-instruments) (1)
@@ -113,14 +115,14 @@
 - [Knobula](#knobula) (1)
 - [Kodamo](#kodamo) (2)
 - [KORG](#korg) (46 devices, 47 files)
-- [Korg](#korg) (14)
+- [Korg](#korg) (15)
 - [Kurzweil](#kurzweil) (2)
 - [L.L. Electronics](#ll-electronics) (1)
 - [Lambda Synthetics](#lambda-synthetics) (1)
 - [Lamberhuus](#lamberhuus) (1)
 - [LennarDigital](#lennardigital) (1)
 - [Lexicon](#lexicon) (8)
-- [Line 6](#line-6) (9)
+- [Line 6](#line-6) (10)
 - [Looperlative](#looperlative) (1)
 - [LPZW](#lpzw) (1)
 - [LZX Industries](#lzx-industries) (2)
@@ -154,7 +156,7 @@
 - [Nord](#nord) (12 devices, 13 files)
 - [Novation](#novation) (23 devices, 24 files)
 - [NUX](#nux) (1)
-- [Oberheim](#oberheim) (18)
+- [Oberheim](#oberheim) (20)
 - [Orla](#orla) (1)
 - [osc-bridge](#osc-bridge) (2)
 - [OTO Machines](#oto-machines) (2)
@@ -169,6 +171,7 @@
 - [PreenFM](#preenfm) (2)
 - [Pure Data](#pure-data) (1)
 - [PWM](#pwm) (3)
+- [Quasimidi](#quasimidi) (1)
 - [Red Panda](#red-panda) (2)
 - [Red Panda Lab](#red-panda-lab) (1)
 - [RED Sound](#red-sound) (1)
@@ -176,10 +179,10 @@
 - [Reveal Sound](#reveal-sound) (1)
 - [Rhodes](#rhodes) (4)
 - [RME](#rme) (1)
-- [Roland](#roland) (76 devices, 78 files)
+- [Roland](#roland) (81 devices, 83 files)
 - [ROLI](#roli) (1)
 - [Schmidt](#schmidt) (1)
-- [Sequential](#sequential) (18)
+- [Sequential](#sequential) (19)
 - [Sherman](#sherman) (1)
 - [SIEL](#siel) (1)
 - [Sleepy Circuits](#sleepy-circuits) (2)
@@ -231,7 +234,7 @@
 - [Waldorf](#waldorf) (28)
 - [Waves](#waves) (1)
 - [Xfer Records](#xfer-records) (1)
-- [Yamaha](#yamaha) (37)
+- [Yamaha](#yamaha) (38)
 - [Zoom](#zoom) (5)
 
 ---
@@ -966,6 +969,18 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/mszEcoQGaDlRbAsItYDh)
 - **Coverage**: 75 SysEx commands · 11 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+### 💾 AX80
+
+- **OSC prefix**: `/ax80`
+- **Variants**: 1
+
+#### 💾 [`ax80.knobkraft.fw-tauntek.json`](../devices/akai/ax80.knobkraft.fw-tauntek.json) — firmware `tauntek`
+
+- **Revision**: per KnobKraft Orm adaptation 'Akai AX80'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/Akai_AX80.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take a stored program with the KnobKraft Orm adaptation named in _sources.
 
 ## Alesis
 
@@ -1856,6 +1871,18 @@
 - **Coverage**: 77 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+### 💾 Kijimi
+
+- **OSC prefix**: `/kijimi`
+- **Variants**: 1
+
+#### 💾 [`kijimi.knobkraft.fw-unknown.json`](../devices/black-corporation/kijimi.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'BC Kijimi'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/BC_Kijimi.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, take a stored program, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
+
 ## Blokas
 
 ### 🎛️ MIDIHUB willie
@@ -2047,6 +2074,18 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/LoM32HOG80Y0oW2TS3u8)
 - **Coverage**: 2 SysEx commands · 2 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+### 💾 CZ-101 / CZ-1000
+
+- **OSC prefix**: `/cz_101`
+- **Variants**: 1
+
+#### 💾 [`cz_101.knobkraft.fw-unknown.json`](../devices/casio/cz_101.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'Casio CZ-101 / CZ-1000'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/Casio%20CZ-101.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, take a stored program, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
 
 ## Chase Bliss
 
@@ -2710,6 +2749,18 @@
 - **Coverage**: 51 CC (2 14-bit) · midi_out
 - **Limitations**: CC/NRPN only.
 
+### 💾 Pro 2
+
+- **OSC prefix**: `/pro_2`
+- **Variants**: 1
+
+#### 💾 [`pro_2.knobkraft.fw-unknown.json`](../devices/dave-smith-instruments/pro_2.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'DSI Pro 2'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/DSI%20Pro%202.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, take a stored program, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
+
 ### 📦 Pro 3
 
 - **OSC prefix**: `/pro_3`
@@ -2769,6 +2820,18 @@
 - **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Dave Smith Instruments/Prophet X (Prophet XL).csv)
 - **Coverage**: 87 CC · midi_out
 - **Limitations**: CC/NRPN only.
+
+### 💾 Tempest
+
+- **OSC prefix**: `/tempest`
+- **Variants**: 1
+
+#### 💾 [`tempest.knobkraft.fw-unknown.json`](../devices/dave-smith-instruments/tempest.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'DSI Tempest'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/DSI_Tempest.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, take a stored program, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
 
 ### 📦 TETRA
 
@@ -3395,6 +3458,18 @@
 
 ## Electra One
 
+### 💾 Electra One
+
+- **OSC prefix**: `/electra_one`
+- **Variants**: 1
+
+#### 💾 [`electra_one.knobkraft.fw-unknown.json`](../devices/electra-one/electra_one.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'Electra One'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/ElectraOne.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
+
 ### ✅ Electra One MK2
 
 - **OSC prefix**: `/electra1`
@@ -3866,6 +3941,18 @@
 - **Coverage**: 146 CC (146 NRPN) · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+### 💾 Mirage
+
+- **OSC prefix**: `/mirage`
+- **Variants**: 1
+
+#### 💾 [`mirage.knobkraft.fw-soundprocess.json`](../devices/ensoniq/mirage.knobkraft.fw-soundprocess.json) — firmware `soundprocess`
+
+- **Revision**: per KnobKraft Orm adaptation 'Ensoniq Mirage (SoundProcess)'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/Ensoniq_Mirage_Soundprocess.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, take a stored program, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
+
 ### 🎛️ Soundprocess
 
 - **OSC prefix**: `/soundprocess`
@@ -3877,6 +3964,18 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/DASzDdbIgPAMfoSyu41w)
 - **Coverage**: 99 SysEx commands · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+### 💾 VFX
+
+- **OSC prefix**: `/vfx`
+- **Variants**: 1
+
+#### 💾 [`vfx.knobkraft.fw-unknown.json`](../devices/ensoniq/vfx.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'Ensoniq VFX'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/Ensoniq_VFX.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
 
 ## Eowave
 
@@ -4935,6 +5034,20 @@
 - **Coverage**: 10 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
+## John Bowen Synth Design
+
+### 💾 Solaris
+
+- **OSC prefix**: `/solaris`
+- **Variants**: 1
+
+#### 💾 [`solaris.knobkraft.fw-unknown.json`](../devices/john-bowen/solaris.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'JB Solaris'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/JB_Solaris.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
+
 ## Jomox
 
 ### 🎛️ Airbase 99
@@ -5055,6 +5168,18 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/6vtmnGDSZbMgbDOdFcCO)
 - **Coverage**: 101 SysEx commands · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+### 💾 K3
+
+- **OSC prefix**: `/k3`
+- **Variants**: 1
+
+#### 💾 [`k3.knobkraft.fw-unknown.json`](../devices/kawai/k3.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'Kawai K3 Adaptation'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/KawaiK3.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take a stored program, read the sound's name with the KnobKraft Orm adaptation named in _sources.
 
 ### 🎛️ K4R V6
 
@@ -5883,6 +6008,18 @@
 - **Coverage**: 37 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+### 💾 DW-6000
+
+- **OSC prefix**: `/dw_6000`
+- **Variants**: 1
+
+#### 💾 [`dw_6000.knobkraft.fw-unknown.json`](../devices/korg/dw_6000.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'Korg DW-6000'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/KorgDW6000.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
+
 ### 🎛️ imported 01R/W
 
 - **OSC prefix**: `/imported_01r_w`
@@ -6316,6 +6453,18 @@
 - **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Line 6/M5 Stompbox Modeler.csv)
 - **Coverage**: 4 CC · midi_out
 - **Limitations**: CC/NRPN only.
+
+### 💾 POD
+
+- **OSC prefix**: `/pod`
+- **Variants**: 1
+
+#### 💾 [`pod.knobkraft.fw-unknown.json`](../devices/line-6/pod.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'Line 6 POD'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/Line_6_POD_Series.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, take a stored program, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
 
 ### 📦 POD Go
 
@@ -8187,6 +8336,30 @@
 - **Coverage**: 132 CC (127 NRPN) · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+### 💾 OB-8
+
+- **OSC prefix**: `/ob_8`
+- **Variants**: 1
+
+#### 💾 [`ob_8.knobkraft.fw-unknown.json`](../devices/oberheim/ob_8.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'Oberheim OB-8'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/OberheimOB8.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take a stored program, read the sound's name with the KnobKraft Orm adaptation named in _sources.
+
+### 💾 OB-X
+
+- **OSC prefix**: `/ob_x`
+- **Variants**: 1
+
+#### 💾 [`ob_x.knobkraft.fw-encore.json`](../devices/oberheim/ob_x.knobkraft.fw-encore.json) — firmware `encore`
+
+- **Revision**: per KnobKraft Orm adaptation 'Oberheim OB-X (Encore)'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/OberheimOBX.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take a stored program, read the sound's name with the KnobKraft Orm adaptation named in _sources.
+
 ### 🎛️ OB-X / GForce
 
 - **OSC prefix**: `/ob_x_gforce`
@@ -8680,6 +8853,20 @@
 - **Coverage**: 86 CC (3 14-bit, 58 NRPN) · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+## Quasimidi
+
+### 💾 Cyber-6
+
+- **OSC prefix**: `/cyber_6`
+- **Variants**: 1
+
+#### 💾 [`cyber_6.knobkraft.fw-unknown.json`](../devices/quasimidi/cyber_6.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'Quasimidi Cyber-6'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/QuasimidiCyber6.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take a stored program, read the sound's name with the KnobKraft Orm adaptation named in _sources.
+
 ## Red Panda
 
 ### 📦 Particle
@@ -9039,6 +9226,18 @@
 - **Coverage**: 33 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
 
+### 💾 Juno-DS
+
+- **OSC prefix**: `/juno_ds`
+- **Variants**: 1
+
+#### 💾 [`juno_ds.knobkraft.fw-unknown.json`](../devices/roland/juno_ds.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'Roland Juno-DS'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/Roland_JunoDS.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, take a stored program, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
+
 ### 🎛️ Juno60Minerva AB
 
 - **OSC prefix**: `/juno60minerva_ab`
@@ -9110,6 +9309,18 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/CMFtkNnKTdWC7tMih6Uz)
 - **Coverage**: 114 SysEx commands · 4 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+### 💾 JV-80
+
+- **OSC prefix**: `/jv_80`
+- **Variants**: 1
+
+#### 💾 [`jv_80.knobkraft.fw-unknown.json`](../devices/roland/jv_80.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'Roland JV-80'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/Roland_JV80.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, take a stored program, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
 
 ### 🎛️ JW-50
 
@@ -9610,6 +9821,18 @@
 - **Coverage**: 1 SysEx command · 26 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
+### 💾 TD-07
+
+- **OSC prefix**: `/td_07`
+- **Variants**: 1
+
+#### 💾 [`td_07.knobkraft.fw-unknown.json`](../devices/roland/td_07.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'Roland TD-07'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/Roland_TD-07.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, take a stored program, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
+
 ### 📦 TR-06
 
 - **OSC prefix**: `/tr_06`
@@ -9694,6 +9917,18 @@
 - **Coverage**: 55 CC · midi_out
 - **Limitations**: CC/NRPN only.
 
+### 💾 U-20 / U-220
+
+- **OSC prefix**: `/u_20`
+- **Variants**: 1
+
+#### 💾 [`u_20.knobkraft.fw-unknown.json`](../devices/roland/u_20.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'Roland U-20/U-220'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/Roland_U20_U220.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, take a stored program, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
+
 ### 📦 VERSELAB MV-1
 
 - **OSC prefix**: `/verselab_mv_1`
@@ -9717,6 +9952,18 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/HEf0dwGXlfXYNAq1Svas)
 - **Coverage**: 60 CC · midi_out
 - **Limitations**: CC/NRPN only.
+
+### 💾 XV-3080
+
+- **OSC prefix**: `/xv_3080`
+- **Variants**: 1
+
+#### 💾 [`xv_3080.knobkraft.fw-unknown.json`](../devices/roland/xv_3080.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'Roland XV-3080'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/Roland_XV3080.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, take a stored program, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
 
 ### 📦 XV-5050
 
@@ -9999,6 +10246,18 @@
 - **Source**: [pencilresearch](https://github.com/pencilresearch/midi/blob/91299d6/Sequential/Take 5.csv)
 - **Coverage**: 89 CC · midi_out
 - **Limitations**: CC/NRPN only.
+
+### 💾 Trigon-6
+
+- **OSC prefix**: `/trigon_6`
+- **Variants**: 1
+
+#### 💾 [`trigon_6.knobkraft.fw-unknown.json`](../devices/sequential/trigon_6.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'Sequential Trigon-6'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/Sequential_Trigon6.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, take a stored program, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
 
 ## Sherman
 
@@ -12281,6 +12540,18 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/1BACXZeqdgJLK21aNvJk)
 - **Coverage**: 56 SysEx commands · 7 CC · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+### 💾 YC61 / YC73 / YC88
+
+- **OSC prefix**: `/yc`
+- **Variants**: 1
+
+#### 💾 [`yc.knobkraft.fw-unknown.json`](../devices/yamaha/yc.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'Yamaha YC61/YC73/YC88'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/Yamaha-YC-Series.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, take a stored program, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
 
 ## Zoom
 

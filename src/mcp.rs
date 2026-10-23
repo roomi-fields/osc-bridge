@@ -194,7 +194,7 @@ fn tier_rank(tier: &str) -> u8 {
         "vendor-doc" | "vendor" => 1,
         "vendor-osc-api" | "third-party-osc" => 2,
         "electra-preset" => 3,
-        "pencilresearch" => 4,
+        "pencilresearch" | "knobkraft" => 4,
         "agent-contributed" => 5,
         "test-fixture" => 6,
         _ => 7,
@@ -213,7 +213,7 @@ fn build_index(devices_dir: &Path, opts: &McpOptions) -> DeviceIndex {
 
 /// Sent with `initialize` by a linked local copy.
 const LINKED_INSTRUCTIONS: &str = "osc-bridge catalogue of MIDI implementations (CC, NRPN, SysEx, drum \
-    maps) for about 964 synths, drum machines and DAWs, kept up to date from the SynthHub server with \
+    maps) for about 986 synths, drum machines and DAWs, kept up to date from the SynthHub server with \
     what other users and agents fixed and confirmed. Start with list_devices, then list_routes with the \
     slug; usage_status and get_trust tell how far other users confirmed a driver, per firmware. After \
     testing a driver on the real device, call report_result with the firmware and the device's Identity \
@@ -366,7 +366,7 @@ pub fn tool_schemas() -> Value {
         "tools": [
             {
                 "name": "list_devices",
-                "description": "Find device drivers in the catalogue (about 964 synths, drum machines, controllers and DAWs). Without arguments it lists them all; `query` keeps drivers whose vendor, name or slug contain every word (e.g. 'korg minilogue'). Returns name, vendor, OSC prefix (slug), kind, source tier and firmware version when the source states one. Pass the slug to list_routes for the full CC/NRPN/SysEx map.",
+                "description": "Find device drivers in the catalogue (about 986 synths, drum machines, controllers and DAWs). Without arguments it lists them all; `query` keeps drivers whose vendor, name or slug contain every word (e.g. 'korg minilogue'). Returns name, vendor, OSC prefix (slug), kind, source tier and firmware version when the source states one. Pass the slug to list_routes for the full CC/NRPN/SysEx map.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {

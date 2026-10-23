@@ -3,8 +3,8 @@
   "name": "osc-bridge",
   "display_name": "osc-bridge",
   "version": "0.15.0",
-  "description": "OSC ↔ MIDI/SysEx bridge for 964 synths and DAWs — a MIDI MCP and OSC MCP.",
-  "long_description": "osc-bridge is a declarative bridge between OSC and the music world: 964 hardware synthesizers over MIDI/SysEx, plus music software over OSC (Ableton, Bitwig, Reaper, Sonic Pi, SuperCollider, Pure Data, TouchDesigner, VCV Rack). Its MCP server exposes the whole catalogue to an LLM — list devices, read a device's named OSC surface, send OSC to synths and DAWs, and check a running bridge's status. Both a MIDI MCP (hardware over MIDI/SysEx) and an OSC MCP (DAWs and live-coding environments).",
+  "description": "OSC ↔ MIDI/SysEx bridge for 986 synths and DAWs — a MIDI MCP and OSC MCP.",
+  "long_description": "osc-bridge is a declarative bridge between OSC and the music world: 986 hardware synthesizers over MIDI/SysEx, plus music software over OSC (Ableton, Bitwig, Reaper, Sonic Pi, SuperCollider, Pure Data, TouchDesigner, VCV Rack). Its MCP server exposes the whole catalogue to an LLM — list devices, read a device's named OSC surface, send OSC to synths and DAWs, and check a running bridge's status. Both a MIDI MCP (hardware over MIDI/SysEx) and an OSC MCP (DAWs and live-coding environments).",
   "author": {
     "name": "roomi-fields",
     "url": "https://github.com/roomi-fields"
@@ -69,7 +69,7 @@
   "tools": [
     {
       "name": "list_devices",
-      "description": "Find device drivers in the catalogue (about 964 synths, drum machines, controllers and DAWs). Without arguments it lists them all; `query` keeps drivers whose vendor, name or slug contain every word (e.g. 'korg minilogue'). Returns name, vendor, OSC prefix (slug), kind, source tier and firmware version when the source states one. Pass the slug to list_routes for the full CC/NRPN/SysEx map.",
+      "description": "Find device drivers in the catalogue (about 986 synths, drum machines, controllers and DAWs). Without arguments it lists them all; `query` keeps drivers whose vendor, name or slug contain every word (e.g. 'korg minilogue'). Returns name, vendor, OSC prefix (slug), kind, source tier and firmware version when the source states one. Pass the slug to list_routes for the full CC/NRPN/SysEx map.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
