@@ -16,8 +16,16 @@ is tracked explicitly under each release.
   served by SynthHub, at https://synthhub.roomi-fields.com/; osc-bridge keeps
   its engine docs under `docs/` (also published there). `mkdocs.yml`, the
   site's own pages and its build hooks leave this repository; GitHub Pages
-  only publishes a page pointing to the new address. The MCP server and the
-  relay stay at `mcp.osc-bridge.roomi-fields.com`.
+  only publishes a page pointing to the new address.
+
+### Changed — the server is SynthHub, at mcp.synthhub.roomi-fields.com
+- The hosted MCP server, the relay and the link of local copies now use
+  `mcp.synthhub.roomi-fields.com` (`online::SERVER`, `connect`'s default relay,
+  the /connect page, `server.json`'s remote). The server introduces itself as
+  SynthHub. Copies already installed keep working: the old address still
+  serves.
+- README, the npm README and the MCP guide lead with the hosted server; the
+  local copy (`npx`) comes second.
 
 ## [0.14.0] — 2026-10-23
 

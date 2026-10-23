@@ -22,9 +22,9 @@ maintainer of osc-bridge, with the up-to-date catalogue, trust from real use
 and the relay to your own hardware:
 
 - **Claude** (web, desktop): Settings → Connectors → *Add custom connector* →
-  `https://mcp.osc-bridge.roomi-fields.com/mcp`
-- **Claude Code**: `claude mcp add --transport http synthhub https://mcp.osc-bridge.roomi-fields.com/mcp`
-- **Cursor and other clients**: `{"mcpServers": {"synthhub": {"url": "https://mcp.osc-bridge.roomi-fields.com/mcp"}}}`
+  `https://mcp.synthhub.roomi-fields.com/mcp`
+- **Claude Code**: `claude mcp add --transport http synthhub https://mcp.synthhub.roomi-fields.com/mcp`
+- **Cursor and other clients**: `{"mcpServers": {"synthhub": {"url": "https://mcp.synthhub.roomi-fields.com/mcp"}}}`
 
 **On your machine** — the MCP server over stdio, with hardware detection and
 OSC to a running bridge (kept up to date from the server; you choose what it
@@ -94,7 +94,7 @@ Each synth is described by one JSON file. No Rust recompile required to add a de
 
 **Searching for your device?**
 - 🔎 Interactive browser → **<https://synthhub.roomi-fields.com/>** (live search by vendor / model / author / source).
-- 🤖 For scripts and AI agents → JSON API at <https://synthhub.roomi-fields.com/api/v1/index.json> (each driver at `/api/v1/devices/<vendor>/<driver>.json`), or the hosted MCP server at <https://mcp.osc-bridge.roomi-fields.com/mcp> — see [API for agents](https://synthhub.roomi-fields.com/api/).
+- 🤖 For scripts and AI agents → JSON API at <https://synthhub.roomi-fields.com/api/v1/index.json> (each driver at `/api/v1/devices/<vendor>/<driver>.json`), or the hosted MCP server at <https://mcp.synthhub.roomi-fields.com/mcp> — see [API for agents](https://synthhub.roomi-fields.com/api/).
 - 📄 Full catalogue as Markdown → [`docs/SUPPORTED_DEVICES.md`](docs/SUPPORTED_DEVICES.md) (auto-generated, organised by vendor).
 
 Your synth isn't there, or a doc-derived entry (`📘` / `📡` / `🎛️` / `📦`) needs promoting to `✅` after you test it on hardware? See the next section.
@@ -455,7 +455,7 @@ server — a **MIDI MCP** *and* **OSC MCP**. Point any MCP client at it and the
 model can browse the 964-device catalogue, read a device's OSC surface, and
 send OSC to synths and DAWs.
 
-**Hosted** — add `https://mcp.osc-bridge.roomi-fields.com/mcp` as a remote MCP server (see
+**Hosted** — add `https://mcp.synthhub.roomi-fields.com/mcp` as a remote MCP server (see
 [Install](#install)). Nothing to install; your synth joins through the relay
 page, [synthhub.roomi-fields.com/connect](https://synthhub.roomi-fields.com/connect/).
 

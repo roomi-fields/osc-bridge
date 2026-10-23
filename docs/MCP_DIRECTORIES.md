@@ -7,7 +7,7 @@ social. This file tracks the directory half.
 **Package**: `@roomi-fields/osc-bridge` (npm) · `io.github.roomi-fields/osc-bridge` (registry)
 **Positioning everywhere**: *OSC ↔ MIDI bridge for 964 synths and DAWs — a MIDI MCP and OSC MCP.*
 **Hosted endpoint first** (since 2026-10-23): every listing leads with the hosted server,
-`https://mcp.osc-bridge.roomi-fields.com/mcp` (SynthHub), the local copy (`npx`) second. No
+`https://mcp.synthhub.roomi-fields.com/mcp` (SynthHub), the local copy (`npx`) second. No
 copies hosted by third parties: agents should reach the hosted server itself.
 **Last sync**: 2026-10-23
 

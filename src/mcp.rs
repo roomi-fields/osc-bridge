@@ -13,7 +13,7 @@
 //!  - `detect_hardware`, `backup_presets`, `restore_presets` — the MIDI
 //!    ports of the machine the server runs on
 //!  - `report_result`, `report_mapping`, `get_trust`, `submit_driver`,
-//!    `submit_fix`, `get_contribution` — run on the hosted osc-bridge server:
+//!    `submit_fix`, `get_contribution` — run on the SynthHub server:
 //!    a local copy is linked to it unless offline (`crate::online`), mirrors
 //!    its catalogue, shows each driver's trust, and forwards these there.
 //!
@@ -81,7 +81,7 @@ impl Link {
     }
 
     fn forward(&self, name: &str, args: &Value) -> Result<Value, String> {
-        let unreachable = |e: anyhow::Error| format!("{name} goes to the osc-bridge server, which could not be reached: {e}");
+        let unreachable = |e: anyhow::Error| format!("{name} goes to the SynthHub server, which could not be reached: {e}");
         let user = self.user(false).map_err(|e| unreachable(anyhow::anyhow!(e)))?;
         match self.client.call_tool(&user, name, args) {
             Err(e) if e.to_string() == "unknown account" => {
@@ -213,7 +213,7 @@ fn build_index(devices_dir: &Path, opts: &McpOptions) -> DeviceIndex {
 
 /// Sent with `initialize` by a linked local copy.
 const LINKED_INSTRUCTIONS: &str = "osc-bridge catalogue of MIDI implementations (CC, NRPN, SysEx, drum \
-    maps) for about 980 synths, drum machines and DAWs, kept up to date from the osc-bridge server with \
+    maps) for about 980 synths, drum machines and DAWs, kept up to date from the SynthHub server with \
     what other users and agents fixed and confirmed. Start with list_devices, then list_routes with the \
     slug; usage_status and get_trust tell how far other users confirmed a driver, per firmware. After \
     testing a driver on the real device, call report_result with the firmware and the device's Identity \
@@ -226,13 +226,13 @@ fn link_in_background(link: std::sync::Arc<Link>, index: std::sync::Arc<std::syn
     std::thread::spawn(move || {
         match link.client.trust() {
             Ok(t) => if let Ok(mut g) = link.trust.write() { *g = t },
-            Err(e) => { eprintln!("osc-bridge server unreachable ({e}): offline catalogue"); return; }
+            Err(e) => { eprintln!("SynthHub server unreachable ({e}): offline catalogue"); return; }
         }
         let Some((bundled, cache, on_cache)) = sync else { return };
         let user = match link.user(false) { Ok(u) => u, Err(e) => { eprintln!("no account: {e}"); return; } };
         match link.client.sync_catalogue(&user, &bundled, &cache) {
             Ok(done) => {
-                eprintln!("catalogue synced with the osc-bridge server: {} files, {} copied, {} downloaded, {} removed",
+                eprintln!("catalogue synced with the SynthHub server: {} files, {} copied, {} downloaded, {} removed",
                     done.files, done.copied, done.downloaded, done.removed);
                 if done.changed() || !on_cache {
                     let fresh = DeviceIndex::build(&cache);
@@ -794,7 +794,7 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
                         started, nothing asked of the server.\n{}", serde_json::to_string_pretty(&structured).unwrap_or_default()), structured));
                 }
                 if PRIVATE_REFUSED.contains(&name) {
-                    return Err(format!("{id} is private on this machine: {name} is not sent to the osc-bridge server. \
+                    return Err(format!("{id} is private on this machine: {name} is not sent to the SynthHub server. \
                         To share it, remove it from the private list (osc-bridge privacy shows the settings file)."));
                 }
             }
@@ -903,9 +903,9 @@ pub fn privacy(path: &Path, devices_dir: &Path, offline: Option<bool>, private: 
     }
     if changed { settings.save(path)?; }
     let mut out = if settings.offline {
-        "Offline: this copy does not contact the osc-bridge server (osc-bridge privacy --offline off to link it again).\n".to_string()
+        "Offline: this copy does not contact the SynthHub server (osc-bridge privacy --offline off to link it again).\n".to_string()
     } else {
-        "Linked to the osc-bridge server: the catalogue stays up to date, and reports and fixes are shared \
+        "Linked to the SynthHub server: the catalogue stays up to date, and reports and fixes are shared \
          under an anonymous account (osc-bridge privacy --offline on to stop).\n".to_string()
     };
     if settings.private.is_empty() {
@@ -1371,7 +1371,7 @@ mod tests {
         let path = std::env::temp_dir().join(format!("osc-bridge-privacy-{}/settings.toml", std::process::id()));
         let devices = Path::new("devices");
         let shown = privacy(&path, devices, None, &[], &[]).unwrap();
-        assert!(shown.contains("Linked to the osc-bridge server") && shown.contains("Private devices: none"), "{shown}");
+        assert!(shown.contains("Linked to the SynthHub server") && shown.contains("Private devices: none"), "{shown}");
         assert!(!path.exists(), "showing writes nothing");
         let shown = privacy(&path, devices, Some(true), &["minilogue".into()], &[]).unwrap();
         assert!(shown.contains("Offline") && shown.contains("korg/minilogue"), "{shown}");

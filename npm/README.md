@@ -18,8 +18,8 @@ any MCP client) via the built-in MCP server**.
 ## Install
 
 **Hosted MCP server, nothing to install** — add
-`https://mcp.osc-bridge.roomi-fields.com/mcp` as a remote MCP server (a custom
-connector in Claude; `claude mcp add --transport http synthhub https://mcp.osc-bridge.roomi-fields.com/mcp`
+`https://mcp.synthhub.roomi-fields.com/mcp` as a remote MCP server (a custom
+connector in Claude; `claude mcp add --transport http synthhub https://mcp.synthhub.roomi-fields.com/mcp`
 in Claude Code). It serves the up-to-date catalogue, trust from real use, and
 a relay to your own hardware: <https://synthhub.roomi-fields.com/>.
 

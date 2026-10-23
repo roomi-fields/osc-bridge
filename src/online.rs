@@ -25,7 +25,7 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-pub const SERVER: &str = "https://mcp.osc-bridge.roomi-fields.com";
+pub const SERVER: &str = "https://mcp.synthhub.roomi-fields.com";
 
 /// The tools a local copy forwards to the server.
 pub const FORWARDED_TOOLS: [&str; 6] = ["report_result", "report_mapping", "get_trust",
@@ -75,7 +75,7 @@ pub struct Settings {
 }
 
 const SETTINGS_HELP: &str = "\
-# osc-bridge — what this machine shares with the osc-bridge server.
+# osc-bridge — what this machine shares with the SynthHub server.
 # Edit this file freely, or use `osc-bridge privacy`. Read when osc-bridge starts.
 #
 # Sharing is on by default: the catalogue stays up to date with the drivers

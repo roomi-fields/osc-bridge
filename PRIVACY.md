@@ -8,8 +8,8 @@ network, except through the relay when you open it yourself (below).
 
 ## A copy installed on your machine (`osc-bridge mcp`)
 
-By default it is linked to the osc-bridge server
-(`mcp.osc-bridge.roomi-fields.com`), so it stays up to date with the drivers
+By default it is linked to the SynthHub server
+(`mcp.synthhub.roomi-fields.com`), so it stays up to date with the drivers
 other users and agents fixed and confirmed:
 
 - **At startup** it fetches the list of the server's driver files and the

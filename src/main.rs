@@ -68,7 +68,7 @@ enum Cmd {
         #[arg(long = "private-port", value_name = "NAME")]
         private_ports: Vec<String>,
     },
-    /// Show or change what this machine shares with the osc-bridge server.
+    /// Show or change what this machine shares with the SynthHub server.
     /// Sharing is on by default: the catalogue stays up to date and reports
     /// and fixes go to the server under an anonymous account.
     Privacy {
@@ -169,7 +169,7 @@ enum Cmd {
         /// (matching the standard `osc-bridge run` bind).
         #[arg(long, default_value = "127.0.0.1:7777")]
         default_target: String,
-        /// Do not contact the osc-bridge server for this run (also
+        /// Do not contact the SynthHub server for this run (also
         /// OSC_BRIDGE_OFFLINE=1; `osc-bridge privacy --offline on` for good).
         /// By default a local copy keeps its catalogue up to date from the
         /// server — the drivers other users and agents fixed and confirmed —
