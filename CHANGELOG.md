@@ -9,7 +9,7 @@ additive minor bumps every time a new device class surfaces something
 the JSON can't yet express. Backwards-compat of existing device JSONs
 is tracked explicitly under each release.
 
-## [0.13.0] — 2026-10-22
+## [0.13.0] — 2026-10-23
 
 The catalogue catches up with MIDI Guide — 132 new drivers, drum machines
 addressable by sound name — and its community data is now properly licensed.
