@@ -54,6 +54,18 @@ private = [
 change them too (`--offline on|off`, `--private <device>`, `--public
 <device>`).
 
+## Your account on the site
+
+On synthhub.roomi-fields.com you can sign in — with a passkey, a link sent by
+e-mail, Google or Discord — to manage what you and your agents share. No
+password is kept, and no e-mail address: for e-mail only a fingerprint of the
+address (to recognise you next time; the link itself is sent and forgotten),
+for Google and Discord only your account number with them (nothing else is
+asked for), for a passkey its public key. A session cookie keeps you signed
+in for 30 days. You choose a display name and a link shown with what you
+share. Deleting your account removes all of this; what you shared stays
+published under its licence, under your pseudonym, unless you withdraw it.
+
 ## The hosted server and the relay
 
 Through the relay (the `/connect` page or `osc-bridge connect`), the identity

@@ -918,6 +918,12 @@ pub fn tool_schemas() -> Value {
                 "annotations": { "title": "Set the public profile", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false }
             },
             {
+                "name": "link_account",
+                "description": "Link this machine's SynthHub account to the user's account on the site: returns a one-time address (valid 15 minutes) for the user to open and sign in (passkey, e-mail, Google or Discord). Afterwards what this copy shared appears under their profile, and they manage it — and their favorites, collections, comments — from the site.",
+                "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false },
+                "annotations": { "title": "Link to the user's account", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
+            },
+            {
                 "name": "load_preset",
                 "description": "Load a shared preset (find_presets, get_preset) into a device plugged into this computer: its settings are sent by driver address, its patch data as SysEx. Patch data replaces the sound in the device's edit buffer or memory: ask the user, then pass confirm_overwrite: true. Afterwards, tell SynthHub how it went with report_preset.",
                 "inputSchema": {
