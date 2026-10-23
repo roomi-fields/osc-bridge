@@ -301,7 +301,7 @@ def _site_nodes(site: str, description: str) -> list[dict]:
         {"@type": "SoftwareApplication", "@id": f"{site}#software", "name": "osc-bridge",
          "description": description, "applicationCategory": "MultimediaApplication",
          "operatingSystem": "Linux, macOS, Windows", "softwareVersion": _version(),
-         "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+         "license": "https://www.gnu.org/licenses/agpl-3.0.html",
          "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
          "downloadUrl": f"{REPO}/releases", "codeRepository": REPO,
          "programmingLanguage": "Rust", "publisher": {"@id": ORG}},
@@ -391,7 +391,7 @@ def _write_api(site_dir: Path, site: str) -> int:
         "version": _version(),
         "count": len(devices),
         "source": REPO,
-        "license": "Drivers are GPL-3.0; those derived from MIDI Guide are CC BY-SA 4.0 (see each entry).",
+        "license": "Drivers are GPL-3.0 (code AGPL-3.0); those derived from MIDI Guide are CC BY-SA 4.0 (see each entry).",
         "devices": [_api_entry(d, site) for d in devices],
     }
     (api / "index.json").write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")

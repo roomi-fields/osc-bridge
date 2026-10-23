@@ -2,7 +2,7 @@
 
 [![Release](https://img.shields.io/github/v/release/roomi-fields/osc-bridge?sort=semver&display_name=tag)](https://github.com/roomi-fields/osc-bridge/releases)
 [![CI](https://github.com/roomi-fields/osc-bridge/actions/workflows/ci.yml/badge.svg)](https://github.com/roomi-fields/osc-bridge/actions/workflows/ci.yml)
-[![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
+[![License: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue.svg)](LICENSE)
 
 **Declarative OSC bridge for music hardware *and* software — and an MCP server to drive it from an LLM.**
 
@@ -472,8 +472,10 @@ protocol family became clear.
 
 ## License
 
-GPL-3.0-or-later. Inherits GPL obligations from the `sysex-controls` reverse
-engineering that seeded our MiniLab 3 parameter table.
+AGPL-3.0-or-later. Running a modified version as a network service obliges
+you to offer its source to the users of that service. The `sysex-controls`
+reverse engineering that seeded our MiniLab 3 parameter table is GPL-3.0,
+which GPL-3.0 section 13 allows to combine with AGPL-3.0 code.
 
 ### Third-party device data
 
@@ -485,4 +487,5 @@ of those entries records the licence, the attribution and the exact upstream
 CSV and commit. Changes made here: CSV rows converted to the osc-bridge JSON
 schema (OSC paths, ranges, `expects` hints, named note triggers).
 CC BY-SA 4.0 is one-way compatible with GPL-3.0, under which these adapted
-files are distributed.
+files are distributed (AGPL-3.0 section 13 covers their combination with the
+code).

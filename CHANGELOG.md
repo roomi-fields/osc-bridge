@@ -9,6 +9,13 @@ additive minor bumps every time a new device class surfaces something
 the JSON can't yet express. Backwards-compat of existing device JSONs
 is tracked explicitly under each release.
 
+## [Unreleased]
+
+### Changed — licence
+- The code is now AGPL-3.0-or-later (was GPL-3.0-or-later): a modified
+  version run as a network service must offer its source to its users. The
+  hosted server links its source from `GET /`. Driver files are unchanged.
+
 ## [0.13.0] — 2026-10-23
 
 The catalogue catches up with MIDI Guide — 132 new drivers, drum machines

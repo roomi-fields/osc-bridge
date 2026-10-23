@@ -507,7 +507,8 @@ fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex, host
             "osc-bridge {SERVER_VERSION} MCP server (tools: {}). POST JSON-RPC to /mcp; \
              a personal endpoint that keeps your account: GET /u/new. \
              Trust of every reported driver: GET /v1/trust. \
-             Docs: https://osc-bridge.roomi-fields.com/api/\n", HOSTED_TOOLS.join(", ")))),
+             Docs: https://osc-bridge.roomi-fields.com/api/ \
+             Source (AGPL-3.0-or-later): https://github.com/roomi-fields/osc-bridge\n", HOSTED_TOOLS.join(", ")))),
         ("GET", "/v1/trust") => HttpReply::new(200, Some(ledger.all().to_string())),
         ("GET", "/v1/learned") => HttpReply::new(200, Some(json!({ "mappings": ledger.learned(None) }).to_string())),
         (_, p) if p.starts_with("/admin/") => admin_exchange(req, hosted),
