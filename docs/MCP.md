@@ -102,7 +102,10 @@ it is linked to the hosted osc-bridge server.
   report improves the drivers for everyone; see
   [API for agents](api.md#reports-and-trust).
 
-Your MIDI ports and your devices' traffic never leave your machine. Details:
+Your MIDI ports and your devices' traffic never leave your machine. Sharing
+is on by default; `osc-bridge privacy` shows what is shared and changes it:
+`--offline on` cuts the link, `--private <device>` keeps one device's reports
+and fixes on your machine, `--public <device>` shares it again. Details:
 [privacy](https://github.com/roomi-fields/osc-bridge/blob/main/PRIVACY.md).
 
 ## Typical workflow

@@ -63,6 +63,26 @@ enum Cmd {
         /// to try everything without hardware.
         #[arg(long)]
         test_synth: bool,
+        /// Keep the device on the ports whose name contains this private:
+        /// its identity is never recorded (repeatable).
+        #[arg(long = "private-port", value_name = "NAME")]
+        private_ports: Vec<String>,
+    },
+    /// Show or change what this machine shares with the osc-bridge server.
+    /// Sharing is on by default: the catalogue stays up to date and reports
+    /// and fixes go to the server under an anonymous account.
+    Privacy {
+        /// `on` cuts the link to the server for every `osc-bridge mcp` run
+        /// (the bundled catalogue is used, nothing is sent); `off` restores it.
+        #[arg(long, value_parser = ["on", "off"])]
+        offline: Option<String>,
+        /// Keep this device (catalogue id or slug) private: its reports and
+        /// fixes stay on this machine (repeatable).
+        #[arg(long, value_name = "DEVICE")]
+        private: Vec<String>,
+        /// Share this device again (repeatable).
+        #[arg(long, value_name = "DEVICE")]
+        public: Vec<String>,
     },
     /// Find connected MIDI devices and the catalogue drivers that match them.
     /// Sends the standard MIDI Identity Request unless --no-probe.
@@ -169,7 +189,8 @@ enum Cmd {
         /// reach MIDI devices on the user's machine through the relay tools.
         #[arg(long, requires = "http")]
         relay_bind: Option<String>,
-        /// Do not contact the osc-bridge server (also OSC_BRIDGE_OFFLINE=1).
+        /// Do not contact the osc-bridge server for this run (also
+        /// OSC_BRIDGE_OFFLINE=1; `osc-bridge privacy --offline on` for good).
         /// By default a local copy keeps its catalogue up to date from the
         /// server — the drivers other users and agents fixed and confirmed —
         /// shows how far each driver is confirmed, and sends report_result
@@ -192,7 +213,15 @@ fn main() -> Result<()> {
             eprintln!("Sent {} SysEx message(s) from {}", msgs.len(), file.display());
             Ok(())
         }
-        Cmd::Connect { server, no_share, test_synth } => osc_bridge::connect::run(&server, !no_share, test_synth),
+        Cmd::Connect { server, no_share, test_synth, private_ports } =>
+            osc_bridge::connect::run(&server, !no_share, test_synth, &private_ports),
+        Cmd::Privacy { offline, private, public } => {
+            let path = osc_bridge::online::settings_file().context("no configuration directory (HOME is not set)")?;
+            let devices = osc_bridge::online::usable_cache()
+                .unwrap_or_else(|| osc_bridge::catalogue::resolve(std::path::Path::new("devices")));
+            print!("{}", osc_bridge::mcp::privacy(&path, &devices, offline.map(|o| o == "on"), &private, &public)?);
+            Ok(())
+        }
         Cmd::Detect { no_probe, devices_dir } => osc_bridge::mcp::print_detection(&devices_dir, !no_probe),
         Cmd::Inspect { device } => cmd_inspect(device),
         Cmd::Run { device, out_port, in_port, bind, osc_clients, ws_bind, ws_allow_origins } =>
@@ -204,8 +233,12 @@ fn main() -> Result<()> {
         Cmd::Mcp { devices_dir, default_target, http, behind_proxy, data_dir, relay_bind, offline } => {
             let default_target = default_target.parse::<std::net::SocketAddr>()
                 .with_context(|| format!("parse --default-target {default_target}"))?;
-            let online = http.is_none() && !offline && !osc_bridge::online::offline_by_env();
-            let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, hosted: false, online };
+            let settings = match http {
+                Some(_) => osc_bridge::online::Settings::default(),
+                None => osc_bridge::online::Settings::load(osc_bridge::online::settings_file().as_deref())?,
+            };
+            let online = http.is_none() && !offline && !settings.offline && !osc_bridge::online::offline_by_env();
+            let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, hosted: false, online, private: settings.private };
             match http {
                 Some(bind) => osc_bridge::mcp::run_http(opts, &bind, behind_proxy, data_dir.as_deref(), relay_bind.as_deref()),
                 None => osc_bridge::mcp::run(opts),

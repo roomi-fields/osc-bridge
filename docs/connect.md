@@ -36,7 +36,7 @@ of 963 drivers.
     </ol>
     <p><button type="button" id="ob-connect-new" class="md-button">New code</button>
       The first agent to use a code is the only one that can drive your devices; a new code ends the session and pairs again.</p>
-    <p class="ob-connect-ports" id="ob-connect-ports"></p>
+    <div class="ob-connect-ports" id="ob-connect-ports"></div>
   </div>
   <div class="ob-connect-confirm" id="ob-connect-confirm" role="alertdialog" aria-labelledby="ob-connect-confirm-text" hidden>
     <p id="ob-connect-confirm-text"></p>
@@ -72,10 +72,17 @@ with `osc-bridge connect --test-synth`.
 ## Privacy
 
 The server gives this browser an account — a random id, kept in this browser so
-you stay the same user next time; no sign-up, no personal data. Device
-identities are recorded only if the box above is ticked. The server does not
-keep your address; like any site, the web server in front of it keeps a short
-access log for a few days. Details: [API for agents](api.md).
+you stay the same user next time; no sign-up, no personal data.
+
+Sharing is on by default: the identity (model, firmware) of the devices your
+agent detects is recorded to improve the catalogue for everyone. Untick
+*Share the identity of my devices* to record none, or tick *private* next to
+one device to keep only that one out; this browser remembers which devices
+you made private. Your MIDI messages themselves are never recorded.
+
+The server does not keep your address; like any site, the web server in front
+of it keeps a short access log for a few days. Details: [API for
+agents](api.md).
 
 ## Limits
 

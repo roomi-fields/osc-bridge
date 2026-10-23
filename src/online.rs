@@ -13,9 +13,11 @@
 //!   forwarded to the server's MCP endpoint under the account kept on this
 //!   machine (`account_file`, the same one `osc-bridge connect` uses).
 //!
-//! The MIDI ports never leave the machine. `osc-bridge mcp --offline` or
-//! `OSC_BRIDGE_OFFLINE=1` cuts the link: the bundled catalogue is used as is
-//! and nothing is sent.
+//! The MIDI ports never leave the machine. Sharing is on by default; the
+//! user turns it off with `osc-bridge privacy` (`Settings`): `--offline on`
+//! cuts the link (the bundled catalogue is used as is and nothing is sent),
+//! `--private <device>` keeps one device's reports on the machine.
+//! `osc-bridge mcp --offline` and `OSC_BRIDGE_OFFLINE=1` cut it for one run.
 
 use anyhow::{anyhow, bail, Context, Result};
 use serde_json::{json, Value};
@@ -49,6 +51,41 @@ fn dir_from(env: &[&str], home_sub: &str) -> Option<PathBuf> {
 /// `~/.config`, under `osc-bridge/user`.
 pub fn account_file() -> Option<PathBuf> {
     Some(dir_from(&["XDG_CONFIG_HOME", "APPDATA"], ".config")?.join("osc-bridge").join("user"))
+}
+
+/// Where the privacy settings are kept: next to the account, in
+/// `osc-bridge/settings.toml`.
+pub fn settings_file() -> Option<PathBuf> {
+    Some(account_file()?.with_file_name("settings.toml"))
+}
+
+/// The user's privacy choices on this machine, written by `osc-bridge
+/// privacy` only. The default shares: linked to the server, no device private.
+#[derive(Debug, Default, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct Settings {
+    /// Cut the link to the server.
+    #[serde(default)]
+    pub offline: bool,
+    /// Drivers (by catalogue id) whose reports and fixes stay on this machine.
+    #[serde(default)]
+    pub private: Vec<String>,
+}
+
+impl Settings {
+    /// The settings at `path`, or the defaults when there are none.
+    pub fn load(path: Option<&Path>) -> Result<Self> {
+        let Some(path) = path else { return Ok(Self::default()) };
+        match std::fs::read_to_string(path) {
+            Ok(text) => toml::from_str(&text).with_context(|| format!("read {}", path.display())),
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(Self::default()),
+            Err(e) => Err(e).with_context(|| format!("read {}", path.display())),
+        }
+    }
+
+    pub fn save(&self, path: &Path) -> Result<()> {
+        if let Some(dir) = path.parent() { std::fs::create_dir_all(dir)?; }
+        std::fs::write(path, toml::to_string(self)?).with_context(|| format!("write {}", path.display()))
+    }
 }
 
 /// Where the mirrored catalogue lives: `$XDG_CACHE_HOME`, `%LOCALAPPDATA%`
@@ -260,6 +297,20 @@ impl Online {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn settings_default_to_sharing_and_round_trip() {
+        let dir = std::env::temp_dir().join(format!("osc-bridge-settings-{}", std::process::id()));
+        let path = dir.join("osc-bridge/settings.toml");
+        assert_eq!(Settings::load(Some(&path)).unwrap(), Settings { offline: false, private: vec![] });
+        assert_eq!(Settings::load(None).unwrap(), Settings::default());
+        let mine = Settings { offline: true, private: vec!["korg/minilogue".into()] };
+        mine.save(&path).unwrap();
+        assert_eq!(Settings::load(Some(&path)).unwrap(), mine);
+        std::fs::write(&path, "private = [\"arturia/minilab3\"]\n").unwrap();
+        assert_eq!(Settings::load(Some(&path)).unwrap(), Settings { offline: false, private: vec!["arturia/minilab3".into()] });
+        std::fs::remove_dir_all(dir).ok();
+    }
 
     #[test]
     fn catalogue_paths_stay_inside_the_catalogue() {

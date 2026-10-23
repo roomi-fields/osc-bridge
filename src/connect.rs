@@ -147,6 +147,15 @@ fn answers() -> crossbeam_channel::Receiver<Option<String>> {
     rx
 }
 
+/// The port names that contain one of the `--private-port` fragments.
+fn private_port_names<'a>(names: impl Iterator<Item = &'a String>, fragments: &[String]) -> Vec<String> {
+    let mut out: Vec<String> = names.filter(|n| fragments.iter().any(|f| n.to_lowercase().contains(&f.to_lowercase())))
+        .cloned().collect();
+    out.sort();
+    out.dedup();
+    out
+}
+
 fn bytes_of(v: &Value) -> Vec<u8> {
     v.as_array().map(|a| a.iter().filter_map(Value::as_u64).map(|b| b as u8).collect()).unwrap_or_default()
 }
@@ -162,7 +171,7 @@ fn set_read_timeout(ws: &WebSocket<MaybeTlsStream<TcpStream>>, t: Duration) -> R
 
 /// Connect this machine's MIDI ports to the relay at `server` until the
 /// connection closes or the process is stopped.
-pub fn run(server: &str, share: bool, test_synth: bool) -> Result<()> {
+pub fn run(server: &str, share: bool, test_synth: bool, private_ports: &[String]) -> Result<()> {
     // One TLS crypto provider for the process (several may be compiled in).
     let _ = rustls::crypto::ring::default_provider().install_default();
     let file = crate::online::account_file();
@@ -196,7 +205,6 @@ pub fn run(server: &str, share: bool, test_synth: bool) -> Result<()> {
     println!("2. Tell the agent: \"My osc-bridge relay code is {code}\"");
     println!("3. Keep this running while you play (Ctrl-C to stop).");
     println!();
-    ws.send(Message::Text(json!({ "type": "share", "enabled": share }).to_string().into()))?;
     set_read_timeout(&ws, READ_TIMEOUT)?;
 
     let (in_tx, in_rx) = unbounded::<(String, Vec<u8>)>();
@@ -230,6 +238,11 @@ pub fn run(server: &str, share: bool, test_synth: bool) -> Result<()> {
             }
             println!("Devices: outputs [{}], inputs [{}]", outs.join(", "), ins.join(", "));
             ws.send(Message::Text(json!({ "type": "ports", "outputs": outs, "inputs": ins }).to_string().into()))?;
+            let private = private_port_names(outs.iter().chain(&ins), private_ports);
+            if !private.is_empty() {
+                println!("Private (identity never recorded): {}", private.join(", "));
+            }
+            ws.send(Message::Text(json!({ "type": "share", "enabled": share, "private": private }).to_string().into()))?;
         }
         while let Ok(line) = typed.try_recv() {
             let word = line.as_deref().map(|l| l.trim().to_lowercase());
@@ -326,5 +339,12 @@ mod tests {
         assert_eq!((id.manufacturer, id.family, id.model, id.version), (vec![0x7D], 1, 1, [1, 0, 0, 0]));
         assert_eq!(TestSynth::answer(&[0xB0, 74, 64]), Some(vec![0xB0, 74, 64]));
         assert_eq!(TestSynth::answer(&[0xF8]), None);
+    }
+
+    #[test]
+    fn private_ports_are_matched_by_a_fragment_of_their_name() {
+        let names = ["minilogue SOUND".to_string(), "MiniLab3 MIDI".into(), "minilogue SOUND".into()];
+        assert_eq!(private_port_names(names.iter(), &["MINILOGUE".into()]), ["minilogue SOUND"]);
+        assert!(private_port_names(names.iter(), &[]).is_empty());
     }
 }

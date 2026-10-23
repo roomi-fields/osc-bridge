@@ -22,13 +22,31 @@ other users and agents fixed and confirmed:
 - **Never sent:** your MIDI ports, your devices' traffic, your files, your
   address (beyond what any web server sees for a few days in its access log).
 
-`osc-bridge mcp --offline` or `OSC_BRIDGE_OFFLINE=1` cuts the link: nothing is
-sent, and the catalogue bundled with your copy is used as is.
+Sharing is on by default, and you choose what to keep to yourself with
+`osc-bridge privacy` (it shows the current state when run alone):
+
+- `osc-bridge privacy --offline on` cuts the link for good: nothing is sent,
+  and the catalogue bundled with your copy is used as is (`--offline off`
+  links it again). For a single run: `osc-bridge mcp --offline` or
+  `OSC_BRIDGE_OFFLINE=1`.
+- `osc-bridge privacy --private <device>` keeps one device private: the
+  reports, learned mappings and fixes about it stay on your machine, while
+  the catalogue and its trust stay up to date. `--public <device>` shares it
+  again.
+
+The choices are kept in `<config>/osc-bridge/settings.toml`.
 
 ## The hosted server and the relay
 
-What they record — accounts, tool calls, reports, the device identities seen
-through a relay when you allow it — is described in the
+Through the relay (the `/connect` page or `osc-bridge connect`), the identity
+(model, firmware) of the devices your agent detects is recorded by default,
+to improve the catalogue. Untick *Share the identity of my devices* (or
+`osc-bridge connect --no-share`) to record none, or keep one device private —
+the *private* box next to it on the page, `--private-port <name>` on the
+command line. MIDI messages passing through the relay are never recorded.
+
+What the server records — accounts, tool calls, reports, device identities —
+is described in the
 [API for agents](https://osc-bridge.roomi-fields.com/api/) page.
 
 **Contact:** https://github.com/roomi-fields/osc-bridge/issues

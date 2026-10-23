@@ -140,8 +140,10 @@ account), receives `{"type":"hello","code","user"}`, then exchanges JSON text
 frames — `{"type":"ports","outputs":[…],"inputs":[…]}` and
 `{"type":"midi_in","port","data":[bytes]}` towards the server,
 `{"type":"midi_out","port","data":[bytes]}` from it, and optionally
-`{"type":"share","enabled":false}` to keep device identities out of the
-records.
+`{"type":"share","enabled":bool,"private":[port names]}`: `enabled: false`
+keeps every device identity out of the records, `private` only those seen on
+the ports named (sharing is on, no port private, until the door says
+otherwise). `relay_detect` marks each private device with `private: true`.
 
 Messages that may overwrite the device's memory — every SysEx message except
 the Identity Request — never come as `midi_out`. They come as one request per
