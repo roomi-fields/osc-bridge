@@ -18,8 +18,6 @@ chrono = { version = "0.4", default-features = false, features = ["clock"] }
 mlua = { version = "0.10", features = ["lua54", "vendored", "send"] }
 toml = "0.8"
 tungstenite = { version = "0.30.0", features = ["rustls-tls-webpki-roots"] }
-tiny_http = "0.12"
-getrandom = "0.4"
 rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
 ureq = { version = "3", default-features = false, features = ["rustls"] }
 ring = "0.17"
@@ -37,4 +35,5 @@ lto = true
 strip = true
 
 [dev-dependencies]
+tiny_http = "0.12"
 pretty_assertions = "1"

@@ -18,8 +18,7 @@ pub mod ws;
 pub mod detect;
 pub mod librarian;
 pub mod catalogue;
-pub mod reports;
-pub mod relay;
+pub mod relay_protocol;
 pub mod online;
 pub mod connect;
 

@@ -12,23 +12,21 @@
 //!
 //!  - `detect_hardware`, `backup_presets`, `restore_presets` — the MIDI
 //!    ports of the machine the server runs on
-//!  - `report_result`, `get_trust` — hosted server only: usage reports and
-//!    the trust they earn a driver (`crate::reports`)
+//!  - `report_result`, `report_mapping`, `get_trust`, `submit_driver`,
+//!    `submit_fix`, `get_contribution` — run on the hosted osc-bridge server:
+//!    a local copy is linked to it unless offline (`crate::online`), mirrors
+//!    its catalogue, shows each driver's trust, and forwards these there.
 //!
-//! A local copy (stdio) is linked to the hosted server unless offline
-//! (`crate::online`): it mirrors the server's catalogue, shows each driver's
-//! trust, and forwards the report and contribution tools there.
+//! The server reads one JSON-RPC request per line from stdin and writes one
+//! response per line to stdout; logging goes to stderr.
 //!
-//! Two transports. On stdio (`run`) the server reads one JSON-RPC request per
-//! line from stdin and writes one response per line to stdout; logging goes
-//! to stderr. Over HTTP (`run_http`, MCP "streamable HTTP" without the
-//! optional event stream) each POST carries one request and gets its
-//! response as JSON; only the catalogue and report tools are offered there,
-//! since the others act on the machine hosting the server, not the caller's.
+//! The hosted server is a separate program built on this module: it serves
+//! the catalogue tools (`catalogue_tool`), the schemas of `tool_schemas` and
+//! the same JSON-RPC framing (`rpc_reply`) over HTTP.
 
 use anyhow::Result;
 use serde_json::{json, Value};
-use std::collections::{BTreeMap, HashMap};
+use std::collections::HashMap;
 use std::io::{BufRead, Write};
 use std::net::{SocketAddr, UdpSocket};
 use std::path::{Path, PathBuf};
@@ -36,15 +34,13 @@ use std::time::Duration;
 
 use crate::device::Device;
 
-const PROTOCOL_VERSION: &str = "2025-06-18";
-const SERVER_NAME: &str = "osc-bridge";
-const SERVER_VERSION: &str = env!("CARGO_PKG_VERSION");
+pub const PROTOCOL_VERSION: &str = "2025-06-18";
+pub const SERVER_NAME: &str = "osc-bridge";
+pub const SERVER_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub struct McpOptions {
     pub devices_dir: PathBuf,
     pub default_target: SocketAddr,
-    /// Served over the network: offer `HOSTED_TOOLS` only.
-    pub hosted: bool,
     /// A local copy linked to the hosted server (`crate::online`): mirror its
     /// catalogue (when `devices_dir` is the default one) and forward the
     /// report and contribution tools to it.
@@ -58,25 +54,6 @@ pub struct McpOptions {
 /// sent. `get_trust` on a private device is answered from the trust fetched
 /// at startup instead.
 const PRIVATE_REFUSED: [&str; 4] = ["report_result", "report_mapping", "submit_fix", "submit_driver"];
-
-/// The tools of a server reached over the network: reading the catalogue
-/// and reporting on it. None touches the host's MIDI ports.
-const HOSTED_TOOLS: [&str; 13] = ["list_devices", "get_device_docs", "list_routes", "report_result", "get_trust",
-    "report_mapping", "submit_driver", "submit_fix", "get_contribution",
-    "relay_status", "relay_detect", "relay_send", "relay_listen"];
-
-/// Who is calling, as far as the hosted server knows: the account (an id
-/// the server issued), the ledger, the relay doors and the usage log. All
-/// absent on stdio.
-#[derive(Clone, Copy, Default)]
-pub struct Caller<'a> {
-    pub user: Option<&'a str>,
-    pub ledger: Option<&'a crate::reports::Ledger>,
-    pub relays: Option<&'a crate::relay::Relays>,
-    usage: Option<&'a UsageLog>,
-    /// A local copy's link to the hosted server.
-    online: Option<&'a Link>,
-}
 
 /// A local copy's link to the hosted server: the client, the account kept on
 /// this machine, and the trust of every reported driver, as last fetched.
@@ -123,68 +100,29 @@ impl Link {
     }
 }
 
-/// What only the hosted server has: the ledger, the relay doors, the usage
-/// log, the administrator's token (`OSC_BRIDGE_ADMIN_TOKEN`) guarding
-/// `/admin/*`, and the merge job's token (`OSC_BRIDGE_SYNC_TOKEN`), which
-/// opens `/admin/contributions*` only. Without a token its endpoints answer 404.
-pub struct Hosted {
-    pub ledger: std::sync::Arc<crate::reports::Ledger>,
-    pub relays: std::sync::Arc<crate::relay::Relays>,
-    usage: UsageLog,
-    pub admin_token: Option<String>,
-    pub sync_token: Option<String>,
-    /// The catalogue served to local copies (`GET /v1/catalogue`): its root
-    /// and, computed on first request, every file with its SHA-256.
-    catalogue_root: PathBuf,
-    catalogue: std::sync::OnceLock<BTreeMap<String, String>>,
-}
-
-impl Hosted {
-    fn caller<'a>(&'a self, user: Option<&'a str>) -> Caller<'a> {
-        Caller { user, ledger: Some(&self.ledger), relays: Some(&self.relays), usage: Some(&self.usage), online: None }
-    }
-
-    fn catalogue(&self) -> &BTreeMap<String, String> {
-        self.catalogue.get_or_init(|| crate::online::catalogue_files(&self.catalogue_root))
-    }
-}
-
-/// Relay doors keep their account: a known id stays, anything else gets a
-/// new account.
-struct LedgerAccounts(std::sync::Arc<crate::reports::Ledger>);
-
-impl crate::relay::Accounts for LedgerAccounts {
-    fn resolve(&self, presented: Option<&str>) -> Option<String> {
-        match presented.map(str::to_ascii_lowercase) {
-            Some(id) if self.0.knows(&id) => Some(id),
-            _ => self.0.issue_account().ok(),
-        }
-    }
-}
-
 /// One lightweight catalogue entry. The full `Device` is loaded on demand
 /// (per `get_device_docs` / `list_routes` call) — only this metadata is held
 /// resident.
-struct DeviceIndexEntry {
-    path: PathBuf,
+pub struct DeviceIndexEntry {
+    pub path: PathBuf,
     /// Path under the catalogue root without `.json` (`korg/minilogue`),
     /// the same id as the site's API.
-    id: String,
-    slug: String,
-    name: String,
-    vendor: String,
-    kind: String,
-    revision: String,
-    tier: String,
-    firmware: Option<String>,
-    manufacturer_id: Vec<u8>,
+    pub id: String,
+    pub slug: String,
+    pub name: String,
+    pub vendor: String,
+    pub kind: String,
+    pub revision: String,
+    pub tier: String,
+    pub firmware: Option<String>,
+    pub manufacturer_id: Vec<u8>,
 }
 
 /// Built once at startup. Without it, every device tool call would re-walk
 /// and re-parse the whole `devices/` tree (~900 files); with it, `list_devices`
 /// is a cheap serialize and slug lookup is O(1).
-struct DeviceIndex {
-    entries: Vec<DeviceIndexEntry>,
+pub struct DeviceIndex {
+    pub entries: Vec<DeviceIndexEntry>,
     by_slug: HashMap<String, usize>,
 }
 
@@ -193,7 +131,7 @@ impl DeviceIndex {
     /// catalogue metadata. When several files share an `osc_prefix` (the
     /// per-variant convention), the most trustworthy source wins the slug
     /// lookup (`tier_rank`), ties broken by path so the choice is stable.
-    fn build(dir: &Path) -> Self {
+    pub fn build(dir: &Path) -> Self {
         let mut entries: Vec<DeviceIndexEntry> = Vec::new();
         let mut by_slug: HashMap<String, usize> = HashMap::new();
         let _ = walk_json(dir, &mut |path, doc| {
@@ -236,12 +174,12 @@ impl DeviceIndex {
         Self { entries, by_slug }
     }
 
-    fn find_path(&self, slug: &str) -> Option<&Path> {
+    pub fn find_path(&self, slug: &str) -> Option<&Path> {
         self.by_slug.get(slug).map(|&i| self.entries[i].path.as_path())
     }
 
     /// A driver by its id (`korg/minilogue`) or, failing that, its slug.
-    fn find(&self, id_or_slug: &str) -> Option<&DeviceIndexEntry> {
+    pub fn find(&self, id_or_slug: &str) -> Option<&DeviceIndexEntry> {
         self.entries.iter().find(|e| e.id == id_or_slug)
             .or_else(|| self.by_slug.get(id_or_slug).map(|&i| &self.entries[i]))
     }
@@ -339,8 +277,7 @@ pub fn run(opts: McpOptions) -> Result<()> {
             }
         };
         let current = index.read().map(|g| g.clone()).map_err(|_| anyhow::anyhow!("catalogue index poisoned"))?;
-        let caller = Caller { online: link.as_deref(), ..Caller::default() };
-        if let Some(mut resp) = handle_request(&req, &opts, &current, caller) {
+        if let Some(mut resp) = handle_request(&req, &opts, &current, link.as_deref()) {
             if let (true, Some(result)) = (link.is_some() && req["method"] == "initialize", resp.get_mut("result")) {
                 result["instructions"] = json!(LINKED_INSTRUCTIONS);
             }
@@ -352,415 +289,15 @@ pub fn run(opts: McpOptions) -> Result<()> {
     Ok(())
 }
 
-/// Web pages allowed to open a relay door, besides localhost: the site's
-/// `/connect` page.
-const RELAY_ORIGINS: [&str; 1] = ["https://osc-bridge.roomi-fields.com"];
-
-/// Largest request body accepted over HTTP. A tool call is a few hundred
-/// bytes; this only stops a client from making the server buffer garbage.
-const MAX_HTTP_BODY: usize = 64 * 1024;
-
-/// Worker threads answering HTTP requests. Most calls are short reads of the
-/// in-memory index and of one driver file; relay calls wait up to a few
-/// seconds for the hardware to answer.
-const HTTP_WORKERS: usize = 16;
-
-/// Requests one client may make per `RATE_WINDOW` before getting 429.
-const RATE_LIMIT: u32 = 120;
-const RATE_WINDOW: Duration = Duration::from_secs(60);
-
-/// Fixed-window request counter per client. The map is pruned of expired
-/// windows whenever it grows past a few thousand clients.
-#[derive(Default)]
-struct RateLimiter {
-    windows: std::sync::Mutex<HashMap<String, (std::time::Instant, u32)>>,
+fn handle_request(req: &Value, opts: &McpOptions, index: &DeviceIndex, link: Option<&Link>) -> Option<Value> {
+    rpc_reply(req, &tool_names(opts), || tools_list(opts), |name, args| call_tool(name, args, opts, index, link))
 }
 
-impl RateLimiter {
-    fn allow(&self, client: &str) -> bool {
-        let now = std::time::Instant::now();
-        let Ok(mut map) = self.windows.lock() else { return true };
-        if map.len() > 4096 {
-            map.retain(|_, (start, _)| now.duration_since(*start) < RATE_WINDOW);
-        }
-        let slot = map.entry(client.to_string()).or_insert((now, 0));
-        if now.duration_since(slot.0) >= RATE_WINDOW {
-            *slot = (now, 0);
-        }
-        slot.1 += 1;
-        slot.1 <= RATE_LIMIT
-    }
-}
-
-/// Who is asking: the TCP peer, or behind a reverse proxy the address the
-/// proxy saw (the peer is then the proxy itself).
-fn client_key(req: &tiny_http::Request, behind_proxy: bool) -> String {
-    let forwarded = behind_proxy.then(|| req.headers().iter()
-        .find(|h| h.field.equiv("X-Forwarded-For"))
-        .and_then(|h| crate::ws::proxy_seen_address(h.value.as_str())))
-        .flatten();
-    forwarded.unwrap_or_else(|| req.remote_addr().map(|a| a.ip().to_string()).unwrap_or_default())
-}
-
-/// Serve MCP over HTTP on `bind`: `POST /mcp` with one JSON-RPC message,
-/// answered as `application/json` (202 with no body for a notification).
-/// The catalogue is public data and no tool has an effect, so any origin
-/// may call it (CORS `*`); each client is held to `RATE_LIMIT` requests per
-/// minute. `GET /` returns a one-line description for people who open the
-/// URL in a browser, `GET /healthz` answers `ok`. With `behind_proxy`, the
-/// client is identified by `X-Forwarded-For` — only set it when a proxy that
-/// overwrites that header is the sole way in. `data_dir` holds
-/// `usage.jsonl` and the ledger `ledger.jsonl` (accounts, reports,
-/// decisions); without it they live in memory only.
-pub fn run_http(opts: McpOptions, bind: &str, behind_proxy: bool, data_dir: Option<&Path>, relay_bind: Option<&str>) -> Result<()> {
-    let opts = McpOptions { hosted: true, online: false, ..opts };
-    let devices_dir = crate::catalogue::resolve(&opts.devices_dir);
-    let hosted = Hosted {
-        ledger: std::sync::Arc::new(crate::reports::Ledger::open(data_dir.map(|d| d.join("ledger.jsonl")).as_deref())?),
-        relays: std::sync::Arc::new(crate::relay::Relays::default()),
-        usage: UsageLog::open(data_dir.map(|d| d.join("usage.jsonl")).as_deref())?,
-        admin_token: std::env::var("OSC_BRIDGE_ADMIN_TOKEN").ok().filter(|t| t.len() >= 16),
-        sync_token: std::env::var("OSC_BRIDGE_SYNC_TOKEN").ok().filter(|t| t.len() >= 16),
-        catalogue_root: devices_dir.clone(),
-        catalogue: std::sync::OnceLock::new(),
-    };
-    if let Some(rb) = relay_bind {
-        let addr = crate::relay::serve(rb, hosted.relays.clone(),
-            std::sync::Arc::new(LedgerAccounts(hosted.ledger.clone())),
-            RELAY_ORIGINS.iter().map(|o| o.to_string()).collect(), behind_proxy)?;
-        eprintln!("relay doors on ws://{addr}");
-    }
-    if hosted.admin_token.is_none() {
-        eprintln!("no OSC_BRIDGE_ADMIN_TOKEN (16+ characters): /admin endpoints disabled");
-    }
-    let index = build_index(&devices_dir, &opts);
-    let server = tiny_http::Server::http(bind).map_err(|e| anyhow::anyhow!("bind HTTP {bind}: {e}"))?;
-    eprintln!("MCP over HTTP on http://{}/mcp ({})", server.server_addr(), HOSTED_TOOLS.join(", "));
-    let shared = std::sync::Arc::new((server, opts, index, RateLimiter::default(), hosted));
-    let workers: Vec<_> = (0..HTTP_WORKERS).map(|_| {
-        let shared = shared.clone();
-        std::thread::spawn(move || {
-            let (server, opts, index, limiter, hosted) = &*shared;
-            for mut req in server.incoming_requests() {
-                if !limiter.allow(&client_key(&req, behind_proxy)) {
-                    respond(req, HttpReply::new(429, Some("rate limit: 120 requests per minute\n".into())));
-                    continue;
-                }
-                let reply = http_exchange(&read_request(&mut req), opts, index, hosted);
-                if let Some(line) = &reply.usage {
-                    hosted.usage.write(line);
-                }
-                respond(req, reply);
-            }
-        })
-    }).collect();
-    for w in workers { let _ = w.join(); }
-    Ok(())
-}
-
-/// One HTTP request, read into memory so the exchange is a plain function.
-struct HttpRequest {
-    method: String,
-    path: String,
-    body: Result<String, String>,
-    /// The account id the client presents: from a personal URL
-    /// (`/u/<id>/mcp`) or the `Mcp-Session-Id` header (see `user_id`).
-    /// Not yet checked against the ledger.
-    user: Option<String>,
-    /// The bearer token of an `Authorization` header.
-    bearer: Option<String>,
-    /// The client's `User-Agent` (`osc-bridge/0.14.0` for a local copy).
-    client: Option<String>,
-}
-
-/// What the server sends back. `session` is the id to return in the
-/// `Mcp-Session-Id` header, set when the server hands one out.
-struct HttpReply {
-    status: u16,
-    body: Option<String>,
-    session: Option<String>,
-    /// The usage record of a tool call (`usage_record`), for the worker to
-    /// write out.
-    usage: Option<String>,
-}
-
-impl HttpReply {
-    fn new(status: u16, body: Option<String>) -> Self {
-        Self { status, body, session: None, usage: None }
-    }
-}
-
-/// Where usage records go: always stderr, and appended to `usage.jsonl` in
-/// the server's data directory when it has one, so they outlive the container.
-struct UsageLog(Option<std::sync::Mutex<std::fs::File>>);
-
-impl UsageLog {
-    fn open(path: Option<&Path>) -> Result<Self> {
-        let Some(path) = path else { return Ok(Self(None)) };
-        let mut options = std::fs::OpenOptions::new();
-        options.create(true).append(true);
-        // Readable by the server's own user only.
-        #[cfg(unix)]
-        std::os::unix::fs::OpenOptionsExt::mode(&mut options, 0o600);
-        let file = options.open(path)
-            .map_err(|e| anyhow::anyhow!("open usage log {}: {e}", path.display()))?;
-        Ok(Self(Some(std::sync::Mutex::new(file))))
-    }
-
-    fn write(&self, line: &str) {
-        eprintln!("{line}");
-        if let Some(file) = &self.0 {
-            if let Ok(mut f) = file.lock() {
-                let _ = writeln!(f, "{line}");
-            }
-        }
-    }
-}
-
-use crate::online::is_user_id;
-
-/// Accounts without sign-up: the server issues every id and keeps it in the
-/// ledger. A client that initializes without one gets a new account, in
-/// `Mcp-Session-Id`, which MCP clients repeat on each request of the
-/// session. To stay the same account across sessions, a client uses its
-/// personal endpoint `/u/<id>/mcp` (a fresh one from `GET /u/new`); that id
-/// then serves as the session id too. Returns the path without the id
-/// prefix, and the id when one was presented and well formed.
-fn user_id(path: &str, session_header: Option<&str>) -> (String, Option<String>) {
-    if let Some(rest) = path.strip_prefix("/u/") {
-        if let Some((id, tail)) = rest.split_once('/') {
-            if is_user_id(id) {
-                return (format!("/{tail}"), Some(id.to_ascii_lowercase()));
-            }
-        }
-    }
-    (path.to_string(), session_header.filter(|h| is_user_id(h)).map(str::to_ascii_lowercase))
-}
-
-fn read_request(req: &mut tiny_http::Request) -> HttpRequest {
-    use std::io::Read;
-    let method = req.method().as_str().to_ascii_uppercase();
-    let session = req.headers().iter().find(|h| h.field.equiv("Mcp-Session-Id"))
-        .map(|h| h.value.as_str().trim().to_string());
-    let (path, user) = user_id(req.url().split('?').next().unwrap_or(""), session.as_deref());
-    let mut text = String::new();
-    let body = match req.as_reader().take(MAX_HTTP_BODY as u64 + 1).read_to_string(&mut text) {
-        Ok(n) if n > MAX_HTTP_BODY => Err("request body too large".into()),
-        Ok(_) => Ok(text),
-        Err(e) => Err(format!("read body: {e}")),
-    };
-    let bearer = req.headers().iter().find(|h| h.field.equiv("Authorization"))
-        .and_then(|h| h.value.as_str().strip_prefix("Bearer ").map(|t| t.trim().to_string()));
-    let client = req.headers().iter().find(|h| h.field.equiv("User-Agent"))
-        .map(|h| h.value.as_str().chars().take(60).collect());
-    HttpRequest { method, path, body, user, bearer, client }
-}
-
-/// Compare a presented token with the expected one in time independent of
-/// where they differ.
-fn token_matches(given: &str, expected: &str) -> bool {
-    given.len() == expected.len()
-        && given.bytes().zip(expected.bytes()).fold(0u8, |acc, (a, b)| acc | (a ^ b)) == 0
-}
-
-/// `/admin/*`: what waits for approval, and decisions on reports and
-/// accounts. 404 without a configured token, 401 with a wrong one.
-fn admin_exchange(req: &HttpRequest, hosted: &Hosted) -> HttpReply {
-    use crate::reports::{ContributionState, Decision};
-    let contributions = req.path == "/admin/contributions" || req.path.starts_with("/admin/contributions/");
-    let accepted: Vec<&String> = hosted.admin_token.iter()
-        .chain(hosted.sync_token.iter().filter(|_| contributions)).collect();
-    if accepted.is_empty() { return HttpReply::new(404, None) }
-    if !req.bearer.as_deref().is_some_and(|t| accepted.iter().any(|e| token_matches(t, e))) {
-        return HttpReply::new(401, Some(json!({ "error": "admin token required" }).to_string()));
-    }
-    let error = |status: u16, msg: String| HttpReply::new(status, Some(json!({ "error": msg }).to_string()));
-    match (req.method.as_str(), req.path.as_str()) {
-        ("GET", "/admin/contributions") => HttpReply::new(200, Some(json!({
-            "contributions": hosted.ledger.pending_contributions() }).to_string())),
-        ("POST", p) if p.starts_with("/admin/contributions/") => {
-            let Some(id) = p.rsplit('/').next().and_then(|n| n.parse::<u64>().ok()) else {
-                return error(404, "unknown contribution".into());
-            };
-            let Some(body) = req.body.as_deref().ok().and_then(|b| serde_json::from_str::<Value>(b).ok()) else {
-                return error(400, "expected a JSON object".into());
-            };
-            let st = match body.get("state").and_then(Value::as_str) {
-                Some("merged") => ContributionState::Merged,
-                Some("rejected") => ContributionState::Rejected,
-                _ => return error(400, "state must be merged or rejected".into()),
-            };
-            let text = |k: &str| body.get(k).and_then(Value::as_str).map(|s| s.chars().take(2000).collect());
-            match hosted.ledger.settle_contribution(id, st, text("detail"), text("pr")) {
-                Ok(()) => HttpReply::new(200, Some(json!({ "applied": true }).to_string())),
-                Err(e) => error(400, e),
-            }
-        }
-        ("GET", "/admin/pending") => HttpReply::new(200, Some(hosted.ledger.pending().to_string())),
-        ("POST", "/admin/decide") => {
-            let Ok(body) = req.body.as_deref().map(serde_json::from_str::<Value>) else {
-                return error(413, "request body too large".into());
-            };
-            let Ok(body) = body else { return error(400, "expected a JSON object".into()) };
-            let decision = match body.get("decision").and_then(Value::as_str) {
-                Some("approve") => Decision::Approve,
-                Some("reject") => Decision::Reject,
-                Some("suspect") => Decision::Suspect,
-                Some("clear") => Decision::Clear,
-                _ => return error(400, "decision must be approve, reject, suspect or clear".into()),
-            };
-            let report = body.get("report").and_then(Value::as_u64);
-            let user = body.get("user").and_then(Value::as_str);
-            match hosted.ledger.decide(decision, report, user) {
-                Ok(v) => HttpReply::new(200, Some(v.to_string())),
-                Err(e) => error(400, e),
-            }
-        }
-        _ => HttpReply::new(404, None),
-    }
-}
-
-/// The reply to one HTTP request.
-fn http_exchange(req: &HttpRequest, opts: &McpOptions, index: &DeviceIndex, hosted: &Hosted) -> HttpReply {
-    let ledger = &hosted.ledger;
-    let rpc_error = |code: i64, msg: String| json!({
-        "jsonrpc": "2.0", "id": null, "error": { "code": code, "message": msg },
-    }).to_string();
-    match (req.method.as_str(), req.path.as_str()) {
-        ("OPTIONS", _) => HttpReply::new(204, None),
-        ("GET", "/") => HttpReply::new(200, Some(format!(
-            "osc-bridge {SERVER_VERSION} MCP server (tools: {}). POST JSON-RPC to /mcp; \
-             a personal endpoint that keeps your account: GET /u/new. \
-             Trust of every reported driver: GET /v1/trust. \
-             Docs: https://osc-bridge.roomi-fields.com/api/ \
-             Source (AGPL-3.0-or-later): https://github.com/roomi-fields/osc-bridge\n", HOSTED_TOOLS.join(", ")))),
-        ("GET", "/v1/trust") => HttpReply::new(200, Some(ledger.all().to_string())),
-        ("GET", "/v1/catalogue") => {
-            let files: Vec<Value> = hosted.catalogue().iter().map(|(p, h)| json!({ "path": p, "sha256": h })).collect();
-            let user = req.user.as_deref().filter(|id| ledger.knows(id));
-            HttpReply { usage: Some(json!({
-                "event": "catalogue_sync",
-                "ts": chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
-                "user": user, "client": req.client,
-            }).to_string()), ..HttpReply::new(200, Some(json!({ "version": SERVER_VERSION, "files": files }).to_string())) }
-        }
-        ("POST", "/v1/catalogue/files") => {
-            let wanted = req.body.as_ref().ok().and_then(|b| serde_json::from_str::<Value>(b).ok())
-                .and_then(|v| v["paths"].as_array().cloned()).unwrap_or_default();
-            if wanted.len() > crate::online::FILES_PER_REQUEST {
-                return HttpReply::new(400, Some(json!({ "error": format!("at most {} paths per request", crate::online::FILES_PER_REQUEST) }).to_string()));
-            }
-            let known = hosted.catalogue();
-            let files: BTreeMap<&str, String> = wanted.iter().filter_map(Value::as_str)
-                .filter(|p| known.contains_key(*p))
-                .filter_map(|p| Some((p, std::fs::read_to_string(p.split('/').fold(hosted.catalogue_root.clone(), |d, c| d.join(c))).ok()?)))
-                .collect();
-            HttpReply::new(200, Some(json!({ "files": files }).to_string()))
-        }
-        ("GET", "/v1/learned") => HttpReply::new(200, Some(json!({ "mappings": ledger.learned(None) }).to_string())),
-        (_, p) if p.starts_with("/admin/") => admin_exchange(req, hosted),
-        ("GET", "/healthz") => HttpReply::new(200, Some("ok\n".into())),
-        ("GET", "/u/new") => match ledger.issue_account() {
-            Ok(id) => HttpReply::new(200, Some(json!({ "user_id": id, "mcp_path": format!("/u/{id}/mcp") }).to_string())),
-            Err(e) => HttpReply::new(503, Some(json!({ "error": e }).to_string())),
-        },
-        // No server-initiated event stream (optional in the spec).
-        ("GET", "/mcp") => HttpReply::new(405, None),
-        ("POST", "/mcp") => {
-            let body = match &req.body {
-                Ok(b) => b,
-                Err(e) => return HttpReply::new(413, Some(rpc_error(-32600, e.clone()))),
-            };
-            let msg = match serde_json::from_str::<Value>(body) {
-                Ok(msg) if msg.is_object() => msg,
-                Ok(_) => return HttpReply::new(400, Some(rpc_error(-32600, "expected one JSON-RPC object".into()))),
-                Err(e) => return HttpReply::new(400, Some(rpc_error(-32700, format!("parse error: {e}")))),
-            };
-            let method = msg.get("method").and_then(Value::as_str).unwrap_or("");
-            // An id from the URL or the session header that the server never
-            // issued: 404, so the client starts over (MCP spec for unknown
-            // sessions). One in the arguments is simply ignored.
-            if let Some(id) = &req.user {
-                if !ledger.knows(id) {
-                    return HttpReply::new(404, Some(rpc_error(-32001,
-                        "unknown account: start a new session, or get one from GET /u/new".into())));
-                }
-            }
-            let from_args = msg.pointer("/params/arguments/user_id").and_then(Value::as_str)
-                .map(str::to_ascii_lowercase).filter(|id| ledger.knows(id));
-            let user = match (req.user.clone().or(from_args), method) {
-                (Some(id), _) => Some(id),
-                (None, "initialize") => ledger.issue_account().ok(),
-                (None, _) => None,
-            };
-            let usage = (method == "tools/call").then(|| usage_record(user.as_deref(), &msg));
-            let session = if method == "initialize" { user.clone() } else { None };
-            match handle_request(&msg, opts, index, hosted.caller(user.as_deref())) {
-                Some(mut resp) => {
-                    if let (Some(id), Some(result)) = (&session, resp.get_mut("result")) {
-                        result["instructions"] = json!(keep_id_instructions(id));
-                    }
-                    HttpReply { status: 200, body: Some(resp.to_string()), session, usage }
-                }
-                None => HttpReply { status: 202, body: None, session, usage },
-            }
-        }
-        _ => HttpReply::new(404, None),
-    }
-}
-
-/// Sent with `initialize`: the client's anonymous id and how to keep it.
-/// Nothing guarantees a client keeps it; this gives the ones that can (a
-/// saved server URL, an agent with memory) the means to.
-fn keep_id_instructions(id: &str) -> String {
-    format!("osc-bridge catalogue of MIDI implementations (CC, NRPN, SysEx, drum maps) for about \
-        980 synths, drum machines and DAWs. Start with list_devices (query: 'korg minilogue'), then \
-        list_routes with the slug; get_trust tells how far other users confirmed a driver, per firmware. \
-        After testing a driver on the real device, call report_result with the firmware and the \
-        device's Identity Reply. This server issued you the account {id} (no sign-up, no personal \
-        data); your reports belong to it. To keep it in later sessions, connect to the personal \
-        endpoint /u/{id}/mcp on this server, or pass user_id: \"{id}\" in tool calls; keep it if \
-        you can store it.")
-}
-
-/// One JSON line per tool call: when, which anonymous user, which tool and
-/// the catalogue arguments. No address, no other request data.
-fn usage_record(user: Option<&str>, msg: &Value) -> String {
-    let params = msg.get("params");
-    let args = params.and_then(|p| p.get("arguments"));
-    let pick = |k: &str| args.and_then(|a| a.get(k)).cloned().unwrap_or(Value::Null);
-    json!({
-        "event": "tool_call",
-        "ts": chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
-        "user": user,
-        "tool": params.and_then(|p| p.get("name")),
-        "query": pick("query"), "vendor": pick("vendor"), "kind": pick("kind"), "slug": pick("slug"),
-    }).to_string()
-}
-
-fn respond(req: tiny_http::Request, reply: HttpReply) {
-    use tiny_http::{Header, Response};
-    let HttpReply { status, body, session, .. } = reply;
-    let header = |k: &str, v: &str| Header::from_bytes(k.as_bytes(), v.as_bytes()).expect("static header");
-    let kind = match &body {
-        Some(b) if b.starts_with('{') => "application/json",
-        _ => "text/plain; charset=utf-8",
-    };
-    let resp = Response::from_string(body.unwrap_or_default())
-        .with_status_code(status)
-        .with_header(header("Content-Type", kind))
-        .with_header(header("Access-Control-Allow-Origin", "*"))
-        .with_header(header("Access-Control-Allow-Methods", "POST, GET, OPTIONS"))
-        .with_header(header("Access-Control-Allow-Headers", "content-type, mcp-protocol-version, mcp-session-id"))
-        .with_header(header("Access-Control-Expose-Headers", "mcp-session-id"));
-    let resp = match session {
-        Some(id) => resp.with_header(header("Mcp-Session-Id", &id)),
-        None => resp,
-    };
-    let _ = req.respond(resp);
-}
-
-fn handle_request(req: &Value, opts: &McpOptions, index: &DeviceIndex, caller: Caller) -> Option<Value> {
+/// The reply to one JSON-RPC message of an MCP session — `initialize`,
+/// `tools/list` (from `tools`), `tools/call` of one of `offered` (run by
+/// `call`), `ping` — or None for a notification.
+pub fn rpc_reply(req: &Value, offered: &[&str], tools: impl FnOnce() -> Value,
+                 call: impl FnOnce(&str, &Value) -> Result<Value, String>) -> Option<Value> {
     let id = req.get("id").cloned();
     let method = req.get("method").and_then(Value::as_str).unwrap_or("");
 
@@ -771,13 +308,13 @@ fn handle_request(req: &Value, opts: &McpOptions, index: &DeviceIndex, caller: C
 
     let result: Result<Value, (i64, String)> = match method {
         "initialize" => Ok(init_result()),
-        "tools/list" => Ok(tools_list(opts)),
+        "tools/list" => Ok(tools()),
         "tools/call" => match req.get("params").and_then(|p| Some((p.get("name")?.as_str()?, p.get("arguments").cloned().unwrap_or(json!({})))))
         {
             // An unknown tool is a protocol error; a tool that fails reports
             // it in its result, so the model can read it and react (MCP spec).
-            Some((name, _)) if !tool_names(opts).contains(&name) => Err((-32602, format!("unknown tool: {name}"))),
-            Some((name, args)) => Ok(call_tool(name, &args, opts, index, caller).unwrap_or_else(|e| json!({
+            Some((name, _)) if !offered.contains(&name) => Err((-32602, format!("unknown tool: {name}"))),
+            Some((name, args)) => Ok(call(name, &args).unwrap_or_else(|e| json!({
                 "content": [ { "type": "text", "text": e } ],
                 "isError": true,
             }))),
@@ -801,7 +338,7 @@ fn handle_request(req: &Value, opts: &McpOptions, index: &DeviceIndex, caller: C
     }
 }
 
-fn init_result() -> Value {
+pub fn init_result() -> Value {
     json!({
         "protocolVersion": PROTOCOL_VERSION,
         "capabilities": { "tools": {} },
@@ -813,23 +350,18 @@ fn init_result() -> Value {
 }
 
 fn tools_list(opts: &McpOptions) -> Value {
-    let mut all = all_tools();
+    let mut all = tool_schemas();
     if let Some(tools) = all["tools"].as_array_mut() {
         let offered = tool_names(opts);
         tools.retain(|t| t["name"].as_str().is_some_and(|n| offered.contains(&n)));
-        if opts.hosted {
-            for t in tools.iter_mut() {
-                t["inputSchema"]["properties"]["user_id"] = json!({
-                    "type": "string",
-                    "description": "Your anonymous osc-bridge id, if you kept it from an earlier session (see the server instructions). Optional.",
-                });
-            }
-        }
     }
     all
 }
 
-fn all_tools() -> Value {
+/// The schema of every tool osc-bridge defines: the local ones, and those a
+/// linked copy forwards to the hosted server (`online::FORWARDED_TOOLS`),
+/// which serves them too.
+pub fn tool_schemas() -> Value {
     json!({
         "tools": [
             {
@@ -1237,59 +769,21 @@ fn all_tools() -> Value {
                 "description": "Where a contribution stands: pending (waiting for the merge job), merged (with its pull request), rejected (with the reason), or held (its account is under review).",
                 "inputSchema": { "type": "object", "properties": { "id": { "type": "integer" } }, "required": ["id"], "additionalProperties": false },
                 "annotations": { "title": "Contribution status", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": false }
-            },
-            {
-                "name": "relay_status",
-                "description": "Check a relay: the user opened https://osc-bridge.roomi-fields.com/connect/ (or ran osc-bridge connect) and gave you its pairing code. Returns the MIDI output and input ports of their machine. Nothing is sent to the hardware.",
-                "inputSchema": { "type": "object", "properties": { "code": { "type": "string", "description": "The pairing code the relay page or program shows (e.g. 'K7QM-2XPA')." } }, "required": ["code"], "additionalProperties": false },
-                "annotations": { "title": "Relay status", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": true }
-            },
-            {
-                "name": "relay_detect",
-                "description": "Find which devices are connected to the user's machine through a relay: sends the MIDI Identity Request (F0 7E 7F 06 01 F7, changes nothing on the device) to every output and matches the answers — manufacturer, model, firmware version — against the catalogue. Returns the best driver ids and identity_hex to pass to report_result. Devices that do not answer are only listed by port name.",
-                "inputSchema": { "type": "object", "properties": { "code": { "type": "string", "description": "The pairing code the relay page or program shows (e.g. 'K7QM-2XPA')." },
-                    "timeout_ms": { "type": "integer", "minimum": 100, "maximum": 5000, "description": "How long to wait for answers (default 1000)." } },
-                    "required": ["code"], "additionalProperties": false },
-                "annotations": { "title": "Detect devices through a relay", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": true }
-            },
-            {
-                "name": "relay_send",
-                "description": "Play or set something on the user's hardware through a relay: give a driver (id or slug) and one of its OSC addresses from list_routes with its arguments (e.g. address '/filter/cutoff', args [64]; '/note/on', args [60, 100]) — the server turns it into the right CC, NRPN, note or SysEx message. Or give raw MIDI bytes as hex. Values are the device's own numbers, clamped to the parameter's range. Any SysEx but the Identity Request (patch dumps, stores, settings, preset restores) may overwrite the device's memory: the relay asks the user to accept it first and this call waits for the answer (up to 2 minutes), so tell the user what you are about to send.",
-                "inputSchema": { "type": "object", "properties": { "code": { "type": "string", "description": "The pairing code the relay page or program shows (e.g. 'K7QM-2XPA')." },
-                    "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or slug." },
-                    "address": { "type": "string", "description": "OSC address of the driver, with or without its prefix." },
-                    "args": { "type": "array", "items": {}, "description": "OSC arguments (numbers, strings, booleans)." },
-                    "hex": { "type": "string", "description": "Raw MIDI messages instead of device/address, e.g. 'B0 2B 40'." },
-                    "port": { "type": "string", "description": "Output port name (or part of it); needed when the relay has several." },
-                    "gap_ms": { "type": "integer", "minimum": 0, "maximum": 2000, "description": "Pause between the SysEx messages of a dump, for devices that write slowly (default 50)." } },
-                    "required": ["code"], "additionalProperties": false },
-                "annotations": { "title": "Send through a relay", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
-            },
-            {
-                "name": "relay_listen",
-                "description": "Listen to what the user's hardware sends through a relay for a few seconds: notes, CC, NRPN, SysEx, decoded. With a device, each CC or NRPN that moved is matched to the driver's OSC addresses — ask the user to move one control on the device while listening to learn which address it is, or to check that the driver's map is right (then record what you saw with report_mapping, so the catalogue learns it).",
-                "inputSchema": { "type": "object", "properties": { "code": { "type": "string", "description": "The pairing code the relay page or program shows (e.g. 'K7QM-2XPA')." },
-                    "seconds": { "type": "integer", "minimum": 1, "maximum": 15, "description": "How long to listen (default 3)." },
-                    "device": { "type": "string", "description": "Driver id or slug, to match what moved to its addresses." } },
-                    "required": ["code"], "additionalProperties": false },
-                "annotations": { "title": "Listen through a relay", "readOnlyHint": true, "idempotentHint": false, "openWorldHint": true }
             }
+
         ]
     })
 }
 
 fn tool_names(opts: &McpOptions) -> Vec<&'static str> {
-    if opts.hosted {
-        return HOSTED_TOOLS.to_vec();
-    }
     let local = ["list_devices", "get_device_docs", "list_routes", "send", "get_status",
          "detect_hardware", "backup_presets", "restore_presets"];
     let forwarded = if opts.online { crate::online::FORWARDED_TOOLS.as_slice() } else { &[] };
     local.iter().chain(forwarded).copied().collect()
 }
 
-fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, caller: Caller) -> Result<Value, String> {
-    if let (None, Some(link)) = (caller.ledger, caller.online) {
+fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, link: Option<&Link>) -> Result<Value, String> {
+    if let Some(link) = link {
         if crate::online::FORWARDED_TOOLS.contains(&name) {
             if let Some(id) = private_device(index, opts, args) {
                 if name == "get_trust" {
@@ -1307,51 +801,10 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, c
             return link.forward(name, args);
         }
     }
+    if let Some(done) = catalogue_tool(name, args, index, &|id| link.and_then(|l| l.status(id))) {
+        return done;
+    }
     match name {
-        "list_devices" => list_devices(index, &DeviceFilter::from_args(args), &|id| match (caller.ledger, caller.online) {
-            (Some(l), _) => Some(l.status(id).to_string()),
-            (None, Some(link)) => link.status(id),
-            (None, None) => None,
-        }),
-        "report_result" => report_result(index, args, caller),
-        "report_mapping" => report_mapping(index, args, caller),
-        "submit_driver" => submit_driver(index, args, caller),
-        "submit_fix" => submit_fix(index, args, caller),
-        "get_contribution" => {
-            let ledger = caller.ledger.ok_or("contributions go to the hosted server")?;
-            let id = args.get("id").and_then(Value::as_u64).ok_or("missing id")?;
-            let c = ledger.contribution(id).ok_or_else(|| format!("no contribution {id}"))?;
-            Ok(content_structured(&serde_json::to_string_pretty(&c).unwrap_or_default(), c))
-        }
-        "relay_status" | "relay_detect" | "relay_send" | "relay_listen" => {
-            let relays = caller.relays.ok_or("the relay runs on the hosted server only")?;
-            let code = args.get("code").and_then(Value::as_str).ok_or("missing code (the pairing code shown by the door)")?;
-            let session = relays.get(code).ok_or_else(|| format!(
-                "no relay with code '{code}': open https://osc-bridge.roomi-fields.com/connect/ and read the code it shows"))?;
-            session.claim(caller.user.ok_or("no account: initialize the session first")?)?;
-            match name {
-                "relay_status" => Ok(relay_status(&session)),
-                "relay_detect" => relay_detect(index, &session, args, caller),
-                "relay_send" => relay_send(index, &session, args),
-                _ => relay_listen(index, &session, args),
-            }
-        }
-        "get_trust" => {
-            let ledger = caller.ledger.ok_or("trust is kept by the hosted server only")?;
-            let device = args.get("device").and_then(Value::as_str).ok_or("missing device")?;
-            let entry = index.find(device).ok_or_else(|| format!("no device '{device}'"))?;
-            let mut trust = ledger.trust(&entry.id);
-            trust["mappings"] = json!(mappings_against_driver(ledger, entry)?);
-            Ok(content_structured(&serde_json::to_string_pretty(&trust).unwrap_or_default(), trust))
-        }
-        "get_device_docs" => {
-            let slug = args.get("slug").and_then(Value::as_str).ok_or("missing slug")?;
-            get_device_docs(index, slug)
-        }
-        "list_routes" => {
-            let slug = args.get("slug").and_then(Value::as_str).ok_or("missing slug")?;
-            list_routes(index, slug)
-        }
         "send" => {
             let addr = args.get("addr").and_then(Value::as_str).ok_or("missing addr")?;
             let osc_args = args.get("args").cloned().unwrap_or(json!([]));
@@ -1392,6 +845,20 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, c
         }
         other => Err(format!("unknown tool: {other}")),
     }
+}
+
+/// The catalogue tools — `list_devices`, `get_device_docs`, `list_routes` —
+/// shared with the hosted server; None for any other tool. `status` gives a
+/// driver's trust for `list_devices`, when known.
+pub fn catalogue_tool(name: &str, args: &Value, index: &DeviceIndex, status: &dyn Fn(&str) -> Option<String>)
+                      -> Option<Result<Value, String>> {
+    let slug = || args.get("slug").and_then(Value::as_str).ok_or_else(|| "missing slug".to_string());
+    Some(match name {
+        "list_devices" => list_devices(index, &DeviceFilter::from_args(args), status),
+        "get_device_docs" => slug().and_then(|s| get_device_docs(index, s)),
+        "list_routes" => slug().and_then(|s| list_routes(index, s)),
+        _ => return None,
+    })
 }
 
 /// The driver a tool call is about, when the user keeps it private: the
@@ -1459,7 +926,7 @@ pub fn privacy(path: &Path, devices_dir: &Path, offline: Option<bool>, private: 
 }
 
 /// The hardware drivers of the catalogue, in the shape `detect::rank` scores.
-fn hardware_candidates(index: &DeviceIndex) -> Vec<crate::detect::Candidate> {
+pub fn hardware_candidates(index: &DeviceIndex) -> Vec<crate::detect::Candidate> {
     index.entries.iter().filter(|e| e.kind != "software").map(|e| crate::detect::Candidate {
         slug: e.slug.clone(),
         name: e.name.clone(),
@@ -1616,7 +1083,7 @@ fn list_devices(index: &DeviceIndex, filter: &DeviceFilter, status: &dyn Fn(&str
 
 /// Every OSC address a driver answers to: commands, CC/NRPN and SysEx
 /// parameters, drum sounds.
-fn surface_addresses(dev: &Device) -> Vec<String> {
+pub fn surface_addresses(dev: &Device) -> Vec<String> {
     let prefix = &dev.device.osc_prefix;
     let cc = dev.cc_params.iter().flat_map(|t| t.entries.iter().map(|e| e.osc.clone()));
     let params = dev.params.iter().flat_map(|t| t.entries.iter().map(|e| e.osc.clone()));
@@ -1625,383 +1092,8 @@ fn surface_addresses(dev: &Device) -> Vec<String> {
         .map(|a| format!("{prefix}{a}")).collect()
 }
 
-fn report_result(index: &DeviceIndex, args: &Value, caller: Caller) -> Result<Value, String> {
-    use crate::reports::{DeviceIdentity, Outcome, Report, LEARN_FIRMWARE, MAX_NOTE};
-    let ledger = caller.ledger.ok_or("reports go to the hosted server: https://mcp.osc-bridge.roomi-fields.com/mcp")?;
-    let user = caller.user.ok_or("no account: initialize the session first, or pass the user_id the server gave you")?;
-    let text = |k: &str| args.get(k).and_then(Value::as_str).map(str::trim).filter(|s| !s.is_empty());
-    let device = text("device").ok_or("missing device")?;
-    let entry = index.find(device).ok_or_else(|| format!("no device '{device}' (use the id or slug from list_devices)"))?;
-    let outcome = text("outcome").and_then(Outcome::parse).ok_or("outcome must be works, fails or partial")?;
-    let address = match text("address") {
-        Some(a) => {
-            let dev = Device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.id))?;
-            if !surface_addresses(&dev).iter().any(|s| s == a) {
-                return Err(format!("'{a}' is not an address of {} (see list_routes)", entry.id));
-            }
-            Some(a.to_string())
-        }
-        None => None,
-    };
-    let identity = match text("identity_hex") {
-        Some(hex) => {
-            let bytes = crate::librarian::parse_hex(hex).map_err(|e| format!("identity_hex: {e}"))?;
-            let id = crate::detect::parse_identity_reply(&bytes)
-                .ok_or("identity_hex is not a MIDI Identity Reply (F0 7E <dev> 06 02 …)")?;
-            if !entry.manufacturer_id.is_empty() && id.manufacturer != entry.manufacturer_id {
-                return Err(format!("the device that answered is not from {}'s manufacturer", entry.id));
-            }
-            Some(DeviceIdentity::from(&id))
-        }
-        None => None,
-    };
-    let report = Report {
-        id: 0,
-        ts: chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
-        user: user.to_string(),
-        device: entry.id.clone(),
-        address,
-        outcome,
-        firmware: text("firmware").map(|f| f.chars().take(40).collect()),
-        identity,
-        note: text("note").map(|n| n.chars().take(MAX_NOTE).collect()),
-    };
-    let unplaced = report.firmware.is_none() && report.identity.is_none();
-    let (id, status) = ledger.add(report)?;
-    let trust = ledger.trust(&entry.id);
-    let mut text = format!("Report {id} recorded for {}: {}. Driver status: {}.", entry.id,
-        serde_json::to_value(status).ok().and_then(|v| v.as_str().map(str::to_string)).unwrap_or_default(),
-        trust["overall"]["status"].as_str().unwrap_or("?"));
-    match status {
-        crate::reports::ReportStatus::Pending => text.push_str(" Your account is under review: the report counts once approved."),
-        crate::reports::ReportStatus::RolledBack => text.push_str(" Other accounts contradict it on this firmware, so it was rolled back and your account is under review."),
-        _ => {}
-    }
-    if unplaced || trust["overall"]["needs_firmware"] == true {
-        text.push_str(&format!("\n\n{LEARN_FIRMWARE}"));
-    }
-    Ok(content_structured(&text, json!({ "recorded": true, "report": id, "status": status, "trust": trust })))
-}
-
-fn relay_status(session: &crate::relay::Session) -> Value {
-    let v = json!({
-        "code": crate::relay::display_code(&session.code),
-        "outputs": session.outputs(),
-        "inputs": session.inputs(),
-    });
-    let text = format!("Relay {} connected. Outputs: {}. Inputs: {}.", v["code"].as_str().unwrap_or(""),
-        session.outputs().join(", "), session.inputs().join(", "));
-    content_structured(&text, v)
-}
-
-/// How long a relay call may wait for the hardware, in milliseconds.
-fn wait_ms(args: &Value, key: &str, default: u64, max: u64) -> std::time::Duration {
-    std::time::Duration::from_millis(args.get(key).and_then(Value::as_u64).unwrap_or(default).clamp(100, max))
-}
-
-fn hex(bytes: &[u8]) -> String {
-    bytes.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ")
-}
-
-/// Ask every output of the door who is there (MIDI Identity Request), and
-/// match each answer, with the name of the port it came on, against the
-/// catalogue.
-fn relay_detect(index: &DeviceIndex, session: &crate::relay::Session, args: &Value, caller: Caller) -> Result<Value, String> {
-    use crate::detect::{parse_identity_reply, rank, IDENTITY_REQUEST};
-    let outputs = session.outputs();
-    if outputs.is_empty() {
-        return Err("the relay has no MIDI output: plug the device in, or allow MIDI access on the page".into());
-    }
-    let since = std::time::Instant::now();
-    for out in &outputs {
-        session.send(out, &[IDENTITY_REQUEST.to_vec()], 0)?;
-    }
-    std::thread::sleep(wait_ms(args, "timeout_ms", 1000, 5000));
-    let candidates = hardware_candidates(index);
-    let mut seen = std::collections::HashSet::new();
-    let mut found: Vec<Value> = Vec::new();
-    for msg in session.received_since(since) {
-        let Some(id) = parse_identity_reply(&msg.data) else { continue };
-        if !seen.insert((msg.port.clone(), msg.data.clone())) { continue; }
-        let matches: Vec<Value> = rank(&msg.port, Some(&id), &candidates, 3).into_iter().filter_map(|(score, i)| {
-            let entry = index.entries.iter().find(|e| e.path.display().to_string() == candidates[i].file)?;
-            Some(json!({ "id": entry.id, "name": entry.name, "vendor": entry.vendor, "source_tier": entry.tier, "score": score }))
-        }).collect();
-        let identity = json!({
-            "manufacturer": id.manufacturer_hex(),
-            "vendor": crate::detect::manufacturer_name(&id.manufacturer),
-            "family": id.family, "model": id.model, "version": hex(&id.version),
-        });
-        let private = session.is_private(&msg.port);
-        if session.shares() && !private {
-            if let Some(usage) = caller.usage {
-                usage.write(&json!({
-                    "event": "relay_identity",
-                    "ts": chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
-                    "user": caller.user,
-                    "identity": identity,
-                    "best": matches.first().map(|m| m["id"].clone()),
-                }).to_string());
-            }
-        }
-        found.push(json!({
-            "input": msg.port,
-            "output": outputs.iter().find(|o| **o == msg.port).cloned(),
-            "identity": identity,
-            "identity_hex": hex(&msg.data),
-            "matches": matches,
-            "private": private,
-        }));
-    }
-    let text = if found.is_empty() {
-        format!("No device answered the Identity Request on {} (many older devices do not). Ports: {}.",
-            outputs.join(", "), session.inputs().join(", "))
-    } else {
-        let private = found.iter().filter(|f| f["private"] == json!(true)).count();
-        format!("{} device(s) answered. Pass identity_hex to report_result after testing.{}\n\n{}",
-            found.len(),
-            if private > 0 { format!(" {private} of them are private at the relay: their identity is not recorded.") } else { String::new() },
-            serde_json::to_string_pretty(&found).unwrap_or_default())
-    };
-    Ok(content_structured(&text, json!({ "devices": found, "outputs": outputs, "inputs": session.inputs() })))
-}
-
-/// Send one named OSC address of a driver — or raw MIDI bytes — through the
-/// door to the hardware.
-fn relay_send(index: &DeviceIndex, session: &crate::relay::Session, args: &Value) -> Result<Value, String> {
-    let port = session.output(args.get("port").and_then(Value::as_str))?;
-    let (messages, what) = match args.get("hex").and_then(Value::as_str) {
-        Some(raw) => {
-            let bytes = crate::librarian::parse_hex(raw).map_err(|e| format!("hex: {e}"))?;
-            (split_midi(&bytes)?, "raw MIDI".to_string())
-        }
-        None => {
-            let device = args.get("device").and_then(Value::as_str).ok_or("give device and address, or hex")?;
-            let entry = index.find(device).ok_or_else(|| format!("no device '{device}' (use the id or slug from list_devices)"))?;
-            let dev = Device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.id))?;
-            let address = args.get("address").and_then(Value::as_str).ok_or("missing address (from list_routes)")?;
-            let prefix = dev.device.osc_prefix.clone();
-            let full = if address.starts_with(&format!("{prefix}/")) { address.to_string() } else { format!("{prefix}{address}") };
-            let osc_args = args.get("args").and_then(Value::as_array).map(|a| a.iter().map(json_to_osc).collect()).unwrap_or_default();
-            let encoded = crate::runtime::encode(dev, rosc::OscMessage { addr: full.clone(), args: osc_args });
-            if encoded.is_empty() {
-                return Err(format!("{full} sends nothing on {}: check the address and its arguments with list_routes", entry.id));
-            }
-            (encoded, full)
-        }
-    };
-    let gap = args.get("gap_ms").and_then(Value::as_u64).unwrap_or(50).min(2000);
-    let delivery = session.send(&port, &messages, gap)?;
-    let accepted = delivery == crate::relay::Delivery::Accepted;
-    let sent: Vec<String> = messages.iter().map(|m| hex(m)).collect();
-    let text = format!("{}Sent {what} to {port}: {}",
-        if accepted { "The user accepted at the relay. " } else { "" }, sent.join(" | "));
-    Ok(content_structured(&text, json!({ "port": port, "messages": sent, "confirmed_by_user": accepted })))
-}
-
-/// Split raw bytes into MIDI messages, each starting with its status byte
-/// (no running status): channel messages by their length, SysEx up to F7.
-fn split_midi(bytes: &[u8]) -> Result<Vec<Vec<u8>>, String> {
-    let mut out = Vec::new();
-    let mut i = 0;
-    while i < bytes.len() {
-        let status = bytes[i];
-        let len = match status {
-            0xF0 => bytes[i..].iter().position(|&b| b == 0xF7).map(|p| p + 1)
-                .ok_or("SysEx without its closing F7")?,
-            0x80..=0xBF | 0xE0..=0xEF | 0xF2 => 3,
-            0xC0..=0xDF | 0xF1 | 0xF3 => 2,
-            0xF4..=0xFF => 1,
-            _ => return Err(format!("byte {status:02X} at {i} is not a status byte")),
-        };
-        let msg = bytes.get(i..i + len).ok_or("message cut short")?;
-        if msg[1..].iter().any(|&b| b >= 0x80 && b != 0xF7) {
-            return Err(format!("data byte out of range in {}", hex(msg)));
-        }
-        out.push(msg.to_vec());
-        i += len;
-    }
-    if out.is_empty() {
-        return Err("no MIDI message".into());
-    }
-    Ok(out)
-}
-
-/// One MIDI message in words: what it is, on which channel, which numbers.
-fn describe_midi(data: &[u8]) -> Value {
-    let status = data.first().copied().unwrap_or(0);
-    let ch = (status & 0x0F) + 1;
-    let at = |i: usize| data.get(i).copied().unwrap_or(0);
-    match status & 0xF0 {
-        0x80 => json!({ "kind": "note_off", "channel": ch, "note": at(1), "velocity": at(2) }),
-        0x90 if at(2) == 0 => json!({ "kind": "note_off", "channel": ch, "note": at(1), "velocity": 0 }),
-        0x90 => json!({ "kind": "note_on", "channel": ch, "note": at(1), "velocity": at(2) }),
-        0xA0 => json!({ "kind": "poly_aftertouch", "channel": ch, "note": at(1), "value": at(2) }),
-        0xB0 => json!({ "kind": "cc", "channel": ch, "cc": at(1), "value": at(2) }),
-        0xC0 => json!({ "kind": "program_change", "channel": ch, "program": at(1) }),
-        0xD0 => json!({ "kind": "aftertouch", "channel": ch, "value": at(1) }),
-        0xE0 => json!({ "kind": "pitchbend", "channel": ch, "value": (at(1) as u16) | ((at(2) as u16) << 7) }),
-        _ if status == 0xF0 => json!({ "kind": "sysex", "length": data.len() }),
-        _ => json!({ "kind": "system", "status": status }),
-    }
-}
-
-/// Collect what the hardware sends through the door for a few seconds. With
-/// a device, CC and NRPN numbers are matched to the driver's addresses —
-/// ask the user to move one control, and see which address it is.
-fn relay_listen(index: &DeviceIndex, session: &crate::relay::Session, args: &Value) -> Result<Value, String> {
-    let since = std::time::Instant::now();
-    let seconds = args.get("seconds").and_then(Value::as_u64).unwrap_or(3).clamp(1, 15);
-    std::thread::sleep(std::time::Duration::from_secs(seconds));
-    let device = match args.get("device").and_then(Value::as_str) {
-        Some(d) => {
-            let entry = index.find(d).ok_or_else(|| format!("no device '{d}'"))?;
-            Some(Device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.id))?)
-        }
-        None => None,
-    };
-    let received = session.received_since(since);
-    let messages: Vec<Value> = received.iter().filter(|m| m.data.first() != Some(&0xF8) && m.data.first() != Some(&0xFE))
-        .take(500).map(|m| {
-            let mut d = describe_midi(&m.data);
-            d["port"] = json!(m.port);
-            d["hex"] = json!(hex(&m.data));
-            d
-        }).collect();
-    let mut controls: BTreeMap<u8, (u8, u8, u8, usize)> = BTreeMap::new();
-    for m in &messages {
-        if m["kind"] == "cc" {
-            let (cc, v) = (m["cc"].as_u64().unwrap_or(0) as u8, m["value"].as_u64().unwrap_or(0) as u8);
-            let e = controls.entry(cc).or_insert((m["channel"].as_u64().unwrap_or(1) as u8, v, v, 0));
-            e.1 = e.1.min(v); e.2 = e.2.max(v); e.3 += 1;
-        }
-    }
-    let nrpn = nrpn_numbers(&received);
-    let mapped = |cc: Option<u8>, nrpn: Option<(u8, u8)>| -> Vec<String> {
-        let Some(dev) = &device else { return Vec::new() };
-        dev.cc_params.iter().flat_map(|t| t.entries.iter()).filter(|e| match nrpn {
-            Some((m, l)) => e.nrpn_msb == Some(m) && e.nrpn_lsb == Some(l),
-            None => e.cc == cc && e.nrpn_msb.is_none(),
-        }).map(|e| format!("{}{}", dev.device.osc_prefix, e.osc)).collect()
-    };
-    let moved: Vec<Value> = controls.iter().filter(|(cc, _)| ![6u8, 38, 98, 99].contains(cc) || nrpn.is_empty())
-        .map(|(cc, (ch, lo, hi, n))| json!({
-            "cc": cc, "channel": ch, "min": lo, "max": hi, "messages": n,
-            "driver_addresses": mapped(Some(*cc), None),
-        }))
-        .chain(nrpn.iter().map(|(m, l)| json!({ "nrpn": [m, l], "driver_addresses": mapped(None, Some((*m, *l))) })))
-        .collect();
-    let text = format!("{} message(s) received. Controls moved: {}",
-        messages.len(), serde_json::to_string_pretty(&moved).unwrap_or_default());
-    Ok(content_structured(&text, json!({ "messages": messages, "controls": moved })))
-}
-
-/// NRPN parameter numbers selected in a stream of messages (CC 99 then 98).
-fn nrpn_numbers(received: &[crate::relay::Inbound]) -> Vec<(u8, u8)> {
-    let mut out: Vec<(u8, u8)> = Vec::new();
-    let mut msb: Option<u8> = None;
-    for m in received {
-        if let [s, cc, v] = m.data[..] {
-            if s & 0xF0 != 0xB0 { continue; }
-            match cc {
-                99 => msb = Some(v),
-                98 => if let Some(hi) = msb {
-                    if !out.contains(&(hi, v)) { out.push((hi, v)); }
-                },
-                _ => {}
-            }
-        }
-    }
-    out
-}
-
-/// What a driver says a control sends: its CC / NRPN / note, None when it
-/// does not map that address.
-fn driver_sends(dev: &Device, control: &str) -> Option<crate::reports::Sends> {
-    use crate::reports::Sends;
-    let rel = control.strip_prefix(dev.device.osc_prefix.as_str())?;
-    if let Some(e) = dev.cc_params.iter().flat_map(|t| t.entries.iter()).find(|e| e.osc == rel) {
-        return match (e.nrpn_msb, e.nrpn_lsb, e.cc) {
-            (Some(msb), Some(lsb), _) => Some(Sends::Nrpn { msb, lsb }),
-            (_, _, Some(cc)) => Some(Sends::Cc { cc }),
-            _ => None,
-        };
-    }
-    let t = dev.triggers.iter().flat_map(|t| t.entries.iter()).find(|e| e.osc == rel)?;
-    t.note.or(Some(t.note_range[0])).map(|note| Sends::Note { note })
-}
-
-/// The ledger's learned mappings of a driver, each with what the driver
-/// itself says and whether they differ.
-fn mappings_against_driver(ledger: &crate::reports::Ledger, entry: &DeviceIndexEntry) -> Result<Vec<Value>, String> {
-    let dev = Device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.id))?;
-    Ok(ledger.learned(Some(&entry.id)).into_iter().map(|mut m| {
-        let driver = m["control"].as_str().and_then(|c| driver_sends(&dev, c));
-        m["driver"] = json!(driver);
-        m["differs"] = json!(!m["learned"].is_null() && serde_json::to_value(&driver).ok() != Some(m["learned"].clone()));
-        m
-    }).collect())
-}
-
-/// Record which MIDI message a control sent while the user moved it (seen
-/// with `relay_listen`, or any other way).
-fn report_mapping(index: &DeviceIndex, args: &Value, caller: Caller) -> Result<Value, String> {
-    use crate::reports::{DeviceIdentity, Observation, Sends};
-    let ledger = caller.ledger.ok_or("mappings go to the hosted server: https://mcp.osc-bridge.roomi-fields.com/mcp")?;
-    let user = caller.user.ok_or("no account: initialize the session first, or pass the user_id the server gave you")?;
-    let text = |k: &str| args.get(k).and_then(Value::as_str).map(str::trim).filter(|s| !s.is_empty());
-    let num = |k: &str| args.get(k).and_then(Value::as_u64).filter(|n| *n < 128).map(|n| n as u8);
-    let device = text("device").ok_or("missing device")?;
-    let entry = index.find(device).ok_or_else(|| format!("no device '{device}' (use the id or slug from list_devices)"))?;
-    let dev = Device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.id))?;
-    let control = match (text("address"), text("label")) {
-        (Some(a), _) => {
-            let full = if a.starts_with(&format!("{}/", dev.device.osc_prefix)) { a.to_string() } else { format!("{}{a}", dev.device.osc_prefix) };
-            if !surface_addresses(&dev).contains(&full) {
-                return Err(format!("'{a}' is not an address of {}; for a control the driver lacks, give its panel label instead", entry.id));
-            }
-            full
-        }
-        (None, Some(l)) => format!("label:{}", l.chars().take(60).collect::<String>()),
-        (None, None) => return Err("give the control's address (from list_routes) or, if the driver lacks it, its panel label".into()),
-    };
-    let sends = match (num("cc"), num("nrpn_msb"), num("nrpn_lsb"), num("note")) {
-        (Some(cc), None, None, None) => Sends::Cc { cc },
-        (None, Some(msb), Some(lsb), None) => Sends::Nrpn { msb, lsb },
-        (None, None, None, Some(note)) => Sends::Note { note },
-        _ => return Err("give exactly one of: cc, nrpn_msb + nrpn_lsb, note (0-127)".into()),
-    };
-    let identity = match text("identity_hex") {
-        Some(h) => {
-            let bytes = crate::librarian::parse_hex(h).map_err(|e| format!("identity_hex: {e}"))?;
-            let id = crate::detect::parse_identity_reply(&bytes).ok_or("identity_hex is not a MIDI Identity Reply")?;
-            if !entry.manufacturer_id.is_empty() && id.manufacturer != entry.manufacturer_id {
-                return Err(format!("the device that answered is not from {}'s manufacturer", entry.id));
-            }
-            Some(DeviceIdentity::from(&id))
-        }
-        None => None,
-    };
-    ledger.observe(Observation {
-        ts: chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
-        user: user.to_string(),
-        device: entry.id.clone(),
-        control: control.clone(),
-        sends,
-        channel: num("channel").filter(|c| (1..=16).contains(c)),
-        firmware: text("firmware").map(|f| f.chars().take(40).collect()),
-        identity,
-    })?;
-    let mappings: Vec<Value> = mappings_against_driver(ledger, entry)?.into_iter().filter(|m| m["control"] == control.as_str()).collect();
-    let text = format!("Observation recorded for {} {control}.\n\n{}", entry.id, serde_json::to_string_pretty(&mappings).unwrap_or_default());
-    Ok(content_structured(&text, json!({ "recorded": true, "mappings": mappings })))
-}
-
-/// Largest driver file accepted as a contribution.
-const MAX_CONTRIBUTION: usize = 256 * 1024;
-
 /// `Moog Music` → `moog_music`: lower case, other characters as `sep`.
-fn slugify(s: &str, sep: char) -> String {
+pub fn slugify(s: &str, sep: char) -> String {
     let mut out = String::new();
     for c in s.chars() {
         if c.is_ascii_alphanumeric() { out.push(c.to_ascii_lowercase()); }
@@ -2012,113 +1104,10 @@ fn slugify(s: &str, sep: char) -> String {
 
 /// The catalogue folder of a vendor: the one its drivers already use, else
 /// a new one from its name.
-fn vendor_dir(index: &DeviceIndex, vendor: &str) -> String {
+pub fn vendor_dir(index: &DeviceIndex, vendor: &str) -> String {
     index.entries.iter().find(|e| e.vendor.eq_ignore_ascii_case(vendor))
         .and_then(|e| e.id.split('/').next().map(str::to_string))
         .unwrap_or_else(|| slugify(vendor, '-'))
-}
-
-fn queue_contribution(caller: Caller, path: String, doc: &Value, kind: &str, note: Option<String>) -> Result<Value, String> {
-    let ledger = caller.ledger.ok_or("contributions go to the hosted server: https://mcp.osc-bridge.roomi-fields.com/mcp")?;
-    let user = caller.user.ok_or("no account: initialize the session first, or pass the user_id the server gave you")?;
-    let content = serde_json::to_string_pretty(doc).map_err(|e| e.to_string())? + "\n";
-    if content.len() > MAX_CONTRIBUTION {
-        return Err(format!("driver file too large ({} bytes, {MAX_CONTRIBUTION} at most)", content.len()));
-    }
-    let id = ledger.contribute(crate::reports::Contribution {
-        id: 0,
-        ts: chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
-        user: user.to_string(), path: path.clone(), content, kind: kind.to_string(), note,
-    })?;
-    let text = format!("Contribution {id} queued as {path}. The catalogue's merge job checks it (parse, lint, tests) \
-        and merges it within the hour if it passes; check with get_contribution.");
-    Ok(content_structured(&text, json!({ "id": id, "path": path, "state": "pending" })))
-}
-
-/// A new driver file from an agent: checked here as a driver, then queued.
-fn submit_driver(index: &DeviceIndex, args: &Value, caller: Caller) -> Result<Value, String> {
-    let mut doc = args.get("driver").cloned().filter(Value::is_object).ok_or("missing driver (the driver file, as a JSON object)")?;
-    let dev: Device = serde_json::from_value(doc.clone()).map_err(|e| format!("not a valid driver: {e} (see DEVICE_JSON_SCHEMA)"))?;
-    let (name, vendor, prefix) = (&dev.device.name, &dev.device.vendor, &dev.device.osc_prefix);
-    if name.trim().is_empty() || vendor.trim().is_empty() || !prefix.starts_with('/') || prefix.len() < 2 {
-        return Err("device.name, device.vendor and device.osc_prefix ('/slug') are required".into());
-    }
-    let has_surface = !dev.commands.is_empty() || dev.cc_params.as_ref().is_some_and(|t| !t.entries.is_empty())
-        || dev.params.as_ref().is_some_and(|t| !t.entries.is_empty()) || dev.triggers.as_ref().is_some_and(|t| !t.entries.is_empty());
-    if !has_surface {
-        return Err("the driver maps nothing: add cc_params, params, commands or triggers".into());
-    }
-    let firmware = args.get("firmware").and_then(Value::as_str).map(str::trim).filter(|f| !f.is_empty()).unwrap_or("unknown");
-    let note = args.get("note").and_then(Value::as_str).map(|n| n.chars().take(500).collect::<String>());
-    let source = json!({
-        "type": "agent-contributed",
-        "submitted": chrono::Utc::now().format("%Y-%m-%d").to_string(),
-        "firmware": firmware,
-        "how": args.get("source").and_then(Value::as_str).map(|s| s.chars().take(300).collect::<String>()),
-    });
-    doc["_sources"] = json!([source]);
-    let path = format!("devices/{}/{}.agent-contributed.fw-{}.json", vendor_dir(index, vendor), slugify(name, '_'), slugify(firmware, '_'));
-    queue_contribution(caller, path, &doc, "driver", note)
-}
-
-/// A corrected variant of a driver, built from the mappings the catalogue
-/// learned for one firmware where they differ from it.
-fn submit_fix(index: &DeviceIndex, args: &Value, caller: Caller) -> Result<Value, String> {
-    use crate::reports::Sends;
-    let ledger = caller.ledger.ok_or("contributions go to the hosted server")?;
-    let device = args.get("device").and_then(Value::as_str).ok_or("missing device")?;
-    let entry = index.find(device).ok_or_else(|| format!("no device '{device}'"))?;
-    let wanted = args.get("firmware").and_then(Value::as_str);
-    let differing: Vec<Value> = mappings_against_driver(ledger, entry)?.into_iter()
-        .filter(|m| m["differs"] == true && wanted.is_none_or(|w| m["firmware"] == w)).collect();
-    let firmwares: std::collections::BTreeSet<&str> = differing.iter().filter_map(|m| m["firmware"].as_str()).collect();
-    let firmware = match firmwares.len() {
-        0 => return Err(format!("no learned mapping differs from {} yet (see get_trust)", entry.id)),
-        1 => firmwares.into_iter().next().unwrap_or_default().to_string(),
-        _ => return Err(format!("learned mappings differ on several firmwares ({}): pass firmware", firmwares.into_iter().collect::<Vec<_>>().join(", "))),
-    };
-    let raw = std::fs::read_to_string(&entry.path).map_err(|e| format!("read {}: {e}", entry.id))?;
-    let mut doc: Value = serde_json::from_str(&raw).map_err(|e| format!("parse {}: {e}", entry.id))?;
-    let prefix = doc["device"]["osc_prefix"].as_str().unwrap_or("").to_string();
-    let mut applied = Vec::new();
-    for m in differing.iter().filter(|m| m["firmware"] == firmware.as_str()) {
-        let Ok(sends) = serde_json::from_value::<Sends>(m["learned"].clone()) else { continue };
-        let control = m["control"].as_str().unwrap_or("");
-        let entries = doc["cc_params"]["entries"].as_array_mut();
-        let target: Option<&mut Value> = match (control.strip_prefix(&prefix), entries) {
-            (Some(rel), Some(list)) => list.iter_mut().find(|e| e["osc"] == rel),
-            (None, Some(list)) if control.starts_with("label:") => {
-                let label = &control["label:".len()..];
-                list.push(json!({ "osc": format!("/learned/{}", slugify(label, '_')), "label": label, "range": [0, 127] }));
-                list.last_mut()
-            }
-            _ => None,
-        };
-        let Some(e) = target else { continue };
-        let obj = e.as_object_mut().ok_or("bad cc_params entry")?;
-        match sends {
-            Sends::Cc { cc } => { obj.insert("cc".into(), json!(cc)); obj.remove("nrpn_msb"); obj.remove("nrpn_lsb"); }
-            Sends::Nrpn { msb, lsb } => { obj.insert("nrpn_msb".into(), json!(msb)); obj.insert("nrpn_lsb".into(), json!(lsb)); obj.remove("cc"); }
-            Sends::Note { .. } => continue,
-        }
-        applied.push(control.to_string());
-    }
-    if applied.is_empty() {
-        return Err("the differing mappings are on controls this driver cannot express as CC or NRPN".into());
-    }
-    let original = doc["_sources"].get(0).cloned().unwrap_or(json!({}));
-    doc["_sources"] = json!([{
-        "type": "agent-contributed",
-        "submitted": chrono::Utc::now().format("%Y-%m-%d").to_string(),
-        "firmware": firmware,
-        "derived_from": entry.id,
-        "how": format!("{} with the mappings learned from usage on firmware {firmware}: {}", entry.id, applied.join(", ")),
-        "license": original.get("license"),
-        "attribution": original.get("attribution"),
-    }]);
-    let stem = entry.id.rsplit('/').next().unwrap_or(&entry.id).split('.').next().unwrap_or("driver").to_string();
-    let path = format!("devices/{}/{stem}.agent-contributed.fw-{}.json", entry.id.split('/').next().unwrap_or("misc"), slugify(&firmware, '_'));
-    queue_contribution(caller, path, &doc, "fix", Some(format!("learned mappings: {}", applied.join(", "))))
 }
 
 fn load_device_by_slug(index: &DeviceIndex, slug: &str) -> Result<Device, String> {
@@ -2244,7 +1233,7 @@ fn collect_messages(pkt: rosc::OscPacket, out: &mut Vec<Value>) {
     }
 }
 
-fn json_to_osc(v: &Value) -> rosc::OscType {
+pub fn json_to_osc(v: &Value) -> rosc::OscType {
     use rosc::OscType;
     match v {
         Value::Bool(b) => OscType::Bool(*b),
@@ -2283,7 +1272,7 @@ fn osc_to_json(v: &rosc::OscType) -> Value {
 /// machine-readable `structuredContent` its `outputSchema` describes. The
 /// text block is the spec-recommended fallback for clients that don't read
 /// `structuredContent`.
-fn content_structured(text: &str, structured: Value) -> Value {
+pub fn content_structured(text: &str, structured: Value) -> Value {
     json!({
         "content": [ { "type": "text", "text": text } ],
         "structuredContent": structured,
@@ -2320,29 +1309,17 @@ fn walk_json<F: FnMut(&Path, &Value)>(dir: &Path, f: &mut F) -> std::io::Result<
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::collections::BTreeMap;
 
     /// An empty index — these handshake/dispatch tests don't touch devices.
     fn empty_index() -> DeviceIndex {
         DeviceIndex { entries: Vec::new(), by_slug: HashMap::new() }
     }
 
-    fn hosted_for_tests() -> Hosted {
-        Hosted {
-            ledger: std::sync::Arc::new(crate::reports::Ledger::open(None).unwrap()),
-            relays: std::sync::Arc::new(crate::relay::Relays::default()),
-            usage: UsageLog::open(None).unwrap(),
-            admin_token: Some("x".repeat(16)),
-            sync_token: Some("s".repeat(16)),
-            catalogue_root: PathBuf::from("devices"),
-            catalogue: std::sync::OnceLock::new(),
-        }
-    }
-
     fn test_opts() -> McpOptions {
         McpOptions {
             devices_dir: PathBuf::from("devices"),
             default_target: "127.0.0.1:7777".parse().unwrap(),
-            hosted: false,
             online: false,
             private: Vec::new(),
         }
@@ -2366,317 +1343,12 @@ mod tests {
     }
 
     #[test]
-    fn hosted_server_offers_and_runs_only_hosted_tools() {
-        let opts = McpOptions { hosted: true, ..test_opts() };
-        let listed: Vec<String> = tools_list(&opts)["tools"].as_array().unwrap().iter()
-            .map(|t| t["name"].as_str().unwrap().to_string()).collect();
-        assert_eq!(listed, HOSTED_TOOLS);
-        let resp = handle_request(&json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
-            "params": {"name": "send", "arguments": {"addr": "/x"}}}), &opts, &empty_index(), Caller::default()).unwrap();
-        assert_eq!(resp["error"]["code"], json!(-32602));
-    }
-
-    #[test]
-    fn http_exchange_answers_posts_notifications_and_rejects_the_rest() {
-        let opts = McpOptions { hosted: true, ..test_opts() };
-        let idx = empty_index();
-        let store = hosted_for_tests();
-        let req = |method: &str, path: &str, body: &str| HttpRequest {
-            method: method.into(), path: path.into(), body: Ok(body.into()), user: None, bearer: None, client: None,
-        };
-        let r = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":7,"method":"tools/list"}"#), &opts, &idx, &store);
-        assert_eq!(r.status, 200);
-        let v: Value = serde_json::from_str(&r.body.unwrap()).unwrap();
-        assert_eq!(v["id"], json!(7));
-        assert_eq!(v["result"]["tools"].as_array().unwrap().len(), HOSTED_TOOLS.len());
-        let r = http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#), &opts, &idx, &store);
-        assert_eq!((r.status, r.body), (202, None));
-        let status = |m: &str, p: &str, b: &str| http_exchange(&req(m, p, b), &opts, &idx, &store).status;
-        assert_eq!(status("POST", "/mcp", "not json"), 400);
-        assert_eq!(status("GET", "/mcp", ""), 405);
-        assert_eq!(status("GET", "/", ""), 200);
-        assert_eq!(status("GET", "/healthz", ""), 200);
-        assert_eq!(status("POST", "/other", ""), 404);
-        let call = r#"{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"list_devices","arguments":{"query":"moog"}}}"#;
-        let usage: Value = serde_json::from_str(&http_exchange(&req("POST", "/mcp", call), &opts, &idx, &store).usage.unwrap()).unwrap();
-        assert_eq!((usage["tool"].as_str(), usage["query"].as_str()), (Some("list_devices"), Some("moog")));
-        assert!(http_exchange(&req("POST", "/mcp", r#"{"jsonrpc":"2.0","id":4,"method":"tools/list"}"#), &opts, &idx, &store).usage.is_none());
-    }
-
-    /// One request to the hosted server, as an HTTP exchange.
-    #[allow(clippy::too_many_arguments)]
-    fn exchange(opts: &McpOptions, idx: &DeviceIndex, hosted: &Hosted, method: &str, path: &str,
-                header: Option<&str>, bearer: Option<&str>, body: &str) -> HttpReply {
-        let (path, user) = user_id(path, header);
-        http_exchange(&HttpRequest { method: method.into(), path, body: Ok(body.into()), user,
-            bearer: bearer.map(str::to_string), client: None }, opts, idx, hosted)
-    }
-
-    #[test]
-    fn the_server_issues_accounts_and_refuses_ids_it_did_not_issue() {
-        let opts = McpOptions { hosted: true, ..test_opts() };
-        let idx = empty_index();
-        let hosted = hosted_for_tests();
-        let init = r#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}"#;
-        let fresh = exchange(&opts, &idx, &hosted, "POST", "/mcp", None, None, init).session.expect("initialize issues an account");
-        assert!(is_user_id(&fresh) && hosted.ledger.knows(&fresh));
-        assert_ne!(exchange(&opts, &idx, &hosted, "POST", "/mcp", None, None, init).session.unwrap(), fresh, "ids are random");
-        // The same account comes back through its personal endpoint or the session header.
-        assert_eq!(exchange(&opts, &idx, &hosted, "POST", &format!("/u/{fresh}/mcp"), None, None, init).session.unwrap(), fresh);
-        assert_eq!(exchange(&opts, &idx, &hosted, "POST", "/mcp", Some(&fresh), None, init).session.unwrap(), fresh);
-        let body: Value = serde_json::from_str(&exchange(&opts, &idx, &hosted, "POST", "/mcp", None, None, init).body.unwrap()).unwrap();
-        assert!(body["result"]["instructions"].as_str().unwrap().contains("/u/"));
-        // An id the server never issued is refused, whatever the way.
-        let forged = "0123456789abcdef0123456789abcdef";
-        assert_eq!(exchange(&opts, &idx, &hosted, "POST", &format!("/u/{forged}/mcp"), None, None, init).status, 404);
-        assert_eq!(exchange(&opts, &idx, &hosted, "POST", "/mcp", Some(forged), None, init).status, 404);
-        let with_arg = format!(r#"{{"jsonrpc":"2.0","id":1,"method":"initialize","params":{{"arguments":{{"user_id":"{forged}"}}}}}}"#);
-        let r = exchange(&opts, &idx, &hosted, "POST", "/mcp", None, None, &with_arg);
-        assert_ne!(r.session.unwrap(), forged, "a forged id in the arguments is ignored");
-        let with_arg = format!(r#"{{"jsonrpc":"2.0","id":1,"method":"initialize","params":{{"arguments":{{"user_id":"{fresh}"}}}}}}"#);
-        assert_eq!(exchange(&opts, &idx, &hosted, "POST", "/mcp", None, None, &with_arg).session.unwrap(), fresh);
-        let schema = &tools_list(&opts)["tools"][0]["inputSchema"]["properties"]["user_id"];
-        assert_eq!(schema["type"], "string");
-        assert_eq!(user_id("/u/not-an-id/mcp", None), ("/u/not-an-id/mcp".to_string(), None));
-        let new: Value = serde_json::from_str(&exchange(&opts, &idx, &hosted, "GET", "/u/new", None, None, "").body.unwrap()).unwrap();
-        assert!(hosted.ledger.knows(new["user_id"].as_str().unwrap()));
-    }
-
-    #[test]
-    fn reports_over_http_build_trust_roll_back_and_reach_the_administrator() {
-        let opts = McpOptions { hosted: true, ..test_opts() };
-        let idx = DeviceIndex::build(&PathBuf::from("devices"));
-        let hosted = hosted_for_tests();
-        let call = |user: &str, tool: &str, args: Value| {
-            let body = json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": tool, "arguments": args}});
-            let r = exchange(&opts, &idx, &hosted, "POST", "/mcp", Some(user), None, &body.to_string());
-            serde_json::from_str::<Value>(&r.body.unwrap()).unwrap()["result"].clone()
-        };
-        let users: Vec<String> = (0..4).map(|_| hosted.ledger.issue_account().unwrap()).collect();
-        let works = json!({"device": "korg/minilogue", "outcome": "works", "firmware": "2.1",
-            "identity_hex": "F0 7E 00 06 02 42 2C 01 00 00 02 01 00 00 F7"});
-        for u in &users[..3] {
-            let r = call(u, "report_result", works.clone());
-            assert_eq!(r["structuredContent"]["status"], "accepted", "{r}");
-        }
-        let trust = call(&users[0], "get_trust", json!({"device": "minilogue"}));
-        assert_eq!(trust["structuredContent"]["overall"]["status"], "usage-verified");
-        let bad = call(&users[0], "report_result", json!({"device": "korg/minilogue", "outcome": "works", "address": "/minilogue/nope"}));
-        assert_eq!(bad["isError"], true);
-        let liar = call(&users[3], "report_result", json!({"device": "korg/minilogue", "outcome": "fails", "firmware": "2.1"}));
-        assert_eq!(liar["structuredContent"]["status"], "rolled-back");
-        assert_eq!(liar["structuredContent"]["trust"]["overall"]["status"], "usage-verified");
-        let listed = call(&users[0], "list_devices", json!({"query": "korg minilogue", "limit": 50}));
-        let entry = listed["structuredContent"]["devices"].as_array().unwrap().iter()
-            .find(|d| d["id"] == "korg/minilogue").cloned().unwrap();
-        assert_eq!(entry["usage_status"], "usage-verified");
-        let all: Value = serde_json::from_str(&exchange(&opts, &idx, &hosted, "GET", "/v1/trust", None, None, "").body.unwrap()).unwrap();
-        assert_eq!(all["devices"]["korg/minilogue"]["rolled_back"], 1);
-        // The administrator sees the suspect account and clears it.
-        let token = "x".repeat(16);
-        assert_eq!(exchange(&opts, &idx, &hosted, "GET", "/admin/pending", None, None, "").status, 401);
-        assert_eq!(exchange(&opts, &idx, &hosted, "GET", "/admin/pending", None, Some("wrong-token-wrong"), "").status, 401);
-        let pending: Value = serde_json::from_str(&exchange(&opts, &idx, &hosted, "GET", "/admin/pending", None, Some(&token), "").body.unwrap()).unwrap();
-        assert_eq!(pending["suspect_accounts"][0], users[3].as_str());
-        let clear = json!({"decision": "clear", "user": users[3]}).to_string();
-        assert_eq!(exchange(&opts, &idx, &hosted, "POST", "/admin/decide", None, Some(&token), &clear).status, 200);
-        let nonsense = json!({"decision": "approve", "user": users[3]}).to_string();
-        assert_eq!(exchange(&opts, &idx, &hosted, "POST", "/admin/decide", None, Some(&token), &nonsense).status, 400);
-        let off = Hosted { admin_token: None, ..hosted_for_tests() };
-        assert_eq!(exchange(&opts, &idx, &off, "GET", "/admin/pending", None, Some(&token), "").status, 404);
-    }
-
-    #[test]
-    fn an_agent_detects_plays_and_listens_through_a_relay_door() {
-        use tungstenite::Message;
-        let opts = McpOptions { hosted: true, ..test_opts() };
-        let idx = DeviceIndex::build(&PathBuf::from("devices"));
-        let hosted = hosted_for_tests();
-        let addr = crate::relay::serve("127.0.0.1:0", hosted.relays.clone(),
-            std::sync::Arc::new(LedgerAccounts(hosted.ledger.clone())), vec![], false).unwrap();
-        // A door that owns a minilogue: answers the Identity Request, and
-        // turns the cutoff knob when asked to play anything.
-        let (mut ws, _) = tungstenite::connect(format!("ws://{addr}/relay")).unwrap();
-        let hello: Value = match ws.read().unwrap() { Message::Text(t) => serde_json::from_str(&t).unwrap(), m => panic!("{m:?}") };
-        let code = hello["code"].as_str().unwrap().to_string();
-        assert!(hosted.ledger.knows(hello["user"].as_str().unwrap()), "the door gets an issued account");
-        ws.send(Message::Text(json!({"type": "ports", "outputs": ["minilogue SOUND"], "inputs": ["minilogue SOUND"]}).to_string().into())).unwrap();
-        let door = std::thread::spawn(move || {
-            let mut played = Vec::new();
-            while let Ok(m) = ws.read() {
-                let Message::Text(t) = m else { continue };
-                let v: Value = serde_json::from_str(&t).unwrap();
-                if v["type"] != "midi_out" { continue; }
-                let data: Vec<u8> = v["data"].as_array().unwrap().iter().map(|b| b.as_u64().unwrap() as u8).collect();
-                let reply = if data == crate::detect::IDENTITY_REQUEST {
-                    vec![0xF0, 0x7E, 0x00, 0x06, 0x02, 0x42, 0x2C, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0x00, 0xF7]
-                } else {
-                    played.push(data);
-                    vec![0xB0, 43, 90]
-                };
-                ws.send(Message::Text(json!({"type": "midi_in", "port": "minilogue SOUND", "data": reply}).to_string().into())).unwrap();
-                if played.len() == 2 { return played; }
-            }
-            played
-        });
-        let user = hosted.ledger.issue_account().unwrap();
-        let call = |tool: &str, args: Value| {
-            let body = json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": tool, "arguments": args}});
-            let r = exchange(&opts, &idx, &hosted, "POST", "/mcp", Some(&user), None, &body.to_string());
-            serde_json::from_str::<Value>(&r.body.unwrap()).unwrap()["result"].clone()
-        };
-        let status = (0..300).find_map(|_| {
-            std::thread::sleep(std::time::Duration::from_millis(10));
-            let r = call("relay_status", json!({"code": code.to_lowercase()}));
-            (r["structuredContent"]["outputs"][0] == "minilogue SOUND").then_some(r)
-        }).expect("the door's ports reach the server");
-        assert_eq!(status["structuredContent"]["inputs"][0], "minilogue SOUND");
-        let found = call("relay_detect", json!({"code": code, "timeout_ms": 300}));
-        let device = &found["structuredContent"]["devices"][0];
-        assert_eq!(device["identity"]["version"], "02 01 00 00", "{found}");
-        assert_eq!(device["matches"][0]["id"], "korg/minilogue", "{found}");
-        let sent = call("relay_send", json!({"code": code, "device": "korg/minilogue", "address": "/filter/cutoff", "args": [45]}));
-        assert_eq!(sent["structuredContent"]["messages"][0], "B0 2B 2D", "{sent}");
-        let listen_args = json!({"code": code, "seconds": 1, "device": "korg/minilogue"});
-        let listening = std::thread::scope(|s| {
-            let h = s.spawn(|| call("relay_listen", listen_args));
-            std::thread::sleep(std::time::Duration::from_millis(200));
-            call("relay_send", json!({"code": code, "hex": "90 3C 64"}));
-            h.join().unwrap()
-        });
-        let moved = &listening["structuredContent"]["controls"][0];
-        assert_eq!(moved["cc"], 43, "{listening}");
-        assert_eq!(moved["driver_addresses"][0], "/minilogue/filter/cutoff");
-        assert_eq!(door.join().unwrap(), vec![vec![0xB0, 43, 45], vec![0x90, 0x3C, 0x64]]);
-        let mapped = call("report_mapping", json!({"device": "korg/minilogue", "address": "/filter/cutoff", "cc": 43, "firmware": "2.1"}));
-        assert_eq!(mapped["structuredContent"]["mappings"][0]["driver"], json!({"kind": "cc", "cc": 43}), "{mapped}");
-        assert_eq!(mapped["structuredContent"]["mappings"][0]["differs"], false);
-        let unmapped = call("report_mapping", json!({"device": "korg/minilogue", "address": "/nope", "cc": 1}));
-        assert_eq!(unmapped["isError"], true);
-        let other = hosted.ledger.issue_account().unwrap();
-        let body = json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "relay_status", "arguments": {"code": code}}});
-        let stolen: Value = serde_json::from_str(&exchange(&opts, &idx, &hosted, "POST", "/mcp", Some(&other), None, &body.to_string()).body.unwrap()).unwrap();
-        assert_eq!(stolen["result"]["isError"], true, "another agent cannot drive a paired door");
-        let gone = call("relay_status", json!({"code": "ZZZZ-ZZZZ"}));
-        assert_eq!(gone["isError"], true);
-        assert!(split_midi(&[0xB0, 0x2B]).is_err());
-        assert_eq!(split_midi(&[0xF0, 0x7E, 0xF7, 0xC0, 5]).unwrap(), vec![vec![0xF0, 0x7E, 0xF7], vec![0xC0, 5]]);
-    }
-
-    #[test]
-    fn agents_contribute_drivers_and_fixes_and_the_merge_job_settles_them() {
-        let opts = McpOptions { hosted: true, ..test_opts() };
-        let idx = DeviceIndex::build(&PathBuf::from("devices"));
-        let hosted = hosted_for_tests();
-        let users: Vec<String> = (0..3).map(|_| hosted.ledger.issue_account().unwrap()).collect();
-        let call = |user: &str, tool: &str, args: Value| {
-            let body = json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": tool, "arguments": args}});
-            let r = exchange(&opts, &idx, &hosted, "POST", "/mcp", Some(user), None, &body.to_string());
-            serde_json::from_str::<Value>(&r.body.unwrap()).unwrap()["result"].clone()
-        };
-        let driver = json!({
-            "device": {"name": "Box 1", "vendor": "Moog", "revision": "1", "osc_prefix": "/box1", "manufacturer_id": [4], "device_id": []},
-            "sysex": {"header": [], "footer": []},
-            "cc_params": {"channel": 0, "entries": [{"osc": "/filter/cutoff", "cc": 19, "range": [0, 127]}]}
-        });
-        let r = call(&users[0], "submit_driver", json!({"driver": driver, "firmware": "1.0", "source": "manual p. 3"}));
-        assert_eq!(r["structuredContent"]["path"], "devices/moog/box_1.agent-contributed.fw-1_0.json", "{r}");
-        let empty = call(&users[0], "submit_driver", json!({"driver": {"device": {"name": "X", "vendor": "Y", "osc_prefix": "/x"}}}));
-        assert_eq!(empty["isError"], true, "{empty}");
-        // Learned: the minilogue's cutoff sends CC 74 on firmware 2.1, not 43.
-        for u in &users {
-            call(u, "report_mapping", json!({"device": "korg/minilogue", "address": "/filter/cutoff", "cc": 74, "firmware": "2.1"}));
-        }
-        let fix = call(&users[1], "submit_fix", json!({"device": "korg/minilogue"}));
-        assert_eq!(fix["structuredContent"]["path"], "devices/korg/minilogue.agent-contributed.fw-2_1.json", "{fix}");
-        // The merge job takes them with its token, and reports back.
-        let sync = "s".repeat(16);
-        assert_eq!(exchange(&opts, &idx, &hosted, "GET", "/admin/contributions", None, None, "").status, 401);
-        assert_eq!(exchange(&opts, &idx, &hosted, "GET", "/admin/pending", None, Some(&sync), "").status, 401, "the sync token opens contributions only");
-        let pending: Value = serde_json::from_str(&exchange(&opts, &idx, &hosted, "GET", "/admin/contributions", None, Some(&sync), "").body.unwrap()).unwrap();
-        let list = pending["contributions"].as_array().unwrap();
-        assert_eq!(list.len(), 2);
-        let fixed: Value = serde_json::from_str(list.iter().find(|c| c["kind"] == "fix").unwrap()["content"].as_str().unwrap()).unwrap();
-        let cutoff = fixed["cc_params"]["entries"].as_array().unwrap().iter().find(|e| e["osc"] == "/filter/cutoff").unwrap();
-        assert_eq!(cutoff["cc"], 74);
-        assert_eq!(fixed["_sources"][0]["derived_from"], "korg/minilogue");
-        let id = list[0]["id"].as_u64().unwrap();
-        let settle = json!({"state": "merged", "pr": "https://github.com/roomi-fields/osc-bridge/pull/9"}).to_string();
-        assert_eq!(exchange(&opts, &idx, &hosted, "POST", &format!("/admin/contributions/{id}"), None, Some(&sync), &settle).status, 200);
-        let status = call(&users[0], "get_contribution", json!({"id": id}));
-        assert_eq!(status["structuredContent"]["state"], "merged");
-    }
-
-    /// The hosted server, for real, on a free local port, serving the
-    /// catalogue under `root`.
-    fn serve_hosted(root: &Path) -> String {
-        let hosted = Hosted { catalogue_root: root.to_path_buf(), ..hosted_for_tests() };
-        let opts = McpOptions { hosted: true, devices_dir: root.to_path_buf(), ..test_opts() };
-        let index = DeviceIndex::build(root);
-        let server = tiny_http::Server::http("127.0.0.1:0").unwrap();
-        let base = format!("http://{}", server.server_addr());
-        std::thread::spawn(move || {
-            for mut req in server.incoming_requests() {
-                let reply = http_exchange(&read_request(&mut req), &opts, &index, &hosted);
-                respond(req, reply);
-            }
-        });
-        base
-    }
-
-    #[test]
-    fn a_local_copy_mirrors_the_server_catalogue_and_forwards_reports() {
-        let tmp = std::env::temp_dir().join(format!("osc-bridge-link-{}", std::process::id()));
-        let _ = std::fs::remove_dir_all(&tmp);
-        let (served, bundled, cache) = (tmp.join("served"), tmp.join("bundled"), tmp.join("cache"));
-        for (dir, files) in [(&served, &["korg/minilogue.json", "examples/test_synth.md", "examples/test_synth.json"][..]),
-                             (&bundled, &["korg/minilogue.json"][..])] {
-            for f in files {
-                std::fs::create_dir_all(dir.join(f).parent().unwrap()).unwrap();
-                std::fs::copy(Path::new("devices").join(f), dir.join(f)).unwrap();
-            }
-        }
-        std::fs::create_dir_all(cache.join("old")).unwrap();
-        std::fs::write(cache.join("old/gone.json"), "{}").unwrap();
-        let link = Link {
-            client: crate::online::Online::keeping_account_in(&serve_hosted(&served), Some(tmp.join("user"))),
-            ..Link::new("unused")
-        };
-        let user = link.user(false).unwrap();
-        assert_eq!(std::fs::read_to_string(tmp.join("user")).unwrap(), user, "the account is kept");
-        let done = link.client.sync_catalogue(&user, &bundled, &cache).unwrap();
-        assert_eq!(done, crate::online::Synced { files: 3, copied: 1, downloaded: 2, removed: 1 });
-        assert_eq!(crate::online::catalogue_files(&cache), crate::online::catalogue_files(&served));
-        let again = link.client.sync_catalogue(&user, &bundled, &cache).unwrap();
-        assert!(!again.changed(), "nothing to do the second time");
-
-        let opts = McpOptions { online: true, ..test_opts() };
-        let index = DeviceIndex::build(&cache);
-        let caller = Caller { online: Some(&link), ..Caller::default() };
-        let reported = call_tool("report_result", &json!({"device": "korg/minilogue", "outcome": "works", "firmware": "2.10"}),
-            &opts, &index, caller).unwrap();
-        assert_ne!(reported["isError"], json!(true), "{reported}");
-        if let Ok(mut t) = link.trust.write() { *t = link.client.trust().unwrap(); }
-        let listed = call_tool("list_devices", &json!({"query": "minilogue"}), &opts, &index, caller).unwrap();
-        assert_eq!(listed["structuredContent"]["devices"][0]["usage_status"], "unconfirmed");
-        assert!(tool_names(&opts).contains(&"submit_fix") && !tool_names(&test_opts()).contains(&"submit_fix"));
-
-        std::fs::write(tmp.join("user"), "0".repeat(32)).unwrap();
-        let relinked = Link { client: crate::online::Online::keeping_account_in(link.client.base(), Some(tmp.join("user"))), ..Link::new("unused") };
-        let trust = call_tool("get_trust", &json!({"device": "korg/minilogue"}), &opts, &index,
-            Caller { online: Some(&relinked), ..Caller::default() }).unwrap();
-        assert_ne!(trust["isError"], json!(true), "an account the server forgot is replaced: {trust}");
-        assert_ne!(std::fs::read_to_string(tmp.join("user")).unwrap(), "0".repeat(32));
-        std::fs::remove_dir_all(&tmp).ok();
-    }
-
-    #[test]
     fn a_private_device_keeps_its_reports_on_the_machine() {
         let index = DeviceIndex::build(&PathBuf::from("devices"));
         let opts = McpOptions { online: true, private: vec!["korg/minilogue".into()], ..test_opts() };
         // Never reached: the refusal comes first.
         let link = Link::new("http://127.0.0.1:9");
-        let caller = Caller { online: Some(&link), ..Caller::default() };
+        let caller = Some(&link);
         for (tool, args) in [("report_result", json!({"device": "korg/minilogue", "outcome": "works"})),
                              ("report_mapping", json!({"device": "minilogue", "address": "/filter/cutoff", "cc": 43})),
                              ("submit_fix", json!({"device": "korg/minilogue", "content": "{}"}))] {
@@ -2712,18 +1384,27 @@ mod tests {
     }
 
     #[test]
-    fn report_tools_refuse_without_the_hosted_store() {
+    fn an_offline_copy_does_not_offer_the_server_tools() {
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
-        let err = call_tool("report_result", &json!({"device": "korg/minilogue", "outcome": "works"}), &test_opts(), &idx, Caller::default()).unwrap_err();
-        assert!(err.contains("hosted"), "{err}");
+        let resp = handle_request(&json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
+            "params": {"name": "report_result", "arguments": {"device": "korg/minilogue", "outcome": "works"}}}),
+            &test_opts(), &idx, None).unwrap();
+        assert_eq!(resp["error"]["code"], json!(-32602));
     }
 
     #[test]
-    fn rate_limiter_caps_each_client_separately() {
-        let limiter = RateLimiter::default();
-        assert!((0..RATE_LIMIT).all(|_| limiter.allow("a")));
-        assert!(!limiter.allow("a"));
-        assert!(limiter.allow("b"));
+    fn the_catalogue_tools_are_shared_with_the_hosted_server() {
+        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let routes = catalogue_tool("list_routes", &json!({"slug": "minilogue"}), &idx, &|_| None).unwrap().unwrap();
+        assert!(routes["structuredContent"].is_object());
+        let listed = catalogue_tool("list_devices", &json!({"query": "minilogue", "limit": 1}), &idx, &|_| Some("unconfirmed".into()))
+            .unwrap().unwrap();
+        assert_eq!(listed["structuredContent"]["devices"][0]["usage_status"], "unconfirmed");
+        assert!(catalogue_tool("send", &json!({}), &idx, &|_| None).is_none());
+        let names: Vec<String> = tool_schemas()["tools"].as_array().unwrap().iter()
+            .map(|t| t["name"].as_str().unwrap().to_string()).collect();
+        assert!(crate::online::FORWARDED_TOOLS.iter().all(|f| names.iter().any(|n| n == f)), "{names:?}");
+        assert!(!names.iter().any(|n| n.starts_with("relay_")), "relay tools belong to the hosted server");
     }
 
     #[test]
@@ -2818,7 +1499,7 @@ mod tests {
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
         let opts = test_opts();
         let call = |name: &str| handle_request(&json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
-            "params": {"name": name, "arguments": {"slug": "no-such-device"}}}), &opts, &idx, Caller::default()).unwrap();
+            "params": {"name": name, "arguments": {"slug": "no-such-device"}}}), &opts, &idx, None).unwrap();
         let failed = call("list_routes");
         assert_eq!(failed["result"]["isError"], json!(true));
         assert!(failed["result"]["content"][0]["text"].as_str().unwrap().contains("no-such-device"));
@@ -2834,7 +1515,7 @@ mod tests {
     fn restore_refuses_without_explicit_confirmation() {
         let idx = DeviceIndex::build(&PathBuf::from("devices"));
         let opts = test_opts();
-        let err = call_tool("restore_presets", &json!({"out_port": "0", "file": "x.syx"}), &opts, &idx, Caller::default()).unwrap_err();
+        let err = call_tool("restore_presets", &json!({"out_port": "0", "file": "x.syx"}), &opts, &idx, None).unwrap_err();
         assert!(err.contains("confirm_overwrite"), "{err}");
     }
 
@@ -2860,7 +1541,7 @@ mod tests {
     fn handle_initialize() {
         let req = json!({"jsonrpc":"2.0","id":1,"method":"initialize","params":{}});
         let opts = test_opts();
-        let resp = handle_request(&req, &opts, &empty_index(), Caller::default()).unwrap();
+        let resp = handle_request(&req, &opts, &empty_index(), None).unwrap();
         assert_eq!(resp.get("id"), Some(&json!(1)));
         assert!(resp.get("result").is_some());
     }
@@ -2869,14 +1550,110 @@ mod tests {
     fn handle_initialized_notification_returns_nothing() {
         let req = json!({"jsonrpc":"2.0","method":"notifications/initialized"});
         let opts = test_opts();
-        assert!(handle_request(&req, &opts, &empty_index(), Caller::default()).is_none());
+        assert!(handle_request(&req, &opts, &empty_index(), None).is_none());
     }
 
     #[test]
     fn handle_unknown_method_returns_error() {
         let req = json!({"jsonrpc":"2.0","id":99,"method":"foo/bar","params":{}});
         let opts = test_opts();
-        let resp = handle_request(&req, &opts, &empty_index(), Caller::default()).unwrap();
+        let resp = handle_request(&req, &opts, &empty_index(), None).unwrap();
         assert!(resp.get("error").is_some());
+    }
+
+    /// A stand-in for the hosted server, on a free local port: it issues
+    /// accounts (refusing ids it did not issue, like the real one), lists and
+    /// serves the catalogue under `root`, gives a fixed trust list, and
+    /// answers every forwarded tool call with the tool's name. The calls it
+    /// received are in the returned list.
+    fn fake_server(root: &Path) -> (String, std::sync::Arc<std::sync::Mutex<Vec<String>>>) {
+        let server = tiny_http::Server::http("127.0.0.1:0").unwrap();
+        let base = format!("http://{}", server.server_addr());
+        let calls = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+        let (root, seen) = (root.to_path_buf(), calls.clone());
+        std::thread::spawn(move || {
+            let mut issued: Vec<String> = Vec::new();
+            for mut req in server.incoming_requests() {
+                let mut body = String::new();
+                let _ = std::io::Read::read_to_string(req.as_reader(), &mut body);
+                let url = req.url().to_string();
+                let (status, reply) = match url.as_str() {
+                    "/u/new" => {
+                        let id = format!("{:032x}", issued.len() + 1);
+                        issued.push(id.clone());
+                        (200, json!({ "user_id": id }))
+                    }
+                    "/v1/trust" => (200, json!({ "devices": { "korg/minilogue": { "status": "unconfirmed" } } })),
+                    "/v1/catalogue/files" => {
+                        let paths: Value = serde_json::from_str(&body).unwrap();
+                        let files: BTreeMap<String, String> = paths["paths"].as_array().unwrap().iter()
+                            .map(|p| p.as_str().unwrap().to_string())
+                            .map(|p| { let text = std::fs::read_to_string(root.join(&p)).unwrap(); (p, text) }).collect();
+                        (200, json!({ "files": files }))
+                    }
+                    u if u.ends_with("/v1/catalogue") => {
+                        let files: Vec<Value> = crate::online::catalogue_files(&root).into_iter()
+                            .map(|(p, h)| json!({ "path": p, "sha256": h })).collect();
+                        (200, json!({ "files": files }))
+                    }
+                    u if u.starts_with("/u/") && u.ends_with("/mcp") => {
+                        let id = &u[3..u.len() - 4];
+                        if issued.iter().any(|i| i == id) {
+                            let rpc: Value = serde_json::from_str(&body).unwrap();
+                            let name = rpc["params"]["name"].as_str().unwrap().to_string();
+                            seen.lock().unwrap().push(name.clone());
+                            (200, json!({ "jsonrpc": "2.0", "id": 1, "result": { "content": [{ "type": "text", "text": name }] } }))
+                        } else {
+                            (404, json!({ "jsonrpc": "2.0", "id": null, "error": { "code": -32001, "message": "unknown account" } }))
+                        }
+                    }
+                    _ => (404, json!({})),
+                };
+                let _ = req.respond(tiny_http::Response::from_string(reply.to_string()).with_status_code(status));
+            }
+        });
+        (base, calls)
+    }
+
+    #[test]
+    fn a_local_copy_mirrors_the_server_catalogue_and_forwards_reports() {
+        let tmp = std::env::temp_dir().join(format!("osc-bridge-link-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&tmp);
+        let (served, bundled, cache) = (tmp.join("served"), tmp.join("bundled"), tmp.join("cache"));
+        for (dir, files) in [(&served, &["korg/minilogue.json", "examples/test_synth.md", "examples/test_synth.json"][..]),
+                             (&bundled, &["korg/minilogue.json"][..])] {
+            for f in files {
+                std::fs::create_dir_all(dir.join(f).parent().unwrap()).unwrap();
+                std::fs::copy(Path::new("devices").join(f), dir.join(f)).unwrap();
+            }
+        }
+        std::fs::create_dir_all(cache.join("old")).unwrap();
+        std::fs::write(cache.join("old/gone.json"), "{}").unwrap();
+        let (base, calls) = fake_server(&served);
+        let link = Link { client: crate::online::Online::keeping_account_in(&base, Some(tmp.join("user"))), ..Link::new("unused") };
+        let user = link.user(false).unwrap();
+        assert_eq!(std::fs::read_to_string(tmp.join("user")).unwrap(), user, "the account is kept");
+        let done = link.client.sync_catalogue(&user, &bundled, &cache).unwrap();
+        assert_eq!(done, crate::online::Synced { files: 3, copied: 1, downloaded: 2, removed: 1 });
+        assert_eq!(crate::online::catalogue_files(&cache), crate::online::catalogue_files(&served));
+        assert!(!link.client.sync_catalogue(&user, &bundled, &cache).unwrap().changed(), "nothing to do the second time");
+
+        let opts = McpOptions { online: true, ..test_opts() };
+        let index = DeviceIndex::build(&cache);
+        let reported = call_tool("report_result", &json!({"device": "korg/minilogue", "outcome": "works", "firmware": "2.10"}),
+            &opts, &index, Some(&link)).unwrap();
+        assert_eq!(reported["content"][0]["text"], "report_result", "{reported}");
+        if let Ok(mut t) = link.trust.write() { *t = link.client.trust().unwrap(); }
+        let listed = call_tool("list_devices", &json!({"query": "minilogue"}), &opts, &index, Some(&link)).unwrap();
+        assert_eq!(listed["structuredContent"]["devices"][0]["usage_status"], "unconfirmed");
+        assert!(tool_names(&opts).contains(&"submit_fix") && !tool_names(&test_opts()).contains(&"submit_fix"));
+
+        std::fs::write(tmp.join("user"), "0".repeat(32)).unwrap();
+        let relinked = Link { client: crate::online::Online::keeping_account_in(&base, Some(tmp.join("user"))), ..Link::new("unused") };
+        let trust = call_tool("get_trust", &json!({"device": "korg/minilogue"}), &opts, &index, Some(&relinked)).unwrap();
+        assert_eq!(trust["content"][0]["text"], "get_trust", "an account the server forgot is replaced: {trust}");
+        assert_ne!(std::fs::read_to_string(tmp.join("user")).unwrap(), "0".repeat(32));
+        assert_eq!(*calls.lock().unwrap(), ["report_result", "get_trust"]);
+        std::fs::remove_dir_all(&tmp).ok();
     }
 }

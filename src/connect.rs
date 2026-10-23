@@ -2,7 +2,7 @@
 //!
 //! The command-line twin of the site's `/connect` page, for Safari users,
 //! servers without a browser, and agents that run next to the hardware. It
-//! opens a WebSocket to the hosted relay (protocol in `crate::relay`), shows
+//! opens a WebSocket to the hosted relay (protocol in `crate::relay_protocol`), shows
 //! the pairing code, and moves bytes: `midi_out` frames to the named output
 //! port, every message of every input to the server. Ports are rescanned
 //! every few seconds, so a device plugged in later appears without restart.
@@ -280,7 +280,7 @@ pub fn run(server: &str, share: bool, test_synth: bool, private_ports: &[String]
                     Some("midi_out") => {
                         let port = v["port"].as_str().unwrap_or("");
                         let data = bytes_of(&v["data"]);
-                        if crate::relay::needs_confirmation(&data) {
+                        if crate::relay_protocol::needs_confirmation(&data) {
                             println!("  x  {port}  {}  (not confirmed)", hex(&data));
                             continue;
                         }

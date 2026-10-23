@@ -83,7 +83,7 @@ Each synth is described by one JSON file. No Rust recompile required to add a de
 
 **Searching for your device?**
 - 🔎 Interactive browser → **<https://osc-bridge.roomi-fields.com/>** (live search by vendor / model / author / source).
-- 🤖 For scripts and AI agents → JSON API at <https://osc-bridge.roomi-fields.com/api/v1/index.json> (each driver at `/api/v1/devices/<vendor>/<driver>.json`), or MCP over HTTP with `osc-bridge mcp --http` — see [`docs/api.md`](docs/api.md).
+- 🤖 For scripts and AI agents → JSON API at <https://osc-bridge.roomi-fields.com/api/v1/index.json> (each driver at `/api/v1/devices/<vendor>/<driver>.json`), or the hosted MCP server at <https://mcp.osc-bridge.roomi-fields.com/mcp> — see [`docs/api.md`](docs/api.md).
 - 📄 Full catalogue as Markdown → [`docs/SUPPORTED_DEVICES.md`](docs/SUPPORTED_DEVICES.md) (auto-generated, organised by vendor).
 
 Your synth isn't there, or a doc-derived entry (`📘` / `📡` / `🎛️` / `📦`) needs promoting to `✅` after you test it on hardware? See the next section.

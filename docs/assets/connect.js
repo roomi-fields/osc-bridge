@@ -1,6 +1,6 @@
 // Relay door: carries MIDI between this browser's devices and the hosted
 // osc-bridge server, so an agent can reach them. Runs only on the page that
-// holds the .ob-connect block. Protocol: see src/relay.rs.
+// holds the .ob-connect block. Protocol: see src/relay_protocol.rs.
 (function () {
   const root = document.querySelector(".ob-connect");
   if (!root) return;

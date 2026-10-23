@@ -11,6 +11,16 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Removed — the hosted server's code
+- `osc-bridge mcp --http`, `--behind-proxy`, `--data-dir` and
+  `--relay-bind` are gone, with the server side of the relay, the ledger of
+  accounts and reports, the merge job of agent contributions and the
+  container image: the hosted server at `mcp.osc-bridge.roomi-fields.com`
+  is now a separate program built on this crate. `osc-bridge mcp` is the
+  local server on stdio; everything that talks to the hosted server stays
+  here (the link of a local copy, `osc-bridge connect`, the `/connect`
+  page). The relay protocol is documented in `src/relay_protocol.rs`.
+
 ### Added — privacy choices, sharing on by default
 - A commented settings file, `<config>/osc-bridge/settings.toml`, created
   at first start and editable by hand: `offline = true` cuts the link to the
