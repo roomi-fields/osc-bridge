@@ -17,7 +17,7 @@ into one named OSC surface.** Send `/minilab3/pad/0/color 127 0 0` or
 bridge translates both ways, over MIDI, SysEx or OSC. It ships an
 [MCP server](MCP.md), so Claude and other AI assistants can find, read and
 play your gear without any mapping on your side. Free and open source
-(GPL-3.0), a single binary for Linux, macOS and Windows.
+(AGPL-3.0), a single binary for Linux, macOS and Windows.
 
 [Get started](getting-started.md){ .md-button .md-button--primary }
 [Browse the 963 devices](catalogue.md){ .md-button }

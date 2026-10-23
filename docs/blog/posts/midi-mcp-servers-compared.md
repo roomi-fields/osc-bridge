@@ -24,7 +24,7 @@ Six open-source projects, chosen because each is a working MCP server with publi
 | TheAndrewStaker/mcp-midi-control | Fractal, Hydrasynth… | CC, NRPN, SysEx, PC, notes | read-back | Apache-2.0 |
 | thias42/midi-mcp | any port, listen and play | notes, chords, CC, PC, `.mid` | yes | MIT |
 | ahujasid/ableton-mcp | Ableton Live itself | none (socket to Live) | n/a | MIT |
-| roomi-fields/osc-bridge | 963 drivers + 8 DAWs/tools | CC, NRPN, notes, SysEx, OSC | via OSC | GPL-3.0 |
+| roomi-fields/osc-bridge | 963 drivers + 8 DAWs/tools | CC, NRPN, notes, SysEx, OSC | via OSC | AGPL-3.0 |
 
 "MIDI in" means the server reports incoming MIDI to the model; osc-bridge sends it to OSC clients, not to the model. Languages: Python (sandst1, thias42, ahujasid), Elixir (nanassound), TypeScript (TheAndrewStaker), Rust (osc-bridge). Columns only list what each README states; a blank in a README is not counted as a feature.
 

@@ -211,4 +211,4 @@ If you observe wrong bytes going out or a JSON that refuses to load:
 
 ## License
 
-Contributions are accepted under GPL-3.0-or-later, same as the rest of the project. You retain copyright on your contributions.
+Contributions are accepted under AGPL-3.0-or-later, same as the rest of the project. You retain copyright on your contributions.

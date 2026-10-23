@@ -120,7 +120,7 @@ osc-bridge differs in three ways: the mapping comes from a reviewable JSON file,
 ## FAQ
 
 **Is osc-bridge free?**
-Yes, it is open source under GPL-3.0-or-later. Binaries are on the [GitHub releases page](https://github.com/roomi-fields/osc-bridge/releases); see the [getting-started guide](../../getting-started.md).
+Yes, it is open source under AGPL-3.0-or-later. Binaries are on the [GitHub releases page](https://github.com/roomi-fields/osc-bridge/releases); see the [getting-started guide](../../getting-started.md).
 
 **Can I add a synth that is not in the catalogue?**
 Yes, by writing a JSON driver; no Rust code or rebuild is needed. The [device schema](../../DEVICE_JSON_SCHEMA.md) lists every field.
