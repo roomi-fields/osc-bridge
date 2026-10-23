@@ -9,7 +9,7 @@ additive minor bumps every time a new device class surfaces something
 the JSON can't yet express. Backwards-compat of existing device JSONs
 is tracked explicitly under each release.
 
-## [Unreleased]
+## [0.14.0] — 2026-10-23
 
 ### Removed — the hosted server's code
 - `osc-bridge mcp --http`, `--behind-proxy`, `--data-dir` and
