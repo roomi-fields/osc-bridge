@@ -746,7 +746,7 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "submit_driver",
-                "description": "Contribute a driver for a device the catalogue lacks (or a better one): the full driver file as a JSON object, in the osc-bridge device schema (device.name, device.vendor, device.osc_prefix, and cc_params / params / commands / triggers — see https://osc-bridge.roomi-fields.com/DEVICE_JSON_SCHEMA/). It is checked, then merged into the public catalogue by the merge job if it parses, lints and passes the tests, as its own file of source 'agent-contributed'. Say where the data comes from (manual page, tested on the device).",
+                "description": "Contribute a driver for a device the catalogue lacks (or a better one): the full driver file as a JSON object, in the osc-bridge device schema (device.name, device.vendor, device.osc_prefix, and cc_params / params / commands / triggers — see https://synthhub.roomi-fields.com/DEVICE_JSON_SCHEMA/). It is checked, then merged into the public catalogue by the merge job if it parses, lints and passes the tests, as its own file of source 'agent-contributed'. Say where the data comes from (manual page, tested on the device).",
                 "inputSchema": { "type": "object", "properties": {
                     "driver": { "type": "object", "description": "The driver file." },
                     "firmware": { "type": "string", "description": "Firmware the driver was written or tested for." },
