@@ -135,5 +135,11 @@ jobs:
         # checks it, so this runs after npm. Authenticated through OIDC.
         run: |
           curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/download/v1.7.9/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+          v=$(node -p "require('./npm/package.json').version")
+          # npm can take a minute to show a version it just accepted.
+          for i in $(seq 1 30); do
+            [ "$(npm view "@roomi-fields/osc-bridge@$v" version 2>/dev/null)" = "$v" ] && break
+            sleep 10
+          done
           ./mcp-publisher login github-oidc
           ./mcp-publisher publish
