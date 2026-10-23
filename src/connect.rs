@@ -9,6 +9,10 @@
 //!
 //! The account the server issues is kept in `<config>/osc-bridge/user`, so
 //! the user stays the same from one run to the next.
+//!
+//! With `--test-synth`, the door also offers a virtual device, the catalogue's
+//! `examples/test_synth` driver (`TestSynth`), so everything can be tried
+//! without hardware.
 
 use anyhow::{anyhow, Context, Result};
 use crossbeam_channel::{unbounded, Sender};
@@ -92,6 +96,28 @@ fn open_ports(incoming: &Sender<(String, Vec<u8>)>) -> Result<Ports> {
     Ok(ports)
 }
 
+/// The port name of the virtual test synth.
+pub const TEST_SYNTH_PORT: &str = "osc-bridge Test Synth";
+
+/// A virtual synth for tests: answers the MIDI Identity Request as
+/// manufacturer 7D (reserved for non-commercial use), family 1, model 1,
+/// firmware 1.0, and sends every channel message it receives back, as if the
+/// control had been moved on the device.
+pub struct TestSynth;
+
+impl TestSynth {
+    pub const IDENTITY_REPLY: [u8; 15] = [0xF0, 0x7E, 0x00, 0x06, 0x02, 0x7D, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0xF7];
+
+    /// What the synth sends in answer to `msg`.
+    pub fn answer(msg: &[u8]) -> Option<Vec<u8>> {
+        match msg.first()? {
+            0xF0 if msg == crate::detect::IDENTITY_REQUEST => Some(Self::IDENTITY_REPLY.to_vec()),
+            0x80..=0xEF => Some(msg.to_vec()),
+            _ => None,
+        }
+    }
+}
+
 fn hex(data: &[u8]) -> String {
     data.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ")
 }
@@ -107,7 +133,7 @@ fn set_read_timeout(ws: &WebSocket<MaybeTlsStream<TcpStream>>, t: Duration) -> R
 
 /// Connect this machine's MIDI ports to the relay at `server` until the
 /// connection closes or the process is stopped.
-pub fn run(server: &str, share: bool) -> Result<()> {
+pub fn run(server: &str, share: bool, test_synth: bool) -> Result<()> {
     // One TLS crypto provider for the process (several may be compiled in).
     let _ = rustls::crypto::ring::default_provider().install_default();
     let file = account_file();
@@ -164,8 +190,13 @@ pub fn run(server: &str, share: bool) -> Result<()> {
         }
         if announce {
             announce = false;
-            println!("Devices: outputs [{}], inputs [{}]", ports.names.0.join(", "), ports.names.1.join(", "));
-            ws.send(Message::Text(json!({ "type": "ports", "outputs": ports.names.0, "inputs": ports.names.1 }).to_string().into()))?;
+            let (mut outs, mut ins) = ports.names.clone();
+            if test_synth {
+                outs.push(TEST_SYNTH_PORT.into());
+                ins.push(TEST_SYNTH_PORT.into());
+            }
+            println!("Devices: outputs [{}], inputs [{}]", outs.join(", "), ins.join(", "));
+            ws.send(Message::Text(json!({ "type": "ports", "outputs": outs, "inputs": ins }).to_string().into()))?;
         }
         while let Ok((port, data)) = in_rx.try_recv() {
             println!("  <- {port}  {}", hex(&data));
@@ -178,6 +209,13 @@ pub fn run(server: &str, share: bool) -> Result<()> {
                     Some("midi_out") => {
                         let port = v["port"].as_str().unwrap_or("");
                         let data: Vec<u8> = v["data"].as_array().map(|a| a.iter().filter_map(Value::as_u64).map(|b| b as u8).collect()).unwrap_or_default();
+                        if test_synth && port == TEST_SYNTH_PORT {
+                            println!("  -> {port}  {}", hex(&data));
+                            if let Some(reply) = TestSynth::answer(&data) {
+                                let _ = in_tx.send((TEST_SYNTH_PORT.to_string(), reply));
+                            }
+                            continue;
+                        }
                         match ports.outputs.get_mut(port) {
                             Some(conn) => match conn.send(&data) {
                                 Ok(()) => println!("  -> {port}  {}", hex(&data)),
@@ -201,5 +239,18 @@ pub fn run(server: &str, share: bool) -> Result<()> {
             }
             Err(e) => return Err(e.into()),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn the_test_synth_identifies_itself_and_echoes_what_it_receives() {
+        let id = crate::detect::parse_identity_reply(&TestSynth::answer(&crate::detect::IDENTITY_REQUEST).unwrap()).unwrap();
+        assert_eq!((id.manufacturer, id.family, id.model, id.version), (vec![0x7D], 1, 1, [1, 0, 0, 0]));
+        assert_eq!(TestSynth::answer(&[0xB0, 74, 64]), Some(vec![0xB0, 74, 64]));
+        assert_eq!(TestSynth::answer(&[0xF8]), None);
     }
 }

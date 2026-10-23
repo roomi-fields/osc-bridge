@@ -22,7 +22,7 @@ OUTPUT = REPO_ROOT / "docs" / "SUPPORTED_DEVICES.md"
 def classify_status(doc: dict, path: Path) -> tuple[str, str]:
     """Return (marker, kind).
 
-    marker ∈ {✅, 📘, 🎛️, 📡, 📦, 🤖, 🚧, 📝}
+    marker ∈ {✅, 📘, 🎛️, 📡, 📦, 🤖, 🧪, 🚧, 📝}
     kind   ∈ {hardware-verified, vendor-doc, vendor-osc-api, electra-preset,
               third-party-osc, pencilresearch, wip, stub}
 
@@ -36,6 +36,7 @@ def classify_status(doc: dict, path: Path) -> tuple[str, str]:
       6. 📦 if the primary source is `pencilresearch` (CC/NRPN only).
       7. 🤖 if the source is `agent-contributed` (an AI agent submitted it
          through the hosted server; checked automatically, not reviewed).
+      8. 🧪 if the source is `test-fixture` (a virtual device for testing).
       7. 🚧 / 📝 fallbacks.
 
     Layered devices (e.g. pencilresearch + electra-preset) get the more
@@ -62,6 +63,8 @@ def classify_status(doc: dict, path: Path) -> tuple[str, str]:
             return ("📦", "pencilresearch")
         if "agent-contributed" in types:
             return ("🤖", "agent-contributed")
+        if "test-fixture" in types:
+            return ("🧪", "test-fixture")
         # Unknown source type — best-effort
         if types:
             return ("📘", types[0])
@@ -124,6 +127,8 @@ def source_summary(doc: dict) -> tuple[str, str | None]:
                 return "verified on running software target", url
             if t == "agent-contributed":
                 return "agent contribution", url
+            if t == "test-fixture":
+                return "virtual test device", url
             return t, url
     legacy = doc.get("_source")
     if legacy:
@@ -142,7 +147,7 @@ def load_devices() -> list[tuple[Path, dict]]:
     return out
 
 
-STATUS_PRIORITY = {"✅": 5, "📘": 4, "📡": 3, "🎛️": 2, "📦": 1, "🤖": 0.5, "🚧": 0, "📝": 0}
+STATUS_PRIORITY = {"✅": 5, "📘": 4, "📡": 3, "🎛️": 2, "📦": 1, "🤖": 0.5, "🧪": 0, "🚧": 0, "📝": 0}
 
 
 def best_status(variants: list[tuple[Path, dict]]) -> str:
@@ -163,7 +168,7 @@ def render(devices: list[tuple[Path, dict]]) -> str:
     # Stats: per-file (not per-device-group) so the tier counts still reflect
     # the actual number of driver files shipped.
     total_files = len(devices)
-    by_status = {"✅": 0, "📘": 0, "📡": 0, "🎛️": 0, "📦": 0, "🤖": 0, "🚧": 0, "📝": 0}
+    by_status = {"✅": 0, "📘": 0, "📡": 0, "🎛️": 0, "📦": 0, "🤖": 0, "🧪": 0, "🚧": 0, "📝": 0}
     for path, d in devices:
         by_status[classify_status(d, path)[0]] += 1
 
@@ -192,6 +197,7 @@ def render(devices: list[tuple[Path, dict]]) -> str:
     out.append(f"- **🎛️ electra-preset derived** — {by_status['🎛️']} (from a community Electra One preset — covers SysEx + CC/NRPN, but reflects the preset author's editorial choices)")
     out.append(f"- **📦 pencilresearch derived** — {by_status['📦']} (community canonical CSVs — CC/NRPN only, no SysEx)")
     out.append(f"- **🤖 agent-contributed** — {by_status['🤖']} (submitted by an AI agent through the hosted server — parsed, linted and tested automatically, not reviewed)")
+    out.append(f"- **🧪 test device** — {by_status['🧪']} (virtual, for testing the relay and the hosted server without hardware)")
     out.append(f"- **🚧 WIP** — {by_status['🚧']}")
     out.append(f"- **📝 stub** — {by_status['📝']}")
     out.append("")

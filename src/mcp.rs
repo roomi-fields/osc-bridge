@@ -187,7 +187,8 @@ fn tier_rank(tier: &str) -> u8 {
         "electra-preset" => 3,
         "pencilresearch" => 4,
         "agent-contributed" => 5,
-        _ => 6,
+        "test-fixture" => 6,
+        _ => 7,
     }
 }
 

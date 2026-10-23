@@ -59,6 +59,10 @@ enum Cmd {
         /// Do not record the identity (model, firmware) of the devices seen.
         #[arg(long)]
         no_share: bool,
+        /// Also offer a virtual synth (the catalogue's examples/test_synth),
+        /// to try everything without hardware.
+        #[arg(long)]
+        test_synth: bool,
     },
     /// Find connected MIDI devices and the catalogue drivers that match them.
     /// Sends the standard MIDI Identity Request unless --no-probe.
@@ -180,7 +184,7 @@ fn main() -> Result<()> {
             eprintln!("Sent {} SysEx message(s) from {}", msgs.len(), file.display());
             Ok(())
         }
-        Cmd::Connect { server, no_share } => osc_bridge::connect::run(&server, !no_share),
+        Cmd::Connect { server, no_share, test_synth } => osc_bridge::connect::run(&server, !no_share, test_synth),
         Cmd::Detect { no_probe, devices_dir } => osc_bridge::mcp::print_detection(&devices_dir, !no_probe),
         Cmd::Inspect { device } => cmd_inspect(device),
         Cmd::Run { device, out_port, in_port, bind, osc_clients, ws_bind, ws_allow_origins } =>
