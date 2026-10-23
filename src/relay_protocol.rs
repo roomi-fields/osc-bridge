@@ -1,7 +1,7 @@
 //! The relay protocol: how a "door" — the `/connect` page in a browser (Web
 //! MIDI), `osc-bridge connect` (`crate::connect`), a plugin, any program
 //! speaking it — lets an agent reach the MIDI ports of a machine it does not
-//! run on, through the hosted osc-bridge server.
+//! run on, through the SynthHub server.
 //!
 //! The door opens a WebSocket to the server (`crate::connect::DEFAULT_RELAY`).
 //! The server gives the session a pairing code; the user hands that code to

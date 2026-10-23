@@ -28,7 +28,7 @@ use std::time::{Duration, Instant};
 use tungstenite::stream::MaybeTlsStream;
 use tungstenite::{Message, WebSocket};
 
-pub const DEFAULT_RELAY: &str = "wss://mcp.osc-bridge.roomi-fields.com/relay";
+pub const DEFAULT_RELAY: &str = "wss://mcp.synthhub.roomi-fields.com/relay";
 const RESCAN: Duration = Duration::from_secs(3);
 const READ_TIMEOUT: Duration = Duration::from_millis(5);
 

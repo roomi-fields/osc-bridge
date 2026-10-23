@@ -1,11 +1,11 @@
 // Relay door: carries MIDI between this browser's devices and the hosted
-// osc-bridge server, so an agent can reach them. Runs only on the page that
+// SynthHub server, so an agent can reach them. Runs only on the page that
 // holds the .ob-connect block. Protocol: see src/relay_protocol.rs.
 (function () {
   const root = document.querySelector(".ob-connect");
   if (!root) return;
-  const RELAY = "wss://mcp.osc-bridge.roomi-fields.com/relay";
-  const MCP = "https://mcp.osc-bridge.roomi-fields.com";
+  const RELAY = "wss://mcp.synthhub.roomi-fields.com/relay";
+  const MCP = "https://mcp.synthhub.roomi-fields.com";
   const $ = id => document.getElementById(id);
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },

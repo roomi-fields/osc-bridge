@@ -24,9 +24,9 @@ The SynthHub server runs this MCP server for you, with the up-to-date
 catalogue, trust from real use, and a relay to the hardware on your machine:
 
 - **Claude** (web, desktop): Settings → Connectors → *Add custom connector* →
-  `https://mcp.osc-bridge.roomi-fields.com/mcp`
-- **Claude Code**: `claude mcp add --transport http synthhub https://mcp.osc-bridge.roomi-fields.com/mcp`
-- **Cursor and other clients**: `{"mcpServers": {"synthhub": {"url": "https://mcp.osc-bridge.roomi-fields.com/mcp"}}}`
+  `https://mcp.synthhub.roomi-fields.com/mcp`
+- **Claude Code**: `claude mcp add --transport http synthhub https://mcp.synthhub.roomi-fields.com/mcp`
+- **Cursor and other clients**: `{"mcpServers": {"synthhub": {"url": "https://mcp.synthhub.roomi-fields.com/mcp"}}}`
 
 Your synth joins through the relay page,
 [synthhub.roomi-fields.com/connect](https://synthhub.roomi-fields.com/connect/).
@@ -71,8 +71,8 @@ The server speaks JSON-RPC 2.0 over stdio.
 - `--default-target <host:port>` — where `send` / `get_status` point when no
   `target` argument is given (default `127.0.0.1:7777`, the standard
   `osc-bridge run` bind).
-- `--offline` — do not contact the osc-bridge server (also
-  `OSC_BRIDGE_OFFLINE=1`); see *Linked to the osc-bridge server* below.
+- `--offline` — do not contact the SynthHub server (also
+  `OSC_BRIDGE_OFFLINE=1`); see *Linked to the SynthHub server* below.
 
 ## The eight tools
 
@@ -90,10 +90,10 @@ The server speaks JSON-RPC 2.0 over stdio.
 The catalogue is indexed once at startup, so `list_devices` and slug lookups
 are instant — no per-call directory walk.
 
-## Linked to the osc-bridge server
+## Linked to the SynthHub server
 
 Your copy stays current with what the community builds: unless `--offline`,
-it is linked to the hosted osc-bridge server.
+it is linked to the SynthHub server.
 
 - **An up-to-date catalogue.** At startup it fetches the list of the server's
   drivers and downloads, in the background, the ones that changed since your
