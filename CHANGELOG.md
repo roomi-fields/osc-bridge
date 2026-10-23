@@ -9,7 +9,7 @@ additive minor bumps every time a new device class surfaces something
 the JSON can't yet express. Backwards-compat of existing device JSONs
 is tracked explicitly under each release.
 
-## [0.14.0] — 2026-10-23
+## [Unreleased]
 
 ### Changed — the site moves to synthhub.roomi-fields.com
 - The documentation site and the device catalogue's pages are now built and
@@ -18,6 +18,8 @@ is tracked explicitly under each release.
   site's own pages and its build hooks leave this repository; GitHub Pages
   only publishes a page pointing to the new address. The MCP server and the
   relay stay at `mcp.osc-bridge.roomi-fields.com`.
+
+## [0.14.0] — 2026-10-23
 
 ### Removed — the hosted server's code
 - `osc-bridge mcp --http`, `--behind-proxy`, `--data-dir` and
