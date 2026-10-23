@@ -95,16 +95,44 @@ pub const TEST_SYNTH_PORT: &str = "osc-bridge Test Synth";
 /// A virtual synth for tests: answers the MIDI Identity Request as
 /// manufacturer 7D (reserved for non-commercial use), family 1, model 1,
 /// firmware 1.0, and sends every channel message it receives back, as if the
-/// control had been moved on the device.
-pub struct TestSynth;
+/// control had been moved on the device. It keeps one sound — cutoff,
+/// resonance, attack, release, waveform, set by their CC — which it sends as
+/// a patch dump when asked (`DUMP_REQUEST`) and replaces when it receives a
+/// patch (`PATCH` followed by the five values), like a real synth's edit
+/// buffer.
+pub struct TestSynth {
+    sound: [u8; 5],
+}
+
+impl Default for TestSynth {
+    fn default() -> Self {
+        Self { sound: [64, 0, 0, 40, 0] }
+    }
+}
 
 impl TestSynth {
     pub const IDENTITY_REPLY: [u8; 15] = [0xF0, 0x7E, 0x00, 0x06, 0x02, 0x7D, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0xF7];
+    pub const DUMP_REQUEST: [u8; 5] = [0xF0, 0x7D, 0x01, 0x10, 0xF7];
+    /// The patch message's header; the five values and F7 follow.
+    pub const PATCH: [u8; 4] = [0xF0, 0x7D, 0x01, 0x20];
+    /// The CC of each value of the sound, in order.
+    const SOUND_CC: [u8; 5] = [74, 71, 73, 72, 70];
 
     /// What the synth sends in answer to `msg`.
-    pub fn answer(msg: &[u8]) -> Option<Vec<u8>> {
+    pub fn answer(&mut self, msg: &[u8]) -> Option<Vec<u8>> {
         match msg.first()? {
             0xF0 if msg == crate::detect::IDENTITY_REQUEST => Some(Self::IDENTITY_REPLY.to_vec()),
+            0xF0 if msg == Self::DUMP_REQUEST => Some([&Self::PATCH[..], &self.sound, &[0xF7]].concat()),
+            0xF0 if msg.len() == 10 && msg.starts_with(&Self::PATCH) && msg[9] == 0xF7 => {
+                self.sound.copy_from_slice(&msg[4..9]);
+                None
+            }
+            0xB0..=0xBF if msg.len() == 3 => {
+                if let Some(i) = Self::SOUND_CC.iter().position(|&cc| cc == msg[1]) {
+                    self.sound[i] = msg[2];
+                }
+                Some(msg.to_vec())
+            }
             0x80..=0xEF => Some(msg.to_vec()),
             _ => None,
         }
@@ -117,10 +145,10 @@ fn hex(data: &[u8]) -> String {
 
 /// Play one message on `port`: a real output, or the test synth, whose
 /// answer goes back as if received.
-fn deliver(ports: &mut Ports, incoming: &Sender<(String, Vec<u8>)>, test_synth: bool, port: &str, data: &[u8]) {
-    if test_synth && port == TEST_SYNTH_PORT {
+fn deliver(ports: &mut Ports, incoming: &Sender<(String, Vec<u8>)>, synth: &mut Option<TestSynth>, port: &str, data: &[u8]) {
+    if let Some(synth) = synth.as_mut().filter(|_| port == TEST_SYNTH_PORT) {
         println!("  -> {port}  {}", hex(data));
-        if let Some(reply) = TestSynth::answer(data) {
+        if let Some(reply) = synth.answer(data) {
             let _ = incoming.send((TEST_SYNTH_PORT.to_string(), reply));
         }
         return;
@@ -214,6 +242,7 @@ pub fn run(server: &str, share: bool, test_synth: bool, private_ports: &[String]
     let mut asked = false;
     let (mut always, mut nobody) = (false, false);
     let mut announce = true;
+    let mut synth = test_synth.then(TestSynth::default);
     let mut last_scan = Instant::now();
     loop {
         if last_scan.elapsed() >= RESCAN {
@@ -252,14 +281,14 @@ pub fn run(server: &str, share: bool, test_synth: bool, private_ports: &[String]
             always |= matches!(word.as_deref(), Some("a" | "always"));
             if let Some(req) = asking.pop_front() {
                 asked = false;
-                answer(&mut ws, &mut ports, &in_tx, test_synth, &req, accepted)?;
+                answer(&mut ws, &mut ports, &in_tx, &mut synth, &req, accepted)?;
             }
         }
         if let Some(req) = asking.front() {
             if always || nobody {
                 let req = asking.pop_front().expect("front");
                 if nobody && !always { println!("  x  refused (no terminal to ask)"); }
-                answer(&mut ws, &mut ports, &in_tx, test_synth, &req, always)?;
+                answer(&mut ws, &mut ports, &in_tx, &mut synth, &req, always)?;
             } else if !asked {
                 asked = true;
                 let n = req["messages"].as_array().map_or(0, Vec::len);
@@ -284,7 +313,7 @@ pub fn run(server: &str, share: bool, test_synth: bool, private_ports: &[String]
                             println!("  x  {port}  {}  (not confirmed)", hex(&data));
                             continue;
                         }
-                        deliver(&mut ports, &in_tx, test_synth, port, &data);
+                        deliver(&mut ports, &in_tx, &mut synth, port, &data);
                     }
                     Some("confirm") => asking.push_back(v),
                     Some("confirm_cancel") => {
@@ -313,14 +342,14 @@ pub fn run(server: &str, share: bool, test_synth: bool, private_ports: &[String]
 
 /// Send an accepted batch, spaced by its `gap_ms`, then tell the server.
 fn answer(ws: &mut WebSocket<MaybeTlsStream<TcpStream>>, ports: &mut Ports, incoming: &Sender<(String, Vec<u8>)>,
-          test_synth: bool, req: &Value, accepted: bool) -> Result<()> {
+          synth: &mut Option<TestSynth>, req: &Value, accepted: bool) -> Result<()> {
     if accepted {
         let port = req["port"].as_str().unwrap_or("");
         let gap = Duration::from_millis(req["gap_ms"].as_u64().unwrap_or(0).min(2000));
         let messages = req["messages"].as_array().cloned().unwrap_or_default();
         for (i, m) in messages.iter().enumerate() {
             if i > 0 { std::thread::sleep(gap); }
-            deliver(ports, incoming, test_synth, port, &bytes_of(m));
+            deliver(ports, incoming, synth, port, &bytes_of(m));
         }
     } else {
         println!("  x  refused: nothing sent");
@@ -335,10 +364,20 @@ mod tests {
 
     #[test]
     fn the_test_synth_identifies_itself_and_echoes_what_it_receives() {
-        let id = crate::detect::parse_identity_reply(&TestSynth::answer(&crate::detect::IDENTITY_REQUEST).unwrap()).unwrap();
+        let mut synth = TestSynth::default();
+        let id = crate::detect::parse_identity_reply(&synth.answer(&crate::detect::IDENTITY_REQUEST).unwrap()).unwrap();
         assert_eq!((id.manufacturer, id.family, id.model, id.version), (vec![0x7D], 1, 1, [1, 0, 0, 0]));
-        assert_eq!(TestSynth::answer(&[0xB0, 74, 64]), Some(vec![0xB0, 74, 64]));
-        assert_eq!(TestSynth::answer(&[0xF8]), None);
+        assert_eq!(synth.answer(&[0xB0, 74, 64]), Some(vec![0xB0, 74, 64]));
+        assert_eq!(synth.answer(&[0xF8]), None);
+    }
+
+    #[test]
+    fn the_test_synth_dumps_and_takes_its_sound_like_an_edit_buffer() {
+        let mut synth = TestSynth::default();
+        synth.answer(&[0xB0, 74, 90]);
+        assert_eq!(synth.answer(&TestSynth::DUMP_REQUEST), Some(vec![0xF0, 0x7D, 0x01, 0x20, 90, 0, 0, 40, 0, 0xF7]));
+        assert_eq!(synth.answer(&[0xF0, 0x7D, 0x01, 0x20, 10, 20, 30, 40, 2, 0xF7]), None);
+        assert_eq!(synth.answer(&TestSynth::DUMP_REQUEST), Some(vec![0xF0, 0x7D, 0x01, 0x20, 10, 20, 30, 40, 2, 0xF7]));
     }
 
     #[test]

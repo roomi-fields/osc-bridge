@@ -53,7 +53,7 @@ pub struct McpOptions {
 /// Tools a private device keeps on the machine: refused before anything is
 /// sent. `get_trust` on a private device is answered from the trust fetched
 /// at startup instead.
-const PRIVATE_REFUSED: [&str; 4] = ["report_result", "report_mapping", "submit_fix", "submit_driver"];
+const PRIVATE_REFUSED: [&str; 5] = ["report_result", "report_mapping", "submit_fix", "submit_driver", "share_preset"];
 
 /// A local copy's link to the hosted server: the client, the account kept on
 /// this machine, and the trust of every reported driver, as last fetched.
@@ -769,6 +769,86 @@ pub fn tool_schemas() -> Value {
                 "description": "Where a contribution stands: pending (waiting for the merge job), merged (with its pull request), rejected (with the reason), or held (its account is under review).",
                 "inputSchema": { "type": "object", "properties": { "id": { "type": "integer" } }, "required": ["id"], "additionalProperties": false },
                 "annotations": { "title": "Contribution status", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": false }
+            },
+            {
+                "name": "share_preset",
+                "description": "Share a sound made on a device with every SynthHub user, under CC BY-SA 4.0: as the device's own patch data (SysEx, e.g. from backup_presets) and/or as settings by driver address (from list_routes, e.g. {'/filter/cutoff': [90]}), which also works for devices without patch dumps. Only sounds the user made: never factory presets or sounds bought or downloaded from others — set own_sound only after asking the user. Shared presets are public; the user can withdraw theirs (withdraw_preset). A sound already shared returns its existing id.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or slug." },
+                        "name": { "type": "string", "description": "The sound's name (80 characters at most)." },
+                        "own_sound": { "type": "boolean", "description": "Must be true: the user made this sound (not a factory preset, not someone else's)." },
+                        "description": { "type": "string", "description": "What it sounds like, how to play it (500 characters at most)." },
+                        "tags": { "type": "array", "items": { "type": "string" }, "description": "A few words: 'bass', 'pad', 'warm'… (8 at most)." },
+                        "firmware": { "type": "string", "description": "Firmware version of the device the sound was made on." },
+                        "hex": { "type": "string", "description": "The patch as SysEx, in hex (one program, 32 KB at most)." },
+                        "file": { "type": "string", "description": "A .syx file holding the patch (e.g. written by backup_presets), instead of hex." },
+                        "settings": { "type": "object", "description": "Settings by driver address: {'/filter/cutoff': [90], '/amp/attack': [12]} (512 at most).", "additionalProperties": true }
+                    },
+                    "required": ["device", "name", "own_sound"],
+                    "additionalProperties": false
+                },
+                "annotations": { "title": "Share a preset", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": true }
+            },
+            {
+                "name": "find_presets",
+                "description": "Search the presets SynthHub users shared (CC BY-SA 4.0): by device, words in the name, description or tags, or one tag. Returns, per preset, its id, name, device, firmware, tags, whether it carries patch data (SysEx) or settings, and how far other users confirmed it loads and sounds right. Get one with get_preset.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "device": { "type": "string", "description": "Driver id or slug (its other variants are included)." },
+                        "query": { "type": "string", "description": "Words that must all appear in the name, description or tags." },
+                        "tag": { "type": "string" },
+                        "limit": { "type": "integer", "minimum": 1, "maximum": 50, "description": "At most this many (default 20)." }
+                    },
+                    "additionalProperties": false
+                },
+                "annotations": { "title": "Find presets", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": true }
+            },
+            {
+                "name": "get_preset",
+                "description": "One shared preset in full: its patch data (SysEx, hex) and/or settings by driver address, device, firmware, author (a pseudonym), licence and attribution line, reports. Load it with load_preset; credit it as the attribution line says when you publish something made from it.",
+                "inputSchema": { "type": "object", "properties": { "id": { "type": "string", "description": "Preset id from find_presets (e.g. 'p3fa9c1d2e4b7')." } }, "required": ["id"], "additionalProperties": false },
+                "annotations": { "title": "Get a preset", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": true }
+            },
+            {
+                "name": "report_preset",
+                "description": "Tell SynthHub how a shared preset behaved once loaded on a real device: 'works' (it loaded and sounds as described), 'fails' (refused, wrong sound), or 'factory' (it is a factory preset or someone else's sound: presets that several users flag are hidden until reviewed). Give the firmware.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "id": { "type": "string" },
+                        "outcome": { "type": "string", "enum": ["works", "fails", "factory"] },
+                        "firmware": { "type": "string" },
+                        "note": { "type": "string", "description": "What happened, briefly (500 characters at most)." }
+                    },
+                    "required": ["id", "outcome"],
+                    "additionalProperties": false
+                },
+                "annotations": { "title": "Report on a preset", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false }
+            },
+            {
+                "name": "withdraw_preset",
+                "description": "Withdraw a preset this account shared: it is no longer listed nor served. Copies others already made stay under CC BY-SA.",
+                "inputSchema": { "type": "object", "properties": { "id": { "type": "string" } }, "required": ["id"], "additionalProperties": false },
+                "annotations": { "title": "Withdraw a preset", "readOnlyHint": false, "destructiveHint": true, "idempotentHint": true, "openWorldHint": false }
+            },
+            {
+                "name": "load_preset",
+                "description": "Load a shared preset (find_presets, get_preset) into a device plugged into this computer: its settings are sent by driver address, its patch data as SysEx. Patch data replaces the sound in the device's edit buffer or memory: ask the user, then pass confirm_overwrite: true. Afterwards, tell SynthHub how it went with report_preset.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "id": { "type": "string" },
+                        "out_port": { "type": "string", "description": "MIDI OUT port of the device: index or name fragment (detect_hardware)." },
+                        "gap_ms": { "type": "integer", "description": "Pause between messages, 0-2000 ms (default 50)." },
+                        "confirm_overwrite": { "type": "boolean", "description": "True once the user agreed; needed when the preset carries patch data." }
+                    },
+                    "required": ["id", "out_port"],
+                    "additionalProperties": false
+                },
+                "annotations": { "title": "Load a preset", "readOnlyHint": false, "destructiveHint": true, "idempotentHint": true, "openWorldHint": true }
             }
 
         ]
@@ -778,8 +858,10 @@ pub fn tool_schemas() -> Value {
 fn tool_names(opts: &McpOptions) -> Vec<&'static str> {
     let local = ["list_devices", "get_device_docs", "list_routes", "send", "get_status",
          "detect_hardware", "backup_presets", "restore_presets"];
+    // Loading a shared preset needs the server, like the forwarded tools.
+    let linked: &[&str] = if opts.online { &["load_preset"] } else { &[] };
     let forwarded = if opts.online { crate::online::FORWARDED_TOOLS.as_slice() } else { &[] };
-    local.iter().chain(forwarded).copied().collect()
+    local.iter().chain(forwarded).chain(linked).copied().collect()
 }
 
 fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, link: Option<&Link>) -> Result<Value, String> {
@@ -798,7 +880,13 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
                         To share it, remove it from the private list (osc-bridge privacy shows the settings file)."));
                 }
             }
+            if name == "share_preset" {
+                return link.forward(name, &with_syx_as_hex(args)?);
+            }
             return link.forward(name, args);
+        }
+        if name == "load_preset" {
+            return load_preset(index, args, link);
         }
     }
     if let Some(done) = catalogue_tool(name, args, index, &|id| link.and_then(|l| l.status(id))) {
@@ -996,6 +1084,54 @@ fn restore_presets(out_port: &str, file: &Path, gap_ms: u64) -> Result<Value, St
     send_messages(out_port, &msgs, Duration::from_millis(gap_ms)).map_err(|e| e.to_string())?;
     let structured = json!({ "file": file.display().to_string(), "messages": msgs.len(), "bytes": bytes });
     Ok(content_structured(&format!("Sent {} SysEx message(s), {} bytes, from {}", msgs.len(), bytes, file.display()), structured))
+}
+
+/// A shared preset's `file` (a .syx on this machine) sent as `hex`.
+fn with_syx_as_hex(args: &Value) -> Result<Value, String> {
+    let Some(file) = args.get("file").and_then(Value::as_str) else { return Ok(args.clone()) };
+    if args.get("hex").is_some() {
+        return Err("give hex or file, not both".into());
+    }
+    let msgs = crate::librarian::read_syx(Path::new(file)).map_err(|e| e.to_string())?;
+    let mut sent = args.clone();
+    sent.as_object_mut().map(|o| o.remove("file"));
+    sent["hex"] = json!(msgs.iter().flatten().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" "));
+    Ok(sent)
+}
+
+/// Fetch a shared preset from the server and play it into a local device:
+/// its settings through the driver, its patch data as SysEx (only once the
+/// user agreed: it replaces what the device holds).
+fn load_preset(index: &DeviceIndex, args: &Value, link: &Link) -> Result<Value, String> {
+    let id = args.get("id").and_then(Value::as_str).ok_or("missing id")?;
+    let out_port = args.get("out_port").and_then(Value::as_str).ok_or("missing out_port")?;
+    let gap = Duration::from_millis(args.get("gap_ms").and_then(Value::as_u64).unwrap_or(50).min(2000));
+    let preset = link.forward("get_preset", &json!({ "id": id }))?["structuredContent"].clone();
+    let mut messages = Vec::new();
+    if let Some(settings) = preset["settings"].as_object() {
+        let device = preset["device"].as_str().unwrap_or_default();
+        let entry = index.find(device).ok_or_else(|| format!("{id} is for {device}, which this catalogue lacks"))?;
+        let dev = Device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.id))?;
+        for (address, values) in settings {
+            let osc_args = values.as_array().map(|a| a.iter().map(json_to_osc).collect()).unwrap_or_default();
+            let full = format!("{}{address}", dev.device.osc_prefix);
+            messages.extend(crate::runtime::encode(dev.clone(), rosc::OscMessage { addr: full, args: osc_args }));
+        }
+    }
+    let sysex = match preset["sysex"].as_str() {
+        Some(hex) => crate::librarian::split_sysex(&crate::librarian::parse_hex(hex).map_err(|e| e.to_string())?),
+        None => Vec::new(),
+    };
+    if !sysex.is_empty() && args.get("confirm_overwrite").and_then(Value::as_bool) != Some(true) {
+        return Err(format!("{id} carries patch data, which replaces the sound the device holds: ask the user, \
+            then pass confirm_overwrite: true"));
+    }
+    messages.extend(sysex);
+    crate::librarian::send_messages(out_port, &messages, gap).map_err(|e| e.to_string())?;
+    let structured = json!({ "id": id, "name": preset["name"], "device": preset["device"], "messages": messages.len(),
+        "attribution": preset["attribution"] });
+    Ok(content_structured(&format!("Loaded {} ({} message(s)) on {out_port}. Tell SynthHub how it went with report_preset.",
+        preset["name"].as_str().unwrap_or(id), messages.len()), structured))
 }
 
 /// `osc-bridge detect`: the same report as the `detect_hardware` tool, for a
@@ -1351,7 +1487,8 @@ mod tests {
         let caller = Some(&link);
         for (tool, args) in [("report_result", json!({"device": "korg/minilogue", "outcome": "works"})),
                              ("report_mapping", json!({"device": "minilogue", "address": "/filter/cutoff", "cc": 43})),
-                             ("submit_fix", json!({"device": "korg/minilogue", "content": "{}"}))] {
+                             ("submit_fix", json!({"device": "korg/minilogue", "content": "{}"})),
+                             ("share_preset", json!({"device": "korg/minilogue", "name": "Warm", "own_sound": true, "hex": "F0 42 F7"}))] {
             let err = call_tool(tool, &args, &opts, &index, caller).unwrap_err();
             assert!(err.contains("private on this machine") && err.contains("private list"), "{tool}: {err}");
         }
@@ -1364,6 +1501,20 @@ mod tests {
             .unwrap_err().contains("private"));
         let other = call_tool("report_result", &json!({"device": "arturia/minilab3", "outcome": "works"}), &vendor, &index, caller).unwrap_err();
         assert!(other.contains("could not be reached"), "another device is shared: {other}");
+    }
+
+    #[test]
+    fn a_syx_file_is_shared_as_hex() {
+        let path = std::env::temp_dir().join(format!("osc-bridge-share-{}.syx", std::process::id()));
+        std::fs::write(&path, [0xF0, 0x42, 0x30, 0x01, 0xF7, 0xF0, 0x42, 0x30, 0x02, 0xF7]).unwrap();
+        let sent = with_syx_as_hex(&json!({"device": "korg/minilogue", "file": path.display().to_string()})).unwrap();
+        assert_eq!(sent, json!({"device": "korg/minilogue", "hex": "F0 42 30 01 F7 F0 42 30 02 F7"}));
+        let both = json!({"file": path.display().to_string(), "hex": "F0 F7"});
+        assert!(with_syx_as_hex(&both).unwrap_err().contains("not both"));
+        std::fs::remove_file(path).ok();
+        let opts = McpOptions { online: true, ..test_opts() };
+        assert!(tool_names(&opts).contains(&"load_preset") && !tool_names(&test_opts()).contains(&"load_preset"),
+            "loading a shared preset is offered only when linked to the server");
     }
 
     #[test]

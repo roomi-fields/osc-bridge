@@ -27,8 +27,25 @@
   const isIdentityRequest = d => d.length === 6 && d[0] === 0xF0 && d[1] === 0x7E && d[3] === 0x06 && d[4] === 0x01 && d[5] === 0xF7;
   const needsConfirmation = d => d[0] === 0xF0 && !isIdentityRequest(d);
   const asking = [];
+  // The test synth keeps one sound (cutoff, resonance, attack, release,
+  // waveform, set by their CC), dumps it when asked and takes a patch, like
+  // a real synth's edit buffer. Same as TestSynth in src/connect.rs.
+  const DUMP_REQUEST = [0xF0, 0x7D, 0x01, 0x10, 0xF7];
+  const PATCH = [0xF0, 0x7D, 0x01, 0x20];
+  const SOUND_CC = [74, 71, 73, 72, 70];
+  const sound = [64, 0, 0, 40, 0];
+  const same = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
   function testSynthAnswer(data) {
-    if (data.length === 6 && data.every((b, i) => b === IDENTITY_REQUEST[i])) return IDENTITY_REPLY;
+    if (same(Array.from(data), IDENTITY_REQUEST)) return IDENTITY_REPLY;
+    if (same(Array.from(data), DUMP_REQUEST)) return PATCH.concat(sound, [0xF7]);
+    if (data.length === 10 && same(Array.from(data.slice(0, 4)), PATCH) && data[9] === 0xF7) {
+      for (let i = 0; i < 5; i++) sound[i] = data[4 + i];
+      return null;
+    }
+    if (data[0] >= 0xB0 && data[0] <= 0xBF && data.length === 3) {
+      const i = SOUND_CC.indexOf(data[1]);
+      if (i >= 0) sound[i] = data[2];
+    }
     if (data[0] >= 0x80 && data[0] <= 0xEF) return data;
     return null;
   }

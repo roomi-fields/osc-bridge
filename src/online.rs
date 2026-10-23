@@ -28,8 +28,9 @@ use std::time::Duration;
 pub const SERVER: &str = "https://mcp.synthhub.roomi-fields.com";
 
 /// The tools a local copy forwards to the server.
-pub const FORWARDED_TOOLS: [&str; 6] = ["report_result", "report_mapping", "get_trust",
-    "submit_driver", "submit_fix", "get_contribution"];
+pub const FORWARDED_TOOLS: [&str; 11] = ["report_result", "report_mapping", "get_trust",
+    "submit_driver", "submit_fix", "get_contribution",
+    "share_preset", "find_presets", "get_preset", "report_preset", "withdraw_preset"];
 
 /// Files fetched per `POST /v1/catalogue/files` request.
 pub const FILES_PER_REQUEST: usize = 100;
