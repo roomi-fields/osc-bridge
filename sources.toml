@@ -43,3 +43,12 @@ cache_dir               = ".cache/electra-presets"
 converter               = "scripts/import_electra_preset.py"
 # Whether to respect Electra revision field to skip unchanged presets on refresh
 incremental             = true
+
+[[source]]
+name        = "knobkraft"
+description = "KnobKraft Orm adaptations (AGPL-3.0 — https://github.com/christofmuc/KnobKraft-orm): sound exchange only, for synths no other source covers"
+type        = "git"
+repo        = "https://github.com/christofmuc/KnobKraft-orm"
+cache_dir   = ".cache/knobkraft-orm"
+importer    = "scripts/import_knobkraft.py"
+importer_bulk_args = ["{cache_dir}"]

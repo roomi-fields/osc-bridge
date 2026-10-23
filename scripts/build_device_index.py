@@ -18,7 +18,7 @@ def classify(doc: dict) -> str:
     sources = doc.get("_sources") or []
     types = [s.get("type") for s in sources if isinstance(s, dict)]
     for t, marker in (("hardware-verified", "✅"), ("vendor-doc", "📘"),
-                      ("electra-preset", "🎛️"), ("pencilresearch", "📦"),
+                      ("electra-preset", "🎛️"), ("pencilresearch", "📦"), ("knobkraft", "💾"),
                       ("agent-contributed", "🤖"), ("test-fixture", "🧪")):
         if t in types:
             return marker

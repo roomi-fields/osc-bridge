@@ -22,9 +22,9 @@ OUTPUT = REPO_ROOT / "docs" / "SUPPORTED_DEVICES.md"
 def classify_status(doc: dict, path: Path) -> tuple[str, str]:
     """Return (marker, kind).
 
-    marker ∈ {✅, 📘, 🎛️, 📡, 📦, 🤖, 🧪, 🚧, 📝}
+    marker ∈ {✅, 📘, 🎛️, 📡, 📦, 💾, 🤖, 🧪, 🚧, 📝}
     kind   ∈ {hardware-verified, vendor-doc, vendor-osc-api, electra-preset,
-              third-party-osc, pencilresearch, wip, stub}
+              third-party-osc, pencilresearch, knobkraft, wip, stub}
 
     Order of priority across the `_sources[]` array:
       1. ✅ if any source is `hardware-verified` → most authoritative.
@@ -34,10 +34,12 @@ def classify_status(doc: dict, path: Path) -> tuple[str, str]:
       5. 📡 if any source is `third-party-osc` (community OSC shim — DAW
          remote-script style, e.g. AbletonOSC).
       6. 📦 if the primary source is `pencilresearch` (CC/NRPN only).
-      7. 🤖 if the source is `agent-contributed` (an AI agent submitted it
+      7. 💾 if the source is `knobkraft` (sound exchange only, from a
+         KnobKraft Orm adaptation; no control mapped).
+      8. 🤖 if the source is `agent-contributed` (an AI agent submitted it
          through the hosted server; checked automatically, not reviewed).
-      8. 🧪 if the source is `test-fixture` (a virtual device for testing).
-      7. 🚧 / 📝 fallbacks.
+      9. 🧪 if the source is `test-fixture` (a virtual device for testing).
+     10. 🚧 / 📝 fallbacks.
 
     Layered devices (e.g. pencilresearch + electra-preset) get the more
     informative marker. The 📡 satellite-dish marker is shared by both
@@ -61,6 +63,8 @@ def classify_status(doc: dict, path: Path) -> tuple[str, str]:
             return ("📡", "third-party-osc")
         if "pencilresearch" in types:
             return ("📦", "pencilresearch")
+        if "knobkraft" in types:
+            return ("💾", "knobkraft")
         if "agent-contributed" in types:
             return ("🤖", "agent-contributed")
         if "test-fixture" in types:
@@ -125,6 +129,8 @@ def source_summary(doc: dict) -> tuple[str, str | None]:
                 return "hardware test (partial)", url
             if t == "software-verified":
                 return "verified on running software target", url
+            if t == "knobkraft":
+                return "KnobKraft Orm adaptation", url
             if t == "agent-contributed":
                 return "agent contribution", url
             if t == "test-fixture":
@@ -184,7 +190,7 @@ def render(devices: list[tuple[Path, dict]]) -> str:
     # Stats: per-file (not per-device-group) so the tier counts still reflect
     # the actual number of driver files shipped.
     total_files = len(devices)
-    by_status = {"✅": 0, "📘": 0, "📡": 0, "🎛️": 0, "📦": 0, "🤖": 0, "🧪": 0, "🚧": 0, "📝": 0}
+    by_status = {"✅": 0, "📘": 0, "📡": 0, "🎛️": 0, "📦": 0, "💾": 0, "🤖": 0, "🧪": 0, "🚧": 0, "📝": 0}
     for path, d in devices:
         by_status[classify_status(d, path)[0]] += 1
 
@@ -208,6 +214,7 @@ def render(devices: list[tuple[Path, dict]]) -> str:
     out.append(f"- **📡 OSC-API (software targets)** — {by_status['📡']} (vendor-OSC or third-party OSC shim like AbletonOSC — DAWs and live coding environments)")
     out.append(f"- **🎛️ electra-preset derived** — {by_status['🎛️']} (from a community Electra One preset — covers SysEx + CC/NRPN, but reflects the preset author's editorial choices)")
     out.append(f"- **📦 pencilresearch derived** — {by_status['📦']} (community canonical CSVs — CC/NRPN only, no SysEx)")
+    out.append(f"- **💾 KnobKraft Orm derived** — {by_status['💾']} (sound exchange only — taking and loading sounds through a KnobKraft Orm adaptation; no control mapped)")
     out.append(f"- **🤖 agent-contributed** — {by_status['🤖']} (submitted by an AI agent through the hosted server — parsed, linted and tested automatically, not reviewed)")
     out.append(f"- **🧪 test device** — {by_status['🧪']} (virtual, for testing the relay and the hosted server without hardware)")
     out.append(f"- **🚧 WIP** — {by_status['🚧']}")
