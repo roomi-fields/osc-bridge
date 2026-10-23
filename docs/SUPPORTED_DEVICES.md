@@ -8318,7 +8318,7 @@
 #### 🧪 [`test_synth.json`](../devices/examples/test_synth.json) — firmware `1.0`
 
 - **Revision**: 1.0
-- **Source**: [virtual test device](https://osc-bridge.roomi-fields.com/connect/)
+- **Source**: [virtual test device](https://synthhub.roomi-fields.com/connect/)
 - **Coverage**: 6 CC (1 NRPN) · midi_out
 
 ## OTO Machines

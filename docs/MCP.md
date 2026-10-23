@@ -95,7 +95,7 @@ it is linked to the hosted osc-bridge server.
   firmware?), `report_mapping` (which message a control really sends),
   `get_trust`, `submit_driver`, `submit_fix` and `get_contribution`. What you
   report improves the drivers for everyone; see
-  [API for agents](api.md#reports-and-trust).
+  [API for agents](https://synthhub.roomi-fields.com/api/#reports-and-trust).
 
 Your MIDI ports and your devices' traffic never leave your machine. Sharing
 is on by default; you choose what stays on your machine in a commented
@@ -144,4 +144,4 @@ DrivenByMoss, Reaper's OSC control surface, etc.
 - [`DEVICE_JSON_SCHEMA.md`](DEVICE_JSON_SCHEMA.md) — how device drivers are written.
 - [`TUTORIAL_FIRST_DEVICE.md`](TUTORIAL_FIRST_DEVICE.md) — write your first driver in 30 minutes.
 - [Main README](../README.md) — osc-bridge as a standalone bridge, the orchestrator, the device catalogue.
-- Interactive device browser: <https://osc-bridge.roomi-fields.com/>
+- Interactive device browser: <https://synthhub.roomi-fields.com/>

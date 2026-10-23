@@ -11,6 +11,14 @@ is tracked explicitly under each release.
 
 ## [0.14.0] — 2026-10-23
 
+### Changed — the site moves to synthhub.roomi-fields.com
+- The documentation site and the device catalogue's pages are now built and
+  served by SynthHub, at https://synthhub.roomi-fields.com/; osc-bridge keeps
+  its engine docs under `docs/` (also published there). `mkdocs.yml`, the
+  site's own pages and its build hooks leave this repository; GitHub Pages
+  only publishes a page pointing to the new address. The MCP server and the
+  relay stay at `mcp.osc-bridge.roomi-fields.com`.
+
 ### Removed — the hosted server's code
 - `osc-bridge mcp --http`, `--behind-proxy`, `--data-dir` and
   `--relay-bind` are gone, with the server side of the relay, the ledger of

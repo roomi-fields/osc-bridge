@@ -61,6 +61,6 @@ command line. MIDI messages passing through the relay are never recorded.
 
 What the server records — accounts, tool calls, reports, device identities —
 is described in the
-[API for agents](https://osc-bridge.roomi-fields.com/api/) page.
+[API for agents](https://synthhub.roomi-fields.com/api/) page.
 
 **Contact:** https://github.com/roomi-fields/osc-bridge/issues
