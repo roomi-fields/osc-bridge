@@ -22,19 +22,33 @@ other users and agents fixed and confirmed:
 - **Never sent:** your MIDI ports, your devices' traffic, your files, your
   address (beyond what any web server sees for a few days in its access log).
 
-Sharing is on by default, and you choose what to keep to yourself with
-`osc-bridge privacy` (it shows the current state when run alone):
+Sharing is on by default, and you choose what to keep to yourself in a
+settings file, `<config>/osc-bridge/settings.toml` (`~/.config` on Linux,
+`%APPDATA%` on Windows). It is created, with comments, the first time
+osc-bridge starts; edit it with any text editor:
 
-- `osc-bridge privacy --offline on` cuts the link for good: nothing is sent,
-  and the catalogue bundled with your copy is used as is (`--offline off`
-  links it again). For a single run: `osc-bridge mcp --offline` or
-  `OSC_BRIDGE_OFFLINE=1`.
-- `osc-bridge privacy --private <device>` keeps one device private: the
-  reports, learned mappings and fixes about it stay on your machine, while
-  the catalogue and its trust stay up to date. `--public <device>` shares it
-  again.
+```toml
+# true: do not contact the server at all (bundled catalogue, nothing sent).
+offline = false
 
-The choices are kept in `<config>/osc-bridge/settings.toml`.
+# Devices kept private: nothing about them is sent to the server.
+private = [
+  "korg/minilogue",   # one driver (and the other variants of that device)
+  "minilab3",         # a device by its slug
+  "elektron/*",       # a whole vendor
+]
+```
+
+- `offline = true` cuts the link: nothing is sent, and the catalogue bundled
+  with your copy is used as is. For a single run: `osc-bridge mcp --offline`
+  or `OSC_BRIDGE_OFFLINE=1`.
+- A private device: its reports, learned mappings, fixes and trust lookups
+  stay on your machine, while the catalogue and the trust fetched at startup
+  stay up to date.
+
+`osc-bridge privacy` shows the current settings and where the file is; it can
+change them too (`--offline on|off`, `--private <device>`, `--public
+<device>`).
 
 ## The hosted server and the relay
 

@@ -76,8 +76,9 @@ enum Cmd {
         /// (the bundled catalogue is used, nothing is sent); `off` restores it.
         #[arg(long, value_parser = ["on", "off"])]
         offline: Option<String>,
-        /// Keep this device (catalogue id or slug) private: its reports and
-        /// fixes stay on this machine (repeatable).
+        /// Keep this device private (catalogue id, slug, or `vendor/*` for a
+        /// whole vendor): nothing about it is sent to the server (repeatable).
+        /// The same list can be edited in the settings file it prints.
         #[arg(long, value_name = "DEVICE")]
         private: Vec<String>,
         /// Share this device again (repeatable).
@@ -235,7 +236,10 @@ fn main() -> Result<()> {
                 .with_context(|| format!("parse --default-target {default_target}"))?;
             let settings = match http {
                 Some(_) => osc_bridge::online::Settings::default(),
-                None => osc_bridge::online::Settings::load(osc_bridge::online::settings_file().as_deref())?,
+                None => match osc_bridge::online::settings_file() {
+                    Some(path) => osc_bridge::online::Settings::load_or_create(&path)?,
+                    None => osc_bridge::online::Settings::default(),
+                },
             };
             let online = http.is_none() && !offline && !settings.offline && !osc_bridge::online::offline_by_env();
             let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, hosted: false, online, private: settings.private };
