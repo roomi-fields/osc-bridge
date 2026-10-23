@@ -139,6 +139,17 @@ frames — `{"type":"ports","outputs":[…],"inputs":[…]}` and
 `{"type":"share","enabled":false}` to keep device identities out of the
 records.
 
+Messages that may overwrite the device's memory — every SysEx message except
+the Identity Request — never come as `midi_out`. They come as one request per
+batch, `{"type":"confirm","id","port","messages":[[bytes]],"bytes","gap_ms"}`:
+the door shows it to the person, sends the messages only if they accept
+(waiting `gap_ms` between two), and answers
+`{"type":"confirm_reply","id","accepted":true|false}`. The agent's
+`relay_send` waits up to two minutes for that answer and reports it; without
+an answer the server withdraws the request with
+`{"type":"confirm_cancel","id"}`. A door must not send a SysEx message other
+than the Identity Request that came as `midi_out`.
+
 ### Reports and trust
 
 After testing a driver on the real device, an agent calls `report_result`:

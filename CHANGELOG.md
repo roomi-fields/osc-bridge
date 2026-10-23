@@ -11,6 +11,17 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Added — the person at the relay confirms memory writes
+- A message sent through the relay that may overwrite the device's memory —
+  every SysEx but the Identity Request: patch dumps, stores, settings — goes
+  out only once the person at the door accepts it. The `/connect` page shows
+  what the agent wants to send with *Accept* / *Refuse* (and an option to
+  accept the rest of the session); `osc-bridge connect` asks in the terminal.
+  `relay_send` waits for the answer (two minutes at most) and reports it;
+  `gap_ms` spaces the messages of a dump. Protocol: `confirm`,
+  `confirm_reply`, `confirm_cancel` frames; doors drop any such message that
+  comes as a plain `midi_out`.
+
 ### Changed — licence
 - The code is now AGPL-3.0-or-later (was GPL-3.0-or-later): a modified
   version run as a network service must offer its source to its users. The

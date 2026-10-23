@@ -38,6 +38,13 @@ of 963 drivers.
       The first agent to use a code is the only one that can drive your devices; a new code ends the session and pairs again.</p>
     <p class="ob-connect-ports" id="ob-connect-ports"></p>
   </div>
+  <div class="ob-connect-confirm" id="ob-connect-confirm" role="alertdialog" aria-labelledby="ob-connect-confirm-text" hidden>
+    <p id="ob-connect-confirm-text"></p>
+    <p><button type="button" id="ob-connect-accept" class="md-button md-button--primary">Accept</button>
+      <button type="button" id="ob-connect-refuse" class="md-button">Refuse</button></p>
+    <label class="ob-connect-share"><input type="checkbox" id="ob-connect-always">
+      Accept these without asking until I close this page</label>
+  </div>
   <div class="ob-connect-log" id="ob-connect-log" aria-live="polite"></div>
 </div>
 
@@ -74,7 +81,9 @@ access log for a few days. Details: [API for agents](api.md).
 
 - Safari and iOS do not give web pages access to MIDI devices; use Chrome or
   Edge, or [`osc-bridge connect`](getting-started.md) on your computer.
-- Messages that store a patch or restore a memory dump overwrite your device;
-  a well-behaved agent asks you first.
+- Messages that can overwrite your device — every SysEx message except the
+  Identity Request: patch dumps, stores, settings — are never sent without
+  you. The page shows what the agent wants to send, and nothing goes out
+  until you press *Accept*. *Refuse* sends nothing.
 - Timing follows the network: fine for setting sounds and playing test notes,
   not for tightly timed sequences.

@@ -21,6 +21,12 @@
   const IDENTITY_REQUEST = [0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7];
   const IDENTITY_REPLY = [0xF0, 0x7E, 0x00, 0x06, 0x02, 0x7D, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0xF7];
   const testSynth = () => $("ob-connect-test").checked;
+  // Every SysEx but the Identity Request may overwrite what the device keeps
+  // (patches, settings): the server sends those as a "confirm" request, and
+  // they go out only once the person accepts. Never from a plain midi_out.
+  const isIdentityRequest = d => d.length === 6 && d[0] === 0xF0 && d[1] === 0x7E && d[3] === 0x06 && d[4] === 0x01 && d[5] === 0xF7;
+  const needsConfirmation = d => d[0] === 0xF0 && !isIdentityRequest(d);
+  const asking = [];
   function testSynthAnswer(data) {
     if (data.length === 6 && data.every((b, i) => b === IDENTITY_REQUEST[i])) return IDENTITY_REPLY;
     if (data[0] >= 0x80 && data[0] <= 0xEF) return data;
@@ -59,6 +65,51 @@
     });
   }
 
+  // Play one message on a port (a real output or the test synth).
+  function deliver(port, data) {
+    if (port === TEST_SYNTH) {
+      log("→", port, data);
+      const reply = testSynthAnswer(data);
+      if (reply) setTimeout(() => {
+        send({ type: "midi_in", port: TEST_SYNTH, data: Array.from(reply) });
+        log("←", TEST_SYNTH, reply);
+      }, 5);
+      return;
+    }
+    const out = access ? Array.from(access.outputs.values()).find(o => o.name === port) : null;
+    if (!out) return log("✕", port, data);
+    try { out.send(data); log("→", port, data); }
+    catch (e) { log("✕ " + e.message, port, data); }
+  }
+  function answer(req, accepted) {
+    if (accepted) {
+      const step = i => {
+        if (i >= req.messages.length) return send({ type: "confirm_reply", id: req.id, accepted: true });
+        deliver(req.port, req.messages[i]);
+        setTimeout(() => step(i + 1), i + 1 < req.messages.length ? req.gap_ms || 0 : 0);
+      };
+      step(0);
+    } else {
+      send({ type: "confirm_reply", id: req.id, accepted: false });
+      log("✕ refused", req.port, []);
+    }
+  }
+  function ask() {
+    const box = $("ob-connect-confirm");
+    const req = asking[0];
+    if (!req) { box.hidden = true; return; }
+    if ($("ob-connect-always").checked) { asking.shift(); answer(req, true); return ask(); }
+    const n = req.messages.length;
+    $("ob-connect-confirm-text").textContent = "Your agent wants to send " + n + " SysEx message" + (n > 1 ? "s" : "") +
+      " (" + req.bytes + " bytes) to " + req.port + ". This can replace sounds or settings stored in the device.";
+    box.hidden = false;
+  }
+  function decide(accepted) {
+    const req = asking.shift();
+    if (req) answer(req, accepted);
+    ask();
+  }
+
   function open() {
     const user = store.get("osc-bridge-user");
     ws = new WebSocket(RELAY + (user ? "?user=" + encodeURIComponent(user) : ""));
@@ -76,19 +127,14 @@
         send({ type: "share", enabled: $("ob-connect-share").checked });
         sendPorts();
       } else if (msg.type === "midi_out") {
-        if (msg.port === TEST_SYNTH) {
-          log("→", msg.port, msg.data);
-          const reply = testSynthAnswer(msg.data);
-          if (reply) setTimeout(() => {
-            send({ type: "midi_in", port: TEST_SYNTH, data: Array.from(reply) });
-            log("←", TEST_SYNTH, reply);
-          }, 5);
-          return;
-        }
-        const out = access ? Array.from(access.outputs.values()).find(o => o.name === msg.port) : null;
-        if (!out) return log("✕", msg.port, msg.data);
-        try { out.send(msg.data); log("→", msg.port, msg.data); }
-        catch (e) { log("✕ " + e.message, msg.port, msg.data); }
+        if (needsConfirmation(msg.data)) return log("✕ not confirmed", msg.port, msg.data);
+        deliver(msg.port, msg.data);
+      } else if (msg.type === "confirm") {
+        asking.push(msg);
+        if (asking.length === 1) ask();
+      } else if (msg.type === "confirm_cancel") {
+        const i = asking.findIndex(r => r.id === msg.id);
+        if (i >= 0) { asking.splice(i, 1); if (i === 0) ask(); }
       } else if (msg.type === "paired") {
         status("An agent is connected. Only it can use this code; press New code to change agent.");
       } else if (msg.type === "error") {
@@ -96,6 +142,8 @@
       }
     };
     ws.onclose = () => {
+      asking.length = 0;
+      ask();
       status("Disconnected. Press the button to start a new session (the code will change).");
       $("ob-connect-paired").hidden = true;
       $("ob-connect-go").disabled = false;
@@ -134,6 +182,8 @@
     ws.onclose = () => open();
     ws.close();
   });
+  $("ob-connect-accept").addEventListener("click", () => decide(true));
+  $("ob-connect-refuse").addEventListener("click", () => decide(false));
   $("ob-connect-test").addEventListener("change", () => { if (ws) sendPorts(); });
   $("ob-connect-share").addEventListener("change", e => send({ type: "share", enabled: e.target.checked }));
   root.querySelectorAll(".ob-connect-copy").forEach(b => b.addEventListener("click", () => {
