@@ -3,14 +3,14 @@
 
 # Supported devices
 
-**965 devices** across **212 vendors** — shipped as **983 driver files** (a device may have several variants: per firmware, per source).
+**964 devices** across **212 vendors** — shipped as **982 driver files** (a device may have several variants: per firmware, per source).
 
 - **✅ hardware-verified** — 5 (tested on the physical device — scope varies per driver, see `_sources` in each JSON for what was exercised)
 - **📘 vendor-doc derived** — 3 (from a manufacturer programmer's reference / official MIDI spec — bytes match the spec, still beta until tested)
 - **📡 OSC-API (software targets)** — 7 (vendor-OSC or third-party OSC shim like AbletonOSC — DAWs and live coding environments)
 - **🎛️ electra-preset derived** — 588 (from a community Electra One preset — covers SysEx + CC/NRPN, but reflects the preset author's editorial choices)
 - **📦 pencilresearch derived** — 376 (community canonical CSVs — CC/NRPN only, no SysEx)
-- **🤖 agent-contributed** — 1 (submitted by an AI agent through the hosted server — parsed, linted and tested automatically, not reviewed)
+- **🤖 agent-contributed** — 0 (submitted by an AI agent through the hosted server — parsed, linted and tested automatically, not reviewed)
 - **🧪 test device** — 1 (virtual, for testing the relay and the hosted server without hardware)
 - **🚧 WIP** — 1
 - **📝 stub** — 1
@@ -156,7 +156,7 @@
 - [NUX](#nux) (1)
 - [Oberheim](#oberheim) (18)
 - [Orla](#orla) (1)
-- [osc-bridge](#osc-bridge) (3)
+- [osc-bridge](#osc-bridge) (2)
 - [OTO Machines](#oto-machines) (2)
 - [OTO Machines FX](#oto-machines-fx) (4)
 - [OXI](#oxi) (1)
@@ -8298,17 +8298,6 @@
 - **Limitations**: Imported from an Electra One community preset.
 
 ## osc-bridge
-
-### 🤖 Pipeline Test
-
-- **OSC prefix**: `/pipeline_test`
-- **Variants**: 1
-
-#### 🤖 [`pipeline_test.agent-contributed.fw-test.json`](../devices/examples/pipeline_test.agent-contributed.fw-test.json) — firmware `test`
-
-- **Revision**: test
-- **Source**: agent contribution
-- **Coverage**: 1 CC
 
 ### 🚧 Scripted Example
 
