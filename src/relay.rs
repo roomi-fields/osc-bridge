@@ -22,8 +22,10 @@
 //! - door → server: `{"type":"ports","outputs":[names],"inputs":[names]}`
 //!   whenever its ports change, `{"type":"midi_in","port","data":[bytes]}`
 //!   for each message a device sends, `confirm_reply`, and optionally
-//!   `{"type":"share","enabled":bool}` (default true): whether the device
-//!   identities seen in the session may be recorded for the catalogue.
+//!   `{"type":"share","enabled":bool,"private":[port names]}` (default:
+//!   enabled, no port private): whether the device identities seen in the
+//!   session may be recorded for the catalogue, and the ports whose devices
+//!   the person keeps private (never recorded, whatever `enabled` says).
 //!
 //! The door connects with `?user=<id>` to keep its account; an id the server
 //! did not issue gets a new account. A session lives as long as its socket.
@@ -109,6 +111,8 @@ pub struct Session {
     inputs: Mutex<Vec<String>>,
     inbound: Mutex<VecDeque<Inbound>>,
     share: Mutex<bool>,
+    /// Ports whose devices the person keeps private.
+    private: Mutex<Vec<String>>,
     /// The agent account driving this door, from its first relay call.
     owner: Mutex<Option<String>>,
     /// Batches waiting for the person's answer, by request id.
@@ -143,6 +147,11 @@ impl Session {
 
     pub fn shares(&self) -> bool {
         self.share.lock().map(|g| *g).unwrap_or(false)
+    }
+
+    /// Whether the person keeps the device on `port` private.
+    pub fn is_private(&self, port: &str) -> bool {
+        self.private.lock().map(|g| g.iter().any(|p| p == port)).unwrap_or(true)
     }
 
     /// The output port to use: the one named (exactly, or by a fragment of
@@ -237,6 +246,7 @@ impl Session {
                 if let Ok(mut g) = self.share.lock() {
                     *g = v.get("enabled").and_then(Value::as_bool).unwrap_or(true);
                 }
+                if let Ok(mut g) = self.private.lock() { *g = names("private"); }
             }
             _ => {}
         }
@@ -299,6 +309,7 @@ impl Relays {
             inputs: Mutex::new(Vec::new()),
             inbound: Mutex::new(VecDeque::new()),
             share: Mutex::new(true),
+            private: Mutex::new(Vec::new()),
             owner: Mutex::new(None),
             confirms: Mutex::new(HashMap::new()),
             next_confirm: std::sync::atomic::AtomicU64::new(1),
@@ -495,6 +506,10 @@ mod tests {
             (!r.is_empty()).then_some(r)
         }).expect("inbound message");
         assert_eq!(got[0].data, vec![0xB0, 43, 64]);
+        assert!(session.shares() && !session.is_private("minilogue SOUND"), "shared by default");
+        ws.send(Message::Text(json!({"type": "share", "enabled": true, "private": ["minilogue SOUND"]}).to_string().into())).unwrap();
+        let private = (0..200).any(|_| { std::thread::sleep(Duration::from_millis(5)); session.is_private("minilogue SOUND") });
+        assert!(private && session.shares() && !session.is_private("other"), "one port made private");
         ws.close(None).unwrap();
         let closed = (0..200).any(|_| { std::thread::sleep(Duration::from_millis(5)); relays.get(&code).is_none() });
         assert!(closed, "the session ends with its socket");

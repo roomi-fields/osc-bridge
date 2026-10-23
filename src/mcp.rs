@@ -49,7 +49,13 @@ pub struct McpOptions {
     /// catalogue (when `devices_dir` is the default one) and forward the
     /// report and contribution tools to it.
     pub online: bool,
+    /// Drivers (catalogue ids) the user keeps private on this machine
+    /// (`osc-bridge privacy --private`): their reports and fixes are not sent.
+    pub private: Vec<String>,
 }
+
+/// Report and fix tools a private device keeps on the machine.
+const PRIVATE_REFUSED: [&str; 3] = ["report_result", "report_mapping", "submit_fix"];
 
 /// The tools of a server reached over the network: reading the catalogue
 /// and reporting on it. None touches the host's MIDI ports.
@@ -1283,6 +1289,12 @@ fn tool_names(opts: &McpOptions) -> Vec<&'static str> {
 fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, caller: Caller) -> Result<Value, String> {
     if let (None, Some(link)) = (caller.ledger, caller.online) {
         if crate::online::FORWARDED_TOOLS.contains(&name) {
+            if PRIVATE_REFUSED.contains(&name) {
+                if let Some(id) = private_device(index, opts, args) {
+                    return Err(format!("{id} is private on this machine: {name} is not sent to the osc-bridge server. \
+                        To share it, run: osc-bridge privacy --public {id}"));
+                }
+            }
             return link.forward(name, args);
         }
     }
@@ -1371,6 +1383,57 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, c
         }
         other => Err(format!("unknown tool: {other}")),
     }
+}
+
+/// The driver a tool call is about, when the user keeps it private: by its
+/// id, or another variant of the same device (same slug).
+fn private_device(index: &DeviceIndex, opts: &McpOptions, args: &Value) -> Option<String> {
+    let wanted = args.get("device").and_then(Value::as_str)?;
+    let entry = index.find(wanted)?;
+    opts.private.iter().any(|p| *p == entry.id || index.find(p).is_some_and(|e| e.slug == entry.slug))
+        .then(|| entry.id.clone())
+}
+
+/// `osc-bridge privacy`: change the settings at `path` — `offline`, devices
+/// made private or public again (ids or slugs of `devices_dir`) — then show
+/// them. Returns what to print.
+pub fn privacy(path: &Path, devices_dir: &Path, offline: Option<bool>, private: &[String], public: &[String]) -> Result<String> {
+    let mut settings = crate::online::Settings::load(Some(path))?;
+    let index = DeviceIndex::build(devices_dir);
+    let id_of = |name: &str| index.find(name).map(|e| e.id.clone())
+        .ok_or_else(|| anyhow::anyhow!("no device '{name}' in the catalogue (use an id or slug from list_devices)"));
+    let changed = offline.is_some() || !private.is_empty() || !public.is_empty();
+    if let Some(o) = offline { settings.offline = o; }
+    for name in private {
+        let id = id_of(name)?;
+        if !settings.private.contains(&id) { settings.private.push(id); }
+    }
+    for name in public {
+        let id = id_of(name).unwrap_or_else(|_| name.clone());
+        settings.private.retain(|p| *p != id && p != name);
+    }
+    if changed { settings.save(path)?; }
+    let mut out = if settings.offline {
+        "Offline: this copy does not contact the osc-bridge server (osc-bridge privacy --offline off to link it again).\n".to_string()
+    } else {
+        "Linked to the osc-bridge server: the catalogue stays up to date, and reports and fixes are shared \
+         under an anonymous account (osc-bridge privacy --offline on to stop).\n".to_string()
+    };
+    if settings.private.is_empty() {
+        out.push_str("Private devices: none.\n");
+    } else {
+        out.push_str("Private devices (their reports and fixes stay on this machine):\n");
+        for id in &settings.private {
+            let name = index.find(id).map(|e| if e.name.to_lowercase().starts_with(&e.vendor.to_lowercase()) {
+                e.name.clone()
+            } else {
+                format!("{} {}", e.vendor, e.name)
+            }).unwrap_or_default();
+            out.push_str(&format!("  {id}  {name}\n"));
+        }
+    }
+    out.push_str(&format!("Settings: {}\n", path.display()));
+    Ok(out)
 }
 
 /// The hardware drivers of the catalogue, in the shape `detect::rank` scores.
@@ -1647,7 +1710,8 @@ fn relay_detect(index: &DeviceIndex, session: &crate::relay::Session, args: &Val
             "vendor": crate::detect::manufacturer_name(&id.manufacturer),
             "family": id.family, "model": id.model, "version": hex(&id.version),
         });
-        if session.shares() {
+        let private = session.is_private(&msg.port);
+        if session.shares() && !private {
             if let Some(usage) = caller.usage {
                 usage.write(&json!({
                     "event": "relay_identity",
@@ -1664,14 +1728,18 @@ fn relay_detect(index: &DeviceIndex, session: &crate::relay::Session, args: &Val
             "identity": identity,
             "identity_hex": hex(&msg.data),
             "matches": matches,
+            "private": private,
         }));
     }
     let text = if found.is_empty() {
         format!("No device answered the Identity Request on {} (many older devices do not). Ports: {}.",
             outputs.join(", "), session.inputs().join(", "))
     } else {
-        format!("{} device(s) answered. Pass identity_hex to report_result after testing.\n\n{}",
-            found.len(), serde_json::to_string_pretty(&found).unwrap_or_default())
+        let private = found.iter().filter(|f| f["private"] == json!(true)).count();
+        format!("{} device(s) answered. Pass identity_hex to report_result after testing.{}\n\n{}",
+            found.len(),
+            if private > 0 { format!(" {private} of them are private at the relay: their identity is not recorded.") } else { String::new() },
+            serde_json::to_string_pretty(&found).unwrap_or_default())
     };
     Ok(content_structured(&text, json!({ "devices": found, "outputs": outputs, "inputs": session.inputs() })))
 }
@@ -2254,6 +2322,7 @@ mod tests {
             default_target: "127.0.0.1:7777".parse().unwrap(),
             hosted: false,
             online: false,
+            private: Vec::new(),
         }
     }
 
@@ -2577,6 +2646,40 @@ mod tests {
         assert_ne!(trust["isError"], json!(true), "an account the server forgot is replaced: {trust}");
         assert_ne!(std::fs::read_to_string(tmp.join("user")).unwrap(), "0".repeat(32));
         std::fs::remove_dir_all(&tmp).ok();
+    }
+
+    #[test]
+    fn a_private_device_keeps_its_reports_on_the_machine() {
+        let index = DeviceIndex::build(&PathBuf::from("devices"));
+        let opts = McpOptions { online: true, private: vec!["korg/minilogue".into()], ..test_opts() };
+        // Never reached: the refusal comes first.
+        let link = Link::new("http://127.0.0.1:9");
+        let caller = Caller { online: Some(&link), ..Caller::default() };
+        for (tool, args) in [("report_result", json!({"device": "korg/minilogue", "outcome": "works"})),
+                             ("report_mapping", json!({"device": "minilogue", "address": "/filter/cutoff", "cc": 43})),
+                             ("submit_fix", json!({"device": "korg/minilogue", "content": "{}"}))] {
+            let err = call_tool(tool, &args, &opts, &index, caller).unwrap_err();
+            assert!(err.contains("private on this machine") && err.contains("osc-bridge privacy --public korg/minilogue"), "{tool}: {err}");
+        }
+        let other = call_tool("report_result", &json!({"device": "arturia/minilab3", "outcome": "works"}), &opts, &index, caller).unwrap_err();
+        assert!(other.contains("could not be reached"), "another device is shared: {other}");
+    }
+
+    #[test]
+    fn the_privacy_command_records_choices_by_catalogue_id() {
+        let path = std::env::temp_dir().join(format!("osc-bridge-privacy-{}/settings.toml", std::process::id()));
+        let devices = Path::new("devices");
+        let shown = privacy(&path, devices, None, &[], &[]).unwrap();
+        assert!(shown.contains("Linked to the osc-bridge server") && shown.contains("Private devices: none"), "{shown}");
+        assert!(!path.exists(), "showing writes nothing");
+        let shown = privacy(&path, devices, Some(true), &["minilogue".into()], &[]).unwrap();
+        assert!(shown.contains("Offline") && shown.contains("korg/minilogue"), "{shown}");
+        assert_eq!(crate::online::Settings::load(Some(&path)).unwrap(),
+            crate::online::Settings { offline: true, private: vec!["korg/minilogue".into()] });
+        assert!(privacy(&path, devices, None, &["no-such-synth".into()], &[]).is_err());
+        privacy(&path, devices, Some(false), &[], &["korg/minilogue".into()]).unwrap();
+        assert_eq!(crate::online::Settings::load(Some(&path)).unwrap(), crate::online::Settings::default());
+        std::fs::remove_dir_all(path.parent().unwrap()).ok();
     }
 
     #[test]

@@ -47,12 +47,40 @@
     return list;
   }
   function send(obj) { if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj)); }
+  // Ports whose device the person keeps private (identity never recorded),
+  // remembered in this browser by port name. Shared unless ticked.
+  function privatePorts() {
+    try { return JSON.parse(store.get("osc-bridge-private") || "[]"); } catch (e) { return []; }
+  }
+  let shown = [];
+  function sendShare() {
+    const mine = privatePorts();
+    send({ type: "share", enabled: $("ob-connect-share").checked, private: shown.filter(n => mine.includes(n)) });
+  }
   function sendPorts() {
     const outputs = names(access && access.outputs), inputs = names(access && access.inputs);
     send({ type: "ports", outputs, inputs });
-    $("ob-connect-ports").textContent = outputs.length || inputs.length
-      ? "Devices: " + Array.from(new Set(outputs.concat(inputs))).join(", ")
-      : "No MIDI device found: plug one in, it will appear here.";
+    shown = Array.from(new Set(outputs.concat(inputs)));
+    const box = $("ob-connect-ports");
+    box.textContent = shown.length ? "Devices (tick to keep one private: its identity is never recorded):" :
+      "No MIDI device found: plug one in, it will appear here.";
+    const mine = privatePorts();
+    shown.forEach(name => {
+      const label = document.createElement("label");
+      label.className = "ob-connect-device";
+      const tick = document.createElement("input");
+      tick.type = "checkbox";
+      tick.checked = mine.includes(name);
+      tick.addEventListener("change", () => {
+        const now = privatePorts().filter(n => n !== name);
+        if (tick.checked) now.push(name);
+        store.set("osc-bridge-private", JSON.stringify(now));
+        sendShare();
+      });
+      label.append(tick, " " + name + " — private");
+      box.append(label);
+    });
+    sendShare();
   }
   function listen() {
     if (!access) return;
@@ -124,7 +152,6 @@
         $("ob-connect-say").textContent = "My osc-bridge relay code is " + msg.code;
         $("ob-connect-paired").hidden = false;
         status("Connected. Waiting for your agent.");
-        send({ type: "share", enabled: $("ob-connect-share").checked });
         sendPorts();
       } else if (msg.type === "midi_out") {
         if (needsConfirmation(msg.data)) return log("✕ not confirmed", msg.port, msg.data);
@@ -185,7 +212,7 @@
   $("ob-connect-accept").addEventListener("click", () => decide(true));
   $("ob-connect-refuse").addEventListener("click", () => decide(false));
   $("ob-connect-test").addEventListener("change", () => { if (ws) sendPorts(); });
-  $("ob-connect-share").addEventListener("change", e => send({ type: "share", enabled: e.target.checked }));
+  $("ob-connect-share").addEventListener("change", sendShare);
   root.querySelectorAll(".ob-connect-copy").forEach(b => b.addEventListener("click", () => {
     const text = $(b.dataset.copy).textContent;
     if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => { b.textContent = "copied"; });
