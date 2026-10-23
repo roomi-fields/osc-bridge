@@ -19,8 +19,8 @@ Legend: ✅ live · ⚠️ submitted, pending · 🔄 auto-indexing in progress 
 
 | Channel | Status | Notes |
 |---|---|---|
-| npm — `@roomi-fields/osc-bridge` | ✅ | v0.14.0 (2026-10-23), catalogue bundled; README leads with the hosted endpoint from the next release; published by npm trusted publishing from `ci.yml` (no token) |
-| Official MCP Registry — `io.github.roomi-fields/osc-bridge` | ✅ | v0.14.0 published 2026-10-23 by the release job (OIDC), with the hosted endpoint as a remote |
+| npm — `@roomi-fields/osc-bridge` | ✅ | v0.15.0 (2026-10-23), catalogue bundled, README leads with the hosted endpoint; published by npm trusted publishing from `ci.yml` (no token) |
+| Official MCP Registry — `io.github.roomi-fields/osc-bridge` | ✅ | v0.15.0 published 2026-10-23 by the release job (OIDC), remote `mcp.synthhub.roomi-fields.com/mcp` |
 | GitHub repo metadata | ✅ | public; About description + homepage (Pages site) set to the 3-strata framing; topics include `mcp`, `mcp-server`, `model-context-protocol`, `midi`, `osc`, `claude`, `ableton`, `bitwig`, `reaper`, `daw`, `live-coding` (20-topic cap reached — dropped the long-tail vendor topics) |
 | `roomi-fields/claude-plugins` marketplace | ✅ | entry added 2026-05-14 |
 | Site — synthhub.roomi-fields.com | ✅ | built from SynthHub since 2026-10-23: a page per device, 10 articles, JSON-LD, llms.txt; GitHub Pages is a pointer page |
