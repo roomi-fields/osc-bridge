@@ -11,6 +11,8 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+## [0.16.0] — 2026-10-24
+
 ### Added — shared presets
 - Tools forwarded to the SynthHub server, for what users make on their
   devices, shared under CC BY-SA 4.0: `share_preset` (a sound, sequence,
@@ -31,9 +33,19 @@ is tracked explicitly under each release.
 - `load_preset` plays the messages the server gives for a preset: a sound
   the librarian took is fitted to the receiving synth (its MIDI channel, its
   edit buffer), found by the same detect messages.
+- `link_account`: links this machine's SynthHub account to the user's
+  account on the site (a one-time address to open and sign in), so what this
+  copy shared appears under their profile.
 - The test synth keeps one sound: it dumps it on `F0 7D 01 10 F7` and takes
   a patch (`F0 7D 01 20` + five values), in `osc-bridge connect
   --test-synth` and on the connect page.
+
+### Added — catalogue
+- 22 synths from KnobKraft Orm adaptations (`knobkraft` source tier, 💾:
+  sound exchange only, no control mapped), for the synths SynthHub's
+  librarian can take sounds from and no other source covers
+  (`scripts/import_knobkraft.py`): 986 devices.
+- One count of the catalogue, written everywhere it appears and checked by CI.
 
 ## [0.15.0] — 2026-10-23
 
