@@ -293,8 +293,17 @@ pub fn run(server: &str, share: bool, test_synth: bool, private_ports: &[String]
                 asked = true;
                 let n = req["messages"].as_array().map_or(0, Vec::len);
                 println!();
-                println!("Your agent wants to send {n} SysEx message(s) ({} bytes) to {}.", req["bytes"], req["port"].as_str().unwrap_or("?"));
-                println!("This can replace sounds or settings stored in the device.");
+                let port = req["port"].as_str().unwrap_or("?");
+                match req["why"].as_str() {
+                    Some(why) => {
+                        println!("Your agent wants to {why}: {n} SysEx message(s) ({} bytes) to {port}.", req["bytes"]);
+                        println!("Accept only if you expect it: this program cannot check what they do.");
+                    }
+                    None => {
+                        println!("Your agent wants to send {n} SysEx message(s) ({} bytes) to {port}.", req["bytes"]);
+                        println!("This can replace sounds or settings stored in the device.");
+                    }
+                }
                 println!("Accept? [y]es / [n]o / [a]lways until this program stops");
             }
         }

@@ -145,8 +145,10 @@
     if (!req) { box.hidden = true; return; }
     if ($("ob-connect-always").checked) { asking.shift(); answer(req, true); return ask(); }
     const n = req.messages.length;
-    $("ob-connect-confirm-text").textContent = "Your agent wants to send " + n + " SysEx message" + (n > 1 ? "s" : "") +
-      " (" + req.bytes + " bytes) to " + req.port + ". This can replace sounds or settings stored in the device.";
+    const what = n + " SysEx message" + (n > 1 ? "s" : "") + " (" + req.bytes + " bytes) to " + req.port;
+    $("ob-connect-confirm-text").textContent = req.why
+      ? "Your agent wants to " + req.why + ": " + what + ". Accept only if you expect it: this page cannot check what they do."
+      : "Your agent wants to send " + what + ". This can replace sounds or settings stored in the device.";
     box.hidden = false;
   }
   function decide(accepted) {
