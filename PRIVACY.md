@@ -88,7 +88,8 @@ page, the site you came from (its address only), your language and screen
 size. You appear in it only as a **fingerprint of your address**, computed
 with a secret key kept on the server: the same address always gives the same
 fingerprint, so visits that come back can be counted, but the address itself
-is never written and cannot be read back from it. The site sets no cookie for
+is never written and cannot be read back from it. An IPv6 address is
+fingerprinted by its network (its first half), which a home's devices share. The site sets no cookie for
 this and keeps nothing in your browser. These records stay on the server and
 are read only by its administrator.
 
