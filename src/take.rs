@@ -19,14 +19,20 @@ use std::collections::{HashMap, HashSet};
 use std::sync::mpsc::{channel, Receiver};
 use std::time::{Duration, Instant};
 
-/// How the MIDI ports are reached: the hardware, or a test synth.
+/// How the MIDI ports are reached: the hardware, a relay, or a test synth.
 pub trait Midi {
     /// The output ports, by name.
     fn outputs(&self) -> Vec<String>;
-    fn send(&mut self, port: &str, data: &[u8]);
+    /// Send `messages` on `port`, in one go: a relay asks its person to
+    /// accept them all at once, told `why`.
+    fn send(&mut self, port: &str, messages: &[Vec<u8>], why: &str) -> Result<(), String>;
     /// The SysEx messages received within `wait`, each with the output port
     /// of the device that sent it.
     fn received(&mut self, wait: Duration) -> Vec<(String, Vec<u8>)>;
+    /// Whether every synth's detect messages may go to every port when the
+    /// synths the ports' names point at did not answer. A relay asks before
+    /// each port's batch, so there the user names the port instead.
+    fn searches_everywhere(&self) -> bool { true }
 }
 
 /// One call to the server's librarian: `op` is `recognize`, `request` or
@@ -98,22 +104,30 @@ pub fn find(midi: &mut dyn Midi, lib: &Value, ask: Ask, port: Option<&str>) -> R
     let mut firmware: HashMap<String, String> = HashMap::new();
     let mut seen: HashSet<String> = HashSet::new();
     // A port given by the user gets every synth's messages at once.
-    let rounds: &[u8] = if port.is_some() { &[0] } else { &[1, 2] };
+    let rounds: &[u8] = match (port, midi.searches_everywhere()) {
+        (Some(_), _) => &[0],
+        (None, true) => &[1, 2],
+        (None, false) => &[1],
+    };
     for &round in rounds {
         let mut wait = 300u64;
         for out in &outs {
-            let mut sent = HashSet::new();
+            let mut batch: Vec<Vec<u8>> = Vec::new();
             for s in &synths {
                 let is_named = named(s["name"].as_str().unwrap_or_default(), out);
                 if (round == 1 && !is_named) || (round == 2 && is_named) { continue; }
                 for d in s["detect"].as_array().into_iter().flatten().filter_map(Value::as_str) {
-                    if (round != 1 && !d.starts_with("F0")) || !sent.insert(d.to_string()) { continue; }
-                    for m in messages_of(d) { midi.send(out, &m); }
-                    std::thread::sleep(Duration::from_millis(5));
+                    if round != 1 && !d.starts_with("F0") { continue; }
+                    for m in messages_of(d) {
+                        if !batch.contains(&m) { batch.push(m); }
+                    }
                 }
                 wait = wait.max(s["detect_wait_ms"].as_u64().unwrap_or(200));
             }
-            if round != 2 { midi.send(out, &crate::detect::IDENTITY_REQUEST); }
+            if round != 2 { batch.push(crate::detect::IDENTITY_REQUEST.to_vec()); }
+            if !batch.is_empty() {
+                midi.send(out, &batch, &format!("find which synth is on {out} (asks it who it is; changes nothing)"))?;
+            }
         }
         for (out, m) in midi.received(Duration::from_millis(wait + 300)) {
             if let Some(fw) = firmware_of(&m) { firmware.insert(out.clone(), fw); }
@@ -145,7 +159,9 @@ pub fn find(midi: &mut dyn Midi, lib: &Value, ask: Ask, port: Option<&str>) -> R
 /// Waits up to `max` for the synth's answer.
 pub fn take(midi: &mut dyn Midi, ask: Ask, f: &Found, program: Option<u64>, max: Duration) -> Result<Taken, String> {
     let r = ask("request", &json!({ "synth": f.synth, "channel": f.channel, "program": program }))?;
-    for m in messages_of(r["request"].as_str().unwrap_or_default()) { midi.send(&f.port, &m); }
+    let what = match program { Some(p) => format!("its program {}", p + 1), None => "the sound it is playing".into() };
+    midi.send(&f.port, &messages_of(r["request"].as_str().unwrap_or_default()),
+              &format!("ask {} for {what} (reads it; changes nothing)", f.name))?;
     let start = Instant::now();
     let mut so_far = String::new();
     while start.elapsed() < max {
@@ -155,7 +171,10 @@ pub fn take(midi: &mut dyn Midi, ask: Ask, f: &Found, program: Option<u64>, max:
             let r = ask("receive", &json!({ "synth": f.synth, "channel": f.channel, "so_far": so_far, "message": message }))?;
             if r["part"] != json!(true) { continue; }
             so_far = if so_far.is_empty() { message } else { format!("{so_far} {message}") };
-            for a in messages_of(r["answer"].as_str().unwrap_or_default()) { midi.send(&f.port, &a); }
+            let answer = messages_of(r["answer"].as_str().unwrap_or_default());
+            if !answer.is_empty() {
+                midi.send(&f.port, &answer, &format!("answer {} while it sends its sound (it asks for each part)", f.name))?;
+            }
             if r["complete"] == json!(true) {
                 let messages = messages_of(r["keep"].as_str().unwrap_or_default());
                 return Ok(Taken { name: r["name"].as_str().unwrap_or_default().to_string(), messages });
@@ -205,10 +224,14 @@ impl Midi for Hardware {
     fn outputs(&self) -> Vec<String> {
         self.outputs.iter().map(|(n, _)| n.clone()).collect()
     }
-    fn send(&mut self, port: &str, data: &[u8]) {
-        if let Some((_, conn)) = self.outputs.iter_mut().find(|(n, _)| n == port) {
-            let _ = conn.send(data);
+    fn send(&mut self, port: &str, messages: &[Vec<u8>], _why: &str) -> Result<(), String> {
+        let (_, conn) = self.outputs.iter_mut().find(|(n, _)| n == port).ok_or_else(|| format!("no MIDI output {port:?}"))?;
+        for m in messages {
+            conn.send(m).map_err(|e| format!("send on {port}: {e}"))?;
+            // Some synths drop messages that arrive back to back.
+            std::thread::sleep(Duration::from_millis(5));
         }
+        Ok(())
     }
     fn received(&mut self, wait: Duration) -> Vec<(String, Vec<u8>)> {
         let end = Instant::now() + wait;
@@ -230,14 +253,18 @@ mod tests {
 
     /// The test synth on two ports (one unit, answering on both), and a
     /// silent port.
-    struct Bench { synth: TestSynth, waiting: Vec<(String, Vec<u8>)>, sent: Vec<(String, Vec<u8>)> }
+    struct Bench { synth: TestSynth, waiting: Vec<(String, Vec<u8>)>, sent: Vec<(String, Vec<u8>)>, whys: Vec<String> }
     impl Midi for Bench {
         fn outputs(&self) -> Vec<String> { vec!["Test Synth A".into(), "Test Synth B".into(), "Midi Through".into()] }
-        fn send(&mut self, port: &str, data: &[u8]) {
-            self.sent.push((port.into(), data.to_vec()));
-            if port.starts_with("Test Synth") {
-                if let Some(r) = self.synth.answer(data) { self.waiting.push((port.into(), r)); }
+        fn send(&mut self, port: &str, messages: &[Vec<u8>], why: &str) -> Result<(), String> {
+            self.whys.push(why.into());
+            for data in messages {
+                self.sent.push((port.into(), data.clone()));
+                if port.starts_with("Test Synth") {
+                    if let Some(r) = self.synth.answer(data) { self.waiting.push((port.into(), r)); }
+                }
             }
+            Ok(())
         }
         fn received(&mut self, _: Duration) -> Vec<(String, Vec<u8>)> { std::mem::take(&mut self.waiting) }
     }
@@ -265,18 +292,20 @@ mod tests {
 
     #[test]
     fn a_synth_on_two_ports_is_found_once_with_its_firmware_then_its_sound_taken() {
-        let mut bench = Bench { synth: TestSynth::default(), waiting: vec![], sent: vec![] };
+        let mut bench = Bench { synth: TestSynth::default(), waiting: vec![], sent: vec![], whys: vec![] };
         let found = find(&mut bench, &lib(), &server, None).unwrap();
         assert_eq!(found, vec![Found { synth: "Test_Synth".into(), name: "Test Synth".into(), channel: 3,
             port: "Test Synth A".into(), devices: vec!["examples/test_synth".into()], firmware: Some("1.0.0.0".into()) }]);
         let taken = take(&mut bench, &server, &found[0], None, Duration::from_secs(1)).unwrap();
         assert_eq!(taken, Taken { name: "Init".into(), messages: vec![[&TestSynth::PATCH[..], &[64, 0, 0, 40, 0, 0xF7]].concat()] });
         assert!(bench.sent.iter().any(|(p, m)| p == "Test Synth A" && m == &TestSynth::DUMP_REQUEST));
+        assert_eq!(bench.whys.last().unwrap(), "ask Test Synth for the sound it is playing (reads it; changes nothing)");
+        assert_eq!(bench.whys.iter().filter(|w| w.starts_with("find which synth is on")).count(), 3, "one batch per port");
     }
 
     #[test]
     fn a_port_given_is_the_only_one_asked() {
-        let mut bench = Bench { synth: TestSynth::default(), waiting: vec![], sent: vec![] };
+        let mut bench = Bench { synth: TestSynth::default(), waiting: vec![], sent: vec![], whys: vec![] };
         let found = find(&mut bench, &lib(), &server, Some("synth b")).unwrap();
         assert_eq!(found.len(), 1);
         assert_eq!(found[0].port, "Test Synth B");
@@ -290,7 +319,7 @@ mod tests {
         struct Silent;
         impl Midi for Silent {
             fn outputs(&self) -> Vec<String> { vec!["Test Synth".into()] }
-            fn send(&mut self, _: &str, _: &[u8]) {}
+            fn send(&mut self, _: &str, _: &[Vec<u8>], _: &str) -> Result<(), String> { Ok(()) }
             fn received(&mut self, _: Duration) -> Vec<(String, Vec<u8>)> { vec![] }
         }
         let f = Found { synth: "Test_Synth".into(), name: "Test Synth".into(), channel: 3, port: "Test Synth".into(),

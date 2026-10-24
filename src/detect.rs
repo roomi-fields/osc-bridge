@@ -118,6 +118,18 @@ fn tokens(s: &str) -> HashSet<String> {
     out
 }
 
+/// The output of the device whose input is `input`: the same name, else the
+/// one sharing most words with it, else the only one.
+pub fn output_for(input: &str, outputs: &[String]) -> Option<String> {
+    if let Some(o) = outputs.iter().find(|o| *o == input) {
+        return Some(o.clone());
+    }
+    let it = tokens(input);
+    outputs.iter().map(|o| (tokens(o).intersection(&it).count(), o)).filter(|(n, _)| *n > 0).max_by_key(|(n, _)| *n)
+        .map(|(_, o)| o.clone())
+        .or_else(|| (outputs.len() == 1).then(|| outputs[0].clone()))
+}
+
 /// Collapse "Minilab3", "mini lab 3", "MiniLab-3" to one key.
 fn squash(s: &str) -> String {
     s.to_lowercase().chars().filter(|c| c.is_ascii_alphanumeric()).collect()
@@ -317,6 +329,15 @@ mod tests {
         let korg = Identity { manufacturer: vec![0x42], family: 0, model: 0, version: [0; 4] };
         let best = rank("MS-20 mini", Some(&korg), &cat, 2);
         assert_eq!(cat[best[0].1].slug, "ms_20_korg");
+    }
+
+    #[test]
+    fn an_input_is_paired_with_its_device_output() {
+        let outs = vec!["Midi Through Port-0".to_string(), "minilogue xd MIDI 2".to_string()];
+        assert_eq!(output_for("minilogue xd MIDI 1", &outs).as_deref(), Some("minilogue xd MIDI 2"));
+        assert_eq!(output_for("Midi Through Port-0", &outs).as_deref(), Some("Midi Through Port-0"));
+        assert_eq!(output_for("TR-8S", &outs), None);
+        assert_eq!(output_for("TR-8S", &outs[1..]).as_deref(), Some("minilogue xd MIDI 2"), "the only output");
     }
 
     #[test]
