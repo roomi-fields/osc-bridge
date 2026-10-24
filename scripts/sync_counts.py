@@ -7,14 +7,16 @@ in prose — README, the npm page, the registry and plugin manifests, the MCP
 guide; this rewrites the number inside each phrase and leaves the phrase
 alone. Directories copy these descriptions verbatim, so a stale number
 travels far: CI runs this with --check and fails on any drift, including the
-GitHub repository's description (--description).
+GitHub repository's description (--description). Run without --check, it
+also rewrites that description itself, through the GitHub CLI.
 
 Usage:
-    python3 scripts/sync_counts.py                 # rewrite the files
+    python3 scripts/sync_counts.py                 # rewrite the files and the repository's description
     python3 scripts/sync_counts.py --check [--description "<repo description>"]
 """
 from __future__ import annotations
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -38,6 +40,21 @@ def rewrite(text: str, n: dict[str, int]) -> str:
     return text
 
 
+def sync_description(n: dict[str, int]) -> list[str]:
+    """Rewrite the GitHub repository's description with the GitHub CLI."""
+    try:
+        description = subprocess.run(["gh", "repo", "view", "--json", "description", "-q", ".description"],
+                                     cwd=REPO_ROOT, capture_output=True, text=True, check=True).stdout.strip()
+        new = rewrite(description, n)
+        if new == description:
+            return []
+        subprocess.run(["gh", "repo", "edit", "--description", new], cwd=REPO_ROOT, capture_output=True, check=True)
+        return ["the GitHub description"]
+    except (OSError, subprocess.CalledProcessError) as e:
+        print(f"the GitHub description was not checked ({e}): update it with gh repo edit --description", file=sys.stderr)
+        return []
+
+
 def main() -> int:
     check = "--check" in sys.argv
     n = counts(load_devices())
@@ -50,6 +67,8 @@ def main() -> int:
             stale.append(name)
             if not check:
                 path.write_text(new, encoding="utf-8")
+    if not check:
+        stale += sync_description(n)
     if "--description" in sys.argv:
         description = sys.argv[sys.argv.index("--description") + 1]
         if rewrite(description, n) != description:
