@@ -3,14 +3,14 @@
 
 # Supported devices
 
-**986 devices** across **214 vendors** — shipped as **1004 driver files** (a device may have several variants: per firmware, per source).
+**987 devices** across **214 vendors** — shipped as **1005 driver files** (a device may have several variants: per firmware, per source).
 
 - **✅ hardware-verified** — 5 (tested on the physical device — scope varies per driver, see `_sources` in each JSON for what was exercised)
 - **📘 vendor-doc derived** — 3 (from a manufacturer programmer's reference / official MIDI spec — bytes match the spec, still beta until tested)
 - **📡 OSC-API (software targets)** — 7 (vendor-OSC or third-party OSC shim like AbletonOSC — DAWs and live coding environments)
 - **🎛️ electra-preset derived** — 588 (from a community Electra One preset — covers SysEx + CC/NRPN, but reflects the preset author's editorial choices)
 - **📦 pencilresearch derived** — 376 (community canonical CSVs — CC/NRPN only, no SysEx)
-- **💾 KnobKraft Orm derived** — 22 (sound exchange only — taking and loading sounds through a KnobKraft Orm adaptation; no control mapped)
+- **💾 KnobKraft Orm derived** — 23 (sound exchange only — taking and loading sounds through a KnobKraft Orm adaptation; no control mapped)
 - **🤖 agent-contributed** — 0 (submitted by an AI agent through the hosted server — parsed, linted and tested automatically, not reviewed)
 - **🧪 test device** — 1 (virtual, for testing the relay and the hosted server without hardware)
 - **🚧 WIP** — 1
@@ -234,7 +234,7 @@
 - [Waldorf](#waldorf) (28)
 - [Waves](#waves) (1)
 - [Xfer Records](#xfer-records) (1)
-- [Yamaha](#yamaha) (38)
+- [Yamaha](#yamaha) (39)
 - [Zoom](#zoom) (5)
 
 ---
@@ -12216,6 +12216,18 @@
 - **Source**: [electra-preset](https://app.electra.one/preset/mZn43LGoYlY2zItQE3M6)
 - **Coverage**: 101 SysEx commands · midi_out
 - **Limitations**: Imported from an Electra One community preset.
+
+### 💾 DX7
+
+- **OSC prefix**: `/dx7`
+- **Variants**: 1
+
+#### 💾 [`dx7.knobkraft.fw-unknown.json`](../devices/yamaha/dx7.knobkraft.fw-unknown.json) — firmware `unknown`
+
+- **Revision**: per KnobKraft Orm adaptation 'Yamaha DX7'
+- **Source**: [KnobKraft Orm adaptation](https://github.com/christofmuc/KnobKraft-orm/blob/9e2522c/adaptations/YamahaDX7.py)
+- **Coverage**: —
+- **Limitations**: Sound exchange only: SynthHub's librarian can take the sound being played, load a sound back, read the sound's name with the KnobKraft Orm adaptation named in _sources.
 
 ### 🎛️ DX7 Editor for NT v1
 
