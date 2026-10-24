@@ -56,6 +56,9 @@ TARGETS = {
     "Roland_XV3080": ("roland", "Roland", "XV-3080", "xv_3080", "unknown"),
     "Sequential_Trigon6": ("sequential", "Sequential", "Trigon-6", "trigon_6", "unknown"),
     "Yamaha-YC-Series": ("yamaha", "Yamaha", "YC61 / YC73 / YC88", "yc", "unknown"),
+    # The catalogue's other DX7 drivers are Electra One editor layouts; the
+    # synth itself, for its sounds, is this one.
+    "YamahaDX7": ("yamaha", "Yamaha", "DX7", "dx7", "unknown"),
 }
 
 
