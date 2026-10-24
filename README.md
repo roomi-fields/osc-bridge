@@ -81,7 +81,7 @@ Each synth is described by one JSON file. No Rust recompile required to add a de
 
 ## Supported devices
 
-**988 devices across 215 vendors** (1009 driver files) — Moog · Arturia · Novation · Korg · Sequential · Dave Smith Instruments · Roland · Yamaha · Elektron · Waldorf · Behringer · Dreadbox · Erica Synths · Polyend · Modal · Expressive E · Bastl · Chase Bliss · Make Noise · Electra One · Tasty Chips · Oberheim · Access · ASM · Black Corporation · Hologram · Strymon · Empress · Meris · Eventide · Ensoniq · Rhodes · Haken · Tubbutec · **Ableton · Bitwig · Cockos (Reaper) · Sonic Pi · SuperCollider · Pure Data · TouchDesigner · VCV Rack** · and ~85 more.
+**988 devices across 215 vendors** (1099 driver files) — Moog · Arturia · Novation · Korg · Sequential · Dave Smith Instruments · Roland · Yamaha · Elektron · Waldorf · Behringer · Dreadbox · Erica Synths · Polyend · Modal · Expressive E · Bastl · Chase Bliss · Make Noise · Electra One · Tasty Chips · Oberheim · Access · ASM · Black Corporation · Hologram · Strymon · Empress · Meris · Eventide · Ensoniq · Rhodes · Haken · Tubbutec · **Ableton · Bitwig · Cockos (Reaper) · Sonic Pi · SuperCollider · Pure Data · TouchDesigner · VCV Rack** · and ~85 more.
 
 | Status | Count | Highlight |
 |---|---|---|
