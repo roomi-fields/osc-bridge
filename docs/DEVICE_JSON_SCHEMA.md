@@ -24,9 +24,16 @@ The `osc-bridge` engine reads this file, registers OSC routes, and builds MIDI/S
   "params":     [ ...Param... ],
   "midi_in":    { ...MidiInMap... },
   "triggers":   { "entries": [ ...Trigger... ] },
-  "replies":    [ ...ReplyPattern... ]
+  "replies":    [ ...ReplyPattern... ],
+  "loads_sounds_of": ["dx7"]
 }
 ```
+
+`loads_sounds_of` (optional): the slugs (`osc_prefix` without the slash) of
+other devices whose sounds this one loads as they are, byte for byte — an
+M-VAVE FM-1 on its stock firmware takes a Yamaha DX7 single voice. Libraries
+offer those sounds for this device too. Say in `_limitations` what format it
+takes and where the sound goes.
 
 ## Command — fixed SysEx utility routes
 

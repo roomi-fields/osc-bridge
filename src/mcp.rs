@@ -116,6 +116,8 @@ pub struct DeviceIndexEntry {
     pub tier: String,
     pub firmware: Option<String>,
     pub manufacturer_id: Vec<u8>,
+    /// Slugs of the devices whose sounds this one loads as they are.
+    pub loads_sounds_of: Vec<String>,
 }
 
 /// Built once at startup. Without it, every device tool call would re-walk
@@ -168,6 +170,9 @@ impl DeviceIndex {
                 manufacturer_id: device.and_then(|d| d.get("manufacturer_id"))
                     .and_then(Value::as_array)
                     .map(|a| a.iter().filter_map(Value::as_u64).map(|b| b as u8).collect())
+                    .unwrap_or_default(),
+                loads_sounds_of: doc.get("loads_sounds_of").and_then(Value::as_array)
+                    .map(|a| a.iter().filter_map(Value::as_str).map(str::to_string).collect())
                     .unwrap_or_default(),
             });
         });
@@ -1418,6 +1423,7 @@ fn list_devices(index: &DeviceIndex, filter: &DeviceFilter, status: &dyn Fn(&str
         "revision": e.revision,
         "source_tier": e.tier,
         "firmware": e.firmware,
+        "loads_sounds_of": e.loads_sounds_of,
         "file": e.path.display().to_string(),
     })).collect();
     let structured = json!({ "count": count, "devices": devices });
@@ -1685,6 +1691,16 @@ mod tests {
         assert_eq!(moog["devices"].as_array().unwrap().len(), 2);
         let software = run(json!({"kind": "software"}));
         assert!(software["devices"].as_array().unwrap().iter().all(|d| d["kind"] == "software"));
+    }
+
+    #[test]
+    fn the_index_holds_which_sounds_a_device_loads_as_they_are() {
+        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let of = |id: &str| idx.entries.iter().find(|e| e.id == id).unwrap().loads_sounds_of.clone();
+        assert_eq!(of("m-vave/fm-1.vendor.fw-15"), ["dx7"]);
+        assert!(of("m-vave/fm-1.vendor.fw-felucca-1.6.1").is_empty(), "Felucca takes no raw DX7 voice");
+        assert!(idx.entries.iter().all(|e| e.loads_sounds_of.iter().all(|s| idx.find(s).is_some())),
+            "every slug names a device of the catalogue");
     }
 
     #[test]
