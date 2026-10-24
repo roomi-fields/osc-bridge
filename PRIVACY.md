@@ -1,6 +1,6 @@
 # Privacy Policy — osc-bridge
 
-_Last updated: 2026-10-23_
+_Last updated: 2026-10-24_
 
 osc-bridge drives your music hardware and software from your own machine.
 MIDI and OSC traffic to your devices never leaves your machine or local
@@ -23,8 +23,9 @@ other users and agents fixed and confirmed:
   made, after asking you), it is published under CC BY-SA 4.0 with a
   pseudonym for its author — never your account id. You can withdraw it
   (`withdraw_preset`).
-- **Never sent:** your MIDI ports, your devices' traffic, your files, your
-  address (beyond what any web server sees for a few days in its access log).
+- **Never sent:** your MIDI ports, your devices' traffic, your files. Your
+  address is never kept: the server records a fingerprint of it instead
+  (see *Visits and activity* below).
 
 Sharing is on by default, and you choose what to keep to yourself in a
 settings file, `<config>/osc-bridge/settings.toml` (`~/.config` on Linux,
@@ -62,8 +63,8 @@ password is kept, and no e-mail address: for e-mail only a fingerprint of the
 address (to recognise you next time; the link itself is sent and forgotten),
 for Google and Discord only your account number with them (nothing else is
 asked for), for a passkey its public key. A session cookie keeps you signed
-in for 30 days. You choose a display name and a link shown with what you
-share. Deleting your account removes all of this; what you shared stays
+in for 30 days. You choose what your author page shows — a display name, a
+link, a few words, a picture — also shown with what you share. Deleting your account removes all of this; what you shared stays
 published under its licence, under your pseudonym, unless you withdraw it.
 
 ## The hosted server and the relay
@@ -76,6 +77,20 @@ the *private* box next to it on the page, `--private-port <name>` on the
 command line. MIDI messages passing through the relay are never recorded,
 except a patch your agent captures to share as a preset (`share_preset`,
 after asking you) — never from a device kept private.
+
+## Visits and activity
+
+To know how SynthHub is used and to notice problems, the server records each
+request it answers, each page of the site viewed, each sign-in, each relay
+opened and closed, and each tool call: the time, what was asked, the
+answer's status, the browser or program's name, and — for page views — the
+page, the site you came from (its address only), your language and screen
+size. You appear in it only as a **fingerprint of your address**, computed
+with a secret key kept on the server: the same address always gives the same
+fingerprint, so visits that come back can be counted, but the address itself
+is never written and cannot be read back from it. The site sets no cookie for
+this and keeps nothing in your browser. These records stay on the server and
+are read only by its administrator.
 
 What the server records — accounts, tool calls, reports, device identities —
 is described in the
