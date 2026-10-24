@@ -913,9 +913,12 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "set_profile",
-                "description": "Set the display name and link (https) shown with this account's shared presets and comments, instead of its pseudonym alone. Ask the user what they want shown; both are public.",
+                "description": "Set the public profile shown on this account's author page and with its shared presets and comments, instead of its pseudonym alone: display name, link (https), a few words, the presets put first. A field left out stays as it is; an empty one is cleared. Ask the user what they want shown; all of it is public.",
                 "inputSchema": { "type": "object", "properties": { "name": { "type": "string", "description": "40 characters at most." },
-                    "link": { "type": "string", "description": "An https:// address: their site, SoundCloud, Bandcamp…" } }, "additionalProperties": false },
+                    "link": { "type": "string", "description": "An https:// address: their site, SoundCloud, Bandcamp…" },
+                    "bio": { "type": "string", "description": "A few words about them and their sounds, 600 characters at most." },
+                    "featured": { "type": "array", "items": { "type": "string" }, "maxItems": 6,
+                        "description": "Ids of their own listed presets, shown first on their page, in this order." } }, "additionalProperties": false },
                 "annotations": { "title": "Set the public profile", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false }
             },
             {
