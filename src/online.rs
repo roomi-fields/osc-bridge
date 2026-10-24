@@ -307,6 +307,29 @@ impl Online {
         Ok(v)
     }
 
+    /// The synths the server's librarian can take sounds from (`GET /v1/librarian`).
+    pub fn librarian_synths(&self) -> Result<Value> {
+        let (status, v) = self.get("/v1/librarian")?;
+        if status != 200 { bail!("{}", v["error"].as_str().unwrap_or("the server has no librarian")); }
+        Ok(v)
+    }
+
+    /// One librarian step (`POST /v1/librarian/<op>`): recognize, request, receive.
+    pub fn librarian(&self, op: &str, body: &Value) -> Result<Value> {
+        let (status, v) = self.post(&format!("/v1/librarian/{op}"), body)?;
+        if status != 200 { bail!("{}", v["error"].as_str().unwrap_or("librarian: refused")); }
+        Ok(v)
+    }
+
+    /// The MIDI messages that load a shared preset, fitted to a synth on
+    /// `channel` when the librarian took it (`GET /v1/presets/<id>/messages`).
+    pub fn preset_messages(&self, id: &str, channel: Option<i64>) -> Result<Value> {
+        let query = channel.map(|c| format!("?channel={c}")).unwrap_or_default();
+        let (status, v) = self.get(&format!("/v1/presets/{id}/messages{query}"))?;
+        if status != 200 { bail!("{}", v["error"].as_str().unwrap_or("no such preset")); }
+        Ok(v)
+    }
+
     /// Mirror the server's catalogue into `cache`: keep what matches, copy
     /// what `bundled` already has, download the rest, remove what the server
     /// no longer lists. The cache is marked complete only when all is there.

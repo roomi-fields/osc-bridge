@@ -793,7 +793,8 @@ pub fn tool_schemas() -> Value {
                         "file": { "type": "string", "description": "A .syx file on this machine (e.g. written by backup_presets), instead of hex." },
                         "settings": { "type": "object", "description": "Settings by driver address: {'/filter/cutoff': [90], '/amp/attack': [12]} (512 at most).", "additionalProperties": true },
                         "midi_file": { "type": "string", "description": "A standard MIDI file (.mid) on this machine." },
-                        "audio_file": { "type": "string", "description": "A short recording of it (MP3, Ogg, M4A or WebM, 1 MB at most) on this machine, as its preview." }
+                        "audio_file": { "type": "string", "description": "A short recording of it (MP3, Ogg, M4A or WebM, 1 MB at most) on this machine, as its preview." },
+                        "librarian": { "type": "string", "description": "The synth the librarian took it from (take_sound's librarian): loading it then goes through the same exchange, fitted to the receiving synth." }
                     },
                     "required": ["device", "name", "own_sound"],
                     "additionalProperties": false
@@ -924,6 +925,36 @@ pub fn tool_schemas() -> Value {
                 "annotations": { "title": "Link to the user's account", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
             },
             {
+                "name": "take_sound",
+                "description": "Take the sound a hardware synth is playing — or one of its stored programs — straight from the synth, with its name, and save it as a .syx file. The synth is found among those SynthHub's librarian can talk to (the KnobKraft Orm adaptations, about 90 synths): every MIDI port gets the identity and detect messages, which change nothing on the synth, then the found synth is asked for its sound. To share it: ask the user whether they made this sound themselves (never a factory preset, nor one bought or downloaded), then call share_preset with the device, name, file, librarian and firmware returned here, and own_sound: true. When several synths answer, call again with port.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "port": { "type": "string", "description": "MIDI port of the synth: index or name fragment (detect_hardware). Default: every port." },
+                        "program": { "type": "integer", "minimum": 1, "description": "A stored program (from 1) instead of the sound being played." },
+                        "file": { "type": "string", "description": "Where to save the .syx file (default: the system's temporary folder)." }
+                    },
+                    "additionalProperties": false
+                },
+                "outputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "synth": { "type": "string" },
+                        "librarian": { "type": "string" },
+                        "device": { "type": ["string", "null"], "description": "The catalogue driver to share it under; null if the catalogue has none yet." },
+                        "name": { "type": "string" },
+                        "firmware": { "type": ["string", "null"] },
+                        "port": { "type": "string" },
+                        "file": { "type": "string" },
+                        "messages": { "type": "integer" },
+                        "bytes": { "type": "integer" },
+                        "note": { "type": ["string", "null"], "description": "What the user should know about this synth's sounds." }
+                    },
+                    "required": ["synth", "librarian", "name", "port", "file", "messages", "bytes"]
+                },
+                "annotations": { "title": "Take a synth's sound", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": true }
+            },
+            {
                 "name": "load_preset",
                 "description": "Load a shared preset (find_presets, get_preset) into a device plugged into this computer: its settings are sent by driver address, its patch data as SysEx. Patch data replaces the sound in the device's edit buffer or memory: ask the user, then pass confirm_overwrite: true. Afterwards, tell SynthHub how it went with report_preset.",
                 "inputSchema": {
@@ -947,8 +978,8 @@ pub fn tool_schemas() -> Value {
 fn tool_names(opts: &McpOptions) -> Vec<&'static str> {
     let local = ["list_devices", "get_device_docs", "list_routes", "send", "get_status",
          "detect_hardware", "backup_presets", "restore_presets"];
-    // Loading a shared preset needs the server, like the forwarded tools.
-    let linked: &[&str] = if opts.online { &["load_preset"] } else { &[] };
+    // Taking and loading sounds needs the server's librarian, like the forwarded tools.
+    let linked: &[&str] = if opts.online { &["take_sound", "load_preset"] } else { &[] };
     let forwarded = if opts.online { crate::online::FORWARDED_TOOLS.as_slice() } else { &[] };
     local.iter().chain(forwarded).chain(linked).copied().collect()
 }
@@ -974,8 +1005,11 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
             }
             return link.forward(name, args);
         }
+        if name == "take_sound" {
+            return take_sound(args, link);
+        }
         if name == "load_preset" {
-            return load_preset(index, args, link);
+            return load_preset(args, link);
         }
     }
     if let Some(done) = catalogue_tool(name, args, index, &|id| link.and_then(|l| l.status(id))) {
@@ -1223,39 +1257,87 @@ fn share_with_files(link: &Link, name: &str, args: &Value) -> Result<Value, Stri
     Ok(result)
 }
 
-/// Fetch a shared preset from the server and play it into a local device:
-/// its settings through the driver, its patch data as SysEx (only once the
-/// user agreed: it replaces what the device holds).
-fn load_preset(index: &DeviceIndex, args: &Value, link: &Link) -> Result<Value, String> {
+/// The synths the server's librarian knows, and one librarian step, for
+/// `crate::take`.
+fn librarian_ask(link: &Link) -> impl Fn(&str, &Value) -> Result<Value, String> + '_ {
+    move |op, body| link.client.librarian(op, body).map_err(|e| format!("SynthHub's librarian: {e}"))
+}
+
+/// Take the sound a synth plays (or a program) through the server's
+/// librarian, saved as a .syx file for share_preset.
+fn take_sound(args: &Value, link: &Link) -> Result<Value, String> {
+    use crate::take::{find, take, Hardware};
+    let lib = link.client.librarian_synths().map_err(|e| format!("SynthHub's librarian could not be reached: {e}"))?;
+    let ask = librarian_ask(link);
+    let mut midi = Hardware::open().map_err(|e| format!("MIDI: {e}"))?;
+    let found = find(&mut midi, &lib, &ask, args["port"].as_str())?;
+    let f = match found.as_slice() {
+        [] => return Err("no synth the librarian knows answered: check that it is on, plugged in, and that SysEx is \
+            allowed in its MIDI settings. For another synth, back its sounds up with backup_presets.".into()),
+        [f] => f,
+        several => return Err(format!("several synths answered — call again with port: {}",
+            several.iter().map(|f| format!("{} on {:?}", f.name, f.port)).collect::<Vec<_>>().join(", "))),
+    };
+    let program = args["program"].as_u64().map(|p| p.saturating_sub(1));
+    let taken = take(&mut midi, &ask, f, program, Duration::from_secs(10))?;
+    drop(midi);
+    let file = match args["file"].as_str() {
+        Some(p) => PathBuf::from(p),
+        None => std::env::temp_dir().join(format!("{}-{}.syx", slugify(&f.name, '-'), slugify(if taken.name.is_empty() { "sound" } else { &taken.name }, '-'))),
+    };
+    crate::librarian::write_syx(&file, &taken.messages).map_err(|e| e.to_string())?;
+    let synth = lib["synths"].as_array().into_iter().flatten().find(|s| s["synth"] == f.synth.as_str());
+    let note = synth.map(|s| s["note"].clone()).filter(|n| !n.is_null());
+    let bytes: usize = taken.messages.iter().map(Vec::len).sum();
+    let structured = json!({ "synth": f.name, "librarian": f.synth, "device": f.devices.first(), "name": taken.name,
+        "firmware": f.firmware, "port": f.port, "file": file.display().to_string(), "messages": taken.messages.len(),
+        "bytes": bytes, "note": note });
+    let share = match f.devices.first() {
+        Some(_) => "Ask the user whether they made it; if so, share_preset with device, name, file, librarian, firmware and own_sound: true.",
+        None => "The catalogue has no driver for this synth yet, so it cannot be shared.",
+    };
+    Ok(content_structured(&format!("Took {:?} from {} on {} ({} message(s), {bytes} bytes), saved to {}. {share}{}",
+        taken.name, f.name, f.port, taken.messages.len(), file.display(),
+        note.as_ref().and_then(Value::as_str).map(|n| format!(" Note: {n}")).unwrap_or_default()), structured))
+}
+
+/// Fetch a shared preset's messages from the server and play them into a
+/// local device (patch data only once the user agreed: it replaces what the
+/// device holds). A sound the librarian took is fitted to the receiving
+/// synth's MIDI channel, read from its answer to the detect messages.
+fn load_preset(args: &Value, link: &Link) -> Result<Value, String> {
     let id = args.get("id").and_then(Value::as_str).ok_or("missing id")?;
     let out_port = args.get("out_port").and_then(Value::as_str).ok_or("missing out_port")?;
     let gap = Duration::from_millis(args.get("gap_ms").and_then(Value::as_u64).unwrap_or(50).min(2000));
     let preset = link.forward("get_preset", &json!({ "id": id }))?["structuredContent"].clone();
-    let mut messages = Vec::new();
-    if let Some(settings) = preset["settings"].as_object() {
-        let device = preset["device"].as_str().unwrap_or_default();
-        let entry = index.find(device).ok_or_else(|| format!("{id} is for {device}, which this catalogue lacks"))?;
-        let dev = Device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.id))?;
-        for (address, values) in settings {
-            let osc_args = values.as_array().map(|a| a.iter().map(json_to_osc).collect()).unwrap_or_default();
-            let full = format!("{}{address}", dev.device.osc_prefix);
-            messages.extend(crate::runtime::encode(dev.clone(), rosc::OscMessage { addr: full, args: osc_args }));
+    let mut note = None;
+    let channel = match preset["librarian"].as_str().and_then(|l| l.split('@').next()) {
+        Some(synth) => {
+            let mut lib = link.client.librarian_synths().map_err(|e| format!("SynthHub's librarian could not be reached: {e}"))?;
+            if let Some(all) = lib["synths"].as_array_mut() { all.retain(|s| s["synth"] == synth); }
+            note = lib["synths"][0]["note"].as_str().map(str::to_string);
+            let mut midi = crate::take::Hardware::open().map_err(|e| format!("MIDI: {e}"))?;
+            let found = crate::take::find(&mut midi, &lib, &librarian_ask(link), Some(out_port))?;
+            Some(found.iter().find(|f| f.synth == synth).map(|f| f.channel)
+                .ok_or_else(|| format!("no {synth} answered on {out_port}: is it the synth this sound was taken from, on and plugged in?"))?)
         }
-    }
-    let sysex = match preset["sysex"].as_str() {
-        Some(hex) => crate::librarian::split_sysex(&crate::librarian::parse_hex(hex).map_err(|e| e.to_string())?),
-        None => Vec::new(),
+        None => None,
     };
-    if !sysex.is_empty() && args.get("confirm_overwrite").and_then(Value::as_bool) != Some(true) {
+    let r = link.client.preset_messages(id, channel).map_err(|e| e.to_string())?;
+    let messages: Vec<Vec<u8>> = r["messages"].as_array().into_iter().flatten().filter_map(Value::as_str)
+        .map(|h| crate::librarian::parse_hex(h).map_err(|e| e.to_string())).collect::<Result<_, _>>()?;
+    if messages.is_empty() {
+        return Err(format!("{id} is a MIDI clip: play its MIDI file from a sequencer (get_preset gives it)"));
+    }
+    if r["device_data"] == json!(true) && args.get("confirm_overwrite").and_then(Value::as_bool) != Some(true) {
         return Err(format!("{id} carries patch data, which replaces the sound the device holds: ask the user, \
             then pass confirm_overwrite: true"));
     }
-    messages.extend(sysex);
     crate::librarian::send_messages(out_port, &messages, gap).map_err(|e| e.to_string())?;
     let structured = json!({ "id": id, "name": preset["name"], "device": preset["device"], "messages": messages.len(),
-        "attribution": preset["attribution"] });
-    Ok(content_structured(&format!("Loaded {} ({} message(s)) on {out_port}. Tell SynthHub how it went with report_preset.",
-        preset["name"].as_str().unwrap_or(id), messages.len()), structured))
+        "attribution": preset["attribution"], "note": note });
+    Ok(content_structured(&format!("Loaded {} ({} message(s)) on {out_port}.{} Tell SynthHub how it went with report_preset.",
+        preset["name"].as_str().unwrap_or(id), messages.len(), note.map(|n| format!(" Note: {n}")).unwrap_or_default()), structured))
 }
 
 /// `osc-bridge detect`: the same report as the `detect_hardware` tool, for a
