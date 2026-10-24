@@ -112,7 +112,9 @@ it is linked to the SynthHub server.
   banks and MIDI clips other users made. `find_presets` and `get_preset`
   search them, `load_preset` plays one into a device plugged into your
   computer (device data only once you agreed), `report_preset` says how it
-  went; `share_preset` shares what you made (from a `.syx`, a `.mid`,
+  went; `take_sound` takes the sound your synth is playing, with its name,
+  straight from the synth (about 90 synths, through SynthHub's librarian);
+  `share_preset` shares what you made (from a `.syx`, a `.mid`,
   settings by driver address, with an audio preview), `update_preset`
   publishes a new version, `withdraw_preset` takes it back; `comment_preset`,
   `favorite_preset`, `preset_collection`, `follow_author` and `set_profile`

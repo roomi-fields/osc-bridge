@@ -57,7 +57,7 @@ Add to your MCP client config (e.g. Claude Desktop
 
 Eight tools — `list_devices`, `get_device_docs`, `list_routes`, `send`,
 `get_status`, `detect_hardware`, `backup_presets`, `restore_presets` — plus
-the server's (reports, trust, contributions, shared presets), so the model can discover
+the server's (reports, trust, contributions, shared presets, sounds taken from the synth), so the model can discover
 the 986-device catalogue, read a device's OSC surface, and drive your devices.
 
 It's both a **MIDI MCP** (hardware synths over MIDI/SysEx) and an **OSC MCP**

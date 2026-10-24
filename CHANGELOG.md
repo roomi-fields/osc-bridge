@@ -23,6 +23,14 @@ is tracked explicitly under each release.
   `set_profile`; and `load_preset`, which fetches a shared preset and plays it
   into a local device (device data only with `confirm_overwrite`). A private
   device's sounds are refused before anything is sent.
+- `take_sound`: takes the sound a synth is playing (or a stored program)
+  straight from the synth, with its name, through SynthHub's librarian (the
+  KnobKraft Orm adaptations run on the server; this copy carries the MIDI):
+  the synth is found on its ports, asked for its sound, and the sound saved
+  as a `.syx` for `share_preset`, which takes the `librarian` it returns.
+- `load_preset` plays the messages the server gives for a preset: a sound
+  the librarian took is fitted to the receiving synth (its MIDI channel, its
+  edit buffer), found by the same detect messages.
 - The test synth keeps one sound: it dumps it on `F0 7D 01 10 F7` and takes
   a patch (`F0 7D 01 20` + five values), in `osc-bridge connect
   --test-synth` and on the connect page.
