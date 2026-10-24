@@ -839,9 +839,10 @@ pub fn tool_schemas() -> Value {
                         "genre": { "type": "string" },
                         "tag": { "type": "string" },
                         "author": { "type": "string", "description": "An author's pseudonym (e.g. 'u1a2b3c4d')." },
-                        "query": { "type": "string", "description": "Words that must all appear in the name, description, tags, genres or category." },
+                        "query": { "type": "string", "description": "Words that must all appear in the name, description, tags, genres, category or device id ('dx7 piano')." },
                         "sort": { "type": "string", "enum": ["new", "popular", "trusted"], "description": "Default new." },
-                        "limit": { "type": "integer", "minimum": 1, "maximum": 50, "description": "At most this many (default 20)." }
+                        "limit": { "type": "integer", "minimum": 1, "maximum": 50, "description": "At most this many (default 20)." },
+                        "offset": { "type": "integer", "minimum": 0, "description": "Skip this many: the next page (the reply's total says how many match)." }
                     },
                     "additionalProperties": false
                 },
