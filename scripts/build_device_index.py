@@ -4,9 +4,16 @@ for client-side search/filter on GitHub Pages.
 
 Re-run whenever `devices/` changes (or wire into CI alongside
 `regen_supported_devices.py`).
+
+Each entry records when its driver file was `added` and last `updated`
+(YYYY-MM-DD, from git history), for the pages SynthHub renders, which have
+no history to read. A file not committed yet is dated today; outside a git
+checkout an entry keeps the dates the previous docs/devices.json gave it.
 """
 from __future__ import annotations
 import json
+import subprocess
+from datetime import date
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -49,7 +56,41 @@ def coverage(doc: dict) -> dict:
     return cov
 
 
+def dates() -> dict[str, tuple[str, str]]:
+    """(added, updated) of every file under devices/, from one `git log`
+    pass, files changed since the last commit updated today; empty outside a
+    git checkout."""
+    try:
+        out = subprocess.run(["git", "log", "--format=@%cs", "--name-only", "--", "devices"],
+                             cwd=REPO_ROOT, capture_output=True, text=True, check=True).stdout
+    except (OSError, subprocess.CalledProcessError):
+        return {}
+    found: dict[str, tuple[str, str]] = {}
+    when = None
+    for line in out.splitlines():
+        if line.startswith("@"):
+            when = line[1:]
+        elif line and when:
+            _, updated = found.get(line, (when, when))
+            found[line] = (when, updated)   # newest first: the last seen is the first commit
+    try:
+        dirty = subprocess.run(["git", "status", "--porcelain", "--", "devices"],
+                               cwd=REPO_ROOT, capture_output=True, text=True, check=True).stdout
+    except (OSError, subprocess.CalledProcessError):
+        dirty = ""
+    today = date.today().isoformat()
+    for line in dirty.splitlines():   # changed since the last commit: updated today
+        path = line[3:].strip().strip('"')
+        found[path] = (found.get(path, (today, today))[0], today)
+    return found
+
+
 def main():
+    try:
+        before = {e["path"]: e for e in json.loads(OUT.read_text()).get("entries", [])}
+    except (OSError, ValueError):
+        before = {}
+    history = dates()
     entries = []
     for p in sorted(DEVICES_DIR.rglob("*.json")):
         try:
@@ -74,6 +115,14 @@ def main():
             "urls": urls[:2],
             "coverage": coverage(d),
         })
+        path = entries[-1]["path"]
+        today = date.today().isoformat()
+        added, updated = history.get(path) or ((today, today) if history else
+                                               (before.get(path, {}).get("added"), before.get(path, {}).get("updated")))
+        if added:
+            entries[-1]["added"] = added
+        if updated:
+            entries[-1]["updated"] = updated
     entries.sort(key=lambda e: (e["vendor"].lower(), e["name"].lower()))
     OUT.write_text(json.dumps({
         "count": len(entries),
