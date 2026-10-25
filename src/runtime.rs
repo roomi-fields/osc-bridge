@@ -518,6 +518,7 @@ fn run_reply_script(
         let iv = match v {
             Value::U7(n) => *n as i64,
             Value::U14(n) => *n as i64,
+            Value::S32(n) => *n as i64,
             Value::Bytes(_) => continue,
         };
         binds.insert(k.clone(), iv);

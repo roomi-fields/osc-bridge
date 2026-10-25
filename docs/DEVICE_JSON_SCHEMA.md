@@ -69,7 +69,7 @@ hundreds of params, declare the framing ONCE and a flat table of addresses.
   "params": {
     "get_frame":  [0x20, "{sec}", 0x40, "{id}", 0x00],
     "set_frame":  [0x21, "{sec}", 0x40, "{id}", "{val_msb}", "{val_lsb}"],
-    "value_type": "u14",                    // for SET value encoding
+    "value_type": "u14",                    // for SET value encoding: u7, u14 or s32
     "entries": [
       { "osc":"/global/backlight",     "sec":0, "id":0x07, "range":[0,1] },
       { "osc":"/knob/1/cc_number",     "sec":0, "id":0x22, "range":[0,127] },
@@ -251,6 +251,7 @@ For device-initiated messages (GET replies, unsolicited state broadcasts).
 | `"{name}"`   | one byte from bound arg `name` (clamped 0..127) |
 | `"{name:u14_msb}"` | high 7 bits of a u14 arg |
 | `"{name:u14_lsb}"` | low 7 bits  |
+| `"{name:s32}"`     | five bytes: a signed value in two's complement, 7 bits each, bits 28-31 first (Korg M3 and later); with `value_type: "s32"` the range may go below 0 |
 | `"{name:ascii}"`   | zero-terminated ASCII bytes injected at this position |
 | `"{name:bytes}"`   | raw byte array inlined |
 
@@ -260,6 +261,7 @@ For device-initiated messages (GET replies, unsolicited state broadcasts).
 |--------|--------------|-----------------------------|
 | `u7`   | 0..127       | one byte |
 | `u14`  | 0..16383     | produces `_msb` + `_lsb` helpers automatically |
+| `s32`  | its `range` (may be negative) | signed; place it with `{name:s32}` |
 | `enum` | see `values` | integer after lookup        |
 | `string` | any text  | ASCII only, filtered |
 | `bool` | 0/1          | |

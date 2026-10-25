@@ -14,6 +14,8 @@ pub enum Value {
     U7(u8),
     /// 14-bit value (0..=16383)
     U14(u16),
+    /// Signed 32-bit value, sent as five 7-bit groups (Korg M3 and later)
+    S32(i32),
     /// Raw byte sequence inserted at a placeholder position
     Bytes(Vec<u8>),
 }
@@ -22,6 +24,7 @@ impl Bindings {
     pub fn new() -> Self { Self::default() }
     pub fn set_u7(&mut self, k: &str, v: u8) { self.0.insert(k.into(), Value::U7(v & 0x7F)); }
     pub fn set_u14(&mut self, k: &str, v: u16) { self.0.insert(k.into(), Value::U14(v & 0x3FFF)); }
+    pub fn set_s32(&mut self, k: &str, v: i32) { self.0.insert(k.into(), Value::S32(v)); }
     pub fn set_bytes(&mut self, k: &str, v: Vec<u8>) { self.0.insert(k.into(), Value::Bytes(v)); }
     pub fn get(&self, k: &str) -> Option<&Value> { self.0.get(k) }
 }
@@ -55,17 +58,27 @@ fn emit_placeholder(ph: &str, b: &Bindings, out: &mut Vec<u8>) -> Result<()> {
         "u7" => match val {
             Value::U7(v) => out.push(*v & 0x7F),
             Value::U14(v) => out.push((*v as u8) & 0x7F), // truncate LSB
-            Value::Bytes(_) => bail!("expected u7 for '{name}', got bytes"),
+            Value::S32(_) | Value::Bytes(_) => bail!("expected u7 for '{name}'"),
         },
         "u14_msb" => match val {
             Value::U14(v) => out.push(((*v >> 7) & 0x7F) as u8),
             Value::U7(v)  => out.push((*v >> 7) & 0x7F), // almost always 0 but handle
-            Value::Bytes(_) => bail!("expected u14_msb for '{name}', got bytes"),
+            Value::S32(_) | Value::Bytes(_) => bail!("expected u14_msb for '{name}'"),
         },
         "u14_lsb" => match val {
             Value::U14(v) => out.push((*v & 0x7F) as u8),
             Value::U7(v)  => out.push(*v & 0x7F),
-            Value::Bytes(_) => bail!("expected u14_lsb for '{name}', got bytes"),
+            Value::S32(_) | Value::Bytes(_) => bail!("expected u14_lsb for '{name}'"),
+        },
+        // Two's complement, bits 28-31 then 21-27, 14-20, 7-13, 0-6.
+        "s32" => match val {
+            Value::S32(v) => {
+                let u = *v as u32;
+                out.extend([28, 21, 14, 7, 0].map(|sh| ((u >> sh) & 0x7F) as u8));
+            }
+            Value::U7(v) => out.extend([0, 0, 0, 0, *v & 0x7F]),
+            Value::U14(v) => out.extend([0, 0, 0, ((*v >> 7) & 0x7F) as u8, (*v & 0x7F) as u8]),
+            Value::Bytes(_) => bail!("expected s32 for '{name}', got bytes"),
         },
         "ascii" => match val {
             Value::Bytes(bs) => {
@@ -107,6 +120,11 @@ pub fn coerce_arg(spec: &ArgSpec, osc_arg: &rosc::OscType) -> Result<Value> {
             let v = to_i64().ok_or_else(|| anyhow!("arg '{}' expects int/float", spec.name))?;
             let v = v.clamp(0, 16383) as u16;
             Ok(Value::U14(v))
+        }
+        "s32" => {
+            let v = to_i64().ok_or_else(|| anyhow!("arg '{}' expects int/float", spec.name))?;
+            let [lo, hi] = spec.range.unwrap_or([i32::MIN as i64, i32::MAX as i64]);
+            Ok(Value::S32(v.clamp(lo, hi) as i32))
         }
         "bool" => {
             let v = to_i64().unwrap_or(0).clamp(0, 1) as u8;
@@ -155,6 +173,7 @@ pub fn bindings_for_param_set(pt: &ParamTable, entry: &ParamEntry, val: &rosc::O
     match pt.value_type.as_str() {
         "u7" => b.set_u7("val", clamped as u8),
         "u14" => b.set_u14("val", clamped as u16),
+        "s32" => b.set_s32("val", clamped as i32),
         other => bail!("unsupported value_type '{}'", other),
     }
     Ok(b)
@@ -225,6 +244,18 @@ mod tests {
         let f = build_frame(&d, &tokens, &b).unwrap();
         // 12345 = 0b01100000 0111001 -> msb = 0x60, lsb = 0x39
         assert_eq!(&f[6..=7], &[0x60, 0x39]);
+    }
+
+    #[test]
+    fn s32_sends_five_7bit_groups_twos_complement() {
+        let d = test_device();
+        let tokens = vec![FrameToken::Placeholder("{val:s32}".into())];
+        let mut b = Bindings::new(); b.set_s32("val", -1);
+        assert_eq!(&build_frame(&d, &tokens, &b).unwrap()[6..11], &[0x0F, 0x7F, 0x7F, 0x7F, 0x7F]);
+        b.set_s32("val", -36);
+        assert_eq!(&build_frame(&d, &tokens, &b).unwrap()[6..11], &[0x0F, 0x7F, 0x7F, 0x7F, 0x5C]);
+        b.set_s32("val", 300);
+        assert_eq!(&build_frame(&d, &tokens, &b).unwrap()[6..11], &[0x00, 0x00, 0x00, 0x02, 0x2C]);
     }
 
     #[test]

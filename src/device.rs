@@ -311,7 +311,7 @@ pub enum FrameToken {
 pub struct ParamTable {
     pub get_frame: Vec<FrameToken>,
     pub set_frame: Vec<FrameToken>,
-    pub value_type: String, // "u7" | "u14"
+    pub value_type: String, // "u7" | "u14" | "s32"
     pub entries: Vec<ParamEntry>,
 }
 
