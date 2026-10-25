@@ -829,7 +829,7 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "find_presets",
-                "description": "Search what SynthHub users shared (CC BY-SA 4.0): sounds, sequences, kits, projects, banks, MIDI clips. Filter by device, kind, category, genre, tag, author (pseudonym) or words; sort by newest, most popular (favorites and real loads) or most trusted (confirmed on real devices). Returns, per preset, its id, name, kind, device, description, author, version, whether it has device data, settings, a MIDI file or an audio preview (URL), and its counts. Get one with get_preset.",
+                "description": "Search what SynthHub users shared (CC BY-SA 4.0): sounds, sequences, kits, projects, banks, MIDI clips. Filter by device, kind, category, genre, tag, author (pseudonym) or words; sort by newest, most stars, most loaded into a device or most trusted (confirmed on real devices). Returns, per preset, its id, name, kind, device, description, author, version, whether it has device data, settings, a MIDI file or an audio preview (URL), and its counts. Get one with get_preset.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -840,7 +840,7 @@ pub fn tool_schemas() -> Value {
                         "tag": { "type": "string" },
                         "author": { "type": "string", "description": "An author's pseudonym (e.g. 'u1a2b3c4d')." },
                         "query": { "type": "string", "description": "Words that must all appear in the name, description, tags, genres, category or device id ('dx7 piano')." },
-                        "sort": { "type": "string", "enum": ["new", "popular", "trusted"], "description": "Default new." },
+                        "sort": { "type": "string", "enum": ["new", "stars", "loads", "trusted"], "description": "new (default), most stars, most loaded into a device, or most confirmed on real devices." },
                         "limit": { "type": "integer", "minimum": 1, "maximum": 50, "description": "At most this many (default 20)." },
                         "offset": { "type": "integer", "minimum": 0, "description": "Skip this many: the next page (the reply's total says how many match)." }
                     },
@@ -892,11 +892,11 @@ pub fn tool_schemas() -> Value {
                 "annotations": { "title": "Comment on a preset", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
             },
             {
-                "name": "favorite_preset",
-                "description": "Mark a shared preset as a favorite of this account (on: false to unmark). Without id, lists this account's favorites.",
+                "name": "star_preset",
+                "description": "Star a shared preset for this account, as on GitHub (on: false takes the star back). Without id, lists the presets this account starred.",
                 "inputSchema": { "type": "object", "properties": { "id": { "type": "string" }, "on": { "type": "boolean", "description": "Default true." } },
                     "additionalProperties": false },
-                "annotations": { "title": "Favorite a preset", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false }
+                "annotations": { "title": "Star a preset", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false }
             },
             {
                 "name": "preset_collection",
@@ -929,7 +929,7 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "link_account",
-                "description": "Link this machine's SynthHub account to the user's account on the site: returns a one-time address (valid 15 minutes) for the user to open and sign in (passkey, e-mail, Google or Discord). Afterwards what this copy shared appears under their profile, and they manage it — and their favorites, collections, comments — from the site.",
+                "description": "Link this machine's SynthHub account to the user's account on the site: returns a one-time address (valid 15 minutes) for the user to open and sign in (passkey, e-mail, Google or Discord). Afterwards what this copy shared appears under their profile, and they manage it — and their stars, collections, comments — from the site.",
                 "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false },
                 "annotations": { "title": "Link to the user's account", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
             },

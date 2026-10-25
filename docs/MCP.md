@@ -117,7 +117,7 @@ it is linked to the SynthHub server.
   `share_preset` shares what you made (from a `.syx`, a `.mid`,
   settings by driver address, with an audio preview), `update_preset`
   publishes a new version, `withdraw_preset` takes it back; `comment_preset`,
-  `favorite_preset`, `preset_collection`, `follow_author` and `set_profile`
+  `star_preset`, `preset_collection`, `follow_author` and `set_profile`
   for the rest. See
   [shared presets](https://synthhub.roomi-fields.com/api/#shared-presets).
 

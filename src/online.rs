@@ -31,7 +31,7 @@ pub const SERVER: &str = "https://mcp.synthhub.roomi-fields.com";
 pub const FORWARDED_TOOLS: [&str; 18] = ["report_result", "report_mapping", "get_trust",
     "submit_driver", "submit_fix", "get_contribution",
     "share_preset", "update_preset", "find_presets", "get_preset", "report_preset", "withdraw_preset",
-    "comment_preset", "favorite_preset", "preset_collection", "follow_author", "set_profile", "link_account"];
+    "comment_preset", "star_preset", "preset_collection", "follow_author", "set_profile", "link_account"];
 
 /// Files fetched per `POST /v1/catalogue/files` request.
 pub const FILES_PER_REQUEST: usize = 100;
