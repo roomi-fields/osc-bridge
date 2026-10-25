@@ -1006,36 +1006,10 @@ fn handle_message(
             };
             let val_i = apply_transform(scripts, &entry.transform, val_i, &msg.addr);
             let clamped = val_i.clamp(entry.range[0], entry.range[1]);
-            let ch = msg.args.get(1).and_then(|a| match a {
-                OscType::Int(i) => Some((*i & 0x0F) as u8),
-                OscType::Long(i) => Some((*i & 0x0F) as u8),
-                _ => None,
-            }).unwrap_or(*default_ch);
-            let status = 0xB0 | (ch & 0x0F);
-            let is_14bit = entry.range[1] > 127;
-            let msb = if is_14bit { ((clamped >> 7) & 0x7F) as u8 } else { (clamped as u8) & 0x7F };
-            let lsb = (clamped as u8) & 0x7F;
-
-            if let (Some(nmsb), Some(nlsb)) = (entry.nrpn_msb, entry.nrpn_lsb) {
-                // NRPN sequence: 99=msb, 98=lsb, 6=data_msb, 38=data_lsb (if 14-bit)
-                enqueue(tx, vec![status, 99, nmsb & 0x7F], &msg.addr, from);
-                enqueue(tx, vec![status, 98, nlsb & 0x7F], &msg.addr, from);
-                enqueue(tx, vec![status, 6, msb], &msg.addr, from);
-                if is_14bit {
-                    enqueue(tx, vec![status, 38, lsb], &msg.addr, from);
-                }
-                return;
+            match cc_messages(entry, *default_ch, clamped, &msg.args) {
+                Ok(frames) => for f in frames { enqueue(tx, f, &msg.addr, from); },
+                Err(e) => eprintln!("  {}: {e}", msg.addr),
             }
-            if let Some(cc_num) = entry.cc {
-                enqueue(tx, vec![status, cc_num & 0x7F, msb], &msg.addr, from);
-                if is_14bit {
-                    if let Some(lsb_cc) = entry.cc_lsb {
-                        enqueue(tx, vec![status, lsb_cc & 0x7F, lsb], &msg.addr, from);
-                    }
-                }
-                return;
-            }
-            eprintln!("  cc entry {} has neither cc nor nrpn address", msg.addr);
             return;
         }
     }
@@ -1231,6 +1205,47 @@ fn eval_expr(expr: &str, b: &Bindings) -> Result<u8> {
         Some(Value::U14(v)) => Ok((*v & 0x7F) as u8),
         _ => anyhow::bail!("unknown identifier in expr: '{expr}'"),
     }
+}
+
+/// The Control Change messages for one cc_params entry set to `value`
+/// (already transformed and clamped): a CC (+ its LSB CC for 14-bit), or a
+/// parameter number (NRPN 99/98 or RPN 101/100) then data entry 6 (+38 for
+/// 14-bit). `args` is the OSC call: value, then the NRPN LSB for an entry
+/// with `nrpn_lsb_range`, then an optional channel.
+fn cc_messages(entry: &CcParamEntry, default_ch: u8, value: i64, args: &[OscType]) -> Result<Vec<Vec<u8>>, String> {
+    let int_arg = |i: usize| args.get(i).and_then(|a| match a {
+        OscType::Int(i) => Some(*i as i64),
+        OscType::Long(i) => Some(*i),
+        _ => None,
+    });
+    let lsb_from_call = entry.nrpn_lsb_range.filter(|_| entry.nrpn_msb.is_some() && entry.nrpn_lsb.is_none());
+    let ch = int_arg(if lsb_from_call.is_some() { 2 } else { 1 }).map(|i| (i & 0x0F) as u8).unwrap_or(default_ch);
+    let status = 0xB0 | (ch & 0x0F);
+    let is_14bit = entry.range[1] > 127;
+    let msb = if is_14bit { ((value >> 7) & 0x7F) as u8 } else { (value as u8) & 0x7F };
+    let lsb = (value as u8) & 0x7F;
+    let number = match (entry.nrpn_msb, entry.nrpn_lsb, lsb_from_call, entry.rpn_msb, entry.rpn_lsb) {
+        (Some(m), Some(l), _, _, _) => Some((99, m, 98, l)),
+        (Some(m), None, Some([lo, hi]), _, _) => {
+            let l = int_arg(1).ok_or(format!("needs its NRPN LSB ({lo}-{hi}) after the value"))?;
+            Some((99, m, 98, l.clamp(lo as i64, hi as i64) as u8))
+        }
+        (_, _, _, Some(m), Some(l)) => Some((101, m, 100, l)),
+        _ => None,
+    };
+    let mut out = Vec::new();
+    if let Some((cm, m, cl, l)) = number {
+        out.push(vec![status, cm, m & 0x7F]);
+        out.push(vec![status, cl, l & 0x7F]);
+        out.push(vec![status, 6, msb]);
+        if is_14bit { out.push(vec![status, 38, lsb]); }
+    } else if let Some(cc) = entry.cc {
+        out.push(vec![status, cc & 0x7F, msb]);
+        if let (true, Some(lsb_cc)) = (is_14bit, entry.cc_lsb) { out.push(vec![status, lsb_cc & 0x7F, lsb]); }
+    } else {
+        return Err("no cc, nrpn or rpn address".into());
+    }
+    Ok(out)
 }
 
 fn enqueue(tx: &Sender<Vec<u8>>, frm: Vec<u8>, addr: &str, from: SocketAddr) {
@@ -1645,6 +1660,37 @@ fn emit_osc_reply_typed(
         }
     }
     OscMessage { addr, args }
+}
+
+#[cfg(test)]
+mod cc_message_tests {
+    use super::*;
+
+    fn entry(json: &str) -> CcParamEntry { serde_json::from_str(json).unwrap() }
+
+    #[test]
+    fn rpn_sends_101_100_then_data_entry() {
+        let e = entry(r#"{"osc":"/pb_sens","rpn_msb":0,"rpn_lsb":0,"range":[0,24]}"#);
+        assert_eq!(cc_messages(&e, 2, 12, &[OscType::Int(12)]).unwrap(),
+            vec![vec![0xB2, 101, 0], vec![0xB2, 100, 0], vec![0xB2, 6, 12]]);
+    }
+
+    #[test]
+    fn nrpn_lsb_comes_from_the_call_then_the_channel() {
+        let e = entry(r#"{"osc":"/drum/cutoff","nrpn_msb":20,"nrpn_lsb_range":[12,108],"range":[0,127]}"#);
+        assert_eq!(cc_messages(&e, 0, 90, &[OscType::Int(90), OscType::Int(36), OscType::Int(9)]).unwrap(),
+            vec![vec![0xB9, 99, 20], vec![0xB9, 98, 36], vec![0xB9, 6, 90]]);
+        assert_eq!(cc_messages(&e, 0, 90, &[OscType::Int(90), OscType::Int(5)]).unwrap()[1], vec![0xB0, 98, 12]);
+        assert!(cc_messages(&e, 0, 90, &[OscType::Int(90)]).is_err());
+    }
+
+    #[test]
+    fn fourteen_bit_nrpn_and_cc_pairs_split_the_value() {
+        let n = entry(r#"{"osc":"/x","nrpn_msb":3,"nrpn_lsb":75,"range":[0,16383]}"#);
+        assert_eq!(cc_messages(&n, 0, 300, &[]).unwrap().last().unwrap(), &vec![0xB0, 38, 44]);
+        let c = entry(r#"{"osc":"/y","cc":9,"cc_lsb":41,"range":[0,16383]}"#);
+        assert_eq!(cc_messages(&c, 0, 300, &[]).unwrap(), vec![vec![0xB0, 9, 2], vec![0xB0, 41, 44]]);
+    }
 }
 
 #[cfg(test)]

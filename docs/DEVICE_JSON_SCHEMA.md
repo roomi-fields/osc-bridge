@@ -97,14 +97,21 @@ can be declared as plain MIDI Control Change messages:
 
       // NRPN addressing: emits CC99/CC98/CC6 (+CC38 for 14-bit) automatically
       { "osc":"/osc1/octave_nrpn", "nrpn_msb":3, "nrpn_lsb":95, "range":[0,3] },
-      { "osc":"/filter/cutoff_nrpn", "nrpn_msb":3, "nrpn_lsb":75, "range":[0,16383] }
+      { "osc":"/filter/cutoff_nrpn", "nrpn_msb":3, "nrpn_lsb":75, "range":[0,16383] },
+
+      // NRPN whose LSB the caller picks (a drum note): `/drum/cutoff 90 36`
+      { "osc":"/drum/cutoff", "nrpn_msb":20, "nrpn_lsb_range":[12,108], "range":[0,127] },
+
+      // RPN addressing: emits CC101/CC100/CC6 (+CC38 for 14-bit)
+      { "osc":"/pitch_bend_sensitivity", "rpn_msb":0, "rpn_lsb":0, "range":[0,24] }
     ]
   }
 }
 ```
 
 OSC calls `/<prefix>/filter/cutoff 64` send `[0xB0 | channel, cc_num, value]` over MIDI.
-A second OSC argument can override the channel per call: `/<prefix>/filter/cutoff 64 3` sends on channel 3.
+A second OSC argument can override the channel per call: `/<prefix>/filter/cutoff 64 3` sends on channel 3
+(the third, after the LSB, for an entry with `nrpn_lsb_range`).
 
 The device's `sysex.header`/`footer` can be empty (`[]`) when there is no SysEx.
 

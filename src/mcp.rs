@@ -1503,6 +1503,9 @@ fn list_routes(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
         "cc_lsb": e.cc_lsb,
         "nrpn_msb": e.nrpn_msb,
         "nrpn_lsb": e.nrpn_lsb,
+        "nrpn_lsb_range": e.nrpn_lsb_range,
+        "rpn_msb": e.rpn_msb,
+        "rpn_lsb": e.rpn_lsb,
         "range": e.range,
         "expects": e.expects,
     })).collect()).unwrap_or_default();

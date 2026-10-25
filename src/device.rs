@@ -134,6 +134,17 @@ pub struct CcParamEntry {
     /// NRPN parameter number LSB (CC 98).
     #[serde(default)]
     pub nrpn_lsb: Option<u8>,
+    /// NRPN LSB given by the caller, within this range, when it selects what
+    /// the parameter acts on (e.g. a drum note): the call is then
+    /// `<osc> <value> <lsb> [<channel>]`. Used with `nrpn_msb`, without `nrpn_lsb`.
+    #[serde(default)]
+    pub nrpn_lsb_range: Option<[u8; 2]>,
+    /// Registered parameter number MSB (CC 101), e.g. 0 for pitch bend sensitivity.
+    #[serde(default)]
+    pub rpn_msb: Option<u8>,
+    /// Registered parameter number LSB (CC 100).
+    #[serde(default)]
+    pub rpn_lsb: Option<u8>,
     #[serde(default = "default_range")]
     pub range: [i64; 2],
     /// Purely informational: "0-based" or "centered".
