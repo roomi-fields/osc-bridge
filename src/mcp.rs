@@ -919,12 +919,19 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "set_profile",
-                "description": "Set the public profile shown on this account's author page and with its shared presets and comments, instead of its pseudonym alone: display name, link (https), a few words, the presets put first. A field left out stays as it is; an empty one is cleared. Ask the user what they want shown; all of it is public.",
+                "description": "Set the public profile shown on this account's author page and with its shared presets and comments, instead of its pseudonym alone: display name, link (https), a few words, the presets put first, where they are, more links, their instruments and a README. A field left out stays as it is; an empty one is cleared. Ask the user what they want shown; all of it is public.",
                 "inputSchema": { "type": "object", "properties": { "name": { "type": "string", "description": "40 characters at most." },
                     "link": { "type": "string", "description": "An https:// address: their site, SoundCloud, Bandcamp…" },
                     "bio": { "type": "string", "description": "A few words about them and their sounds, 600 characters at most." },
                     "featured": { "type": "array", "items": { "type": "string" }, "maxItems": 6,
-                        "description": "Ids of their own listed presets, shown first on their page, in this order." } }, "additionalProperties": false },
+                        "description": "Ids of their own listed presets, shown first on their page, in this order." },
+                    "location": { "type": "string", "description": "Where they make music, 60 characters at most." },
+                    "links": { "type": "array", "items": { "type": "string" }, "maxItems": 8,
+                        "description": "More https:// pages of theirs: a channel, a shop, a band." },
+                    "gear": { "type": "array", "items": { "type": "string" }, "maxItems": 20,
+                        "description": "The instruments they play, e.g. 'Korg minilogue'." },
+                    "about": { "type": "string", "description": "Their README in Markdown: who they are, how they work, what they offer; 8000 characters at most." } },
+                    "additionalProperties": false },
                 "annotations": { "title": "Set the public profile", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false }
             },
             {
