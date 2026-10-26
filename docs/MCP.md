@@ -1,13 +1,13 @@
 # osc-bridge MCP server — a MIDI MCP and OSC MCP
 
 `osc-bridge` ships a [Model Context Protocol](https://modelcontextprotocol.io)
-server. It lets Claude — or any MCP client — discover a catalogue of **977
+server. It lets Claude — or any MCP client — discover a catalogue of **978
 music devices**, read each device's OSC surface, and send OSC to control
 synthesizers and DAWs.
 
 It is both:
 
-- a **MIDI MCP** — 977 hardware synthesizers exposed over MIDI / SysEx
+- a **MIDI MCP** — 978 hardware synthesizers exposed over MIDI / SysEx
   (every Prophet, Oberheim, Moog, Yamaha DX family, MatrixBrute, Hydrasynth,
   Virus TI, Digitone…), and
 - an **OSC MCP** — DAWs and live-coding environments over OSC (Ableton Live,
