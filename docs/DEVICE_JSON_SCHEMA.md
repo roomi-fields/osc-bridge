@@ -51,7 +51,9 @@ others name that file instead of copying it:
 
 - `midi_of` is the catalogue id of the file shared: maker folder and file
   name without `.json`. It is a driver of the same device (same maker folder,
-  same `device.name`) that holds its own MIDI: one level only.
+  same `device.name`). That file may itself name another: JJOS Light shares
+  JJOS OS3's MIDI, which adds three CCs to the stock MPC1000's. Up to 8 links
+  are followed, never in a circle.
 - The file keeps its `_` keys and the `device` keys `name`, `vendor`,
   `revision`, `osc_prefix` and `kind`; everything else (transport, SysEx,
   identity bytes, MIDI in and out, routes, `loads_sounds_of`) is the shared
@@ -61,8 +63,9 @@ others name that file instead of copying it:
   the instrument that runs it). They come after the shared file's routes; on
   the same OSC address its own wins. An address may appear only once in the
   file, and a table's framing (`channel`, frames) stays the shared file's.
-- `osc-bridge lint` refuses a broken link, and the tests refuse two files of
-  one device with the same MIDI where neither names the other.
+- `osc-bridge lint` refuses a broken link. The tests refuse two files of one
+  device whose MIDI, as loaded, is the same unless both take it from one file
+  that has it, and two files adding the same routes of their own.
 
 ## Command — fixed SysEx utility routes
 

@@ -439,13 +439,22 @@ pub const OWN_TABLES: [&str; 3] = ["params", "cc_params", "triggers"];
 /// shares that MIDI interface) keeps its own identity — the `_` keys
 /// (sources, limitations) and the `device` keys of [`IDENTITY`] — and takes
 /// everything else from the target, read from the same catalogue. The target
-/// is a driver of the same device (same maker folder, same name) with a MIDI
-/// body of its own: one level only. The file may add routes of its own
+/// is a driver of the same device (same maker folder, same name); it may
+/// itself name another with `midi_of` (JJOS Light shares OS3's MIDI, which
+/// adds three CCs to the stock MPC1000's), resolved first, up to
+/// [`MIDI_OF_DEPTH`] links and never in a circle. The file may add routes of its own
 /// ([`OWN_LISTS`], the `entries` of [`OWN_TABLES`]; a norns script's
 /// parameters on the norns): appended to the target's, its own winning on
 /// the same OSC address. Transport, SysEx framing, MIDI in and out and the
 /// tables' framing stay the target's.
 pub fn resolve_midi_of(path: &Path, doc: serde_json::Value) -> anyhow::Result<serde_json::Value> {
+    resolve_chain(path, doc, &mut Vec::new())
+}
+
+/// The most `midi_of` links followed from one file.
+pub const MIDI_OF_DEPTH: usize = 8;
+
+fn resolve_chain(path: &Path, doc: serde_json::Value, chain: &mut Vec<std::path::PathBuf>) -> anyhow::Result<serde_json::Value> {
     use serde_json::Value;
     let Some(target) = doc.get("midi_of") else { return Ok(doc) };
     let fail = |why: String| anyhow::anyhow!("{}: midi_of {target}: {why}", path.display());
@@ -480,10 +489,15 @@ pub fn resolve_midi_of(path: &Path, doc: serde_json::Value) -> anyhow::Result<se
     }
     let tpath = folder.join(format!("{}.json", parts[1]));
     let txt = std::fs::read_to_string(&tpath).map_err(|e| fail(format!("reading {}: {e}", tpath.display())))?;
-    let mut out: Value = serde_json::from_str(&txt).map_err(|e| fail(format!("parsing {}: {e}", tpath.display())))?;
-    if out.get("midi_of").is_some() {
-        return Err(fail("the target shares another file's MIDI itself (one level only)".into()));
+    let out: Value = serde_json::from_str(&txt).map_err(|e| fail(format!("parsing {}: {e}", tpath.display())))?;
+    chain.push(path.to_path_buf());
+    if chain.iter().any(|p| p == &tpath) {
+        return Err(fail("the links come back to this file (a circle)".into()));
     }
+    if chain.len() > MIDI_OF_DEPTH {
+        return Err(fail(format!("more than {MIDI_OF_DEPTH} links")));
+    }
+    let mut out = resolve_chain(&tpath, out, chain)?;
     let name = |d: &Value| d.pointer("/device/name").and_then(Value::as_str).map(str::to_string);
     if name(&doc).is_some() && name(&doc) != name(&out) {
         return Err(fail("the target is another device".into()));
@@ -642,7 +656,10 @@ mod tests {
         let root = catalogue(&[("acme/box.vendor.fw-15.json", STOCK), ("acme/crate.json", &other),
             ("other/box.json", STOCK),
             ("acme/a.json", &link("acme/box.vendor.fw-15", "")),
-            ("acme/chain.json", &link("acme/a", "")),
+            ("acme/chain.json", &link("acme/a", r#","commands":[{"osc":"/more","frame":[1]}]"#)),
+            ("acme/circle1.json", &link("acme/circle2", "")),
+            ("acme/circle2.json", &link("acme/circle1", "")),
+            ("acme/self.json", &link("acme/self", "")),
             ("acme/missing.json", &link("acme/none", "")),
             ("acme/maker.json", &link("other/box", "")),
             ("acme/device.json", &link("acme/crate", "")),
@@ -652,12 +669,28 @@ mod tests {
             ("acme/script.json", &STOCK.replace(r#""commands""#, r#""cc_params":{"channel":0,"entries":[]},"commands""#)),
             ("acme/up.json", &link("../box", ""))]);
         assert!(Device::load(root.join("acme/a.json")).is_ok());
-        for (file, why) in [("chain", "one level only"), ("missing", "reading"), ("maker", "another maker"),
+        let chained = Device::load(root.join("acme/chain.json")).unwrap();
+        assert_eq!(chained.commands.iter().map(|c| c.osc.as_str()).collect::<Vec<_>>(), ["/init", "/more"],
+            "a link to a link: the first target's routes, then its own");
+        for (file, why) in [("circle1", "a circle"), ("self", "a circle"), ("missing", "reading"), ("maker", "another maker"),
                             ("device", "another device"), ("body", "is the target's"), ("up", "not a catalogue id"),
                             ("twice", "twice in its own commands"), ("framing", "cc_params.channel is the target's")] {
             let err = Device::load(root.join(format!("acme/{file}.json"))).unwrap_err().to_string();
             assert!(err.contains(why), "{file}: {err}");
         }
+        std::fs::remove_dir_all(root).ok();
+    }
+
+    #[test]
+    fn a_chain_of_links_stops_past_its_depth() {
+        let link = |n: usize| format!(r#"{{"device":{{"name":"Box","vendor":"Acme","osc_prefix":"/b{n}"}},"midi_of":"acme/l{}"}}"#, n - 1);
+        let mut files = vec![("acme/l0.json".to_string(), STOCK.to_string())];
+        files.extend((1..=MIDI_OF_DEPTH + 1).map(|n| (format!("acme/l{n}.json"), link(n))));
+        let refs: Vec<(&str, &str)> = files.iter().map(|(a, b)| (a.as_str(), b.as_str())).collect();
+        let root = catalogue(&refs);
+        assert!(Device::load(root.join(format!("acme/l{MIDI_OF_DEPTH}.json"))).is_ok());
+        let err = Device::load(root.join(format!("acme/l{}.json", MIDI_OF_DEPTH + 1))).unwrap_err().to_string();
+        assert!(err.contains("more than"), "{err}");
         std::fs::remove_dir_all(root).ok();
     }
 

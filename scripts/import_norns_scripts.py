@@ -440,7 +440,7 @@ def script(entry: dict) -> dict | None:
     licence = (info.get("license") or {}).get("spdx_id")
     licence = licence if licence and licence != "NOASSERTION" else None
     return {"repo": repo, "sha": sha, "folder": folder, "files": len(files), "read": read,
-            "commands": cmds, "unread": unread, "licence": licence}
+            "commands": cmds, "unread": unread, "licence": licence, "created": info.get("created_at") or ""}
 
 
 def driver(entry: dict, s: dict) -> dict:
@@ -494,6 +494,7 @@ def main() -> int:
     total = written = params = unread = 0
     skipped: list[str] = []
     names: dict[str, str] = {}
+    found: list[tuple[dict, dict, dict, Path]] = []
     for e in entries:
         total += 1
         try:
@@ -515,6 +516,21 @@ def main() -> int:
         params += len(s["commands"])
         unread += s["unread"]
         written += 1
+        found.append((e, s, doc, path))
+    # Scripts with the same parameters (a fork, a rewrite) share them: the
+    # oldest repository keeps them, the others name its file with midi_of.
+    first: dict[str, Path] = {}
+    for e, s, doc, path in sorted(found, key=lambda f: (f[1]["created"], f[0]["project_name"])):
+        if not s["commands"]:
+            continue
+        key = json.dumps(s["commands"], sort_keys=True)
+        if key in first:
+            doc["midi_of"] = f"{OUT.name}/{first[key].stem}"
+            del doc["commands"]
+            doc["_limitations"] += f" Its parameters are those of {first[key].stem}, whose routes it shares (midi_of)."
+        else:
+            first[key] = path
+    for e, s, doc, path in found:
         if not args.dry_run:
             path.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
             md = path.with_suffix(".md")

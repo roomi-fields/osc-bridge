@@ -28,15 +28,18 @@ IDENTITY = ("name", "vendor", "revision", "osc_prefix", "kind")
 # Route lists and tables (`entries`) a `midi_of` file may add to its target's.
 OWN_LISTS = ("commands", "custom_commands")
 OWN_TABLES = ("params", "cc_params", "triggers")
+# The most `midi_of` links followed from one file (MIDI_OF_DEPTH).
+DEPTH = 8
 
 
-def resolve(path: Path, doc: dict) -> dict:
+def resolve(path: Path, doc: dict, chain: tuple = ()) -> dict:
     """A driver file as its firmware runs it, as osc-bridge loads it
     (src/device.rs, resolve_midi_of): a file naming another with `midi_of`
     (`m-vave/fm-1.vendor.fw-15`, a firmware sharing that MIDI interface)
     keeps its `_` keys and the `device` keys of IDENTITY, and takes the rest
-    from the target, a driver of the same device in the same maker folder
-    with a MIDI body of its own. Routes of its own (OWN_LISTS, the entries of
+    from the target, a driver of the same device in the same maker folder,
+    itself resolved first when it names another (up to DEPTH links, never in
+    a circle). Routes of its own (OWN_LISTS, the entries of
     OWN_TABLES) are appended to the target's, its own winning on the same OSC
     address. ValueError when the link is broken."""
     target = doc.get("midi_of")
@@ -64,12 +67,17 @@ def resolve(path: Path, doc: dict) -> dict:
             if e["osc"] in seen:
                 raise fail(f"{e['osc']} is twice in its own {key}")
             seen.add(e["osc"])
+    tpath = path.parent / f"{parts[1]}.json"
     try:
-        out = json.loads((path.parent / f"{parts[1]}.json").read_text(encoding="utf-8"))
+        out = json.loads(tpath.read_text(encoding="utf-8"))
     except (OSError, ValueError) as e:
         raise fail(e) from e
-    if "midi_of" in out:
-        raise fail("the target shares another file's MIDI itself (one level only)")
+    chain = (*chain, path)
+    if tpath in chain:
+        raise fail("the links come back to this file (a circle)")
+    if len(chain) > DEPTH:
+        raise fail(f"more than {DEPTH} links")
+    out = resolve(tpath, out, chain)
     if (doc.get("device") or {}).get("name") not in (None, (out.get("device") or {}).get("name")):
         raise fail("the target is another device")
 
