@@ -35,6 +35,35 @@ M-VAVE FM-1 on its stock firmware takes a Yamaha DX7 single voice. Libraries
 offer those sounds for this device too. Say in `_limitations` what format it
 takes and where the sound goes.
 
+## Firmwares sharing one MIDI interface — `midi_of`
+
+Each firmware has its own file (its sources, author, version, licence,
+README), but when several speak the same MIDI, only one file holds it. The
+others name that file instead of copying it:
+
+```jsonc
+{
+  "_sources": [{ "type": "vendor-doc", "firmware": "grimm-1.0", "url": "…" }],
+  "device": { "name": "FM-1", "vendor": "M-VAVE", "revision": "Grimm 1.0", "osc_prefix": "/fm1_grimm" },
+  "midi_of": "m-vave/fm-1.vendor.fw-dinghy-0.4"
+}
+```
+
+- `midi_of` is the catalogue id of the file shared: maker folder and file
+  name without `.json`. It is a driver of the same device (same maker folder,
+  same `device.name`) that holds its own MIDI: one level only.
+- The file keeps its `_` keys and the `device` keys `name`, `vendor`,
+  `revision`, `osc_prefix` and `kind`; everything else (transport, SysEx,
+  identity bytes, MIDI in and out, routes, `loads_sounds_of`) is the shared
+  file's.
+- It may add routes of its own: `commands`, `custom_commands`, and the
+  `entries` of `params`, `cc_params` and `triggers` (a script's parameters on
+  the instrument that runs it). They come after the shared file's routes; on
+  the same OSC address its own wins. An address may appear only once in the
+  file, and a table's framing (`channel`, frames) stays the shared file's.
+- `osc-bridge lint` refuses a broken link, and the tests refuse two files of
+  one device with the same MIDI where neither names the other.
+
 ## Command — fixed SysEx utility routes
 
 Used for framed commands that are not individual parameter read/writes (init, preset recall,

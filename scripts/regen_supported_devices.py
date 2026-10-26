@@ -14,6 +14,9 @@ import json
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_device_index import resolve  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEVICES_DIR = REPO_ROOT / "devices"
 OUTPUT = REPO_ROOT / "docs" / "SUPPORTED_DEVICES.md"
@@ -143,10 +146,12 @@ def source_summary(doc: dict) -> tuple[str, str | None]:
 
 
 def load_devices() -> list[tuple[Path, dict]]:
+    """Every driver file, a firmware sharing another file's MIDI (midi_of)
+    resolved as osc-bridge loads it."""
     out = []
     for p in sorted(DEVICES_DIR.rglob("*.json")):
         try:
-            doc = json.loads(p.read_text())
+            doc = resolve(p, json.loads(p.read_text()))
         except Exception as e:
             print(f"error: {p}: {e}", file=sys.stderr); continue
         out.append((p, doc))
@@ -287,6 +292,8 @@ def render(devices: list[tuple[Path, dict]]) -> str:
                 else:
                     out.append(f"- **Source**: {src_label}")
                 out.append(f"- **Coverage**: {cov}")
+                if doc.get("midi_of"):
+                    out.append(f"- **MIDI**: same as [`{doc['midi_of'].split('/')[1]}.json`](../devices/{doc['midi_of']}.json)")
                 if limitations:
                     short = limitations.split(".")[0] + "."
                     out.append(f"- **Limitations**: {short}")

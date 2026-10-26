@@ -137,6 +137,9 @@ impl DeviceIndex {
         let mut entries: Vec<DeviceIndexEntry> = Vec::new();
         let mut by_slug: HashMap<String, usize> = HashMap::new();
         let _ = walk_json(dir, &mut |path, doc| {
+            // Which sounds it loads comes with the MIDI it shares (midi_of).
+            let shared = crate::device::resolve_midi_of(path, doc.clone()).ok();
+            let body = shared.as_ref().unwrap_or(doc);
             let device = doc.get("device");
             let get = |k: &str| device.and_then(|d| d.get(k)).and_then(Value::as_str);
             let slug = get("osc_prefix").unwrap_or("").trim_start_matches('/').to_string();
@@ -167,11 +170,11 @@ impl DeviceIndex {
                 revision: get("revision").unwrap_or("").to_string(),
                 tier,
                 firmware,
-                manufacturer_id: device.and_then(|d| d.get("manufacturer_id"))
+                manufacturer_id: body.get("device").and_then(|d| d.get("manufacturer_id"))
                     .and_then(Value::as_array)
                     .map(|a| a.iter().filter_map(Value::as_u64).map(|b| b as u8).collect())
                     .unwrap_or_default(),
-                loads_sounds_of: doc.get("loads_sounds_of").and_then(Value::as_array)
+                loads_sounds_of: body.get("loads_sounds_of").and_then(Value::as_array)
                     .map(|a| a.iter().filter_map(Value::as_str).map(str::to_string).collect())
                     .unwrap_or_default(),
             });

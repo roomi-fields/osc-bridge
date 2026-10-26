@@ -425,13 +425,116 @@ pub struct OscArgPattern {
     pub ty: String, // "int" | "float" | "string" | "bool"
 }
 
+/// The `device` keys that say which firmware a file is, not how it speaks
+/// MIDI: a file with `midi_of` keeps these and takes the rest from its target.
+pub const IDENTITY: [&str; 5] = ["name", "vendor", "revision", "osc_prefix", "kind"];
+
+/// Route lists a `midi_of` file may add to its target's, by OSC address.
+pub const OWN_LISTS: [&str; 2] = ["commands", "custom_commands"];
+/// Route tables (`entries`) a `midi_of` file may add to its target's.
+pub const OWN_TABLES: [&str; 3] = ["params", "cc_params", "triggers"];
+
+/// A driver file as its firmware runs it. A file naming another with
+/// `midi_of` (its catalogue id, `m-vave/fm-1.vendor.fw-15`: a firmware that
+/// shares that MIDI interface) keeps its own identity — the `_` keys
+/// (sources, limitations) and the `device` keys of [`IDENTITY`] — and takes
+/// everything else from the target, read from the same catalogue. The target
+/// is a driver of the same device (same maker folder, same name) with a MIDI
+/// body of its own: one level only. The file may add routes of its own
+/// ([`OWN_LISTS`], the `entries` of [`OWN_TABLES`]; a norns script's
+/// parameters on the norns): appended to the target's, its own winning on
+/// the same OSC address. Transport, SysEx framing, MIDI in and out and the
+/// tables' framing stay the target's.
+pub fn resolve_midi_of(path: &Path, doc: serde_json::Value) -> anyhow::Result<serde_json::Value> {
+    use serde_json::Value;
+    let Some(target) = doc.get("midi_of") else { return Ok(doc) };
+    let fail = |why: String| anyhow::anyhow!("{}: midi_of {target}: {why}", path.display());
+    let id = target.as_str().ok_or_else(|| fail("not a catalogue id".into()))?;
+    let parts: Vec<&str> = id.split('/').collect();
+    if parts.len() != 2 || parts.iter().any(|c| c.is_empty() || c.starts_with('.')) {
+        return Err(fail("not a catalogue id (<maker>/<file name without .json>)".into()));
+    }
+    let folder = path.parent().ok_or_else(|| fail("no catalogue folder".into()))?;
+    if folder.file_name().and_then(|f| f.to_str()) != Some(parts[0]) {
+        return Err(fail("names another maker's driver".into()));
+    }
+    let allowed = |k: &str| k.starts_with('_') || ["device", "midi_of"].contains(&k)
+        || OWN_LISTS.contains(&k) || OWN_TABLES.contains(&k);
+    if let Some(own) = doc.as_object().and_then(|o| o.keys().find(|k| !allowed(k))) {
+        return Err(fail(format!("{own} is the target's (a midi_of file adds routes only)")));
+    }
+    // The file's own routes: each address once.
+    let osc = |e: &Value| e.get("osc").and_then(Value::as_str).map(str::to_string);
+    let entries_of = |v: &Value, key: &str| -> Vec<Value> {
+        let list = if OWN_LISTS.contains(&key) { v.get(key) } else { v.get(key).and_then(|t| t.get("entries")) };
+        list.and_then(Value::as_array).cloned().unwrap_or_default()
+    };
+    for key in OWN_LISTS.iter().chain(OWN_TABLES.iter()) {
+        let mut seen = std::collections::HashSet::new();
+        for e in entries_of(&doc, key) {
+            let a = osc(&e).ok_or_else(|| fail(format!("a {key} entry has no osc address")))?;
+            if !seen.insert(a.clone()) {
+                return Err(fail(format!("{a} is twice in its own {key}")));
+            }
+        }
+    }
+    let tpath = folder.join(format!("{}.json", parts[1]));
+    let txt = std::fs::read_to_string(&tpath).map_err(|e| fail(format!("reading {}: {e}", tpath.display())))?;
+    let mut out: Value = serde_json::from_str(&txt).map_err(|e| fail(format!("parsing {}: {e}", tpath.display())))?;
+    if out.get("midi_of").is_some() {
+        return Err(fail("the target shares another file's MIDI itself (one level only)".into()));
+    }
+    let name = |d: &Value| d.pointer("/device/name").and_then(Value::as_str).map(str::to_string);
+    if name(&doc).is_some() && name(&doc) != name(&out) {
+        return Err(fail("the target is another device".into()));
+    }
+    // Appended to the target's routes, its own replacing one at the same address.
+    let merge = |base: Vec<Value>, own: Vec<Value>| -> Vec<Value> {
+        let mine: std::collections::HashSet<_> = own.iter().filter_map(osc).collect();
+        base.into_iter().filter(|e| osc(e).map_or(true, |a| !mine.contains(&a))).chain(own).collect()
+    };
+    let obj = out.as_object_mut().ok_or_else(|| fail("the target is not a driver".into()))?;
+    obj.retain(|k, _| !k.starts_with('_'));
+    let mut device = obj.remove("device").unwrap_or_else(|| Value::Object(Default::default()));
+    for (k, v) in doc.as_object().into_iter().flatten() {
+        if k == "device" {
+            for key in IDENTITY {
+                match v.get(key) {
+                    Some(x) => { device[key] = x.clone(); }
+                    None => { device.as_object_mut().map(|d| d.remove(key)); }
+                }
+            }
+        } else if OWN_LISTS.contains(&k.as_str()) {
+            let base = obj.get(k).and_then(Value::as_array).cloned().unwrap_or_default();
+            obj.insert(k.clone(), Value::Array(merge(base, entries_of(&doc, k))));
+        } else if OWN_TABLES.contains(&k.as_str()) {
+            match obj.get_mut(k).filter(|t| t.is_object()) {
+                Some(table) => {
+                    if let Some(extra) = v.as_object().and_then(|t| t.keys().find(|x| *x != "entries")) {
+                        return Err(fail(format!("{k}.{extra} is the target's (a midi_of file adds entries only)")));
+                    }
+                    let base = table.get("entries").and_then(Value::as_array).cloned().unwrap_or_default();
+                    table["entries"] = Value::Array(merge(base, entries_of(&doc, k)));
+                }
+                None => { obj.insert(k.clone(), v.clone()); }
+            }
+        } else {
+            obj.insert(k.clone(), v.clone());
+        }
+    }
+    obj.insert("device".into(), device);
+    Ok(out)
+}
+
 impl Device {
     pub fn load<P: AsRef<Path>>(path: P) -> anyhow::Result<Self> {
         let resolved = crate::catalogue::resolve(path.as_ref());
         let p = resolved.as_path();
         let txt = std::fs::read_to_string(p)
             .map_err(|e| anyhow::anyhow!("reading {}: {e}", p.display()))?;
-        let mut dev: Device = serde_json::from_str(&txt)
+        let doc: serde_json::Value = serde_json::from_str(&txt)
+            .map_err(|e| anyhow::anyhow!("parsing {}: {e}", p.display()))?;
+        let mut dev: Device = serde_json::from_value(resolve_midi_of(p, doc)?)
             .map_err(|e| anyhow::anyhow!("parsing {}: {e}", p.display()))?;
         // Optional companion markdown at <stem>.md — integration guide for
         // clients (Kanopi, LLM agents). Silently absent is fine.
@@ -470,6 +573,92 @@ mod tests {
         let e: CcParamEntry =
             serde_json::from_str(r#"{"osc":"/arp/hold","cc":64,"expects":"switch"}"#).unwrap();
         assert_eq!(e.expects, "switch");
+    }
+
+    fn catalogue(files: &[(&str, &str)]) -> std::path::PathBuf {
+        use std::sync::atomic::{AtomicUsize, Ordering};
+        static N: AtomicUsize = AtomicUsize::new(0);
+        let root = std::env::temp_dir().join(format!("osc-bridge-midi-of-{}-{}", std::process::id(), N.fetch_add(1, Ordering::SeqCst)));
+        for (rel, txt) in files {
+            let p = root.join(rel);
+            std::fs::create_dir_all(p.parent().unwrap()).unwrap();
+            std::fs::write(p, txt).unwrap();
+        }
+        root
+    }
+
+    const STOCK: &str = r#"{"_sources":[{"type":"vendor-doc","firmware":"15"}],"_limitations":"stock",
+        "device":{"name":"Box","vendor":"Acme","revision":"V15","osc_prefix":"/box","manufacturer_id":[67]},
+        "commands":[{"osc":"/init","frame":[240,67,247]}],"loads_sounds_of":["dx7"]}"#;
+
+    #[test]
+    fn a_firmware_sharing_another_files_midi_keeps_its_own_identity() {
+        let root = catalogue(&[("acme/box.vendor.fw-15.json", STOCK),
+            ("acme/box.vendor.fw-fork-1.0.json", r#"{"_sources":[{"type":"vendor-doc","firmware":"fork-1.0"}],
+                "device":{"name":"Box","vendor":"Acme","revision":"Fork 1.0","osc_prefix":"/box_fork"},
+                "midi_of":"acme/box.vendor.fw-15"}"#),
+            ("acme/box.vendor.fw-fork-1.0.md", "# Fork")]);
+        let dev = Device::load(root.join("acme/box.vendor.fw-fork-1.0.json")).unwrap();
+        assert_eq!((dev.device.revision.as_str(), dev.device.osc_prefix.as_str()), ("Fork 1.0", "/box_fork"));
+        assert_eq!(dev.device.manufacturer_id, vec![67], "the MIDI identity comes with the shared interface");
+        assert_eq!(dev.commands.len(), 1);
+        assert_eq!(dev.docs.as_deref(), Some("# Fork"), "its own README");
+        let raw: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(root.join("acme/box.vendor.fw-fork-1.0.json")).unwrap()).unwrap();
+        let doc = resolve_midi_of(&root.join("acme/box.vendor.fw-fork-1.0.json"), raw).unwrap();
+        assert_eq!(doc["_sources"][0]["firmware"], "fork-1.0");
+        assert!(doc.get("_limitations").is_none(), "the target's limitations are its own");
+        assert_eq!(doc["loads_sounds_of"][0], "dx7");
+        std::fs::remove_dir_all(root).ok();
+    }
+
+    #[test]
+    fn a_file_sharing_another_files_midi_adds_routes_of_its_own() {
+        let base = r#"{"device":{"name":"norns","vendor":"monome","osc_prefix":"/norns","transport":{"kind":"osc","host":"127.0.0.1","port":10111}},
+            "commands":[{"osc":"/remote/key","frame":[]},{"osc":"/param/{id}","frame":[]}],
+            "cc_params":{"channel":3,"entries":[{"osc":"/vol","cc":7}]}}"#;
+        let root = catalogue(&[("monome/norns.json", base),
+            ("monome/norns.script-awake.json", r#"{"_sources":[{"type":"vendor-doc"}],
+                "device":{"name":"norns","vendor":"monome","revision":"awake","osc_prefix":"/norns_awake"},"midi_of":"monome/norns",
+                "commands":[{"osc":"/param/{id}","frame":[1]},{"osc":"/param/step_div","frame":[2]}],
+                "cc_params":{"entries":[{"osc":"/cutoff","cc":74}]},
+                "triggers":{"entries":[{"osc":"/kick","sound":"Kick","note_range":[36,36],"note":36}]}}"#)]);
+        let dev = Device::load(root.join("monome/norns.script-awake.json")).unwrap();
+        let cmds: Vec<_> = dev.commands.iter().map(|c| c.osc.as_str()).collect();
+        assert_eq!(cmds, ["/remote/key", "/param/{id}", "/param/step_div"], "the target's, then its own");
+        assert_eq!(dev.commands[1].frame.len(), 1, "its own wins on the same address");
+        let cc = dev.cc_params.as_ref().unwrap();
+        assert_eq!((cc.channel, cc.entries.len()), (3, 2), "the table's framing stays the target's");
+        assert_eq!(dev.triggers.as_ref().unwrap().entries.len(), 1, "a table the target lacks is the file's");
+        assert_eq!(dev.device.osc_prefix, "/norns_awake");
+        assert!(dev.device.transport.is_some(), "the transport is the target's");
+        std::fs::remove_dir_all(root).ok();
+    }
+
+    #[test]
+    fn a_broken_midi_of_is_refused() {
+        let link = |target: &str, extra: &str| format!(
+            r#"{{"device":{{"name":"Box","vendor":"Acme","osc_prefix":"/b"}},"midi_of":"{target}"{extra}}}"#);
+        let other = STOCK.replace(r#""name":"Box""#, r#""name":"Crate""#);
+        let root = catalogue(&[("acme/box.vendor.fw-15.json", STOCK), ("acme/crate.json", &other),
+            ("other/box.json", STOCK),
+            ("acme/a.json", &link("acme/box.vendor.fw-15", "")),
+            ("acme/chain.json", &link("acme/a", "")),
+            ("acme/missing.json", &link("acme/none", "")),
+            ("acme/maker.json", &link("other/box", "")),
+            ("acme/device.json", &link("acme/crate", "")),
+            ("acme/body.json", &link("acme/box.vendor.fw-15", r#","sysex":{}"#)),
+            ("acme/twice.json", &link("acme/box.vendor.fw-15", r#","commands":[{"osc":"/x"},{"osc":"/x"}]"#)),
+            ("acme/framing.json", &link("acme/script", r#","cc_params":{"channel":2,"entries":[]}"#)),
+            ("acme/script.json", &STOCK.replace(r#""commands""#, r#""cc_params":{"channel":0,"entries":[]},"commands""#)),
+            ("acme/up.json", &link("../box", ""))]);
+        assert!(Device::load(root.join("acme/a.json")).is_ok());
+        for (file, why) in [("chain", "one level only"), ("missing", "reading"), ("maker", "another maker"),
+                            ("device", "another device"), ("body", "is the target's"), ("up", "not a catalogue id"),
+                            ("twice", "twice in its own commands"), ("framing", "cc_params.channel is the target's")] {
+            let err = Device::load(root.join(format!("acme/{file}.json"))).unwrap_err().to_string();
+            assert!(err.contains(why), "{file}: {err}");
+        }
+        std::fs::remove_dir_all(root).ok();
     }
 
     #[test]

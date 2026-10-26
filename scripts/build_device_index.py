@@ -21,6 +21,87 @@ DEVICES_DIR = REPO_ROOT / "devices"
 OUT = REPO_ROOT / "docs" / "devices.json"
 
 
+# The `device` keys that say which firmware a file is, not how it speaks MIDI.
+IDENTITY = ("name", "vendor", "revision", "osc_prefix", "kind")
+
+
+# Route lists and tables (`entries`) a `midi_of` file may add to its target's.
+OWN_LISTS = ("commands", "custom_commands")
+OWN_TABLES = ("params", "cc_params", "triggers")
+
+
+def resolve(path: Path, doc: dict) -> dict:
+    """A driver file as its firmware runs it, as osc-bridge loads it
+    (src/device.rs, resolve_midi_of): a file naming another with `midi_of`
+    (`m-vave/fm-1.vendor.fw-15`, a firmware sharing that MIDI interface)
+    keeps its `_` keys and the `device` keys of IDENTITY, and takes the rest
+    from the target, a driver of the same device in the same maker folder
+    with a MIDI body of its own. Routes of its own (OWN_LISTS, the entries of
+    OWN_TABLES) are appended to the target's, its own winning on the same OSC
+    address. ValueError when the link is broken."""
+    target = doc.get("midi_of")
+    if target is None:
+        return doc
+    fail = lambda why: ValueError(f"{path}: midi_of {target!r}: {why}")
+    parts = target.split("/") if isinstance(target, str) else []
+    if len(parts) != 2 or any(not c or c.startswith(".") for c in parts):
+        raise fail("not a catalogue id")
+    if parts[0] != path.parent.name:
+        raise fail("names another maker's driver")
+    other = [k for k in doc if not k.startswith("_") and k not in ("device", "midi_of", *OWN_LISTS, *OWN_TABLES)]
+    if other:
+        raise fail(f"{other[0]} is the target's (a midi_of file adds routes only)")
+
+    def entries(d: dict, key: str) -> list:
+        v = d.get(key)
+        return list((v if key in OWN_LISTS else (v or {}).get("entries")) or [])
+
+    for key in (*OWN_LISTS, *OWN_TABLES):
+        seen = set()
+        for e in entries(doc, key):
+            if not isinstance(e, dict) or "osc" not in e:
+                raise fail(f"a {key} entry has no osc address")
+            if e["osc"] in seen:
+                raise fail(f"{e['osc']} is twice in its own {key}")
+            seen.add(e["osc"])
+    try:
+        out = json.loads((path.parent / f"{parts[1]}.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError) as e:
+        raise fail(e) from e
+    if "midi_of" in out:
+        raise fail("the target shares another file's MIDI itself (one level only)")
+    if (doc.get("device") or {}).get("name") not in (None, (out.get("device") or {}).get("name")):
+        raise fail("the target is another device")
+
+    def merge(base: list, own: list) -> list:
+        mine = {e["osc"] for e in own}
+        return [e for e in base if not (isinstance(e, dict) and e.get("osc") in mine)] + own
+
+    out = {k: v for k, v in out.items() if not k.startswith("_")}
+    device = dict(out.pop("device", None) or {})
+    for k, v in doc.items():
+        if k == "device":
+            for key in IDENTITY:
+                if key in v:
+                    device[key] = v[key]
+                else:
+                    device.pop(key, None)
+        elif k in OWN_LISTS:
+            out[k] = merge(list(out.get(k) or []), entries(doc, k))
+        elif k in OWN_TABLES:
+            if isinstance(out.get(k), dict):
+                extra = [x for x in v if x != "entries"]
+                if extra:
+                    raise fail(f"{k}.{extra[0]} is the target's (a midi_of file adds entries only)")
+                out[k] = {**out[k], "entries": merge(list(out[k].get("entries") or []), entries(doc, k))}
+            else:
+                out[k] = v
+        else:
+            out[k] = v
+    out["device"] = device
+    return out
+
+
 def classify(doc: dict) -> str:
     sources = doc.get("_sources") or []
     types = [s.get("type") for s in sources if isinstance(s, dict)]
@@ -94,7 +175,7 @@ def main():
     entries = []
     for p in sorted(DEVICES_DIR.rglob("*.json")):
         try:
-            d = json.loads(p.read_text())
+            d = resolve(p, json.loads(p.read_text()))
         except Exception:
             continue
         dev = d.get("device") or {}
@@ -115,6 +196,8 @@ def main():
             "urls": urls[:2],
             "coverage": coverage(d),
         })
+        if d.get("midi_of"):
+            entries[-1]["midi_of"] = d["midi_of"]
         path = entries[-1]["path"]
         today = date.today().isoformat()
         added, updated = history.get(path) or ((today, today) if history else
