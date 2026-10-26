@@ -85,15 +85,18 @@ def opening(md: str) -> tuple[str, bool]:
     return part, len(part) < len(md.strip())
 
 
-def companion(repo: str) -> str | None:
+def companion(repo: str, sha: str | None = None, folder: str = "") -> str | None:
+    """The companion text of `repo`'s README at `sha` (its default branch's
+    last commit when not given), or of the README of its `folder`."""
     info = gh(f"repos/{repo}")
-    sha = gh(f"repos/{repo}/commits/{info['default_branch']}")["sha"]
+    sha = sha or gh(f"repos/{repo}/commits/{info['default_branch']}")["sha"]
     try:
-        readme = gh(f"repos/{repo}/readme?ref={sha}")
+        readme = gh(f"repos/{repo}/readme{'/' + folder if folder else ''}?ref={sha}")
     except urllib.error.HTTPError:
         return None
     blob = f"https://github.com/{repo}/blob/{sha}/"
-    text, more = opening(to_markdown(base64.b64decode(readme["content"]).decode("utf-8", "replace"), blob))
+    text, more = opening(to_markdown(base64.b64decode(readme["content"]).decode("utf-8", "replace"),
+                                     blob + (folder + "/" if folder else "")))
     if not text:
         return None
     licence = (info.get("license") or {}).get("spdx_id")
@@ -108,15 +111,19 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
-    by_repo: dict[str, list[Path]] = {}
+    by_repo: dict[tuple, list[Path]] = {}
     for path in sorted(DEVICES.rglob("*.json")):
         try:
             source = (json.loads(path.read_text(encoding="utf-8")).get("_sources") or [{}])[0]
         except (json.JSONDecodeError, UnicodeDecodeError):
             continue
-        m = re.match(r"https://github\.com/([^/]+/[^/#?]+)", source.get("url") or "")
+        m = re.match(r"https://github\.com/([^/]+/[^/#?]+)(?:/(tree|blob)/([0-9a-f]{40})(?:/([^#?]+))?)?", source.get("url") or "")
         if source.get("type") == "vendor-doc" and m:
-            by_repo.setdefault(m[1].removesuffix(".git"), []).append(path)
+            # A source pinned at a commit keeps its README from there, a
+            # folder's (/tree/<sha>/<folder>) from that folder.
+            folder = (m[4] or "").strip("/") if m[2] == "tree" else ""
+            key = (m[1].removesuffix(".git"), m[3], folder)
+            by_repo.setdefault(key, []).append(path)
     written = 0
     for repo, paths in by_repo.items():
         todo = [p.with_suffix(".md") for p in paths]
@@ -124,9 +131,9 @@ def main() -> int:
         if not todo:
             continue
         try:
-            text = companion(repo)
+            text = companion(*repo)
         except urllib.error.HTTPError as exc:
-            print(f"{repo}: {exc}", file=sys.stderr)
+            print(f"{repo[0]}: {exc}", file=sys.stderr)
             continue
         for t in todo:
             if text is None or (t.exists() and t.read_text(encoding="utf-8") == text):
