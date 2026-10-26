@@ -783,12 +783,17 @@ pub fn match_osc_path(parts: &[Part], addr: &str) -> Option<HashMap<String, Stri
     if idx == bytes.len() { Some(captures) } else { None }
 }
 
+/// The first handler matching an address wins, so the ones with fewer
+/// captures come first: a script's `/param/cutoff` before the norns'
+/// `/param/{id}`. Ties keep the driver's order.
 pub fn build_command_map(dev: &Device) -> Vec<CommandHandler> {
-    dev.commands.iter().map(|c| {
+    let mut cmds: Vec<CommandHandler> = dev.commands.iter().map(|c| {
         let full = dev.full_osc_path(&c.osc);
         let pattern_parts = parse_osc_tpl(&full);
         CommandHandler { cmd: c.clone(), pattern_parts }
-    }).collect()
+    }).collect();
+    cmds.sort_by_key(|h| h.pattern_parts.iter().filter(|p| matches!(p, Part::Capture(_))).count());
+    cmds
 }
 
 pub fn build_param_map(dev: &Device) -> HashMap<String, ParamEntry> {
@@ -1714,6 +1719,18 @@ mod tests {
         let parts = parse_osc_tpl("/minilab3/pad/{pad}/color");
         let caps = match_osc_path(&parts, "/minilab3/pad/3/color").unwrap();
         assert_eq!(caps.get("pad").unwrap(), "3");
+    }
+
+    #[test]
+    fn an_exact_address_is_matched_before_a_capture() {
+        let dev: Device = serde_json::from_value(serde_json::json!({
+            "device": {"name": "n", "vendor": "v", "osc_prefix": "/n"},
+            "commands": [{"osc": "/param/{id}"}, {"osc": "/param/cutoff"}]
+        })).unwrap();
+        let cmds = build_command_map(&dev);
+        let first = cmds.iter().find(|h| match_osc_path(&h.pattern_parts, "/n/param/cutoff").is_some()).unwrap();
+        assert_eq!(first.cmd.osc, "/param/cutoff");
+        assert!(cmds.iter().any(|h| match_osc_path(&h.pattern_parts, "/n/param/level").is_some()));
     }
 
     // ---- OSC transport (software drivers) ----
