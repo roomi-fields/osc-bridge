@@ -23,7 +23,8 @@
 //!   tells the door an agent now drives it (that agent only, until a new
 //!   session gives a new code).
 //! - door → server: `{"type":"ports","outputs":[names],"inputs":[names]}`
-//!   whenever its ports change, `{"type":"midi_in","port","data":[bytes]}`
+//!   (with `"known":{port: driver id}`, the devices the person recognised on
+//!   the page, when there are) whenever its ports change, `{"type":"midi_in","port","data":[bytes]}`
 //!   for each message a device sends, `confirm_reply`, and optionally
 //!   `{"type":"share","enabled":bool,"private":[port names]}` (default:
 //!   enabled, no port private): whether the device identities seen in the

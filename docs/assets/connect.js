@@ -74,9 +74,21 @@
     const mine = privatePorts();
     send({ type: "share", enabled: $("ob-connect-share").checked, private: shown.filter(n => mine.includes(n)) });
   }
+  // The devices the person recognised on this page ("Which devices are plugged
+  // in?", kept by recognise.js under "sh-recognised" by port name, unwrapped):
+  // port → driver id, so the agent knows them without detecting.
+  function knownPorts(ports) {
+    let mine = {};
+    try { mine = JSON.parse(store.get("sh-recognised") || "{}"); } catch (e) { /* none */ }
+    const base = n => ((n.match(/^MIDI(?:IN|OUT)\d*\s*\((.*)\)$/i) || [])[1] || n).trim();
+    const known = {};
+    for (const p of ports) if (mine[base(p)]) known[p] = mine[base(p)].id;
+    return known;
+  }
+  window.addEventListener("sh-recognised", () => sendPorts());
   function sendPorts() {
     const outputs = names(access && access.outputs), inputs = names(access && access.inputs);
-    send({ type: "ports", outputs, inputs });
+    send({ type: "ports", outputs, inputs, known: knownPorts(outputs.concat(inputs)) });
     shown = Array.from(new Set(outputs.concat(inputs)));
     const box = $("ob-connect-ports");
     box.textContent = shown.length ? "Devices (tick to keep one private: its identity is never recorded):" :
