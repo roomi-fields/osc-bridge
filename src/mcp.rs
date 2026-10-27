@@ -7,6 +7,7 @@
 //!  - `list_devices`   — enumerate all device JSONs under `--devices-dir`
 //!  - `get_device_docs`— fetch the .md companion of one device by slug
 //!  - `list_routes`    — return the OSC routes (commands + cc/params) of one device
+//!  - `export_device`  — one driver written as OSCQuery or MIDNAM (`crate::export`)
 //!  - `send`           — emit an OSC message to a running osc-bridge bind port
 //!  - `get_status`     — round-trip `/bridge/status` to a running bridge
 //!
@@ -491,6 +492,36 @@ pub fn tool_schemas() -> Value {
                 },
                 "annotations": {
                     "title": "List device routes",
+                    "readOnlyHint": true,
+                    "idempotentHint": true,
+                    "openWorldHint": false
+                }
+            },
+            {
+                "name": "export_device",
+                "description": "Write one driver in a format other tools read: 'oscquery' gives its OSC namespace as OSCQuery JSON (every route with type tags, ranges and access, for OSC controllers and browsers); 'midnam' gives its MIDI names as a MIDI Name Document (controllers incl. NRPN/RPN, named values, drum notes per channel, for DAWs such as Ardour or Logic). Both carry the credit and licence of the driver's sources. The document is the text content; an OSCQuery namespace is large (every address, each CC 0-127 included).",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or slug, from list_devices." },
+                        "format": { "type": "string", "enum": crate::export::FORMATS }
+                    },
+                    "required": ["device", "format"],
+                    "additionalProperties": false
+                },
+                "outputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "device": { "type": "string", "description": "Driver id." },
+                        "format": { "type": "string" },
+                        "media_type": { "type": "string", "description": "'application/json' or 'application/xml'." },
+                        "file_name": { "type": "string", "description": "A file name to save it under." },
+                        "bytes": { "type": "integer", "description": "Size of the document, which is the text content." }
+                    },
+                    "required": ["device", "format", "media_type", "file_name", "bytes"]
+                },
+                "annotations": {
+                    "title": "Export a driver",
                     "readOnlyHint": true,
                     "idempotentHint": true,
                     "openWorldHint": false
@@ -995,7 +1026,7 @@ pub fn tool_schemas() -> Value {
 }
 
 fn tool_names(opts: &McpOptions) -> Vec<&'static str> {
-    let local = ["list_devices", "get_device_docs", "list_routes", "send", "get_status",
+    let local = ["list_devices", "get_device_docs", "list_routes", "export_device", "send", "get_status",
          "detect_hardware", "backup_presets", "restore_presets"];
     // Taking and loading sounds needs the server's librarian, like the forwarded tools.
     let linked: &[&str] = if opts.online { &["take_sound", "load_preset"] } else { &[] };
@@ -1077,9 +1108,9 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
     }
 }
 
-/// The catalogue tools — `list_devices`, `get_device_docs`, `list_routes` —
-/// shared with the hosted server; None for any other tool. `status` gives a
-/// driver's trust for `list_devices`, when known.
+/// The catalogue tools — `list_devices`, `get_device_docs`, `list_routes`,
+/// `export_device` — shared with the hosted server; None for any other
+/// tool. `status` gives a driver's trust for `list_devices`, when known.
 pub fn catalogue_tool(name: &str, args: &Value, index: &DeviceIndex, status: &dyn Fn(&str) -> Option<String>)
                       -> Option<Result<Value, String>> {
     let slug = || args.get("slug").and_then(Value::as_str).ok_or_else(|| "missing slug".to_string());
@@ -1087,6 +1118,7 @@ pub fn catalogue_tool(name: &str, args: &Value, index: &DeviceIndex, status: &dy
         "list_devices" => list_devices(index, &DeviceFilter::from_args(args), status),
         "get_device_docs" => slug().and_then(|s| get_device_docs(index, s)),
         "list_routes" => slug().and_then(|s| list_routes(index, s)),
+        "export_device" => export_device(index, args),
         _ => return None,
     })
 }
@@ -1478,6 +1510,19 @@ fn load_device_by_slug(index: &DeviceIndex, slug: &str) -> Result<Device, String
     Device::load(path).map_err(|e| format!("load {}: {e}", path.display()))
 }
 
+fn export_device(index: &DeviceIndex, args: &Value) -> Result<Value, String> {
+    let wanted = args.get("device").and_then(Value::as_str).ok_or("missing device")?;
+    let format: crate::export::Format = args.get("format").and_then(Value::as_str).ok_or("missing format")?
+        .parse().map_err(|e: anyhow::Error| e.to_string())?;
+    let entry = index.find(wanted).ok_or_else(|| format!("no driver '{wanted}' (see list_devices)"))?;
+    let dev = Device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.path.display()))?;
+    let document = crate::export::export(&dev, format).map_err(|e| e.to_string())?;
+    let file_name = format!("{}.{}", entry.id.replace('/', "_"), format.extension());
+    let structured = json!({ "device": entry.id, "format": args["format"], "media_type": format.media_type(),
+        "file_name": file_name, "bytes": document.len() });
+    Ok(content_structured(&document, structured))
+}
+
 fn get_device_docs(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
     let dev = load_device_by_slug(index, slug)?;
     let (has_docs, markdown) = match dev.docs.as_deref() {
@@ -1511,6 +1556,7 @@ fn list_routes(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
         "rpn_lsb": e.rpn_lsb,
         "range": e.range,
         "expects": e.expects,
+        "usage": e.usage,
     })).collect()).unwrap_or_default();
     let params: Vec<Value> = dev.params.as_ref().map(|t| t.entries.iter().map(|e| json!({
         "address": format!("{prefix}{}", e.osc),
@@ -1797,6 +1843,16 @@ mod tests {
             .unwrap().unwrap();
         assert_eq!(listed["structuredContent"]["devices"][0]["usage_status"], "unconfirmed");
         assert!(catalogue_tool("send", &json!({}), &idx, &|_| None).is_none());
+        let midnam = catalogue_tool("export_device", &json!({"device": "korg/minilogue", "format": "midnam"}), &idx, &|_| None)
+            .unwrap().unwrap();
+        assert_eq!(midnam["structuredContent"]["media_type"], "application/xml");
+        assert!(midnam["content"][0]["text"].as_str().unwrap().contains("<MIDINameDocument>"));
+        let oscq = catalogue_tool("export_device", &json!({"device": "minilogue", "format": "oscquery"}), &idx, &|_| None)
+            .unwrap().unwrap();
+        let ns: Value = serde_json::from_str(oscq["content"][0]["text"].as_str().unwrap()).unwrap();
+        assert_eq!(ns["FULL_PATH"], "/");
+        assert!(catalogue_tool("export_device", &json!({"device": "minilogue", "format": "ctrlr"}), &idx, &|_| None)
+            .unwrap().is_err());
         let names: Vec<String> = tool_schemas()["tools"].as_array().unwrap().iter()
             .map(|t| t["name"].as_str().unwrap().to_string()).collect();
         assert!(crate::online::FORWARDED_TOOLS.iter().all(|f| names.iter().any(|n| n == f)), "{names:?}");
@@ -1815,12 +1871,12 @@ mod tests {
     }
 
     #[test]
-    fn tools_list_has_eight_tools() {
+    fn tools_list_has_nine_tools() {
         let t = tools_list(&test_opts());
         let arr = t.get("tools").unwrap().as_array().unwrap();
-        assert_eq!(arr.len(), 8);
+        assert_eq!(arr.len(), 9);
         let names: Vec<&str> = arr.iter().map(|t| t.get("name").unwrap().as_str().unwrap()).collect();
-        for expected in ["list_devices", "get_device_docs", "list_routes", "send", "get_status",
+        for expected in ["list_devices", "get_device_docs", "list_routes", "export_device", "send", "get_status",
                          "detect_hardware", "backup_presets", "restore_presets"] {
             assert!(names.contains(&expected), "tool {expected} missing");
         }

@@ -275,6 +275,15 @@ with `--ws-allow-origin https://example.org` (repeatable; `null` for
 `file://` pages; `*` for any), or `ws_allow_origins = [...]` in
 `bridge.toml`.
 
+### OSCQuery and MIDNAM
+
+`--oscquery-bind 127.0.0.1:7891` (or `oscquery_bind` in the `[osc]` section
+of `bridge.toml`) answers OSCQuery requests: `http://127.0.0.1:7891/` lists
+every OSC address the bridge answers, with its types and ranges, so OSCQuery
+clients build their controls by themselves. `osc-bridge export --device
+<file> --format oscquery|midnam` writes the same namespace, or the driver's
+MIDI names as a MIDNAM file for DAWs. See [docs/EXPORT.md](docs/EXPORT.md).
+
 ### Device not showing up? (Windows 11 24H2+)
 
 Since the March 2026 cumulative update (KB5079473), Windows 11 ships
@@ -472,8 +481,8 @@ page, [synthhub.roomi-fields.com/connect](https://synthhub.roomi-fields.com/conn
 }
 ```
 
-Eight local tools — `list_devices`, `get_device_docs`, `list_routes`, `send`,
-`get_status`, `detect_hardware`, `backup_presets`, `restore_presets` — plus
+Nine local tools — `list_devices`, `get_device_docs`, `list_routes`, `export_device`,
+`send`, `get_status`, `detect_hardware`, `backup_presets`, `restore_presets` — plus
 the server's: reports, trust, contributions and shared presets (find, load, take from the synth,
 share). Then in conversation:
 *"What can the MatrixBrute do? Sweep its filter cutoff."* — the model calls

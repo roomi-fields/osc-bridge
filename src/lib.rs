@@ -25,6 +25,9 @@ pub mod relay_protocol;
 pub mod online;
 pub mod connect;
 pub mod take;
+pub mod export;
+pub mod oscquery;
+pub mod midnam;
 
 pub use device::Device;
 pub use runtime::{Runtime, RuntimeOptions};

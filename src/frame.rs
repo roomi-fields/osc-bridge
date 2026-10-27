@@ -212,7 +212,7 @@ mod tests {
             midi_out: None,
             midi_in: Default::default(), replies: vec![],
             subscriptions: vec![],
-            custom_commands: vec![], docs: None, triggers: None,
+            custom_commands: vec![], docs: None, triggers: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
         }
     }
 

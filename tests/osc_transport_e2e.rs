@@ -80,7 +80,7 @@ fn ableton_like(target_port: u16, reply_port: u16) -> Device {
         }],
         docs: None,
         custom_commands: vec![],
-        triggers: None,
+        triggers: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
     }
 }
 
@@ -114,7 +114,7 @@ fn passthrough_like(target_port: u16, reply_port: u16) -> Device {
         subscriptions: vec![],
         docs: None,
         custom_commands: vec![],
-        triggers: None,
+        triggers: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
     }
 }
 
@@ -139,6 +139,7 @@ fn osc_passthrough_roundtrip() {
         osc_clients: vec![client_addr],
         ws_bind: None,
         ws_allow_origins: vec![],
+        oscquery_bind: None,
     };
 
     std::thread::spawn(move || { let _ = Runtime::run(opts); });
@@ -213,6 +214,7 @@ fn osc_transport_full_roundtrip() {
         osc_clients: vec![client_addr],
         ws_bind: None,
         ws_allow_origins: vec![],
+        oscquery_bind: None,
     };
 
     std::thread::spawn(move || { let _ = Runtime::run(opts); });
@@ -289,6 +291,7 @@ fn bridge_status_answers_a_caller_that_is_not_an_osc_client() {
         osc_clients: vec![],
         ws_bind: None,
         ws_allow_origins: vec![],
+        oscquery_bind: None,
     };
     std::thread::spawn(move || { let _ = Runtime::run(opts); });
     std::thread::sleep(Duration::from_millis(300));

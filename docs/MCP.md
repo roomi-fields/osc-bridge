@@ -74,13 +74,14 @@ The server speaks JSON-RPC 2.0 over stdio.
 - `--offline` — do not contact the SynthHub server (also
   `OSC_BRIDGE_OFFLINE=1`); see *Linked to the SynthHub server* below.
 
-## The eight tools
+## The nine tools
 
 | Tool | What it does |
 |---|---|
 | `list_devices` | Find device drivers — name, vendor, slug, kind (hardware/software), source tier, documented firmware. Optional `query` (words matched in vendor, name and slug), `vendor`, `kind`, `limit`. |
 | `get_device_docs` | Fetch the markdown companion guide for one device (by slug). |
 | `list_routes` | Return a device's full OSC surface — declarative commands, CC/NRPN params, SysEx params, named drum sounds, reply patterns. |
+| `export_device` | Write one driver (`device`: id or slug) as `oscquery` (its OSC namespace, OSCQuery JSON) or `midnam` (its MIDI names, MIDI Name Document XML), with its sources' credit and licence. See [EXPORT.md](EXPORT.md). |
 | `send` | Send a single OSC message to a running `osc-bridge` instance (typed args: int, float, string, bool). |
 | `get_status` | Round-trip `/bridge/status` to a running bridge and report the replies. |
 | `detect_hardware` | Find the MIDI devices plugged into this computer: list ports, ask each device who it is (standard MIDI Identity Request — changes nothing on the device), match the catalogue, and return a ready-to-run `osc-bridge run` command with the right port numbers. |

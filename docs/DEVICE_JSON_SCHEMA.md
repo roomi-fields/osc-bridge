@@ -57,7 +57,9 @@ others name that file instead of copying it:
 - The file keeps its `_` keys and the `device` keys `name`, `vendor`,
   `revision`, `osc_prefix` and `kind`; everything else (transport, SysEx,
   identity bytes, MIDI in and out, routes, `loads_sounds_of`) is the shared
-  file's.
+  file's. As loaded, it also holds `_midi_of_sources`: the shared file's
+  `_sources` (and those of the files it shares from), so what is written
+  from it credits where its MIDI came from (`EXPORT.md`).
 - It may add routes of its own: `commands`, `custom_commands`, and the
   `entries` of `params`, `cc_params` and `triggers` (a script's parameters on
   the instrument that runs it). They come after the shared file's routes; on
@@ -144,6 +146,10 @@ can be declared as plain MIDI Control Change messages:
 OSC calls `/<prefix>/filter/cutoff 64` send `[0xB0 | channel, cc_num, value]` over MIDI.
 A second OSC argument can override the channel per call: `/<prefix>/filter/cutoff 64 3` sends on channel 3
 (the third, after the LSB, for an entry with `nrpn_lsb_range`).
+
+`_usage` (optional, from the source) says what the values mean, as
+`N: name; N-M: name` (`"0: Off; 1-127: On"`). It changes nothing sent; a
+MIDNAM export turns such a list into named values.
 
 The device's `sysex.header`/`footer` can be empty (`[]`) when there is no SysEx.
 

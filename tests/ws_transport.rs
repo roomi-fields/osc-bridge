@@ -161,7 +161,7 @@ fn passthrough_like(target_port: u16, reply_port: u16) -> Device {
         subscriptions: vec![],
         docs: None,
         custom_commands: vec![],
-        triggers: None,
+        triggers: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
     }
 }
 
@@ -191,6 +191,7 @@ fn ws_client_end_to_end_on_osc_passthrough_runtime() {
         osc_clients: vec![],
         ws_bind: Some(format!("127.0.0.1:{ws_port}")),
         ws_allow_origins: vec![],
+        oscquery_bind: None,
     };
     std::thread::spawn(move || { let _ = Runtime::run(opts); });
     std::thread::sleep(Duration::from_millis(300));

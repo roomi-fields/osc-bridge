@@ -131,6 +131,20 @@ enum Cmd {
         /// served from localhost and non-browser clients are always allowed.
         #[arg(long = "ws-allow-origin")]
         ws_allow_origins: Vec<String>,
+        /// Optional HTTP listen address (e.g. 127.0.0.1:7891) answering
+        /// OSCQuery requests: `/` gives the device's OSC namespace (routes,
+        /// types, ranges), `/?HOST_INFO` the OSC port and transport.
+        #[arg(long = "oscquery-bind")]
+        oscquery_bind: Option<String>,
+    },
+    /// Write a device JSON in another format on stdout: `oscquery` (its OSC
+    /// namespace, JSON) or `midnam` (its MIDI names, MIDI Name Document XML).
+    Export {
+        /// Path to the device JSON (e.g. devices/korg/minilogue.json).
+        #[arg(long)]
+        device: PathBuf,
+        #[arg(long, value_parser = osc_bridge::export::FORMATS)]
+        format: String,
     },
     /// Send one OSC message to a local bridge for quick testing.
     OscSend {
@@ -204,8 +218,13 @@ fn main() -> Result<()> {
         }
         Cmd::Detect { no_probe, devices_dir } => osc_bridge::mcp::print_detection(&devices_dir, !no_probe),
         Cmd::Inspect { device } => cmd_inspect(device),
-        Cmd::Run { device, out_port, in_port, bind, osc_clients, ws_bind, ws_allow_origins } =>
-            cmd_run(device, out_port, in_port, bind, osc_clients, ws_bind, ws_allow_origins),
+        Cmd::Run { device, out_port, in_port, bind, osc_clients, ws_bind, ws_allow_origins, oscquery_bind } =>
+            cmd_run(device, out_port, in_port, bind, osc_clients, ws_bind, ws_allow_origins, oscquery_bind),
+        Cmd::Export { device, format } => {
+            let dev = Device::load(&device)?;
+            print!("{}", osc_bridge::export::export(&dev, format.parse()?)?);
+            Ok(())
+        }
         Cmd::OscSend { target, addr, args, from_file } => cmd_osc_send(target, addr, args, from_file),
         Cmd::OscListen { bind } => cmd_osc_listen(bind),
         Cmd::Lint { device } => cmd_lint(device),
@@ -328,7 +347,8 @@ fn hex_vec(v: &[u8]) -> String {
     v.iter().map(|b| format!("{:02X}", b)).collect::<Vec<_>>().join(" ")
 }
 
-fn cmd_run(path: PathBuf, out_port: Option<usize>, in_port: Option<usize>, bind: String, clients: Vec<String>, ws_bind: Option<String>, ws_allow_origins: Vec<String>) -> Result<()> {
+fn cmd_run(path: PathBuf, out_port: Option<usize>, in_port: Option<usize>, bind: String, clients: Vec<String>,
+           ws_bind: Option<String>, ws_allow_origins: Vec<String>, oscquery_bind: Option<String>) -> Result<()> {
     let dev = Device::load(&path)?;
     let is_osc = dev.device.transport.as_ref().map(|t| t.kind.as_str()) == Some("osc");
     let out_port = match (out_port, is_osc) {
@@ -353,6 +373,7 @@ fn cmd_run(path: PathBuf, out_port: Option<usize>, in_port: Option<usize>, bind:
         osc_clients: client_addrs,
         ws_bind,
         ws_allow_origins,
+        oscquery_bind,
     })
 }
 

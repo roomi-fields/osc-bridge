@@ -9,6 +9,7 @@
 //! bind = "127.0.0.1:7777"
 //! clients = ["127.0.0.1:8888"]
 //! # ws_bind = "127.0.0.1:7890"   # optional — browser clients over WebSocket
+//! # oscquery_bind = "127.0.0.1:7891"   # optional — OSCQuery namespace over HTTP
 //!
 //! # Hardware (MIDI/SysEx) device.
 //! [[devices]]
@@ -210,6 +211,10 @@ pub struct OscConfig {
     /// pages and non-browser clients are always accepted.
     #[serde(default)]
     pub ws_allow_origins: Vec<String>,
+    /// Optional HTTP listen address (e.g. "127.0.0.1:7891") answering
+    /// OSCQuery requests with the namespace of every device.
+    #[serde(default)]
+    pub oscquery_bind: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -430,6 +435,7 @@ impl Orchestrator {
 
         // WebSocket transport — browser clients dispatch through the same
         // prefix-routing (and inter-device routes) as the UDP loop below.
+        let mut ws_local = None;
         if let (Some(bind), Some(wsc)) = (&cfg.osc.ws_bind, &ws_clients) {
             let dispatch_cb: crate::ws::WsDispatch = {
                 let devices = devices.clone();
@@ -442,6 +448,7 @@ impl Orchestrator {
             };
             let local = crate::ws::serve(bind, wsc.clone(), dispatch_cb, cfg.osc.ws_allow_origins.clone())?;
             eprintln!("WS IN    {local}");
+            ws_local = Some(local);
         }
 
         // --- Deferred wiring: MIDI-IN connections (kept alive for the process
@@ -505,6 +512,8 @@ impl Orchestrator {
         // Inbound OSC socket
         let sock = UdpSocket::bind(&cfg.osc.bind)
             .with_context(|| format!("bind {}", cfg.osc.bind))?;
+        let served: Vec<Device> = devices.iter().map(|d| d.device().clone()).collect();
+        crate::runtime::serve_oscquery(&cfg.osc.oscquery_bind, &served, &sock, ws_local)?;
         eprintln!("Orchestrator ready. {} device(s) on {}", devices.len(), cfg.osc.bind);
         for c in &client_addrs { eprintln!("OSC OUT  {c}"); }
 

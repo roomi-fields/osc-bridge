@@ -68,11 +68,12 @@ and send back each kind.
 | MIDI Guide CSV | yes (`pencilresearch` tier) | — |
 | Electra One preset | yes (`electra-*` tier) | planned |
 | KnobKraft adaptation | sounds, on the hosted server | — |
-| OSCQuery | — | planned |
-| MIDNAM | planned | planned |
+| OSCQuery | — | yes (`osc-bridge export`, `--oscquery-bind`) |
+| MIDNAM | planned | yes (`osc-bridge export`) |
 | Ctrlr panel | planned | later |
 | Cakewalk instrument definition | planned | — |
 | MIDI-CI Property Exchange | later | later |
 
 Each file written from a driver carries the credit and licence of the
-sources its data came from.
+sources its data came from. What each written format holds and leaves out:
+`EXPORT.md`.

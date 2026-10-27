@@ -11,6 +11,17 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Added — OSCQuery and MIDNAM
+- `osc-bridge export --device <file> --format oscquery|midnam` and the MCP
+  tool `export_device` (shared with the hosted server) write a driver as an
+  OSCQuery namespace (every OSC route with types, ranges, access) or a MIDI
+  Name Document (controllers incl. NRPN/RPN, named values, drum notes per
+  channel), with its sources' credit and licence. See `docs/EXPORT.md`.
+- `osc-bridge run --oscquery-bind <addr>` (`oscquery_bind` under
+  `orchestrate`) serves the namespace over HTTP, with `?HOST_INFO`.
+- A loaded `midi_of` file keeps the shared file's sources as
+  `_midi_of_sources`, so what is written from it credits both.
+
 ## [0.16.0] — 2026-10-24
 
 ### Added — shared presets

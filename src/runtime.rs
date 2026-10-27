@@ -30,6 +30,9 @@ pub struct RuntimeOptions {
     /// Extra browser origins allowed on the WebSocket (`*` for any). Local
     /// pages and non-browser clients are always accepted.
     pub ws_allow_origins: Vec<String>,
+    /// Optional HTTP listen address (e.g. `127.0.0.1:7891`) answering
+    /// OSCQuery requests with the device's OSC namespace (`crate::oscquery`).
+    pub oscquery_bind: Option<String>,
 }
 
 pub struct Runtime;
@@ -130,6 +133,7 @@ impl Runtime {
 
         // WebSocket transport — every connected browser client goes through
         // the exact same dispatch as the UDP loop below.
+        let mut ws_local = None;
         if let (Some(bind), Some(wsc)) = (&opts.ws_bind, &ws_clients) {
             let dispatch_cb: crate::ws::WsDispatch = {
                 let dev = dev.clone();
@@ -147,10 +151,12 @@ impl Runtime {
             };
             let local = crate::ws::serve(bind, wsc.clone(), dispatch_cb, opts.ws_allow_origins.clone())?;
             eprintln!("WS IN    {local}");
+            ws_local = Some(local);
         }
 
         let sock = UdpSocket::bind(&opts.osc_bind)
             .with_context(|| format!("bind {}", opts.osc_bind))?;
+        serve_oscquery(&opts.oscquery_bind, std::slice::from_ref(dev.as_ref()), &sock, ws_local)?;
         eprintln!("Ready. Ctrl-C to stop.");
 
         let mut buf = [0u8; 65536];
@@ -171,6 +177,16 @@ impl Runtime {
 }
 
 pub type ScriptCell = Arc<OnceLock<Mutex<ScriptEngine>>>;
+
+/// Start the OSCQuery listener when `bind` is set, describing `devices` as
+/// reached on `sock` (UDP) and the WebSocket at `ws`.
+pub fn serve_oscquery(bind: &Option<String>, devices: &[Device], sock: &UdpSocket, ws: Option<SocketAddr>) -> Result<()> {
+    if let Some(bind) = bind {
+        let local = crate::oscquery::serve(bind, devices, sock.local_addr()?, ws)?;
+        eprintln!("OSCQuery http://{local}/");
+    }
+    Ok(())
+}
 
 /// Build the `/bridge/status/device` replies for every device currently
 /// served by this runtime. In single-device mode returns one entry;
@@ -1327,6 +1343,7 @@ fn run_osc(opts: RuntimeOptions) -> Result<()> {
     let cmds = Arc::new(build_command_map(&dev));
 
     // WebSocket transport — same dispatch as the UDP loop below.
+    let mut ws_local = None;
     if let (Some(bind), Some(wsc)) = (&opts.ws_bind, &ws_clients) {
         let dispatch_cb: crate::ws::WsDispatch = {
             let dev = dev.clone();
@@ -1339,10 +1356,12 @@ fn run_osc(opts: RuntimeOptions) -> Result<()> {
         };
         let local = crate::ws::serve(bind, wsc.clone(), dispatch_cb, opts.ws_allow_origins.clone())?;
         eprintln!("WS IN    {local}");
+        ws_local = Some(local);
     }
 
     let sock = UdpSocket::bind(&opts.osc_bind)
         .with_context(|| format!("bind {}", opts.osc_bind))?;
+    serve_oscquery(&opts.oscquery_bind, std::slice::from_ref(dev.as_ref()), &sock, ws_local)?;
     eprintln!("Ready. Ctrl-C to stop.");
 
     let mut buf = [0u8; 65536];

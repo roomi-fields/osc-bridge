@@ -47,6 +47,35 @@ pub struct Device {
     /// named OSC address that fires one MIDI note on the right channel.
     #[serde(default)]
     pub triggers: Option<TriggerTable>,
+    /// Catalogue id of the file whose MIDI this one shares (see
+    /// [`resolve_midi_of`]); its routes are already merged in.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub midi_of: Option<String>,
+    /// Where the file's data comes from, with its credit and licence.
+    #[serde(default, rename = "_sources")]
+    pub sources: Vec<Source>,
+    /// With `midi_of`: the sources of the shared file (and of the files it
+    /// shares from), where its MIDI interface comes from.
+    #[serde(default, rename = "_midi_of_sources", skip_serializing_if = "Vec::is_empty")]
+    pub midi_of_sources: Vec<Source>,
+}
+
+/// One `_sources` entry. Only the keys an export credits are read.
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
+pub struct Source {
+    /// Source tier (`vendor-doc`, `pencilresearch`, `hardware-verified`…).
+    #[serde(default, rename = "type")]
+    pub tier: String,
+    #[serde(default)]
+    pub url: Option<String>,
+    #[serde(default)]
+    pub attribution: Option<String>,
+    #[serde(default)]
+    pub author: Option<String>,
+    #[serde(default)]
+    pub license: Option<String>,
+    #[serde(default)]
+    pub firmware: Option<String>,
 }
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
@@ -165,6 +194,9 @@ pub struct CcParamEntry {
     /// string is accepted, the runtime owns the interpretation.
     #[serde(default = "default_expects")]
     pub expects: String,
+    /// What the values mean, as the source states it (`0: Off; 1-127: On`).
+    #[serde(default, rename = "_usage", skip_serializing_if = "Option::is_none")]
+    pub usage: Option<String>,
 }
 
 fn default_expects() -> String { "continuous".to_string() }
@@ -508,6 +540,9 @@ fn resolve_chain(path: &Path, doc: serde_json::Value, chain: &mut Vec<std::path:
         base.into_iter().filter(|e| osc(e).map_or(true, |a| !mine.contains(&a))).chain(own).collect()
     };
     let obj = out.as_object_mut().ok_or_else(|| fail("the target is not a driver".into()))?;
+    // Credit for the MIDI taken from the target: its sources and those it took from.
+    let shared: Vec<Value> = ["_sources", "_midi_of_sources"].iter()
+        .filter_map(|k| obj.get(*k).and_then(Value::as_array)).flatten().cloned().collect();
     obj.retain(|k, _| !k.starts_with('_'));
     let mut device = obj.remove("device").unwrap_or_else(|| Value::Object(Default::default()));
     for (k, v) in doc.as_object().into_iter().flatten() {
@@ -535,6 +570,9 @@ fn resolve_chain(path: &Path, doc: serde_json::Value, chain: &mut Vec<std::path:
         } else {
             obj.insert(k.clone(), v.clone());
         }
+    }
+    if !shared.is_empty() {
+        obj.insert("_midi_of_sources".into(), Value::Array(shared));
     }
     obj.insert("device".into(), device);
     Ok(out)
@@ -621,6 +659,9 @@ mod tests {
         let doc = resolve_midi_of(&root.join("acme/box.vendor.fw-fork-1.0.json"), raw).unwrap();
         assert_eq!(doc["_sources"][0]["firmware"], "fork-1.0");
         assert!(doc.get("_limitations").is_none(), "the target's limitations are its own");
+        assert_eq!(doc["_midi_of_sources"][0]["firmware"], "15", "the shared MIDI is credited to its sources");
+        assert_eq!((dev.sources[0].firmware.as_deref(), dev.midi_of_sources[0].firmware.as_deref()),
+                   (Some("fork-1.0"), Some("15")));
         assert_eq!(doc["loads_sounds_of"][0], "dx7");
         std::fs::remove_dir_all(root).ok();
     }
