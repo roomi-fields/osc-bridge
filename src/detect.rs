@@ -246,11 +246,22 @@ pub fn decode_firmware(rule: &FirmwareRule, reply: &[u8]) -> Option<String> {
     }
 }
 
-/// Two firmware versions name the same release: equal, or equal numbers
-/// once trailing zeros are dropped (`2.0` and `2.0.0`).
+/// Two firmware versions name the same release: equal, or the last
+/// version number in each (`2.0`, `community-1.2.1`, `FM-1_015`) equal once
+/// trailing zeros are dropped (`2.0` and `2.0.0`, `015` and `15`).
 pub fn same_version(a: &str, b: &str) -> bool {
     let nums = |s: &str| -> Option<Vec<u32>> {
-        let mut v: Vec<u32> = s.trim().trim_start_matches(['v', 'V']).split('.').map(|p| p.parse().ok()).collect::<Option<_>>()?;
+        let mut runs: Vec<Vec<u32>> = Vec::new();
+        let mut cur = String::new();
+        for c in s.chars().chain(std::iter::once(' ')) {
+            if c.is_ascii_digit() || (c == '.' && !cur.is_empty() && !cur.ends_with('.')) {
+                cur.push(c);
+            } else if !cur.is_empty() {
+                runs.push(cur.trim_end_matches('.').split('.').filter_map(|p| p.parse().ok()).collect());
+                cur.clear();
+            }
+        }
+        let mut v = runs.pop()?;
         while v.len() > 1 && v.last() == Some(&0) { v.pop(); }
         Some(v)
     };
@@ -303,7 +314,8 @@ pub struct Ranked {
 
 /// Score every candidate against a port name and the SysEx the device sent
 /// back while detected (its Identity Reply, its answers to maker requests);
-/// return the best ones, highest score first. A driver whose identity block
+/// return the best ones, highest score first (then the most trustworthy
+/// source). A driver whose identity block
 /// recognises the device ranks first, the one for the firmware it reported
 /// above the others; drivers matching neither the name nor the identity are
 /// dropped.
@@ -356,7 +368,10 @@ pub fn rank(port_name: &str, replies: &[Vec<u8>], catalogue: &[Candidate], limit
         }
         Some(Ranked { score, index: i, recognised })
     }).collect();
-    scored.sort_by(|a, b| b.score.cmp(&a.score).then_with(|| catalogue[a.index].id.cmp(&catalogue[b.index].id)));
+    // Equal scores: the most trustworthy source first, as a slug resolves.
+    scored.sort_by(|a, b| b.score.cmp(&a.score)
+        .then_with(|| crate::mcp::tier_rank(&catalogue[a.index].tier).cmp(&crate::mcp::tier_rank(&catalogue[b.index].tier)))
+        .then_with(|| catalogue[a.index].id.cmp(&catalogue[b.index].id)));
     scored.truncate(limit);
     scored
 }
@@ -658,5 +673,7 @@ mod tests {
         assert_eq!(decode_firmware(&rule("raw_bytes", &[40]), &seqtrak), None, "past the end");
         assert!(same_version("2.0", "2.0.0") && same_version("v1.5", "1.5") && !same_version("2.1", "2.10"));
         assert!(same_version("hacktribe-94c8e60", "hacktribe-94c8e60") && !same_version("1.2", "x"));
+        assert!(same_version("1.2.1", "community-1.2.1") && same_version("FM-1_015", "15") && !same_version("1.1", "1.2.1"));
+        assert!(same_version("1.1", "clipper-1.1-experimental") && !same_version("1.2", "1.2-on-2.0"), "the last number counts");
     }
 }

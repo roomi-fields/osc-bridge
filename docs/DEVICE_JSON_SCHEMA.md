@@ -119,8 +119,9 @@ only by its USB port name has `ports` alone.
 
 - A driver whose identity recognises the answer (or the port name) is put
   first, and among the variants of a device the one whose `_sources` firmware
-  is the version read (`2.0` and `2.0.0` are the same) comes before those of
-  unknown firmware, and those of another firmware last. A firmware file that
+  is the version read comes before those of unknown firmware, and those of
+  another firmware last. Versions compare by their last number, trailing
+  zeros dropped: `2.0` is `2.0.0`, `community-1.2.1` is `1.2.1`. A firmware file that
   answers differently carries its own `identity` (see `midi_of`).
 
 ## Programs — what a program change recalls
