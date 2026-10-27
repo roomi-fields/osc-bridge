@@ -77,36 +77,50 @@
   // The devices the person recognised on this page ("Which devices are plugged
   // in?", kept by recognise.js under "sh-recognised" by port name, unwrapped):
   // port → driver id, so the agent knows them without detecting.
+  const base = n => ((n.match(/^MIDI(?:IN|OUT)\d*\s*\((.*)\)$/i) || [])[1] || n).trim();
+  const recognised = () => { try { return JSON.parse(store.get("sh-recognised") || "{}"); } catch (e) { return {}; } };
   function knownPorts(ports) {
-    let mine = {};
-    try { mine = JSON.parse(store.get("sh-recognised") || "{}"); } catch (e) { /* none */ }
-    const base = n => ((n.match(/^MIDI(?:IN|OUT)\d*\s*\((.*)\)$/i) || [])[1] || n).trim();
+    const mine = recognised();
     const known = {};
     for (const p of ports) if (mine[base(p)]) known[p] = mine[base(p)].id;
     return known;
   }
+  // The ports of one device together, as recognise.js groups them: the first
+  // word of the name once unwrapped, the whole name when it says nothing.
+  const deviceOf = n => {
+    const words = base(n).toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+    return words.length && !["usb", "midi", "port", "in", "out", "the", "my"].includes(words[0]) ? words[0] : words.join(" ");
+  };
   window.addEventListener("sh-recognised", () => sendPorts());
   function sendPorts() {
     const outputs = names(access && access.outputs), inputs = names(access && access.inputs);
     send({ type: "ports", outputs, inputs, known: knownPorts(outputs.concat(inputs)) });
     shown = Array.from(new Set(outputs.concat(inputs)));
+    // One line per device, by its recognised name: keep it private, and
+    // nothing about it is recorded.
+    const devices = new Map();
+    for (const port of shown) {
+      const key = deviceOf(port);
+      if (!devices.has(key)) devices.set(key, { name: (recognised()[base(port)] || {}).name || base(port), ports: [] });
+      devices.get(key).ports.push(port);
+    }
     const box = $("ob-connect-ports");
-    box.textContent = shown.length ? "Devices (tick to keep one private: its identity is never recorded):" :
+    box.textContent = devices.size ? "Your devices (tick one to keep it private: SynthHub records nothing about it):" :
       "No MIDI device found: plug one in, it will appear here.";
     const mine = privatePorts();
-    shown.forEach(name => {
+    devices.forEach(d => {
       const label = document.createElement("label");
       label.className = "ob-connect-device";
       const tick = document.createElement("input");
       tick.type = "checkbox";
-      tick.checked = mine.includes(name);
+      tick.checked = d.ports.every(p => mine.includes(p));
       tick.addEventListener("change", () => {
-        const now = privatePorts().filter(n => n !== name);
-        if (tick.checked) now.push(name);
+        const now = privatePorts().filter(n => !d.ports.includes(n));
+        if (tick.checked) now.push(...d.ports);
         store.set("osc-bridge-private", JSON.stringify(now));
         sendShare();
       });
-      label.append(tick, " " + name + " — private");
+      label.append(tick, " " + d.name + " — private");
       box.append(label);
     });
     sendShare();
