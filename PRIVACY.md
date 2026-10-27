@@ -20,8 +20,16 @@ other users and agents fixed and confirmed them:
   (`osc-bridge detect`, `detect_hardware`) sends the names of your MIDI ports
   and the identity your devices answer with (maker, model, firmware), so the
   server names the matching drivers; **listing devices** sends the search
-  words. These requests carry no account: the server records the time, what
-  was asked and the osc-bridge version.
+  words. These requests carry no account. What the server keeps of them is
+  counters only, with no visitor, account, address or time of day attached:
+  per driver, how many times it was fetched each day; per device name asked
+  for, how many times it was found or missing; per MIDI port name (lower
+  case, without its numbers), how many times it was seen, whether the device
+  identified itself, and which driver came first, or none. It learns which
+  drivers are used and which devices are missing, never who uses what. Its
+  general request log names only the kind of request (`/api/v1/devices/…`,
+  `/v1/devices/…`, `/v1/detect`, a search), never the driver, device, ports
+  or search words.
 - **An anonymous account** is issued by the server the first time your agent
   reports or contributes, and kept on your machine in `<config>/osc-bridge/user`.
 - **When your agent reports or contributes** (`report_result`,
