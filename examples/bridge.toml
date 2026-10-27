@@ -16,26 +16,28 @@ clients = ["127.0.0.1:8888"]
 # Optional OSCQuery listener (HTTP): GET / gives every device's OSC namespace.
 # oscquery_bind = "127.0.0.1:7891"
 
+# spec: a driver file, or a catalogue id or slug (fetched from the SynthHub
+# server once, then kept in the cache; offline, the cached copy).
 [[devices]]
-spec          = "devices/moog/subsequent-37.json"
+spec          = "moog/subsequent-37"
 midi_out_port = 3
 midi_in_port  = 2
 # osc_prefix: inherited from the JSON (/sub37 here) unless overridden.
 
 [[devices]]
-spec          = "devices/polyend/synth.json"
+spec          = "polyend/synth"
 midi_out_port = 5
 midi_in_port  = 4
 
 # Two MatrixBrutes in the same rig — give them distinct OSC prefixes.
 # [[devices]]
-# spec          = "devices/arturia/matrixbrute.json"
+# spec          = "arturia/matrixbrute"
 # osc_prefix    = "/matrixbrute-1"
 # midi_out_port = 7
 # midi_in_port  = 6
 #
 # [[devices]]
-# spec          = "devices/arturia/matrixbrute.json"
+# spec          = "arturia/matrixbrute"
 # osc_prefix    = "/matrixbrute-2"
 # midi_out_port = 9
 # midi_in_port  = 8

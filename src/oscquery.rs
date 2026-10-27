@@ -577,7 +577,7 @@ mod tests {
     use super::*;
 
     fn load(id: &str) -> Device {
-        Device::load(format!("devices/{id}.json")).unwrap_or_else(|e| panic!("{id}: {e}"))
+        Device::load(format!("tests/fixtures/devices/{id}.json")).unwrap_or_else(|e| panic!("{id}: {e}"))
     }
 
     fn node<'a>(ns: &'a Value, path: &str) -> &'a Value {

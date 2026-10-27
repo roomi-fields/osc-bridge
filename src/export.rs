@@ -135,7 +135,7 @@ mod tests {
     }
 
     #[test]
-    fn every_driver_of_the_catalogue_is_written_in_both_formats() {
+    fn every_test_driver_is_written_in_both_formats() {
         fn walk(dir: &std::path::Path, out: &mut Vec<std::path::PathBuf>) {
             for e in std::fs::read_dir(dir).unwrap().flatten() {
                 let p = e.path();
@@ -143,7 +143,7 @@ mod tests {
             }
         }
         let mut files = Vec::new();
-        walk(std::path::Path::new("devices"), &mut files);
+        walk(std::path::Path::new("tests/fixtures/devices"), &mut files);
         let opts = roxmltree::ParsingOptions { allow_dtd: true, ..Default::default() };
         let mut midnams = 0;
         for f in &files {

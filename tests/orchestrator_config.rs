@@ -13,7 +13,7 @@ fn parses_minimal_config() {
 bind = "127.0.0.1:7777"
 
 [[devices]]
-spec = "devices/moog/subsequent-37.json"
+spec = "moog/subsequent-37"
 midi_out_port = 3
 "#;
     let cfg: OrchestratorConfig = toml::from_str(toml).unwrap();
@@ -33,13 +33,13 @@ bind = "127.0.0.1:7777"
 clients = ["127.0.0.1:8888", "127.0.0.1:9999"]
 
 [[devices]]
-spec = "devices/arturia/matrixbrute.json"
+spec = "arturia/matrixbrute"
 osc_prefix = "/matrixbrute-1"
 midi_out_port = 3
 midi_in_port  = 2
 
 [[devices]]
-spec = "devices/arturia/matrixbrute.json"
+spec = "arturia/matrixbrute"
 osc_prefix = "/matrixbrute-2"
 midi_out_port = 5
 midi_in_port  = 4
@@ -61,10 +61,10 @@ fn parses_software_device_without_midi_port() {
 bind = "127.0.0.1:7777"
 
 [[devices]]
-spec = "devices/ableton/live.third-party-osc.fw-12.2.json"
+spec = "ableton/live.third-party-osc.fw-12.2"
 
 [[devices]]
-spec = "devices/arturia/minilab3.json"
+spec = "arturia/minilab3"
 midi_out_port = 4
 midi_in_port = 0
 "#;
@@ -82,7 +82,7 @@ fn parses_osc_transport_overrides() {
 bind = "127.0.0.1:7777"
 
 [[devices]]
-spec = "devices/ableton/live.third-party-osc.fw-12.2.json"
+spec = "ableton/live.third-party-osc.fw-12.2"
 host = "192.168.1.40"
 port = 11000
 reply_port = 11001
@@ -102,7 +102,7 @@ fn parses_inter_device_routes() {
 bind = "127.0.0.1:7777"
 
 [[devices]]
-spec = "devices/arturia/minilab3.json"
+spec = "arturia/minilab3"
 midi_out_port = 4
 midi_in_port = 0
 

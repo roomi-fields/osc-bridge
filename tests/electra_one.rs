@@ -5,7 +5,7 @@ use osc_bridge::device::Device;
 use osc_bridge::frame::{build_frame, Bindings};
 
 fn load() -> Device {
-    Device::load("devices/electra-one/electra-one.json").expect("load electra-one.json")
+    Device::load("tests/fixtures/devices/electra-one/electra-one.json").expect("load electra-one.json")
 }
 
 fn find_frame<'a>(dev: &'a Device, osc: &str) -> &'a [osc_bridge::device::FrameToken] {

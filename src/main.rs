@@ -69,11 +69,11 @@ enum Cmd {
         private_ports: Vec<String>,
     },
     /// Show or change what this machine shares with the SynthHub server.
-    /// Sharing is on by default: the catalogue stays up to date and reports
-    /// and fixes go to the server under an anonymous account.
+    /// Sharing is on by default: drivers come from the server as they are
+    /// needed, and reports and fixes go to it under an anonymous account.
     Privacy {
-        /// `on` cuts the link to the server for every `osc-bridge mcp` run
-        /// (the bundled catalogue is used, nothing is sent); `off` restores it.
+        /// `on` cuts the link to the server (only the drivers already cached
+        /// are used, nothing is sent); `off` restores it.
         #[arg(long, value_parser = ["on", "off"])]
         offline: Option<String>,
         /// Keep this device private (catalogue id, slug, or `vendor/*` for a
@@ -91,17 +91,21 @@ enum Cmd {
         /// Only list ports and match by name; send nothing.
         #[arg(long)]
         no_probe: bool,
-        /// Root directory of the device catalogue.
-        #[arg(long, default_value = "devices")]
-        devices_dir: PathBuf,
+        /// Match against the drivers of this folder instead of the SynthHub
+        /// catalogue (offline: the drivers cached on this machine).
+        #[arg(long)]
+        devices_dir: Option<PathBuf>,
     },
     /// Print summary of a device JSON spec without starting the bridge.
     Inspect {
+        /// A driver file, or a catalogue id or slug (see `run --device`).
         device: PathBuf,
     },
     /// Run the bridge for a given device JSON.
     Run {
-        /// Path to the device JSON (e.g. devices/arturia/minilab3.json).
+        /// The driver: a JSON file, or its catalogue id (arturia/minilab3)
+        /// or slug (minilab3), fetched from the SynthHub server and kept in
+        /// the cache (offline: the cached copy).
         #[arg(long)]
         device: PathBuf,
         /// MIDI OUT port index. Required for hardware (MIDI/SysEx) drivers,
@@ -140,7 +144,7 @@ enum Cmd {
     /// Write a device JSON in another format on stdout: `oscquery` (its OSC
     /// namespace, JSON) or `midnam` (its MIDI names, MIDI Name Document XML).
     Export {
-        /// Path to the device JSON (e.g. devices/korg/minilogue.json).
+        /// The driver: a JSON file, or its catalogue id or slug (see `run`).
         #[arg(long)]
         device: PathBuf,
         #[arg(long, value_parser = osc_bridge::export::FORMATS)]
@@ -175,9 +179,10 @@ enum Cmd {
     /// Run a Model Context Protocol (MCP) server on stdio. Exposes the device
     /// catalogue and OSC surface to LLM clients (Claude Desktop, etc.).
     Mcp {
-        /// Root directory to scan for device JSONs. Defaults to `./devices`.
-        #[arg(long, default_value = "devices")]
-        devices_dir: PathBuf,
+        /// Serve the drivers of this folder, as they are, instead of those of
+        /// the SynthHub catalogue (fetched one at a time and cached).
+        #[arg(long)]
+        devices_dir: Option<PathBuf>,
         /// Default OSC target for the `send` and `get_status` tools when no
         /// `target` argument is supplied per call. Defaults to 127.0.0.1:7777
         /// (matching the standard `osc-bridge run` bind).
@@ -185,9 +190,9 @@ enum Cmd {
         default_target: String,
         /// Do not contact the SynthHub server for this run (also
         /// OSC_BRIDGE_OFFLINE=1; `osc-bridge privacy --offline on` for good).
-        /// By default a local copy keeps its catalogue up to date from the
-        /// server — the drivers other users and agents fixed and confirmed —
-        /// shows how far each driver is confirmed, and sends report_result
+        /// By default a local copy fetches each driver it needs from the
+        /// server — as other users and agents fixed and confirmed it — and
+        /// keeps it in its cache, shows how far each driver is confirmed, and sends report_result
         /// and the contribution tools there, under an anonymous account kept
         /// on this machine. MIDI ports are never shared.
         #[arg(long)]
@@ -211,17 +216,20 @@ fn main() -> Result<()> {
             osc_bridge::connect::run(&server, !no_share, test_synth, &private_ports),
         Cmd::Privacy { offline, private, public } => {
             let path = osc_bridge::online::settings_file().context("no configuration directory (HOME is not set)")?;
-            let devices = osc_bridge::online::usable_cache()
-                .unwrap_or_else(|| osc_bridge::catalogue::resolve(std::path::Path::new("devices")));
-            print!("{}", osc_bridge::mcp::privacy(&path, &devices, offline.map(|o| o == "on"), &private, &public)?);
+            let offline = offline.map(|o| o == "on");
+            let cached = osc_bridge::mcp::DeviceIndex::build(&osc_bridge::online::cache_dir().unwrap_or_default());
+            // A device not cached here is looked up on the server, unless the link is being cut.
+            let server = (offline != Some(true) && osc_bridge::online::linked())
+                .then(|| osc_bridge::online::Online::new(osc_bridge::online::SERVER));
+            print!("{}", osc_bridge::mcp::privacy(&path, &cached, server.as_ref(), offline, &private, &public)?);
             Ok(())
         }
-        Cmd::Detect { no_probe, devices_dir } => osc_bridge::mcp::print_detection(&devices_dir, !no_probe),
+        Cmd::Detect { no_probe, devices_dir } => osc_bridge::mcp::print_detection(devices_dir.as_deref(), !no_probe),
         Cmd::Inspect { device } => cmd_inspect(device),
         Cmd::Run { device, out_port, in_port, bind, osc_clients, ws_bind, ws_allow_origins, oscquery_bind } =>
             cmd_run(device, out_port, in_port, bind, osc_clients, ws_bind, ws_allow_origins, oscquery_bind),
         Cmd::Export { device, format } => {
-            let dev = Device::load(&device)?;
+            let dev = Device::load(osc_bridge::catalogue::locate(&device)?)?;
             print!("{}", osc_bridge::export::export(&dev, format.parse()?)?);
             Ok(())
         }
@@ -320,7 +328,7 @@ fn cmd_list() -> Result<()> {
 }
 
 fn cmd_inspect(path: PathBuf) -> Result<()> {
-    let dev = Device::load(&path)?;
+    let dev = Device::load(osc_bridge::catalogue::locate(&path)?)?;
     println!("Device:   {} ({})", dev.device.name, dev.device.revision);
     println!("Vendor:   {}", dev.device.vendor);
     println!("OSC prefix: {}", dev.device.osc_prefix);
@@ -349,7 +357,7 @@ fn hex_vec(v: &[u8]) -> String {
 
 fn cmd_run(path: PathBuf, out_port: Option<usize>, in_port: Option<usize>, bind: String, clients: Vec<String>,
            ws_bind: Option<String>, ws_allow_origins: Vec<String>, oscquery_bind: Option<String>) -> Result<()> {
-    let dev = Device::load(&path)?;
+    let dev = Device::load(osc_bridge::catalogue::locate(&path)?)?;
     let is_osc = dev.device.transport.as_ref().map(|t| t.kind.as_str()) == Some("osc");
     let out_port = match (out_port, is_osc) {
         (Some(p), _) => p,

@@ -2,11 +2,13 @@
 //! server (`SERVER`), so that every install shares in, and adds to, what the
 //! community builds there:
 //!
-//! - the catalogue: the server publishes the list of its driver files with
-//!   their SHA-256 (`GET /v1/catalogue`); the local copy mirrors it into a
-//!   cache (`cache_dir`), fetching only the files that differ from those it
-//!   already has (`POST /v1/catalogue/files`), so it gets the drivers other
-//!   users and agents contributed or fixed since its release;
+//! - the drivers: the catalogue lives on the server and is handed out one
+//!   driver at a time, never whole. A local copy asks for the driver it needs
+//!   — by id (`GET /api/v1/devices/<id>.json`, its notes `<id>.md`), by slug
+//!   (`GET /v1/devices/<slug>`: the device's variants, best first) or for
+//!   the MIDI ports it found (`POST /v1/detect`) — and keeps it in a cache
+//!   (`cache_dir`), which is all it has offline. These requests carry no
+//!   account;
 //! - trust: how far other users confirmed each driver (`GET /v1/trust`);
 //! - reports and contributions: `report_result`, `report_mapping`,
 //!   `get_trust`, `submit_driver`, `submit_fix` and `get_contribution` are
@@ -15,13 +17,12 @@
 //!
 //! The MIDI ports never leave the machine. Sharing is on by default; the
 //! user turns it off with `osc-bridge privacy` (`Settings`): `--offline on`
-//! cuts the link (the bundled catalogue is used as is and nothing is sent),
+//! cuts the link (only the drivers already cached are used, nothing is sent),
 //! `--private <device>` keeps one device's reports on the machine.
 //! `osc-bridge mcp --offline` and `OSC_BRIDGE_OFFLINE=1` cut it for one run.
 
 use anyhow::{anyhow, bail, Context, Result};
 use serde_json::{json, Value};
-use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
@@ -33,15 +34,18 @@ pub const FORWARDED_TOOLS: [&str; 18] = ["report_result", "report_mapping", "get
     "share_preset", "update_preset", "find_presets", "get_preset", "report_preset", "withdraw_preset",
     "comment_preset", "star_preset", "preset_collection", "follow_author", "set_profile", "link_account"];
 
-/// Files fetched per `POST /v1/catalogue/files` request.
-pub const FILES_PER_REQUEST: usize = 100;
-
-/// Marks a complete cache, with the version of osc-bridge that filled it.
-const COMPLETE: &str = ".complete";
+/// MIDI ports matched per `POST /v1/detect` request.
+pub const PORTS_PER_REQUEST: usize = 32;
 
 /// Whether the user cut the link (`OSC_BRIDGE_OFFLINE`, any value but 0).
 pub fn offline_by_env() -> bool {
     std::env::var("OSC_BRIDGE_OFFLINE").is_ok_and(|v| !v.is_empty() && v != "0")
+}
+
+/// Whether this machine is linked to the server: neither the environment
+/// nor the settings file cut the link.
+pub fn linked() -> bool {
+    !offline_by_env() && !settings_file().and_then(|f| Settings::load(Some(&f)).ok()).is_some_and(|s| s.offline)
 }
 
 fn dir_from(env: &[&str], home_sub: &str) -> Option<PathBuf> {
@@ -80,10 +84,11 @@ const SETTINGS_HELP: &str = "\
 # osc-bridge — what this machine shares with the SynthHub server.
 # Edit this file freely, or use `osc-bridge privacy`. Read when osc-bridge starts.
 #
-# Sharing is on by default: the catalogue stays up to date with the drivers
-# other users and agents fixed and confirmed, and your reports and fixes go to
-# the server under an anonymous account. MIDI ports and the traffic of your
-# devices never leave this machine.
+# Sharing is on by default: the drivers your devices need come from the
+# server, one at a time and without your account, as other users and agents
+# fixed and confirmed them; your reports and fixes go to the server under an
+# anonymous account. MIDI ports and the traffic of your devices never leave
+# this machine.
 ";
 
 impl Settings {
@@ -101,7 +106,7 @@ impl Settings {
     pub fn render(&self) -> String {
         let list = self.private.iter().map(|p| format!("  {},\n", toml::Value::String(p.clone()))).collect::<String>();
         format!("{SETTINGS_HELP}
-# true: do not contact the server at all (bundled catalogue, nothing sent).
+# true: do not contact the server at all (drivers already cached only, nothing sent).
 offline = {}
 
 # Devices kept private: nothing about them is sent to the server (reports,
@@ -135,10 +140,11 @@ private = [
     }
 }
 
-/// Where the mirrored catalogue lives: `$XDG_CACHE_HOME`, `%LOCALAPPDATA%`
-/// or `~/.cache`, under `osc-bridge/catalogue`.
+/// Where the drivers fetched from the server are kept: `$XDG_CACHE_HOME`,
+/// `%LOCALAPPDATA%` or `~/.cache`, under `osc-bridge/drivers`, each at its
+/// id (`korg/minilogue.json`, its notes `korg/minilogue.md`).
 pub fn cache_dir() -> Option<PathBuf> {
-    Some(dir_from(&["XDG_CACHE_HOME", "LOCALAPPDATA"], ".cache")?.join("osc-bridge").join("catalogue"))
+    Some(dir_from(&["XDG_CACHE_HOME", "LOCALAPPDATA"], ".cache")?.join("osc-bridge").join("drivers"))
 }
 
 pub fn is_user_id(s: &str) -> bool {
@@ -149,63 +155,19 @@ pub fn sha256_hex(bytes: &[u8]) -> String {
     ring::digest::digest(&ring::digest::SHA256, bytes).as_ref().iter().map(|b| format!("{b:02x}")).collect()
 }
 
-fn file_hash(path: &Path) -> Option<String> {
-    std::fs::read(path).ok().map(|b| sha256_hex(&b))
+/// A driver id as the catalogue names it (`korg/minilogue`,
+/// `arturia/microfreak.vendor.fw-1.0`): a maker folder and a file name
+/// without `.json`, nothing that could leave the cache.
+pub fn is_driver_id(s: &str) -> bool {
+    let parts: Vec<&str> = s.split('/').collect();
+    parts.len() == 2 && parts.iter().all(|c| !c.is_empty() && !c.starts_with('.')
+        && c.bytes().all(|b| b.is_ascii_alphanumeric() || b"-_.+".contains(&b)))
 }
 
-/// A catalogue path as the server lists it (`korg/minilogue.json`): relative,
-/// `/`-separated, no `.` or `..`, a driver or its notes.
-pub fn is_catalogue_path(p: &str) -> bool {
-    (p.ends_with(".json") || p.ends_with(".md")) && !p.contains('\\') && !p.starts_with('/')
-        && p.split('/').all(|c| !c.is_empty() && c != "." && c != ".." && !c.starts_with('.'))
-}
-
-fn local(root: &Path, path: &str) -> PathBuf {
-    path.split('/').fold(root.to_path_buf(), |p, c| p.join(c))
-}
-
-/// Every driver file (`.json`) and its notes (`.md`) under `root`, by
-/// catalogue path, with its SHA-256.
-pub fn catalogue_files(root: &Path) -> BTreeMap<String, String> {
-    fn walk(root: &Path, dir: &Path, out: &mut BTreeMap<String, String>) {
-        let Ok(entries) = std::fs::read_dir(dir) else { return };
-        for e in entries.flatten() {
-            let p = e.path();
-            if p.is_dir() {
-                walk(root, &p, out);
-            } else if let Ok(rel) = p.strip_prefix(root) {
-                let rel = rel.components().map(|c| c.as_os_str().to_string_lossy()).collect::<Vec<_>>().join("/");
-                if is_catalogue_path(&rel) {
-                    if let Some(h) = file_hash(&p) { out.insert(rel, h); }
-                }
-            }
-        }
-    }
-    let mut out = BTreeMap::new();
-    walk(root, root, &mut out);
-    out
-}
-
-/// The cache, when a complete copy made by this version is there.
-pub fn usable_cache() -> Option<PathBuf> {
-    let dir = cache_dir()?;
-    let made_by = std::fs::read_to_string(dir.join(COMPLETE)).ok()?;
-    (made_by.trim() == env!("CARGO_PKG_VERSION")).then_some(dir)
-}
-
-/// What a catalogue sync did.
-#[derive(Debug, Default, PartialEq)]
-pub struct Synced {
-    pub files: usize,
-    pub copied: usize,
-    pub downloaded: usize,
-    pub removed: usize,
-}
-
-impl Synced {
-    pub fn changed(&self) -> bool {
-        self.copied + self.downloaded + self.removed > 0
-    }
+/// Where driver `id` is kept under `root`.
+pub fn driver_path(root: &Path, id: &str) -> PathBuf {
+    let (maker, name) = id.split_once('/').unwrap_or(("", id));
+    root.join(maker).join(format!("{name}.json"))
 }
 
 /// A client of the hosted server.
@@ -240,6 +202,13 @@ impl Online {
         let status = resp.status().as_u16();
         let text = resp.body_mut().with_config().limit(64 << 20).read_to_string()?;
         Ok((status, serde_json::from_str(&text).unwrap_or(Value::Null)))
+    }
+
+    /// `GET path` as text, for a driver file and its notes.
+    fn get_text(&self, path: &str) -> Result<(u16, String)> {
+        let mut resp = self.agent.get(format!("{}{path}", self.base)).call().with_context(|| format!("GET {path}"))?;
+        let status = resp.status().as_u16();
+        Ok((status, resp.body_mut().with_config().limit(16 << 20).read_to_string()?))
     }
 
     fn get(&self, path: &str) -> Result<(u16, Value)> {
@@ -330,48 +299,71 @@ impl Online {
         Ok(v)
     }
 
-    /// Mirror the server's catalogue into `cache`: keep what matches, copy
-    /// what `bundled` already has, download the rest, remove what the server
-    /// no longer lists. The cache is marked complete only when all is there.
-    pub fn sync_catalogue(&self, user: &str, bundled: &Path, cache: &Path) -> Result<Synced> {
-        let (status, manifest) = self.get(&format!("/u/{user}/v1/catalogue"))?;
-        if status != 200 { bail!("catalogue list: HTTP {status}"); }
-        let wanted: BTreeMap<String, String> = manifest["files"].as_array().ok_or_else(|| anyhow!("no file list"))?
-            .iter().filter_map(|f| Some((f["path"].as_str()?.to_string(), f["sha256"].as_str()?.to_string())))
-            .filter(|(p, _)| is_catalogue_path(p)).collect();
-        if wanted.is_empty() { bail!("the server lists no driver"); }
-        let _ = std::fs::remove_file(cache.join(COMPLETE));
-        let have = catalogue_files(cache);
-        let mut done = Synced { files: wanted.len(), ..Synced::default() };
-        let mut missing = Vec::new();
-        for (path, hash) in &wanted {
-            if have.get(path) == Some(hash) { continue; }
-            let (src, dst) = (local(bundled, path), local(cache, path));
-            if file_hash(&src).as_ref() == Some(hash) {
-                std::fs::create_dir_all(dst.parent().expect("file in a directory"))?;
-                std::fs::copy(&src, &dst).with_context(|| format!("copy {path}"))?;
-                done.copied += 1;
-            } else {
-                missing.push(path.clone());
+    /// Fetch driver `id` into `cache` (`driver_path`), with its notes, and
+    /// the drivers it takes its MIDI from (`midi_of`), so that it loads there.
+    /// A driver the server no longer has is an error; the cached copy stays.
+    pub fn fetch_driver(&self, id: &str, cache: &Path) -> Result<PathBuf> {
+        let mut next = Some(id.to_string());
+        let mut seen = Vec::new();
+        while let Some(id) = next.take() {
+            if !is_driver_id(&id) { bail!("{id:?} is not a driver id (<maker>/<name>)"); }
+            if seen.contains(&id) || seen.len() > crate::device::MIDI_OF_DEPTH { break; }
+            let (status, text) = self.get_text(&format!("/api/v1/devices/{id}.json"))?;
+            match status {
+                200 => {}
+                404 => bail!("the SynthHub catalogue has no driver {id}"),
+                s => bail!("driver {id}: HTTP {s}"),
             }
-        }
-        for batch in missing.chunks(FILES_PER_REQUEST) {
-            let (status, got) = self.post("/v1/catalogue/files", &json!({ "paths": batch }))?;
-            if status != 200 { bail!("catalogue files: HTTP {status}"); }
-            for path in batch {
-                let content = got["files"][path].as_str().ok_or_else(|| anyhow!("{path} missing from the answer"))?;
-                if sha256_hex(content.as_bytes()) != wanted[path] { bail!("{path} does not match its checksum"); }
-                let dst = local(cache, path);
-                std::fs::create_dir_all(dst.parent().expect("file in a directory"))?;
-                std::fs::write(&dst, content).with_context(|| format!("write {path}"))?;
-                done.downloaded += 1;
+            let doc: Value = serde_json::from_str(&text).with_context(|| format!("driver {id} from the server"))?;
+            let path = driver_path(cache, &id);
+            std::fs::create_dir_all(path.parent().expect("a maker folder"))?;
+            std::fs::write(&path, &text).with_context(|| format!("write {}", path.display()))?;
+            let notes = path.with_extension("md");
+            match self.get_text(&format!("/api/v1/devices/{id}.md"))? {
+                (200, md) => std::fs::write(&notes, md).with_context(|| format!("write {}", notes.display()))?,
+                (404, _) => { let _ = std::fs::remove_file(&notes); }
+                (s, _) => bail!("notes of {id}: HTTP {s}"),
             }
+            next = doc["midi_of"].as_str().map(str::to_string);
+            seen.push(id);
         }
-        for path in have.keys().filter(|p| !wanted.contains_key(*p)) {
-            if std::fs::remove_file(local(cache, path)).is_ok() { done.removed += 1; }
+        Ok(driver_path(cache, id))
+    }
+
+    /// The variants of a device, by one of its ids or its slug, best first
+    /// (`GET /v1/devices/<id or slug>`): `{ "best": id, "variants": [...] }`.
+    pub fn variants(&self, id_or_slug: &str) -> Result<Value> {
+        let (status, v) = self.get(&format!("/v1/devices/{id_or_slug}"))?;
+        match status {
+            200 => Ok(v),
+            404 => bail!("the SynthHub catalogue has no device {id_or_slug:?} (see list_devices)"),
+            s => bail!("{}", v["error"].as_str().map(str::to_string).unwrap_or_else(|| format!("device {id_or_slug}: HTTP {s}"))),
         }
-        std::fs::write(cache.join(COMPLETE), env!("CARGO_PKG_VERSION"))?;
-        Ok(done)
+    }
+
+    /// The drivers matching MIDI ports found on this machine
+    /// (`POST /v1/detect`): `ports` is `[{ "port", "identity_hex"? }]`, the
+    /// answer `{ "ports": [{ "port", "candidates": [...] }] }` in the same order.
+    pub fn detect(&self, ports: &[Value]) -> Result<Vec<Value>> {
+        let mut out = Vec::new();
+        for batch in ports.chunks(PORTS_PER_REQUEST) {
+            let (status, v) = self.post("/v1/detect", &json!({ "ports": batch }))?;
+            if status != 200 { bail!("{}", v["error"].as_str().map(str::to_string).unwrap_or_else(|| format!("detect: HTTP {status}"))); }
+            out.extend(v["ports"].as_array().cloned().unwrap_or_default());
+        }
+        Ok(out)
+    }
+
+    /// One of the server's catalogue tools (`list_devices`…), called without
+    /// an account (`POST /mcp`).
+    pub fn catalogue_call(&self, name: &str, args: &Value) -> Result<Value> {
+        let rpc = json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": { "name": name, "arguments": args } });
+        let (status, v) = self.post("/mcp", &rpc)?;
+        match (v.get("result"), v.get("error")) {
+            (Some(r), _) => Ok(r.clone()),
+            (None, Some(e)) => bail!("{}", e["message"].as_str().unwrap_or("error")),
+            _ => bail!("the server answered HTTP {status}"),
+        }
     }
 }
 
@@ -405,27 +397,13 @@ mod tests {
     }
 
     #[test]
-    fn catalogue_paths_stay_inside_the_catalogue() {
-        assert!(is_catalogue_path("korg/minilogue.json"));
-        assert!(is_catalogue_path("examples/test_synth.md"));
-        for bad in ["../etc/passwd.json", "/abs.json", "korg/../x.json", "korg//x.json", "a\\b.json",
-                    "korg/x.txt", ".complete", "korg/.hidden.json"] {
-            assert!(!is_catalogue_path(bad), "{bad}");
+    fn driver_ids_stay_inside_the_cache() {
+        assert!(is_driver_id("korg/minilogue") && is_driver_id("arturia/microfreak.vendor.fw-freakpatch-0.3.0"));
+        for bad in ["../etc/passwd", "/abs", "korg/../x", "korg//x", "a\\b", "korg", "a/b/c", "korg/.hidden", "korg/x y", ""] {
+            assert!(!is_driver_id(bad), "{bad}");
         }
-    }
-
-    #[test]
-    fn catalogue_files_lists_drivers_and_notes_with_their_checksum() {
-        let root = std::env::temp_dir().join(format!("osc-bridge-cat-{}", std::process::id()));
-        std::fs::create_dir_all(root.join("acme")).unwrap();
-        std::fs::write(root.join("acme/box.json"), "{}").unwrap();
-        std::fs::write(root.join("acme/box.md"), "# Box").unwrap();
-        std::fs::write(root.join("acme/notes.txt"), "x").unwrap();
-        std::fs::write(root.join(COMPLETE), "0").unwrap();
-        let files = catalogue_files(&root);
-        assert_eq!(files.keys().collect::<Vec<_>>(), ["acme/box.json", "acme/box.md"]);
-        assert_eq!(files["acme/box.json"], sha256_hex(b"{}"));
+        assert_eq!(driver_path(Path::new("/c"), "korg/minilogue"), Path::new("/c/korg/minilogue.json"));
+        assert_eq!(driver_path(Path::new("/c"), "arturia/x.fw-1.0"), Path::new("/c/arturia/x.fw-1.0.json"));
         assert_eq!(sha256_hex(b""), "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
-        std::fs::remove_dir_all(root).ok();
     }
 }

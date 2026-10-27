@@ -31,6 +31,18 @@ impl Identity {
     pub fn manufacturer_hex(&self) -> String {
         self.manufacturer.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ")
     }
+
+    /// The Identity Reply this identity reads from (`parse_identity_reply`).
+    pub fn reply(&self) -> Vec<u8> {
+        let le14 = |v: u16| [(v & 0x7F) as u8, ((v >> 7) & 0x7F) as u8];
+        let mut out = vec![0xF0, 0x7E, 0x7F, 0x06, 0x02];
+        out.extend(&self.manufacturer);
+        out.extend(le14(self.family));
+        out.extend(le14(self.model));
+        out.extend(self.version);
+        out.push(0xF7);
+        out
+    }
 }
 
 /// Parse an Identity Reply: `F0 7E <dev> 06 02 <mfr 1|3> <fam 2> <model 2> <ver 4> F7`.
@@ -92,6 +104,8 @@ pub fn manufacturer_name(id: &[u8]) -> Option<&'static str> {
 /// A driver of the catalogue, as much as matching needs.
 #[derive(Debug, Clone)]
 pub struct Candidate {
+    /// Catalogue id (`korg/minilogue`).
+    pub id: String,
     pub slug: String,
     pub name: String,
     pub vendor: String,
@@ -276,7 +290,7 @@ mod tests {
     use super::*;
 
     fn cand(slug: &str, name: &str, vendor: &str, mfr: &[u8]) -> Candidate {
-        Candidate { slug: slug.into(), name: name.into(), vendor: vendor.into(),
+        Candidate { id: format!("acme/{slug}"), slug: slug.into(), name: name.into(), vendor: vendor.into(),
                     file: format!("devices/{slug}.json"), tier: "pencilresearch".into(),
                     manufacturer_id: mfr.to_vec() }
     }
@@ -289,6 +303,7 @@ mod tests {
         assert_eq!(id.manufacturer, vec![0x00, 0x20, 0x6B]);
         assert_eq!((id.family, id.model), (2, 4));
         assert_eq!(id.version, [1, 0, 4, 0]);
+        assert_eq!(parse_identity_reply(&id.reply()), Some(id.clone()), "written back as it was read");
         assert_eq!(manufacturer_name(&id.manufacturer), Some("Arturia"));
     }
 

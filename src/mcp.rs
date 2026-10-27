@@ -1,10 +1,11 @@
-//! MCP (Model Context Protocol) server — exposes osc-bridge's catalogue and
+//! MCP (Model Context Protocol) server — exposes the SynthHub catalogue and
 //! OSC surface to LLMs via JSON-RPC 2.0 over stdio.
 //!
 //! Spec: <https://modelcontextprotocol.io/specification/2025-06-18>
 //!
 //! Tools exposed:
-//!  - `list_devices`   — enumerate all device JSONs under `--devices-dir`
+//!  - `list_devices`   — find drivers: in the SynthHub catalogue, or under
+//!    `--devices-dir` (offline: the drivers cached on this machine)
 //!  - `get_device_docs`— fetch the .md companion of one device by slug
 //!  - `list_routes`    — return the OSC routes (commands + cc/params) of one device
 //!  - `export_device`  — one driver written as OSCQuery or MIDNAM (`crate::export`)
@@ -15,8 +16,9 @@
 //!    ports of the machine the server runs on
 //!  - `report_result`, `report_mapping`, `get_trust`, `submit_driver`,
 //!    `submit_fix`, `get_contribution` — run on the SynthHub server:
-//!    a local copy is linked to it unless offline (`crate::online`), mirrors
-//!    its catalogue, shows each driver's trust, and forwards these there.
+//!    a local copy is linked to it unless offline (`crate::online`), fetches
+//!    the drivers it needs from it one at a time (`crate::catalogue`), shows
+//!    each driver's trust, and forwards these there.
 //!
 //! The server reads one JSON-RPC request per line from stdin and writes one
 //! response per line to stdout; logging goes to stderr.
@@ -40,11 +42,14 @@ pub const SERVER_NAME: &str = "osc-bridge";
 pub const SERVER_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub struct McpOptions {
-    pub devices_dir: PathBuf,
+    /// A folder of drivers the user keeps, used as it is. None: the drivers
+    /// come from the SynthHub server, one at a time, kept in the cache
+    /// (`online::cache_dir`), which is all there is offline.
+    pub devices_dir: Option<PathBuf>,
     pub default_target: SocketAddr,
-    /// A local copy linked to the hosted server (`crate::online`): mirror its
-    /// catalogue (when `devices_dir` is the default one) and forward the
-    /// report and contribution tools to it.
+    /// A local copy linked to the hosted server (`crate::online`): fetch the
+    /// drivers it needs (without `devices_dir`) and forward the report and
+    /// contribution tools to it.
     pub online: bool,
     /// Devices the user keeps private on this machine (ids, slugs or
     /// `vendor/*`, see `online::Settings`): nothing about them is sent.
@@ -121,16 +126,16 @@ pub struct DeviceIndexEntry {
     pub loads_sounds_of: Vec<String>,
 }
 
-/// Built once at startup. Without it, every device tool call would re-walk
-/// and re-parse the whole `devices/` tree (~900 files); with it, `list_devices`
-/// is a cheap serialize and slug lookup is O(1).
+/// Built once over a folder of drivers. Without it, every device tool call
+/// would re-walk and re-parse the folder; with it, `list_devices` is a cheap
+/// serialize and slug lookup is O(1).
 pub struct DeviceIndex {
     pub entries: Vec<DeviceIndexEntry>,
     by_slug: HashMap<String, usize>,
 }
 
 impl DeviceIndex {
-    /// Walk `devices/` once, parsing each JSON just enough to capture the
+    /// Walk `dir` once, parsing each JSON just enough to capture the
     /// catalogue metadata. When several files share an `osc_prefix` (the
     /// per-variant convention), the most trustworthy source wins the slug
     /// lookup (`tier_rank`), ties broken by path so the choice is stable.
@@ -197,7 +202,7 @@ impl DeviceIndex {
 /// Lower is more trustworthy: tested on the device, then the vendor's own
 /// documentation, then curated OSC surfaces, then community sources, then
 /// what agents contributed (checked automatically, not reviewed).
-fn tier_rank(tier: &str) -> u8 {
+pub fn tier_rank(tier: &str) -> u8 {
     match tier {
         "hardware-verified" | "software-verified" => 0,
         "vendor-doc" | "vendor" => 1,
@@ -221,52 +226,46 @@ fn build_index(devices_dir: &Path, opts: &McpOptions) -> DeviceIndex {
 }
 
 /// Sent with `initialize` by a linked local copy.
-const LINKED_INSTRUCTIONS: &str = "osc-bridge catalogue of MIDI implementations (CC, NRPN, SysEx, drum \
-    maps) for about 977 synths, drum machines and DAWs, kept up to date from the SynthHub server with \
-    what other users and agents fixed and confirmed. Start with list_devices, then list_routes with the \
-    slug; usage_status and get_trust tell how far other users confirmed a driver, per firmware. After \
-    testing a driver on the real device, call report_result with the firmware and the device's Identity \
-    Reply: it improves the driver for everyone.";
+const LINKED_INSTRUCTIONS: &str = "osc-bridge with the SynthHub catalogue of MIDI implementations (CC, NRPN, \
+    SysEx, drum maps) of synths, drum machines and DAWs: each driver is fetched from the SynthHub server when a \
+    tool needs it, as other users and agents fixed and confirmed it. Start with list_devices (or detect_hardware), \
+    then list_routes with the slug; usage_status and get_trust tell how far other users confirmed a driver, per \
+    firmware. After testing a driver on the real device, call report_result with the firmware and the device's \
+    Identity Reply: it improves the driver for everyone.";
 
-/// Link a local copy to the hosted server, in the background: fetch trust,
-/// mirror the catalogue when `sync` (then swap in an index of the mirror).
-fn link_in_background(link: std::sync::Arc<Link>, index: std::sync::Arc<std::sync::RwLock<std::sync::Arc<DeviceIndex>>>,
-                      sync: Option<(PathBuf, PathBuf, bool)>) {
-    std::thread::spawn(move || {
-        match link.client.trust() {
-            Ok(t) => if let Ok(mut g) = link.trust.write() { *g = t },
-            Err(e) => { eprintln!("SynthHub server unreachable ({e}): offline catalogue"); return; }
-        }
-        let Some((bundled, cache, on_cache)) = sync else { return };
-        let user = match link.user(false) { Ok(u) => u, Err(e) => { eprintln!("no account: {e}"); return; } };
-        match link.client.sync_catalogue(&user, &bundled, &cache) {
-            Ok(done) => {
-                eprintln!("catalogue synced with the SynthHub server: {} files, {} copied, {} downloaded, {} removed",
-                    done.files, done.copied, done.downloaded, done.removed);
-                if done.changed() || !on_cache {
-                    let fresh = DeviceIndex::build(&cache);
-                    eprintln!("indexed {} device file(s) from {}", fresh.entries.len(), cache.display());
-                    if let Ok(mut g) = index.write() { *g = std::sync::Arc::new(fresh); }
-                }
-            }
-            Err(e) => eprintln!("catalogue sync failed ({e}): keeping the current catalogue"),
-        }
+/// Fetch the trust of every reported driver from the hosted server, in the
+/// background.
+fn trust_in_background(link: std::sync::Arc<Link>) {
+    std::thread::spawn(move || match link.client.trust() {
+        Ok(t) => if let Ok(mut g) = link.trust.write() { *g = t },
+        Err(e) => eprintln!("SynthHub server unreachable ({e}): only the drivers cached on this machine"),
     });
+}
+
+/// The driver a tool call needs on this machine, by id or slug: the one it
+/// reads, or the one it reports on (to tell whether it is private).
+fn driver_wanted(req: &Value) -> Option<&str> {
+    if req["method"] != "tools/call" { return None; }
+    let (name, args) = (req["params"]["name"].as_str()?, &req["params"]["arguments"]);
+    match name {
+        "get_device_docs" | "list_routes" => args["slug"].as_str(),
+        "export_device" => args["device"].as_str(),
+        n if crate::online::FORWARDED_TOOLS.contains(&n) => args["device"].as_str(),
+        _ => None,
+    }
 }
 
 pub fn run(opts: McpOptions) -> Result<()> {
     use std::sync::{Arc, RwLock};
-    let bundled = crate::catalogue::resolve(&opts.devices_dir);
-    // Only the default catalogue is mirrored: one the user points to is theirs.
-    let mirror = (opts.online && opts.devices_dir == Path::new("devices"))
-        .then(crate::online::cache_dir).flatten();
-    let cached = mirror.as_ref().and(crate::online::usable_cache());
-    let start = cached.clone().unwrap_or_else(|| bundled.clone());
-    let index = Arc::new(RwLock::new(Arc::new(build_index(&start, &opts))));
     let link = opts.online.then(|| Arc::new(Link::new(crate::online::SERVER)));
+    // Drivers from the server are kept in the cache; a folder the user gave is theirs.
+    let cache = if opts.devices_dir.is_some() { None } else { crate::online::cache_dir() };
+    let root = opts.devices_dir.clone().or_else(|| cache.clone()).unwrap_or_default();
+    let index = RwLock::new(Arc::new(build_index(&root, &opts)));
     if let Some(link) = &link {
-        link_in_background(link.clone(), index.clone(), mirror.map(|m| (bundled, m, cached.is_some())));
+        trust_in_background(link.clone());
     }
+    let mut fetched = std::collections::HashSet::new();
 
     let stdin = std::io::stdin();
     let stdout = std::io::stdout();
@@ -285,6 +284,17 @@ pub fn run(opts: McpOptions) -> Result<()> {
                 continue;
             }
         };
+        // Once a session, the driver a call needs comes from the server; a
+        // device the user keeps private by that very name is not asked for.
+        if let (Some(link), Some(cache)) = (&link, &cache) {
+            let wanted = driver_wanted(&req).filter(|n| !crate::online::Settings::covers(&opts.private, n, n));
+            if let Some(name) = wanted.filter(|n| fetched.insert(n.to_string())) {
+                match crate::catalogue::fetch(&link.client, name, cache) {
+                    Ok(_) => if let Ok(mut g) = index.write() { *g = Arc::new(DeviceIndex::build(cache)) },
+                    Err(e) => eprintln!("{name}: {e:#}"),
+                }
+            }
+        }
         let current = index.read().map(|g| g.clone()).map_err(|_| anyhow::anyhow!("catalogue index poisoned"))?;
         if let Some(mut resp) = handle_request(&req, &opts, &current, link.as_deref()) {
             if let (true, Some(result)) = (link.is_some() && req["method"] == "initialize", resp.get_mut("result")) {
@@ -375,7 +385,7 @@ pub fn tool_schemas() -> Value {
         "tools": [
             {
                 "name": "list_devices",
-                "description": "Find device drivers in the catalogue (about 977 synths, drum machines, controllers and DAWs). Without arguments it lists them all; `query` keeps drivers whose vendor, name or slug contain every word (e.g. 'korg minilogue'). Returns name, vendor, OSC prefix (slug), kind, source tier and firmware version when the source states one. Pass the slug to list_routes for the full CC/NRPN/SysEx map.",
+                "description": "Find device drivers in the catalogue of synths, drum machines, controllers and DAWs. Without arguments it lists them all; `query` keeps drivers whose vendor, name or slug contain every word (e.g. 'korg minilogue'). Returns name, vendor, OSC prefix (slug), kind, source tier and firmware version when the source states one. Pass the slug to list_routes for the full CC/NRPN/SysEx map.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -785,7 +795,7 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "submit_driver",
-                "description": "Contribute a driver for a device the catalogue lacks (or a better one): the full driver file as a JSON object, in the osc-bridge device schema (device.name, device.vendor, device.osc_prefix, and cc_params / params / commands / triggers — see https://synthhub.roomi-fields.com/DEVICE_JSON_SCHEMA/). It is checked, then merged into the public catalogue by the merge job if it parses, lints and passes the tests, as its own file of source 'agent-contributed'. Say where the data comes from (manual page, tested on the device).",
+                "description": "Contribute a driver for a device the catalogue lacks (or a better one): the full driver file as a JSON object, in the osc-bridge device schema (device.name, device.vendor, device.osc_prefix, and cc_params / params / commands / triggers — see https://synthhub.roomi-fields.com/DEVICE_JSON_SCHEMA/). It is checked, then merged into the SynthHub catalogue by the merge job if it parses, lints and passes the tests, as its own file of source 'agent-contributed'. Say where the data comes from (manual page, tested on the device).",
                 "inputSchema": { "type": "object", "properties": {
                     "driver": { "type": "object", "description": "The driver file." },
                     "firmware": { "type": "string", "description": "Firmware the driver was written or tested for." },
@@ -1062,6 +1072,12 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
             return load_preset(args, link);
         }
     }
+    // Drivers from the server: it finds them, and matches the ports found here.
+    let server = link.filter(|_| opts.devices_dir.is_none());
+    if let (Some(link), "list_devices") = (server, name) {
+        return link.client.catalogue_call(name, args).map_err(|e| format!("list_devices asks the SynthHub server, \
+            which could not be reached: {e}. Offline, it lists the drivers cached on this machine."));
+    }
     if let Some(done) = catalogue_tool(name, args, index, &|id| link.and_then(|l| l.status(id))) {
         return done;
     }
@@ -1102,7 +1118,7 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
         "detect_hardware" => {
             let probe = args.get("probe").and_then(Value::as_bool).unwrap_or(true);
             let wait = args.get("timeout_ms").and_then(Value::as_u64).unwrap_or(800).clamp(100, 5000);
-            detect_hardware(index, probe, std::time::Duration::from_millis(wait))
+            detect_hardware(index, server.map(|l| &l.client), opts.devices_dir.is_some(), probe, std::time::Duration::from_millis(wait))
         }
         other => Err(format!("unknown tool: {other}")),
     }
@@ -1131,6 +1147,10 @@ fn private_device(index: &DeviceIndex, opts: &McpOptions, args: &Value) -> Optio
     let covers = |id: &str, slug: &str| crate::online::Settings::covers(private, id, slug)
         || private.iter().any(|p| index.find(p).is_some_and(|e| e.slug == slug));
     if let Some(wanted) = args.get("device").and_then(Value::as_str) {
+        // Named as the private list names it, even when no driver of it is here.
+        if covers(wanted, wanted) {
+            return Some(index.find(wanted).map(|e| e.id.clone()).unwrap_or_else(|| wanted.to_string()));
+        }
         let entry = index.find(wanted)?;
         return covers(&entry.id, &entry.slug).then(|| entry.id.clone());
     }
@@ -1142,15 +1162,21 @@ fn private_device(index: &DeviceIndex, opts: &McpOptions, args: &Value) -> Optio
 }
 
 /// `osc-bridge privacy`: change the settings at `path` — `offline`, devices
-/// made private or public again (ids or slugs of `devices_dir`) — then show
-/// them. Returns what to print.
-pub fn privacy(path: &Path, devices_dir: &Path, offline: Option<bool>, private: &[String], public: &[String]) -> Result<String> {
+/// made private or public again (ids or slugs, found in `index`, else asked
+/// of `server`) — then show them. Returns what to print.
+pub fn privacy(path: &Path, index: &DeviceIndex, server: Option<&crate::online::Online>, offline: Option<bool>,
+               private: &[String], public: &[String]) -> Result<String> {
     let mut settings = crate::online::Settings::load(Some(path))?;
-    let index = DeviceIndex::build(devices_dir);
     let id_of = |name: &str| match name.strip_suffix("/*") {
-        Some(vendor) => index.entries.iter().any(|e| e.id.starts_with(&format!("{vendor}/"))).then(|| name.to_string())
-            .ok_or_else(|| anyhow::anyhow!("no vendor '{vendor}' in the catalogue")),
+        Some(vendor) => crate::catalogue::is_slug(vendor).then(|| name.to_string())
+            .ok_or_else(|| anyhow::anyhow!("'{vendor}' is not a vendor folder of the catalogue")),
         None => index.find(name).map(|e| e.id.clone())
+            .or_else(|| {
+                // An id the server knows is kept as it is; a slug stands for its best variant.
+                let found = server?.variants(name).ok()?;
+                let known = found["variants"].as_array()?.iter().any(|v| v["id"] == name);
+                if known { Some(name.to_string()) } else { found["best"].as_str().map(str::to_string) }
+            })
             .ok_or_else(|| anyhow::anyhow!("no device '{name}' in the catalogue (use an id or slug from list_devices, or vendor/*)")),
     };
     let changed = offline.is_some() || !private.is_empty() || !public.is_empty();
@@ -1165,10 +1191,11 @@ pub fn privacy(path: &Path, devices_dir: &Path, offline: Option<bool>, private: 
     }
     if changed { settings.save(path)?; }
     let mut out = if settings.offline {
-        "Offline: this copy does not contact the SynthHub server (osc-bridge privacy --offline off to link it again).\n".to_string()
+        "Offline: this copy does not contact the SynthHub server and uses only the drivers cached on this machine \
+         (osc-bridge privacy --offline off to link it again).\n".to_string()
     } else {
-        "Linked to the SynthHub server: the catalogue stays up to date, and reports and fixes are shared \
-         under an anonymous account (osc-bridge privacy --offline on to stop).\n".to_string()
+        "Linked to the SynthHub server: drivers come from it one at a time, without your account, and reports \
+         and fixes are shared under an anonymous account (osc-bridge privacy --offline on to stop).\n".to_string()
     };
     if settings.private.is_empty() {
         out.push_str("Private devices: none.\n");
@@ -1190,6 +1217,7 @@ pub fn privacy(path: &Path, devices_dir: &Path, offline: Option<bool>, private: 
 /// The hardware drivers of the catalogue, in the shape `detect::rank` scores.
 pub fn hardware_candidates(index: &DeviceIndex) -> Vec<crate::detect::Candidate> {
     index.entries.iter().filter(|e| e.kind != "software").map(|e| crate::detect::Candidate {
+        id: e.id.clone(),
         slug: e.slug.clone(),
         name: e.name.clone(),
         vendor: e.vendor.clone(),
@@ -1199,19 +1227,49 @@ pub fn hardware_candidates(index: &DeviceIndex) -> Vec<crate::detect::Candidate>
     }).collect()
 }
 
-fn detect_hardware(index: &DeviceIndex, probe: bool, wait: std::time::Duration) -> Result<Value, String> {
+/// The drivers of `catalogue` (`hardware_candidates`) that best match a MIDI
+/// port, by its name and the device's Identity Reply, best first: id, slug,
+/// name, vendor, source tier and score. The hosted server answers
+/// `POST /v1/detect` with them.
+pub fn match_port(catalogue: &[crate::detect::Candidate], port: &str, identity: Option<&crate::detect::Identity>) -> Vec<Value> {
+    crate::detect::rank(port, identity, catalogue, 3).iter().map(|(score, i)| {
+        let c = &catalogue[*i];
+        json!({ "id": c.id, "slug": c.slug, "name": c.name, "vendor": c.vendor, "source_tier": c.tier, "score": score })
+    }).collect()
+}
+
+/// Find the MIDI devices plugged into this machine and their drivers: those
+/// of `index`, or, given `server`, those of the SynthHub catalogue it
+/// matches the ports against. The command to run names the driver by its
+/// file when `by_file` (a folder the user keeps), else by its id.
+fn detect_hardware(index: &DeviceIndex, server: Option<&crate::online::Online>, by_file: bool, probe: bool,
+                   wait: std::time::Duration) -> Result<Value, String> {
     let found = crate::detect::scan(probe, wait).map_err(|e| format!("MIDI scan: {e}"))?;
-    let catalogue = hardware_candidates(index);
-    let devices: Vec<Value> = found.iter().map(|d| {
-        let ranked = crate::detect::rank(d.label(), d.identity.as_ref(), &catalogue, 3);
-        let candidates: Vec<Value> = ranked.iter().map(|(score, i)| {
-            let c = &catalogue[*i];
-            json!({ "slug": c.slug, "name": c.name, "vendor": c.vendor, "file": c.file,
-                    "source_tier": c.tier, "score": score })
-        }).collect();
-        let run_command = match (ranked.first(), d.out_index) {
-            (Some((_, i)), Some(out)) => Some(format!("osc-bridge run --device {} --out-port {out}{}",
-                catalogue[*i].file, d.in_index.map(|n| format!(" --in-port {n}")).unwrap_or_default())),
+    let matched: Vec<Vec<Value>> = match server {
+        Some(server) => {
+            let ports: Vec<Value> = found.iter().map(|d| json!({ "port": d.label(),
+                "identity_hex": d.identity.as_ref().map(|id| id.reply().iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ")) }))
+                .collect();
+            let answers = server.detect(&ports).map_err(|e| format!("detect_hardware asks the SynthHub server to match \
+                the ports, and it could not be reached: {e}. Offline, the ports are matched against the drivers cached here."))?;
+            (0..found.len()).map(|i| answers.get(i).and_then(|a| a["candidates"].as_array().cloned()).unwrap_or_default())
+                .collect()
+        }
+        None => {
+            let catalogue = hardware_candidates(index);
+            found.iter().map(|d| match_port(&catalogue, d.label(), d.identity.as_ref())).collect()
+        }
+    };
+    let devices: Vec<Value> = found.iter().zip(matched).map(|(d, mut candidates)| {
+        for c in candidates.iter_mut() {
+            if let Some(e) = c["id"].as_str().and_then(|id| index.find(id)) {
+                c["file"] = json!(e.path.display().to_string());
+            }
+        }
+        let driver = candidates.first().and_then(|c| if by_file { c["file"].as_str() } else { c["id"].as_str() });
+        let run_command = match (driver, d.out_index) {
+            (Some(driver), Some(out)) => Some(format!("osc-bridge run --device {driver} --out-port {out}{}",
+                d.in_index.map(|n| format!(" --in-port {n}")).unwrap_or_default())),
             _ => None,
         };
         json!({
@@ -1392,10 +1450,13 @@ fn load_preset(args: &Value, link: &Link) -> Result<Value, String> {
 }
 
 /// `osc-bridge detect`: the same report as the `detect_hardware` tool, for a
-/// terminal.
-pub fn print_detection(devices_dir: &Path, probe: bool) -> Result<()> {
-    let index = DeviceIndex::build(&crate::catalogue::resolve(devices_dir));
-    let report = detect_hardware(&index, probe, std::time::Duration::from_millis(800))
+/// terminal: drivers of `devices_dir`, else of the SynthHub catalogue when
+/// linked, else those cached on this machine.
+pub fn print_detection(devices_dir: Option<&Path>, probe: bool) -> Result<()> {
+    let root = devices_dir.map(Path::to_path_buf).or_else(crate::online::cache_dir).unwrap_or_default();
+    let index = DeviceIndex::build(&root);
+    let server = (devices_dir.is_none() && crate::online::linked()).then(|| crate::online::Online::new(crate::online::SERVER));
+    let report = detect_hardware(&index, server.as_ref(), devices_dir.is_some(), probe, std::time::Duration::from_millis(800))
         .map_err(|e| anyhow::anyhow!(e))?;
     let devices = report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default();
     if devices.is_empty() {
@@ -1415,7 +1476,7 @@ pub fn print_detection(devices_dir: &Path, probe: bool) -> Result<()> {
         }
         for c in d["candidates"].as_array().into_iter().flatten() {
             println!("  match: {} — {} ({}, score {})", c["slug"].as_str().unwrap_or(""),
-                c["file"].as_str().unwrap_or(""), c["source_tier"].as_str().unwrap_or(""), c["score"]);
+                c["file"].as_str().or(c["id"].as_str()).unwrap_or(""), c["source_tier"].as_str().unwrap_or(""), c["score"]);
         }
         if let Some(cmd) = d["run_command"].as_str() {
             println!("  run:   {cmd}");
@@ -1720,16 +1781,22 @@ fn walk_json<F: FnMut(&Path, &Value)>(dir: &Path, f: &mut F) -> std::io::Result<
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::collections::BTreeMap;
 
     /// An empty index — these handshake/dispatch tests don't touch devices.
     fn empty_index() -> DeviceIndex {
         DeviceIndex { entries: Vec::new(), by_slug: HashMap::new() }
     }
 
+    /// The drivers the tests read: a few of the catalogue's, and synthetic ones.
+    const FIXTURES: &str = "tests/fixtures/devices";
+
+    fn fixtures() -> DeviceIndex {
+        DeviceIndex::build(Path::new(FIXTURES))
+    }
+
     fn test_opts() -> McpOptions {
         McpOptions {
-            devices_dir: PathBuf::from("devices"),
+            devices_dir: Some(PathBuf::from(FIXTURES)),
             default_target: "127.0.0.1:7777".parse().unwrap(),
             online: false,
             private: Vec::new(),
@@ -1738,7 +1805,7 @@ mod tests {
 
     #[test]
     fn list_devices_filters_by_words_vendor_kind_and_limit() {
-        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let idx = fixtures();
         let run = |args: Value| list_devices(&idx, &DeviceFilter::from_args(&args), &|_| None).unwrap()["structuredContent"].clone();
         let all = run(json!({}));
         assert_eq!(all["count"].as_u64().unwrap() as usize, idx.entries.len());
@@ -1746,26 +1813,16 @@ mod tests {
         let names: Vec<&str> = mini["devices"].as_array().unwrap().iter().map(|d| d["name"].as_str().unwrap()).collect();
         assert!(names.iter().any(|n| n.eq_ignore_ascii_case("minilogue")), "{names:?}");
         assert!(names.iter().all(|n| n.to_lowercase().contains("minilogue")), "{names:?}");
-        let moog = run(json!({"vendor": "moog", "limit": 2}));
-        assert!(moog["count"].as_u64().unwrap() > 2);
-        assert_eq!(moog["devices"].as_array().unwrap().len(), 2);
+        let novation = run(json!({"vendor": "novation", "limit": 1}));
+        assert!(novation["count"].as_u64().unwrap() > 1);
+        assert_eq!(novation["devices"].as_array().unwrap().len(), 1);
         let software = run(json!({"kind": "software"}));
         assert!(software["devices"].as_array().unwrap().iter().all(|d| d["kind"] == "software"));
     }
 
     #[test]
-    fn the_index_holds_which_sounds_a_device_loads_as_they_are() {
-        let idx = DeviceIndex::build(&PathBuf::from("devices"));
-        let of = |id: &str| idx.entries.iter().find(|e| e.id == id).unwrap().loads_sounds_of.clone();
-        assert_eq!(of("m-vave/fm-1.vendor.fw-15"), ["dx7"]);
-        assert!(of("m-vave/fm-1.vendor.fw-felucca-1.6.1").is_empty(), "Felucca takes no raw DX7 voice");
-        assert!(idx.entries.iter().all(|e| e.loads_sounds_of.iter().all(|s| idx.find(s).is_some())),
-            "every slug names a device of the catalogue");
-    }
-
-    #[test]
     fn a_private_device_keeps_its_reports_on_the_machine() {
-        let index = DeviceIndex::build(&PathBuf::from("devices"));
+        let index = fixtures();
         let opts = McpOptions { online: true, private: vec!["korg/minilogue".into()], ..test_opts() };
         // Never reached: the refusal comes first.
         let link = Link::new("http://127.0.0.1:9");
@@ -1811,23 +1868,23 @@ mod tests {
     #[test]
     fn the_privacy_command_records_choices_by_catalogue_id() {
         let path = std::env::temp_dir().join(format!("osc-bridge-privacy-{}/settings.toml", std::process::id()));
-        let devices = Path::new("devices");
-        let shown = privacy(&path, devices, None, &[], &[]).unwrap();
+        let devices = fixtures();
+        let shown = privacy(&path, &devices, None, None, &[], &[]).unwrap();
         assert!(shown.contains("Linked to the SynthHub server") && shown.contains("Private devices: none"), "{shown}");
         assert!(!path.exists(), "showing writes nothing");
-        let shown = privacy(&path, devices, Some(true), &["minilogue".into()], &[]).unwrap();
+        let shown = privacy(&path, &devices, None, Some(true), &["minilogue".into()], &[]).unwrap();
         assert!(shown.contains("Offline") && shown.contains("korg/minilogue"), "{shown}");
         assert_eq!(crate::online::Settings::load(Some(&path)).unwrap(),
             crate::online::Settings { offline: true, private: vec!["korg/minilogue".into()] });
-        assert!(privacy(&path, devices, None, &["no-such-synth".into()], &[]).is_err());
-        privacy(&path, devices, Some(false), &[], &["korg/minilogue".into()]).unwrap();
+        assert!(privacy(&path, &devices, None, None, &["no-such-synth".into()], &[]).is_err());
+        privacy(&path, &devices, None, Some(false), &[], &["korg/minilogue".into()]).unwrap();
         assert_eq!(crate::online::Settings::load(Some(&path)).unwrap(), crate::online::Settings::default());
         std::fs::remove_dir_all(path.parent().unwrap()).ok();
     }
 
     #[test]
     fn an_offline_copy_does_not_offer_the_server_tools() {
-        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let idx = fixtures();
         let resp = handle_request(&json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
             "params": {"name": "report_result", "arguments": {"device": "korg/minilogue", "outcome": "works"}}}),
             &test_opts(), &idx, None).unwrap();
@@ -1836,7 +1893,7 @@ mod tests {
 
     #[test]
     fn the_catalogue_tools_are_shared_with_the_hosted_server() {
-        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let idx = fixtures();
         let routes = catalogue_tool("list_routes", &json!({"slug": "minilogue"}), &idx, &|_| None).unwrap().unwrap();
         assert!(routes["structuredContent"].is_object());
         let listed = catalogue_tool("list_devices", &json!({"query": "minilogue", "limit": 1}), &idx, &|_| Some("unconfirmed".into()))
@@ -1860,12 +1917,12 @@ mod tests {
     }
 
     #[test]
-    fn device_index_builds_from_devices_dir() {
-        let idx = DeviceIndex::build(&PathBuf::from("devices"));
-        assert!(idx.entries.len() > 100, "expected the full catalogue, got {}", idx.entries.len());
-        // The Ableton driver has a stable slug — lookup must be O(1) and hit.
-        let p = idx.find_path("ableton").expect("/ableton slug should resolve");
-        assert!(p.to_string_lossy().contains("ableton"));
+    fn device_index_builds_from_a_folder_of_drivers() {
+        let idx = fixtures();
+        assert!(idx.entries.len() > 10, "expected every test driver, got {}", idx.entries.len());
+        let p = idx.find_path("minilogue").expect("/minilogue slug should resolve");
+        assert!(p.to_string_lossy().contains("korg"));
+        assert_eq!(idx.find("korg/minilogue").map(|e| e.slug.as_str()), Some("minilogue"));
         // Unknown slug resolves to nothing rather than walking the tree.
         assert!(idx.find_path("does-not-exist").is_none());
     }
@@ -1899,18 +1956,18 @@ mod tests {
 
     #[test]
     fn list_devices_result_carries_structured_content() {
-        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let idx = fixtures();
         let res = list_devices(&idx, &DeviceFilter::default(), &|_| None).unwrap();
         let sc = res.get("structuredContent").expect("structuredContent present");
-        assert!(sc.get("count").and_then(Value::as_u64).unwrap() > 100);
-        assert!(sc.get("devices").and_then(Value::as_array).unwrap().len() > 100);
+        assert_eq!(sc.get("count").and_then(Value::as_u64).unwrap() as usize, idx.entries.len());
+        assert_eq!(sc.get("devices").and_then(Value::as_array).unwrap().len(), idx.entries.len());
         // The text fallback block is still there for non-structured clients.
         assert!(res.get("content").and_then(Value::as_array).is_some());
     }
 
     #[test]
     fn list_routes_exposes_expects_on_surface_entries() {
-        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let idx = fixtures();
         // Find any device with a non-empty cc_params surface and check that
         // every entry carries an `expects` string (defaulted to "continuous").
         let mut checked = false;
@@ -1932,7 +1989,7 @@ mod tests {
 
     #[test]
     fn shared_slug_resolves_to_the_most_trustworthy_variant() {
-        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let idx = fixtures();
         let mut by_slug: HashMap<&str, Vec<&DeviceIndexEntry>> = HashMap::new();
         for e in &idx.entries { by_slug.entry(e.slug.as_str()).or_default().push(e); }
         let mut checked = 0;
@@ -1943,12 +2000,14 @@ mod tests {
             assert_eq!(tier_rank(chosen_tier), best, "{slug} resolved to a weaker variant");
             checked += 1;
         }
-        assert!(checked > 0, "catalogue should contain shared slugs");
+        assert!(checked > 0, "the test drivers hold variants of one device");
+        assert_eq!(idx.find_path("box"), Some(Path::new(FIXTURES).join("acme/box.vendor.fw-2.json").as_path()),
+            "the vendor's documentation wins over an unreviewed contribution");
     }
 
     #[test]
     fn tool_failure_is_a_result_and_unknown_tool_a_protocol_error() {
-        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let idx = fixtures();
         let opts = test_opts();
         let call = |name: &str| handle_request(&json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
             "params": {"name": name, "arguments": {"slug": "no-such-device"}}}), &opts, &idx, None).unwrap();
@@ -1965,21 +2024,25 @@ mod tests {
 
     #[test]
     fn restore_refuses_without_explicit_confirmation() {
-        let idx = DeviceIndex::build(&PathBuf::from("devices"));
+        let idx = fixtures();
         let opts = test_opts();
         let err = call_tool("restore_presets", &json!({"out_port": "0", "file": "x.syx"}), &opts, &idx, None).unwrap_err();
         assert!(err.contains("confirm_overwrite"), "{err}");
     }
 
     #[test]
-    fn real_port_names_resolve_to_their_catalogue_driver() {
-        let idx = DeviceIndex::build(&PathBuf::from("devices"));
-        let cat = hardware_candidates(&idx);
-        for (port, want) in [("Minilab3 MIDI", "minilab3"), ("TR-8S", "tr_8s"), ("Digitakt II", "digitakt_ii")] {
-            let best = crate::detect::rank(port, None, &cat, 1);
-            assert!(!best.is_empty(), "{port}: no candidate");
-            assert_eq!(cat[best[0].1].slug, want, "{port}");
+    fn port_names_and_identities_resolve_to_their_driver() {
+        let cat = hardware_candidates(&fixtures());
+        for (port, want) in [("minilogue MIDI 1", "korg/minilogue"), ("Bass Station II", "novation/bass_station_ii"),
+                             ("Electra Controller Electra Port 1", "electra-one/electra-one")] {
+            let best = match_port(&cat, port, None);
+            assert_eq!(best.first().map(|c| c["id"].clone()), Some(json!(want)), "{port}: {best:?}");
         }
+        // An Identity Reply from the maker puts its driver first.
+        let acme = crate::detect::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
+        let best = match_port(&cat, "Box", Some(&acme));
+        assert_eq!(best[0]["slug"], "box", "{best:?}");
+        assert!(best.iter().all(|c| c.get("file").is_none()), "no path of the machine that matched them");
     }
 
     #[test]
@@ -2014,39 +2077,56 @@ mod tests {
     }
 
     /// A stand-in for the hosted server, on a free local port: it issues
-    /// accounts (refusing ids it did not issue, like the real one), lists and
-    /// serves the catalogue under `root`, gives a fixed trust list, and
-    /// answers every forwarded tool call with the tool's name. The calls it
-    /// received are in the returned list.
+    /// accounts (refusing ids it did not issue, like the real one), hands out
+    /// the drivers under `root` one at a time (a file and its notes, a
+    /// device's variants, the drivers matching MIDI ports), answers the
+    /// catalogue tools without an account, gives a fixed trust list, and
+    /// answers every forwarded tool call with the tool's name. The forwarded
+    /// calls it received are in the returned list.
     fn fake_server(root: &Path) -> (String, std::sync::Arc<std::sync::Mutex<Vec<String>>>) {
         let server = tiny_http::Server::http("127.0.0.1:0").unwrap();
         let base = format!("http://{}", server.server_addr());
         let calls = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
         let (root, seen) = (root.to_path_buf(), calls.clone());
         std::thread::spawn(move || {
+            let index = DeviceIndex::build(&root);
             let mut issued: Vec<String> = Vec::new();
             for mut req in server.incoming_requests() {
                 let mut body = String::new();
                 let _ = std::io::Read::read_to_string(req.as_reader(), &mut body);
                 let url = req.url().to_string();
+                let file = |rel: &str| std::fs::read_to_string(root.join(rel)).ok();
                 let (status, reply) = match url.as_str() {
                     "/u/new" => {
                         let id = format!("{:032x}", issued.len() + 1);
                         issued.push(id.clone());
-                        (200, json!({ "user_id": id }))
+                        (200, json!({ "user_id": id }).to_string())
                     }
-                    "/v1/trust" => (200, json!({ "devices": { "korg/minilogue": { "status": "unconfirmed" } } })),
-                    "/v1/catalogue/files" => {
-                        let paths: Value = serde_json::from_str(&body).unwrap();
-                        let files: BTreeMap<String, String> = paths["paths"].as_array().unwrap().iter()
-                            .map(|p| p.as_str().unwrap().to_string())
-                            .map(|p| { let text = std::fs::read_to_string(root.join(&p)).unwrap(); (p, text) }).collect();
-                        (200, json!({ "files": files }))
+                    "/v1/trust" => (200, json!({ "devices": { "korg/minilogue": { "status": "unconfirmed" } } }).to_string()),
+                    u if u.starts_with("/api/v1/devices/") => match file(&u["/api/v1/devices/".len()..]) {
+                        Some(text) => (200, text),
+                        None => (404, "not found\n".into()),
+                    },
+                    u if u.starts_with("/v1/devices/") => match index.find(&u["/v1/devices/".len()..]) {
+                        Some(best) => {
+                            let variants: Vec<Value> = index.entries.iter().filter(|e| e.slug == best.slug)
+                                .map(|e| json!({ "id": e.id, "slug": e.slug })).collect();
+                            (200, json!({ "best": best.id, "variants": variants }).to_string())
+                        }
+                        None => (404, json!({ "error": "no such device" }).to_string()),
+                    },
+                    "/v1/detect" => {
+                        let asked: Value = serde_json::from_str(&body).unwrap();
+                        let cat = hardware_candidates(&index);
+                        let ports: Vec<Value> = asked["ports"].as_array().unwrap().iter().map(|p| json!({ "port": p["port"],
+                            "candidates": match_port(&cat, p["port"].as_str().unwrap(), None) })).collect();
+                        (200, json!({ "ports": ports }).to_string())
                     }
-                    u if u.ends_with("/v1/catalogue") => {
-                        let files: Vec<Value> = crate::online::catalogue_files(&root).into_iter()
-                            .map(|(p, h)| json!({ "path": p, "sha256": h })).collect();
-                        (200, json!({ "files": files }))
+                    "/mcp" => {
+                        let rpc: Value = serde_json::from_str(&body).unwrap();
+                        let result = catalogue_tool(rpc["params"]["name"].as_str().unwrap(), &rpc["params"]["arguments"], &index, &|_| None)
+                            .unwrap().unwrap();
+                        (200, json!({ "jsonrpc": "2.0", "id": 1, "result": result }).to_string())
                     }
                     u if u.starts_with("/u/") && u.ends_with("/mcp") => {
                         let id = &u[3..u.len() - 4];
@@ -2054,50 +2134,62 @@ mod tests {
                             let rpc: Value = serde_json::from_str(&body).unwrap();
                             let name = rpc["params"]["name"].as_str().unwrap().to_string();
                             seen.lock().unwrap().push(name.clone());
-                            (200, json!({ "jsonrpc": "2.0", "id": 1, "result": { "content": [{ "type": "text", "text": name }] } }))
+                            (200, json!({ "jsonrpc": "2.0", "id": 1, "result": { "content": [{ "type": "text", "text": name }] } }).to_string())
                         } else {
-                            (404, json!({ "jsonrpc": "2.0", "id": null, "error": { "code": -32001, "message": "unknown account" } }))
+                            (404, json!({ "jsonrpc": "2.0", "id": null, "error": { "code": -32001, "message": "unknown account" } }).to_string())
                         }
                     }
-                    _ => (404, json!({})),
+                    _ => (404, "{}".into()),
                 };
-                let _ = req.respond(tiny_http::Response::from_string(reply.to_string()).with_status_code(status));
+                let _ = req.respond(tiny_http::Response::from_string(reply).with_status_code(status));
             }
         });
         (base, calls)
     }
 
     #[test]
-    fn a_local_copy_mirrors_the_server_catalogue_and_forwards_reports() {
+    fn a_call_names_the_driver_it_needs() {
+        let call = |name: &str, args: Value| json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
+            "params": {"name": name, "arguments": args}});
+        assert_eq!(driver_wanted(&call("list_routes", json!({"slug": "minilogue"}))), Some("minilogue"));
+        assert_eq!(driver_wanted(&call("export_device", json!({"device": "korg/minilogue", "format": "midnam"}))), Some("korg/minilogue"));
+        assert_eq!(driver_wanted(&call("report_result", json!({"device": "minilogue", "outcome": "works"}))), Some("minilogue"));
+        assert_eq!(driver_wanted(&call("list_devices", json!({"query": "korg"}))), None, "the server lists them");
+        assert_eq!(driver_wanted(&json!({"jsonrpc": "2.0", "id": 1, "method": "tools/list"})), None);
+    }
+
+    #[test]
+    fn a_local_copy_fetches_the_drivers_it_needs_and_forwards_reports() {
         let tmp = std::env::temp_dir().join(format!("osc-bridge-link-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&tmp);
-        let (served, bundled, cache) = (tmp.join("served"), tmp.join("bundled"), tmp.join("cache"));
-        for (dir, files) in [(&served, &["korg/minilogue.json", "examples/test_synth.md", "examples/test_synth.json"][..]),
-                             (&bundled, &["korg/minilogue.json"][..])] {
-            for f in files {
-                std::fs::create_dir_all(dir.join(f).parent().unwrap()).unwrap();
-                std::fs::copy(Path::new("devices").join(f), dir.join(f)).unwrap();
-            }
-        }
-        std::fs::create_dir_all(cache.join("old")).unwrap();
-        std::fs::write(cache.join("old/gone.json"), "{}").unwrap();
-        let (base, calls) = fake_server(&served);
+        let cache = tmp.join("cache");
+        let (base, calls) = fake_server(Path::new(FIXTURES));
         let link = Link { client: crate::online::Online::keeping_account_in(&base, Some(tmp.join("user"))), ..Link::new("unused") };
+
+        // By slug, its best variant; with its notes and the driver it takes its MIDI from.
+        let fetched = crate::catalogue::fetch(&link.client, "microfreak_tools", &cache).unwrap();
+        assert_eq!(fetched, cache.join("arturia/microfreak.vendor.fw-microfreak-tools-0.1.0.json"));
+        assert!(fetched.with_extension("md").is_file() && cache.join("arturia/microfreak.json").is_file());
+        assert_eq!(Device::load(&fetched).unwrap().device.osc_prefix, "/microfreak_tools");
+        assert_eq!(crate::catalogue::fetch(&link.client, "box", &cache).unwrap(), cache.join("acme/box.vendor.fw-2.json"));
+        assert!(crate::catalogue::fetch(&link.client, "acme/none", &cache).unwrap_err().to_string().contains("no driver acme/none"));
+        assert!(link.client.fetch_driver("../secret", &cache).is_err());
+        assert_eq!(DeviceIndex::build(&cache).entries.len(), 3, "only what was asked for is on this machine");
+
+        // The server lists and matches the drivers; what is cached here is not the catalogue.
+        let opts = McpOptions { online: true, devices_dir: None, ..test_opts() };
+        let index = DeviceIndex::build(&cache);
+        let listed = call_tool("list_devices", &json!({"query": "minilogue"}), &opts, &index, Some(&link)).unwrap();
+        assert_eq!(listed["structuredContent"]["devices"][0]["id"], "korg/minilogue", "{listed}");
+        let matched = link.client.detect(&[json!({"port": "minilogue MIDI 1"})]).unwrap();
+        assert_eq!(matched[0]["candidates"][0]["id"], "korg/minilogue", "{matched:?}");
+
+        // Reports go out under the account kept on this machine.
         let user = link.user(false).unwrap();
         assert_eq!(std::fs::read_to_string(tmp.join("user")).unwrap(), user, "the account is kept");
-        let done = link.client.sync_catalogue(&user, &bundled, &cache).unwrap();
-        assert_eq!(done, crate::online::Synced { files: 3, copied: 1, downloaded: 2, removed: 1 });
-        assert_eq!(crate::online::catalogue_files(&cache), crate::online::catalogue_files(&served));
-        assert!(!link.client.sync_catalogue(&user, &bundled, &cache).unwrap().changed(), "nothing to do the second time");
-
-        let opts = McpOptions { online: true, ..test_opts() };
-        let index = DeviceIndex::build(&cache);
         let reported = call_tool("report_result", &json!({"device": "korg/minilogue", "outcome": "works", "firmware": "2.10"}),
             &opts, &index, Some(&link)).unwrap();
         assert_eq!(reported["content"][0]["text"], "report_result", "{reported}");
-        if let Ok(mut t) = link.trust.write() { *t = link.client.trust().unwrap(); }
-        let listed = call_tool("list_devices", &json!({"query": "minilogue"}), &opts, &index, Some(&link)).unwrap();
-        assert_eq!(listed["structuredContent"]["devices"][0]["usage_status"], "unconfirmed");
         assert!(tool_names(&opts).contains(&"submit_fix") && !tool_names(&test_opts()).contains(&"submit_fix"));
 
         std::fs::write(tmp.join("user"), "0".repeat(32)).unwrap();

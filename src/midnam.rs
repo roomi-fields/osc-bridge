@@ -245,7 +245,7 @@ mod tests {
     use super::*;
 
     fn load(id: &str) -> Device {
-        Device::load(format!("devices/{id}.json")).unwrap_or_else(|e| panic!("{id}: {e}"))
+        Device::load(format!("tests/fixtures/devices/{id}.json")).unwrap_or_else(|e| panic!("{id}: {e}"))
     }
 
     fn parse(xml: &str) -> roxmltree::Document<'_> {

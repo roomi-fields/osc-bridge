@@ -5,7 +5,7 @@ use osc_bridge::device::Device;
 use osc_bridge::frame::{build_frame, Bindings};
 
 fn load() -> Device {
-    Device::load("devices/novation/launch-control-xl-3.json").expect("load lcxl3 json")
+    Device::load("tests/fixtures/devices/novation/launch-control-xl-3.json").expect("load lcxl3 json")
 }
 
 fn find_frame<'a>(dev: &'a Device, osc: &str) -> &'a [osc_bridge::device::FrameToken] {

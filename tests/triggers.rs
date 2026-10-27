@@ -69,7 +69,7 @@ fn non_trigger_address_is_not_claimed() {
 
 #[test]
 fn imported_midi_guide_drum_map_fires_the_documented_note() {
-    let d = Device::load("devices/vermona/drm1_mkiv.pencilresearch.fw-unknown.json").unwrap();
+    let d = Device::load("tests/fixtures/devices/vermona/drm1_mkiv.pencilresearch.fw-unknown.json").unwrap();
     let bytes = trigger_note_on(&d, &msg("/drm1_mkiv/drum/kick", vec![OscType::Int(110)])).unwrap().unwrap();
     assert_eq!(bytes, vec![0x99, 36, 110], "DRM1 MKIV kick: note 36 on channel 10");
 }

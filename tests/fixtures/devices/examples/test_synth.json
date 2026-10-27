@@ -1,0 +1,129 @@
+{
+  "_sources": [
+    {
+      "type": "test-fixture",
+      "url": "https://synthhub.roomi-fields.com/connect/",
+      "firmware": "1.0",
+      "note": "Not a real device: the virtual synth of osc-bridge connect --test-synth and of the connect page, for testing the relay, detection, reports, learned mappings and contributions without hardware."
+    }
+  ],
+  "device": {
+    "name": "Test Synth",
+    "vendor": "osc-bridge",
+    "revision": "1.0",
+    "osc_prefix": "/test_synth",
+    "manufacturer_id": [
+      125
+    ],
+    "device_id": []
+  },
+  "sysex": {
+    "header": [],
+    "footer": []
+  },
+  "commands": [],
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": {
+    "note_on": "/note/on {note} {velocity} {channel}",
+    "note_off": "/note/off {note} {velocity} {channel}",
+    "cc": "/cc/{num} {value} {channel}",
+    "pitchbend": "/pitchbend {value_u14} {channel}",
+    "aftertouch": "/aftertouch {value} {channel}"
+  },
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/filter/cutoff",
+        "cc": 74,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 71,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/amp/attack",
+        "cc": 73,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/amp/release",
+        "cc": 72,
+        "range": [
+          0,
+          127
+        ]
+      },
+      {
+        "osc": "/osc/waveform",
+        "cc": 70,
+        "range": [
+          0,
+          3
+        ],
+        "expects": "discrete"
+      },
+      {
+        "osc": "/lfo/rate",
+        "nrpn_msb": 0,
+        "nrpn_lsb": 1,
+        "range": [
+          0,
+          16383
+        ]
+      }
+    ]
+  },
+  "triggers": {
+    "entries": [
+      {
+        "osc": "/drum/kick",
+        "sound": "Kick",
+        "section": "Drums",
+        "channel": 9,
+        "note_range": [
+          36,
+          36
+        ],
+        "note": 36
+      },
+      {
+        "osc": "/drum/snare",
+        "sound": "Snare",
+        "section": "Drums",
+        "channel": 9,
+        "note_range": [
+          38,
+          38
+        ],
+        "note": 38
+      },
+      {
+        "osc": "/drum/hat",
+        "sound": "Closed hat",
+        "section": "Drums",
+        "channel": 9,
+        "note_range": [
+          42,
+          42
+        ],
+        "note": 42
+      }
+    ]
+  },
+  "replies": []
+}

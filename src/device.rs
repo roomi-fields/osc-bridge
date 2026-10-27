@@ -580,8 +580,7 @@ fn resolve_chain(path: &Path, doc: serde_json::Value, chain: &mut Vec<std::path:
 
 impl Device {
     pub fn load<P: AsRef<Path>>(path: P) -> anyhow::Result<Self> {
-        let resolved = crate::catalogue::resolve(path.as_ref());
-        let p = resolved.as_path();
+        let p = path.as_ref();
         let txt = std::fs::read_to_string(p)
             .map_err(|e| anyhow::anyhow!("reading {}: {e}", p.display()))?;
         let doc: serde_json::Value = serde_json::from_str(&txt)

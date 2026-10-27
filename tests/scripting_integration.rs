@@ -6,7 +6,7 @@ use osc_bridge::scripting::{ScriptContext, ScriptEngine};
 
 #[test]
 fn loads_example_device() {
-    let d = Device::load("devices/examples/scripted-example.json").unwrap();
+    let d = Device::load("tests/fixtures/devices/examples/scripted-example.json").unwrap();
     assert_eq!(d.device.osc_prefix, "/example");
     let ccs = d.cc_params.as_ref().unwrap();
     let e = &ccs.entries[0];
@@ -18,7 +18,7 @@ fn loads_example_device() {
 
 #[test]
 fn transform_on_cc_param_scales_0_1000_to_0_127() {
-    let d = Device::load("devices/examples/scripted-example.json").unwrap();
+    let d = Device::load("tests/fixtures/devices/examples/scripted-example.json").unwrap();
     let expr = d.cc_params.as_ref().unwrap().entries[0].transform.clone().unwrap();
     let engine = ScriptEngine::new().unwrap();
     assert_eq!(engine.eval_transform(&expr, 0).unwrap(),    0);
@@ -28,7 +28,7 @@ fn transform_on_cc_param_scales_0_1000_to_0_127() {
 
 #[test]
 fn script_on_command_appends_xor_checksum() {
-    let d = Device::load("devices/examples/scripted-example.json").unwrap();
+    let d = Device::load("tests/fixtures/devices/examples/scripted-example.json").unwrap();
     let cmd = &d.commands[0];
     let mut b = Bindings::new();
     b.set_u7("a", 0x12);

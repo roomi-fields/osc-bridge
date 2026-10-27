@@ -1,4 +1,4 @@
-//! End-to-end Phase 4 integration: the real devices/electra-one/electra-one.json
+//! End-to-end Phase 4 integration: the real Electra One driver (a copy in tests/fixtures/devices/)
 //! is loaded, its /preset/upload custom_command is fed a realistic Electra
 //! preset, and the resulting dynamic routes are verified. The /page/switched
 //! reply script is also exercised.
@@ -35,7 +35,7 @@ const PRESET: &str = r#"
 "#;
 
 fn electra() -> Device {
-    Device::load("devices/electra-one/electra-one.json").expect("load electra-one.json")
+    Device::load("tests/fixtures/devices/electra-one/electra-one.json").expect("load electra-one.json")
 }
 
 #[test]
@@ -248,7 +248,7 @@ fn bridge_docs_skips_devices_without_companion_markdown() {
     use osc_bridge::runtime::bridge_docs_replies;
     // Load any device that has NO .md next to it. The scripted-example has
     // no companion file.
-    let d = osc_bridge::device::Device::load("devices/examples/scripted-example.json").unwrap();
+    let d = osc_bridge::device::Device::load("tests/fixtures/devices/examples/scripted-example.json").unwrap();
     assert!(d.docs.is_none(), "scripted-example.json must not have a .md");
     let replies = bridge_docs_replies(std::slice::from_ref(&d));
     assert!(replies.is_empty(), "undocumented devices produce no reply");

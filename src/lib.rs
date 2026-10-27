@@ -1,6 +1,8 @@
 //! osc-bridge — declarative OSC ↔ MIDI/SysEx bridge.
 //!
-//! Devices are described by JSON documents under `devices/<vendor>/<name>.json`.
+//! Devices are described by JSON driver files (`<vendor>/<name>.json`): the
+//! catalogue of them lives on the SynthHub server, which hands them out one
+//! at a time (`catalogue`, `online`).
 //! The engine loads a device spec, exposes its OSC surface, and translates
 //! incoming OSC to outgoing MIDI (and vice-versa for replies / live MIDI in).
 //!

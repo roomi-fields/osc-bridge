@@ -1,0 +1,119 @@
+{
+  "_sources": [
+    {
+      "type": "third-party-osc",
+      "name": "DrivenByMoss (Bitwig Studio extension)",
+      "url": "https://github.com/git-moss/DrivenByMoss-Documentation/blob/master/Generic-Tools-Protocols/Open-Sound-Control-(OSC).md",
+      "version": "latest",
+      "firmware": "Bitwig Studio 5"
+    }
+  ],
+  "_limitations": "v1 covers transport (play / stop / tempo), per-track volume / mute / solo / arm for the first 8 tracks (DrivenByMoss bank size), and scene launch for the first 8 scenes. Track and scene indices are 1-based in DrivenByMoss (NOT 0-based like AbletonOSC). Browser, devices, automation, and the wider DrivenByMoss surface are out of scope for v1.",
+  "_coverage": {
+    "host_software": "Bitwig Studio 5 + DrivenByMoss",
+    "commands": 9,
+    "replies": 6,
+    "subscriptions": 0
+  },
+  "device": {
+    "name": "Bitwig Studio",
+    "vendor": "Bitwig",
+    "revision": "Bitwig Studio 5 + DrivenByMoss (latest)",
+    "osc_prefix": "/bitwig",
+    "kind": "software",
+    "transport": {
+      "kind": "osc",
+      "host": "127.0.0.1",
+      "port": 8000,
+      "reply_port": 9000
+    }
+  },
+  "commands": [
+    {
+      "osc": "/transport/play",
+      "forward": { "path": "/play", "args": [1] }
+    },
+    {
+      "osc": "/transport/stop",
+      "forward": { "path": "/stop", "args": [] }
+    },
+    {
+      "osc": "/transport/tempo",
+      "args": [{ "name": "bpm", "type": "float", "range": [20, 666] }],
+      "forward": { "path": "/tempo/raw", "args": ["{bpm}"] }
+    },
+    {
+      "osc": "/transport/tap",
+      "forward": { "path": "/tempo/tap", "args": [1] }
+    },
+    {
+      "osc": "/track/{n}/volume",
+      "args": [
+        { "name": "n", "type": "int", "range": [1, 8] },
+        { "name": "v", "type": "float", "range": [0, 1] }
+      ],
+      "forward": { "path": "/track/{n}/volume", "args": ["{v}"] }
+    },
+    {
+      "osc": "/track/{n}/mute",
+      "args": [
+        { "name": "n", "type": "int", "range": [1, 8] },
+        { "name": "on", "type": "bool" }
+      ],
+      "forward": { "path": "/track/{n}/mute", "args": ["{on}"] }
+    },
+    {
+      "osc": "/track/{n}/solo",
+      "args": [
+        { "name": "n", "type": "int", "range": [1, 8] },
+        { "name": "on", "type": "bool" }
+      ],
+      "forward": { "path": "/track/{n}/solo", "args": ["{on}"] }
+    },
+    {
+      "osc": "/track/{n}/arm",
+      "args": [
+        { "name": "n", "type": "int", "range": [1, 8] },
+        { "name": "on", "type": "bool" }
+      ],
+      "forward": { "path": "/track/{n}/recarm", "args": ["{on}"] }
+    },
+    {
+      "osc": "/scene/{n}/launch",
+      "args": [{ "name": "n", "type": "int", "range": [1, 8] }],
+      "forward": { "path": "/scene/{n}/launch", "args": [1] }
+    }
+  ],
+  "replies": [
+    {
+      "match_osc": "/tempo/raw",
+      "match_args": [{ "name": "bpm", "type": "float" }],
+      "emit_osc": "/transport/tempo {bpm}"
+    },
+    {
+      "match_osc": "/play",
+      "match_args": [{ "name": "playing", "type": "int" }],
+      "emit_osc": "/transport/playing {playing}"
+    },
+    {
+      "match_osc": "/track/{n}/volume",
+      "match_args": [{ "name": "v", "type": "float" }],
+      "emit_osc": "/track/{n}/volume {v}"
+    },
+    {
+      "match_osc": "/track/{n}/mute",
+      "match_args": [{ "name": "on", "type": "int" }],
+      "emit_osc": "/track/{n}/mute {on}"
+    },
+    {
+      "match_osc": "/track/{n}/solo",
+      "match_args": [{ "name": "on", "type": "int" }],
+      "emit_osc": "/track/{n}/solo {on}"
+    },
+    {
+      "match_osc": "/track/{n}/recarm",
+      "match_args": [{ "name": "on", "type": "int" }],
+      "emit_osc": "/track/{n}/arm {on}"
+    }
+  ]
+}

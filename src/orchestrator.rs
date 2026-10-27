@@ -11,22 +11,23 @@
 //! # ws_bind = "127.0.0.1:7890"   # optional — browser clients over WebSocket
 //! # oscquery_bind = "127.0.0.1:7891"   # optional — OSCQuery namespace over HTTP
 //!
-//! # Hardware (MIDI/SysEx) device.
+//! # Hardware (MIDI/SysEx) device: a driver file, or its catalogue id or
+//! # slug (fetched from the SynthHub server, see crate::catalogue).
 //! [[devices]]
-//! spec = "devices/moog/subsequent-37.json"
+//! spec = "moog/subsequent-37"
 //! midi_out_port = 3
 //! midi_in_port  = 2
 //!
 //! # Same model twice — override the prefix to avoid a dispatch collision.
 //! [[devices]]
-//! spec = "devices/arturia/matrixbrute.json"
+//! spec = "arturia/matrixbrute"
 //! osc_prefix = "/matrixbrute-1"
 //! midi_out_port = 5
 //!
 //! # Software (OSC-transport) device. No MIDI port. host / port /
 //! # reply_port are optional overrides of the driver JSON's transport block.
 //! [[devices]]
-//! spec = "devices/ableton/live.third-party-osc.fw-12.2.json"
+//! spec = "ableton/live.third-party-osc.fw-12.2"
 //! host = "192.168.1.40"      # optional — defaults to the JSON's value
 //!
 //! # Inter-device route: a knob turn on the MiniLab drives an Ableton track.
@@ -327,7 +328,7 @@ impl Orchestrator {
         let mut pending_osc_reply: Vec<PendingOscReply> = Vec::new();
 
         for dc in &cfg.devices {
-            let mut dev = Device::load(&dc.spec)?;
+            let mut dev = Device::load(crate::catalogue::locate(&dc.spec)?)?;
             if let Some(pfx) = &dc.osc_prefix {
                 if !pfx.starts_with('/') {
                     bail!("osc_prefix override must start with '/': {pfx}");
