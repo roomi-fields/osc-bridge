@@ -1,7 +1,7 @@
 // SuperCollider demo — drive MiniLab 3 via osc-bridge
 //
 // Run first (in a terminal):
-//   osc-bridge run --device devices/arturia/minilab3.json \
+//   osc-bridge run --device arturia/minilab3 \
 //     --out-port <Minilab3 MIDI out> --in-port <Minilab3 MIDI in> \
 //     --bind 127.0.0.1:7777 --osc-client 127.0.0.1:57120
 //

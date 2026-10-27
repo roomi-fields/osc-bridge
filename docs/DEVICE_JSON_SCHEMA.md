@@ -1,6 +1,6 @@
 # Device JSON schema (v0.1)
 
-Every supported instrument is described by a single JSON file in `devices/<vendor>/<device>.json`.
+Every supported instrument is described by a single JSON file, its driver: `<vendor>/<device>.json` in the [SynthHub](https://synthhub.roomi-fields.com/) catalogue (its id is that path without `.json`), or any file of yours.
 The `osc-bridge` engine reads this file, registers OSC routes, and builds MIDI/SysEx frames at runtime.
 
 ## Top level

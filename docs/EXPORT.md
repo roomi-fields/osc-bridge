@@ -14,7 +14,7 @@ The same text comes from three places:
 
 | Where | How |
 |---|---|
-| Command line | `osc-bridge export --device devices/korg/minilogue.json --format oscquery` (or `midnam`), on stdout |
+| Command line | `osc-bridge export --device korg/minilogue --format oscquery` (or `midnam`), on stdout |
 | MCP server | tool `export_device` with `device` (id or slug) and `format`; the document is the text content |
 | Running bridge | `osc-bridge run … --oscquery-bind 127.0.0.1:7891`, or `oscquery_bind` in the `[osc]` section of `bridge.toml` |
 

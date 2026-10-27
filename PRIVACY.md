@@ -1,6 +1,6 @@
 # Privacy Policy — osc-bridge
 
-_Last updated: 2026-10-24_
+_Last updated: 2026-10-27_
 
 osc-bridge drives your music hardware and software from your own machine.
 MIDI and OSC traffic to your devices never leaves your machine or local
@@ -9,13 +9,21 @@ network, except through the relay when you open it yourself (below).
 ## A copy installed on your machine (`osc-bridge mcp`)
 
 By default it is linked to the SynthHub server
-(`mcp.synthhub.roomi-fields.com`), so it stays up to date with the drivers
-other users and agents fixed and confirmed:
+(`mcp.synthhub.roomi-fields.com`), which holds the catalogue of drivers, as
+other users and agents fixed and confirmed them:
 
-- **At startup** it fetches the list of the server's driver files and the
-  trust of each driver, then downloads the files that changed. The server
-  records the time, an anonymous account id it issued (kept on your machine in
-  `<config>/osc-bridge/user`) and the osc-bridge version.
+- **At startup** it fetches the trust of each driver.
+- **When a driver is needed** (to run a device, read its routes or notes,
+  report on it), it fetches that one driver, by its id or slug, and keeps it in
+  a cache on your machine (`<cache>/osc-bridge/drivers`: `~/.cache` on Linux,
+  `%LOCALAPPDATA%` on Windows). **Detecting your hardware**
+  (`osc-bridge detect`, `detect_hardware`) sends the names of your MIDI ports
+  and the identity your devices answer with (maker, model, firmware), so the
+  server names the matching drivers; **listing devices** sends the search
+  words. These requests carry no account: the server records the time, what
+  was asked and the osc-bridge version.
+- **An anonymous account** is issued by the server the first time your agent
+  reports or contributes, and kept on your machine in `<config>/osc-bridge/user`.
 - **When your agent reports or contributes** (`report_result`,
   `report_mapping`, `submit_driver`, `submit_fix`), what it sends goes to the
   server under that account, to improve the catalogue for everyone.
@@ -33,7 +41,7 @@ settings file, `<config>/osc-bridge/settings.toml` (`~/.config` on Linux,
 osc-bridge starts; edit it with any text editor:
 
 ```toml
-# true: do not contact the server at all (bundled catalogue, nothing sent).
+# true: do not contact the server at all (drivers already cached only, nothing sent).
 offline = false
 
 # Devices kept private: nothing about them is sent to the server.
@@ -44,12 +52,14 @@ private = [
 ]
 ```
 
-- `offline = true` cuts the link: nothing is sent, and the catalogue bundled
-  with your copy is used as is. For a single run: `osc-bridge mcp --offline`
+- `offline = true` cuts the link: nothing is sent, and only the drivers
+  already in the cache are used. For a single run: `osc-bridge mcp --offline`
   or `OSC_BRIDGE_OFFLINE=1`.
 - A private device: its reports, learned mappings, fixes, presets and trust
-  lookups stay on your machine, while the catalogue and the trust fetched at startup
-  stay up to date.
+  lookups stay on your machine. A device named as the list names it is not
+  fetched by that name either; its driver comes from the cache (or a file of
+  yours) — fetching it again means asking the server for it, without your
+  account.
 
 `osc-bridge privacy` shows the current settings and where the file is; it can
 change them too (`--offline on|off`, `--private <device>`, `--public

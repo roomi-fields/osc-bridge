@@ -2,7 +2,7 @@
 
 | File | Purpose |
 |------|---------|
-| [`DEVICE_JSON_SCHEMA.md`](DEVICE_JSON_SCHEMA.md) | **Reference** — the full schema for `devices/<vendor>/<synth>.json` files. Read this before writing a new device spec. |
+| [`DEVICE_JSON_SCHEMA.md`](DEVICE_JSON_SCHEMA.md) | **Reference** — the full schema of driver files (`<vendor>/<synth>.json` in the SynthHub catalogue). Read this before writing a new device spec. |
 | [`EXPORT.md`](EXPORT.md) | A driver written as OSCQuery (its OSC namespace, also served live) or MIDNAM (its MIDI names for DAWs): what each holds and leaves out. |
 | [`ARTURIA_SYSEX_GENERIC.md`](ARTURIA_SYSEX_GENERIC.md) | Generic SysEx framing used by all Arturia devices (MiniLab, KeyLab, BeatStep, DrumBrute, MatrixBrute, etc.). |
 | [`MINILAB3_PROTOCOL.md`](MINILAB3_PROTOCOL.md) | Complete parameter table (~350 logical controls) for the MiniLab 3, extracted from the reference GPL-3 implementation. |

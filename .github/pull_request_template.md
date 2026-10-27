@@ -1,7 +1,7 @@
 <!--
-Default PR template. For a new device, copy the checklist from
-.github/PULL_REQUEST_TEMPLATE/new_device.md and replace this block.
-For a hardware-verification promotion, use promote_to_verified.md.
+Pull requests here change the engine. Drivers live in the SynthHub catalogue:
+send one with the submit_driver tool, or attach it to a device request issue
+(see CONTRIBUTING.md).
 -->
 
 ## Summary
@@ -11,10 +11,9 @@ For a hardware-verification promotion, use promote_to_verified.md.
 ## Checklist
 
 - [ ] `cargo test --release` passes locally
-- [ ] `cargo run --release -- lint <any new device JSON>` has zero unexpected warnings
+- [ ] `cargo run --release -- lint <any new test driver>` has zero unexpected warnings
 - [ ] No stray `transform` / `script` — or it's justified in the PR description
 - [ ] If schema was extended: `docs/DEVICE_JSON_SCHEMA.md` and `CHANGELOG.md` updated
-- [ ] If a device was added / promoted: `README.md` table and `docs/SUPPORTED_DEVICES.md` updated
 - [ ] First contribution: I will sign the [Contributor License Agreement](../CLA.md) when the bot asks (once)
 
 ## Notes for the reviewer

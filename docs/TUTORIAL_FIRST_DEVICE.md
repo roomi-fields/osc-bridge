@@ -32,8 +32,8 @@ to write and lint a driver — only to promote it to ✅ later.
 
 ## Step 1 — Find your source (2 min)
 
-Every driver must cite where its mapping comes from. No source = the PR stays
-open until one is provided. Acceptable sources:
+Every driver must cite where its mapping comes from: the catalogue takes no
+driver without one. Acceptable sources:
 
 - the manufacturer's MIDI implementation chart / programmer's reference,
 - a canonical community CSV (e.g. [pencilresearch/midi](https://github.com/pencilresearch/midi)),
@@ -45,12 +45,13 @@ For this tutorial, assume we have the synth's one-page MIDI chart in hand.
 
 ## Step 2 — Create the file (1 min)
 
-Drivers live at `devices/<vendor>/<slug>.json`. Vendor folder is the
-manufacturer in lowercase-kebab; slug is the model.
+In the SynthHub catalogue a driver's id is `<vendor>/<slug>`: the vendor
+folder is the manufacturer in lowercase-kebab, the slug is the model. Write
+yours wherever you like, under that name:
 
 ```bash
-mkdir -p devices/acme
-$EDITOR devices/acme/bassline.json
+mkdir -p my-drivers/acme
+$EDITOR my-drivers/acme/bassline.json
 ```
 
 ---
@@ -161,13 +162,13 @@ Omit the whole block for a device that should not accept performance routes
 ## Step 6 — Lint it (2 min)
 
 ```bash
-./target/release/osc-bridge lint devices/acme/bassline.json
+./target/release/osc-bridge lint my-drivers/acme/bassline.json
 ```
 
 Expected:
 
 ```
-devices/acme/bassline.json: parsed OK — 0 commands, 0 replies, 0 params, 6 cc_params
+my-drivers/acme/bassline.json: parsed OK — 0 commands, 0 replies, 0 params, 6 cc_params
 ```
 
 The linter parses the file, counts what it found, and warns on any scripted
@@ -181,7 +182,7 @@ is malformed or a required field is missing, this is where you find out.
 Inspect the driver without connecting anything:
 
 ```bash
-./target/release/osc-bridge inspect devices/acme/bassline.json
+./target/release/osc-bridge inspect my-drivers/acme/bassline.json
 ```
 
 If you have the synth on a MIDI port, run the bridge and send it something:
@@ -191,7 +192,7 @@ If you have the synth on a MIDI port, run the bridge and send it something:
 ./target/release/osc-bridge list
 
 # run the bridge (port 4 is an example)
-./target/release/osc-bridge run --device devices/acme/bassline.json --out-port 4 &
+./target/release/osc-bridge run --device my-drivers/acme/bassline.json --out-port 4 &
 
 # send an OSC message
 ./target/release/osc-bridge osc-send /bassline/filter/cutoff 100
@@ -203,30 +204,19 @@ dispatches.
 
 ---
 
-## Step 8 — Refresh the catalogue (1 min)
+## Step 8 — Send it to SynthHub (1 min)
 
-The device list is generated. Regenerate it so your driver shows up:
+The catalogue lives on [SynthHub](https://synthhub.roomi-fields.com/). From an
+MCP client linked to it (`osc-bridge mcp`, or the hosted server), ask your
+agent to contribute the driver: the `submit_driver` tool takes the file and
+where its mapping comes from. It is parsed, linted and tested, then added to
+the catalogue, where others find it under `acme/bassline` — and once you
+tested it on the synth, `report_result` records that it works, on which
+firmware.
 
-```bash
-python3 scripts/regen_supported_devices.py
-python3 scripts/build_device_index.py
-```
-
-Both `docs/SUPPORTED_DEVICES.md` and `docs/devices.json` now include the Acme
-Bassline. CI fails if you forget this step, so always run it before committing
-a device change.
-
----
-
-## Step 9 — Open the PR (1 min)
-
-```bash
-cargo test --release          # the schema round-trip tests must pass
-git add devices/acme/bassline.json docs/SUPPORTED_DEVICES.md docs/devices.json
-git commit -m "devices: add Acme Bassline (vendor-doc)"
-```
-
-Push and open the PR. The `new_device.md` template walks you through the rest.
+No MCP client at hand? Open a
+[device request](https://github.com/roomi-fields/osc-bridge/issues/new?template=new_device_request.yml)
+with the file attached.
 
 ---
 

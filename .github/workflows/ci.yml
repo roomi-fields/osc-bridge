@@ -31,24 +31,8 @@ jobs:
         run: cargo build --release --verbose
       - name: Unit tests
         run: cargo test --release --verbose
-      - name: Inspect reference device
-        run: cargo run --release -- inspect devices/arturia/minilab3.json
-      - name: Catalogue is in sync with device JSONs
-        if: runner.os == 'Linux'
-        shell: bash
-        run: |
-          python3 scripts/regen_supported_devices.py
-          git diff --exit-code docs/SUPPORTED_DEVICES.md || {
-            echo '::error::docs/SUPPORTED_DEVICES.md is out of sync — run scripts/regen_supported_devices.py locally and commit.'
-            exit 1
-          }
-      - name: Catalogue counts are the same everywhere
-        if: runner.os == 'Linux'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          python3 scripts/sync_counts.py --check \
-            --description "$(gh repo view ${{ github.repository }} --json description -q .description)"
+      - name: Inspect a test driver
+        run: cargo run --release -- inspect tests/fixtures/devices/novation/launch-control-xl-3.json
       - name: Version mirrors are in sync with Cargo.toml
         if: runner.os == 'Linux'
         run: python3 scripts/sync_version.py --check
@@ -94,9 +78,7 @@ jobs:
       - name: Upload to release
         uses: softprops/action-gh-release@v2
         with:
-          # Only upload the binary. Device JSONs + docs live in the repo
-          # itself — no need to duplicate hundreds of files as release assets
-          # (the GitHub API secondary rate limit hits hard past a few dozen).
+          # Only upload the binary: the drivers come from the SynthHub server.
           files: |
             osc-bridge-${{ matrix.suffix }}
 
@@ -122,10 +104,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Version mirrors are in sync with Cargo.toml
         run: python3 scripts/sync_version.py --check
-      - name: Bundle the device catalogue
-        # The binary looks for devices/ next to its package (src/catalogue.rs):
-        # without it the MCP server and `--device devices/…` find nothing.
-        run: cp -r devices npm/devices
       - name: Publish @roomi-fields/osc-bridge
         working-directory: npm
         # Skipped when this version is already on npm (a re-run that only

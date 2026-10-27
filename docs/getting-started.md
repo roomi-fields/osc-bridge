@@ -43,7 +43,7 @@ not answer.
 ## 3. Start the bridge
 
 ```bash
-osc-bridge run --device devices/arturia/minilab3.json --out-port 4 --in-port 0 \
+osc-bridge run --device arturia/minilab3 --out-port 4 --in-port 0 \
   --osc-client 127.0.0.1:8888
 ```
 

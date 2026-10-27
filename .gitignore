@@ -3,9 +3,6 @@ Cargo.lock
 *.swp
 .DS_Store
 
-# Bulk-import caches (populated by scripts/sync_sources.py)
-.cache/
-
 # Local auth files (never commit)
 .electra_auth.json
 .auth.json
@@ -27,8 +24,7 @@ test-preset.json
 CLAUDE.md
 
 # Machine-local files: scratch space, local-only config overrides,
-# experiment caches. scripts/sync_sources.py reads an optional
-# .local/sources.toml for local source-declaration overrides.
+# experiment caches.
 .local/
 
 # npm wrapper artifacts. vendor/ is populated by the postinstall download
@@ -45,5 +41,4 @@ mcp-publisher
 # Smithery MCPB bundle — built from mcpb/ on demand, not source
 *.mcpb
 .codegraph/
-npm/devices/
 site/

@@ -6,12 +6,15 @@ for driving it from an LLM.
 osc-bridge translates [OSC](https://opensoundcontrol.stanford.edu/) to and from
 the music world:
 
-- **977 hardware synthesizers** via MIDI / SysEx — every Prophet, Oberheim,
-  Moog, Yamaha DX family, MatrixBrute, Hydrasynth, Virus TI, Digitone…
+- **Hardware synthesizers** via MIDI / SysEx — Prophets, Oberheims, Moogs,
+  the Yamaha DX family, MatrixBrute, Hydrasynth, Virus TI, Digitone…
 - **Software targets** via native OSC — Ableton Live, Bitwig, Reaper, Sonic Pi,
   SuperCollider, Pure Data, TouchDesigner, VCV Rack.
 
-Each device is one declarative JSON file — no recompile to add a synth. Drive it
+Each device is one declarative JSON file — no recompile to add a synth. The
+catalogue of drivers lives on [SynthHub](https://synthhub.roomi-fields.com/):
+osc-bridge fetches each driver when it needs it and keeps it in a cache
+(offline, the cached ones). Drive it
 from a live-coding environment, a DAW, a script, the CLI — or from **Claude (or
 any MCP client) via the built-in MCP server**.
 
@@ -20,7 +23,7 @@ any MCP client) via the built-in MCP server**.
 **Hosted MCP server, nothing to install** — add
 `https://mcp.synthhub.roomi-fields.com/mcp` as a remote MCP server (a custom
 connector in Claude; `claude mcp add --transport http synthhub https://mcp.synthhub.roomi-fields.com/mcp`
-in Claude Code). It serves the up-to-date catalogue, trust from real use, and
+in Claude Code). It serves the catalogue, trust from real use, and
 a relay to your own hardware: <https://synthhub.roomi-fields.com/>.
 
 **On your machine**, as an MCP server over stdio:
@@ -55,10 +58,10 @@ Add to your MCP client config (e.g. Claude Desktop
 }
 ```
 
-Eight tools — `list_devices`, `get_device_docs`, `list_routes`, `send`,
-`get_status`, `detect_hardware`, `backup_presets`, `restore_presets` — plus
-the server's (reports, trust, contributions, shared presets, sounds taken from the synth), so the model can discover
-the 977-device catalogue, read a device's OSC surface, and drive your devices.
+Nine tools — `list_devices`, `get_device_docs`, `list_routes`, `export_device`,
+`send`, `get_status`, `detect_hardware`, `backup_presets`, `restore_presets` — plus
+the server's (reports, trust, contributions, shared presets, sounds taken from the synth), so the model can search
+the SynthHub catalogue, read a device's OSC surface, and drive your devices.
 
 It's both a **MIDI MCP** (hardware synths over MIDI/SysEx) and an **OSC MCP**
 (DAWs and live-coding environments over OSC).

@@ -1,14 +1,14 @@
 # osc-bridge MCP server — a MIDI MCP and OSC MCP
 
 `osc-bridge` ships a [Model Context Protocol](https://modelcontextprotocol.io)
-server. It lets Claude — or any MCP client — discover a catalogue of **977
-music devices**, read each device's OSC surface, and send OSC to control
+server. It lets Claude — or any MCP client — search the SynthHub catalogue of
+music devices, read each device's OSC surface, and send OSC to control
 synthesizers and DAWs.
 
 It is both:
 
-- a **MIDI MCP** — 977 hardware synthesizers exposed over MIDI / SysEx
-  (every Prophet, Oberheim, Moog, Yamaha DX family, MatrixBrute, Hydrasynth,
+- a **MIDI MCP** — hardware synthesizers exposed over MIDI / SysEx
+  (Prophets, Oberheims, Moogs, the Yamaha DX family, MatrixBrute, Hydrasynth,
   Virus TI, Digitone…), and
 - an **OSC MCP** — DAWs and live-coding environments over OSC (Ableton Live,
   Bitwig Studio, Reaper, Sonic Pi, SuperCollider, Pure Data, TouchDesigner,
@@ -20,8 +20,8 @@ usable from OSC clients, the CLI, and the multi-device orchestrator. See the
 
 ## Hosted, nothing to install
 
-The SynthHub server runs this MCP server for you, with the up-to-date
-catalogue, trust from real use, and a relay to the hardware on your machine:
+The SynthHub server runs this MCP server for you, with the catalogue, trust
+from real use, and a relay to the hardware on your machine:
 
 - **Claude** (web, desktop): Settings → Connectors → *Add custom connector* →
   `https://mcp.synthhub.roomi-fields.com/mcp`
@@ -67,7 +67,8 @@ The server speaks JSON-RPC 2.0 over stdio.
 
 `osc-bridge mcp` accepts:
 
-- `--devices-dir <path>` — root to scan for device drivers (default `devices`).
+- `--devices-dir <path>` — serve the drivers of this folder, as they are,
+  instead of those of the SynthHub catalogue.
 - `--default-target <host:port>` — where `send` / `get_status` point when no
   `target` argument is given (default `127.0.0.1:7777`, the standard
   `osc-bridge run` bind).
@@ -84,23 +85,27 @@ The server speaks JSON-RPC 2.0 over stdio.
 | `export_device` | Write one driver (`device`: id or slug) as `oscquery` (its OSC namespace, OSCQuery JSON) or `midnam` (its MIDI names, MIDI Name Document XML), with its sources' credit and licence. See [EXPORT.md](EXPORT.md). |
 | `send` | Send a single OSC message to a running `osc-bridge` instance (typed args: int, float, string, bool). |
 | `get_status` | Round-trip `/bridge/status` to a running bridge and report the replies. |
-| `detect_hardware` | Find the MIDI devices plugged into this computer: list ports, ask each device who it is (standard MIDI Identity Request — changes nothing on the device), match the catalogue, and return a ready-to-run `osc-bridge run` command with the right port numbers. |
+| `detect_hardware` | Find the MIDI devices plugged into this computer: list ports, ask each device who it is (standard MIDI Identity Request — changes nothing on the device), have the SynthHub server match them against the catalogue (offline: the drivers cached here), and return a ready-to-run `osc-bridge run` command with the right port numbers. |
 | `backup_presets` | Record a device's SysEx dump (its presets) into a `.syx` file — the dump is started from the device's menu, or by a dump-request message. |
 | `restore_presets` | Send a `.syx` file back to a device. Overwrites its memory, so the tool refuses unless `confirm_overwrite: true` (the client should ask the user). |
 
-The catalogue is indexed once at startup, so `list_devices` and slug lookups
-are instant — no per-call directory walk.
+The drivers on this machine (the cache, or `--devices-dir`) are indexed at
+startup, and the cache again each time a driver is fetched into it.
 
 ## Linked to the SynthHub server
 
-Your copy stays current with what the community builds: unless `--offline`,
-it is linked to the SynthHub server.
+The catalogue lives on the SynthHub server; unless `--offline`, your copy is
+linked to it.
 
-- **An up-to-date catalogue.** At startup it fetches the list of the server's
-  drivers and downloads, in the background, the ones that changed since your
-  copy was released — drivers other users and agents added or fixed. They are
-  kept in `<cache>/osc-bridge/catalogue` and used from then on. (A catalogue
-  you point to with `--devices-dir` is left alone.)
+- **One driver at a time.** `list_devices` searches the catalogue on the
+  server; `detect_hardware` sends it the names of your MIDI ports and the
+  devices' Identity Replies, and gets the matching drivers back; a tool that
+  needs a driver (`list_routes`, `get_device_docs`, `export_device`, a report)
+  fetches it once per session, with its notes and the driver it shares its
+  MIDI with, into `<cache>/osc-bridge/drivers` (`~/.cache` on Linux,
+  `%LOCALAPPDATA%` on Windows). These requests carry no account. Offline, the
+  cached drivers are all there is. (A folder you point to with
+  `--devices-dir` is used as it is.)
 - **Trust.** `list_devices` gives each driver's `usage_status`: how far other
   users confirmed it on the real device.
 - **More tools**, run on the server under an anonymous account kept on
@@ -138,7 +143,8 @@ The path from cold start to controlling a device:
    (or `list_devices` to search the catalogue by name).
 2. `list_routes("minilogue")` — see every OSC address it accepts.
 3. (separately) start the bridge with the command `detect_hardware` returned,
-   e.g. `osc-bridge run --device devices/korg/minilogue.json --out-port 3 --in-port 2`
+   e.g. `osc-bridge run --device korg/minilogue --out-port 3 --in-port 2`
+   (a driver id: `run` fetches it, or takes it from the cache)
 4. `send("/minilogue/filter/cutoff", [90])` — drive it (CC 43, range 0–127:
    values are the device's own integers, not 0–1).
 

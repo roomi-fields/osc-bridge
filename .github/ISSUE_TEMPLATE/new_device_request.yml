@@ -1,5 +1,5 @@
 name: "New device request"
-description: "Ask for a device to be added, or offer to add one yourself."
+description: "Ask for a device to be added to the SynthHub catalogue, or send its driver."
 title: "[device] <Vendor> <Model>"
 labels: ["device-request"]
 body:
@@ -29,16 +29,14 @@ body:
       placeholder: "https://..."
     validations:
       required: true
-  - type: checkboxes
-    id: volunteer
+  - type: textarea
+    id: driver
     attributes:
-      label: "Do you want to open the PR yourself?"
-      options:
-        - label: "Yes, I'll submit the device JSON (possibly doc-derived, possibly hardware-verified)."
-        - label: "No, I'm asking for someone else to pick this up."
+      label: "Driver file (optional)"
+      description: "A driver you wrote (docs/DEVICE_JSON_SCHEMA.md): attach the JSON, or paste it. It goes to the SynthHub catalogue; the submit_driver MCP tool sends it there directly."
   - type: checkboxes
     id: hardware
     attributes:
       label: "Do you own the hardware?"
       options:
-        - label: "Yes — I can test and promote 📄 → ✅ after initial merge."
+        - label: "Yes — I can test the driver on it and report the result (report_result)."

@@ -14,7 +14,7 @@
   const hex = data => Array.from(data, b => b.toString(16).toUpperCase().padStart(2, "0")).join(" ");
   let access = null;
   let ws = null;
-  // Virtual test synth (devices/examples/test_synth): answers the Identity
+  // Virtual test synth (the examples/test_synth driver): answers the Identity
   // Request as manufacturer 7D, echoes channel messages. Same as
   // osc-bridge connect --test-synth.
   const TEST_SYNTH = "osc-bridge Test Synth";

@@ -11,6 +11,24 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed — the catalogue lives on SynthHub
+- The driver catalogue (`devices/`, its listings and import scripts) left
+  this repository: it lives on the SynthHub server, which hands drivers out
+  one at a time. `--device`, `inspect`, `export` and the orchestrator's
+  `spec` take a driver file, or a catalogue id (`korg/minilogue`) or slug
+  (`minilogue`, the best variant), fetched with its notes and the drivers it
+  shares its MIDI with into `<cache>/osc-bridge/drivers`; offline, the
+  cached copy.
+- `osc-bridge mcp`: without `--devices-dir`, `list_devices` searches the
+  catalogue on the server, `detect_hardware` and `osc-bridge detect` have the
+  server match the MIDI ports found here (`POST /v1/detect`), and a tool that
+  needs a driver fetches it once per session; offline, only cached drivers.
+  `--devices-dir` (no default any more) serves a folder of drivers as it is.
+- Removed: the whole-catalogue mirror (`GET /v1/catalogue`,
+  `POST /v1/catalogue/files`), the catalogue bundled with the npm package,
+  and the lookup of `devices/` next to the executable (`OSC_BRIDGE_HOME`).
+- The tests read a few drivers kept in `tests/fixtures/devices/`.
+
 ### Added — OSCQuery and MIDNAM
 - `osc-bridge export --device <file> --format oscquery|midnam` and the MCP
   tool `export_device` (shared with the hosted server) write a driver as an
