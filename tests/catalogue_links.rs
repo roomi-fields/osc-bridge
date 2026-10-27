@@ -97,3 +97,26 @@ fn no_two_drivers_of_a_device_copy_the_same_midi() {
     copies.sort();
     assert!(copies.is_empty(), "same MIDI, so one file names the other with midi_of:\n{}", copies.join("\n"));
 }
+
+/// A device's files (a maker's folder, one name before the first dot) name
+/// it alike, so the site shows all its firmwares on one page.
+#[test]
+fn the_files_of_a_device_name_it_alike() {
+    let mut files = Vec::new();
+    drivers(Path::new("devices"), &mut files);
+    let mut names: HashMap<String, (String, PathBuf)> = HashMap::new();
+    for f in files {
+        let doc: Value = serde_json::from_str(&std::fs::read_to_string(&f).unwrap()).unwrap();
+        let Some(d) = doc.get("device") else { continue };
+        let Some(name) = d.get("name").and_then(Value::as_str) else { continue };
+        let vendor = d.get("vendor").and_then(Value::as_str).unwrap_or("");
+        let stem = f.file_name().unwrap().to_str().unwrap().split('.').next().unwrap();
+        let family = format!("{}/{stem}", f.parent().unwrap().display());
+        let id = format!("{vendor} | {name}").to_lowercase();
+        if let Some((other, first)) = names.get(&family) {
+            assert_eq!(&id, other, "{} and {} name one device differently", f.display(), first.display());
+        } else {
+            names.insert(family, (id, f));
+        }
+    }
+}

@@ -6,7 +6,7 @@
 
 **Declarative OSC bridge for music hardware *and* software — and an MCP server to drive it from an LLM.**
 
-981 hardware synthesizers over MIDI / SysEx, plus DAWs and live-coding
+978 hardware synthesizers over MIDI / SysEx, plus DAWs and live-coding
 environments over OSC (Ableton, Bitwig, Reaper, Sonic Pi, SuperCollider, Pure
 Data, TouchDesigner, VCV Rack). Every device gets a clean, named OSC surface
 described by one JSON file. Drive it from a live-coding client, a DAW, a
@@ -69,7 +69,7 @@ Each synth is described by one JSON file. No Rust recompile required to add a de
 ## What makes it different
 
 - **One JSON = one driver.** Adding a synth is ~30 lines of declarative JSON — CC numbers, SysEx frame templates, optional parameter tables. No Rust, no bindings, no build step. Ship a PR, `osc-bridge run` picks it up.
-- **981 devices out of the box.** Every Prophet, every Oberheim, every Yamaha DX-family, MatrixBrute, Hydrasynth, Virus TI, Digitone, Matrix-1000… most of the catalogue is usable today. Fully searchable at [synthhub.roomi-fields.com](https://synthhub.roomi-fields.com/).
+- **978 devices out of the box.** Every Prophet, every Oberheim, every Yamaha DX-family, MatrixBrute, Hydrasynth, Virus TI, Digitone, Matrix-1000… most of the catalogue is usable today. Fully searchable at [synthhub.roomi-fields.com](https://synthhub.roomi-fields.com/).
 - **Hardware *and* software.** The same named OSC surface drives a hardware synth over MIDI/SysEx *or* a DAW / live-coding environment over OSC — Ableton, Bitwig, Reaper, Sonic Pi, SuperCollider, Pure Data, TouchDesigner, VCV Rack. See [§ Software targets](#software-targets--daws-and-live-coding-environments).
 - **An MCP server built in.** `osc-bridge mcp` exposes the whole catalogue to Claude (or any MCP client) — a MIDI MCP *and* OSC MCP. Discover devices, read a device's OSC surface, send OSC to synths and DAWs. See [`docs/MCP.md`](docs/MCP.md).
 - **Honest provenance.** Each device declares its source in `_sources[]`: `✅ hardware-verified`, `✅ software-verified`, `📘 vendor-doc`, `📡 vendor-osc-api` / `📡 third-party-osc`, `🎛️ electra-preset`, `📦 pencilresearch`. You always know whether a mapping was tested on the device or lifted from a spec sheet.
@@ -81,7 +81,7 @@ Each synth is described by one JSON file. No Rust recompile required to add a de
 
 ## Supported devices
 
-**981 devices across 219 vendors** (1573 driver files) — Moog · Arturia · Novation · Korg · Sequential · Dave Smith Instruments · Roland · Yamaha · Elektron · Waldorf · Behringer · Dreadbox · Erica Synths · Polyend · Modal · Expressive E · Bastl · Chase Bliss · Make Noise · Electra One · Tasty Chips · Oberheim · Access · ASM · Black Corporation · Hologram · Strymon · Empress · Meris · Eventide · Ensoniq · Rhodes · Haken · Tubbutec · **Ableton · Bitwig · Cockos (Reaper) · Sonic Pi · SuperCollider · Pure Data · TouchDesigner · VCV Rack** · and ~85 more.
+**978 devices across 218 vendors** (1573 driver files) — Moog · Arturia · Novation · Korg · Sequential · Dave Smith Instruments · Roland · Yamaha · Elektron · Waldorf · Behringer · Dreadbox · Erica Synths · Polyend · Modal · Expressive E · Bastl · Chase Bliss · Make Noise · Electra One · Tasty Chips · Oberheim · Access · ASM · Black Corporation · Hologram · Strymon · Empress · Meris · Eventide · Ensoniq · Rhodes · Haken · Tubbutec · **Ableton · Bitwig · Cockos (Reaper) · Sonic Pi · SuperCollider · Pure Data · TouchDesigner · VCV Rack** · and ~85 more.
 
 | Status | Count | Highlight |
 |---|---|---|
@@ -452,7 +452,7 @@ map.to = [0, 1]
 
 osc-bridge ships a [Model Context Protocol](https://modelcontextprotocol.io)
 server — a **MIDI MCP** *and* **OSC MCP**. Point any MCP client at it and the
-model can browse the 981-device catalogue, read a device's OSC surface, and
+model can browse the 978-device catalogue, read a device's OSC surface, and
 send OSC to synths and DAWs.
 
 **Hosted** — add `https://mcp.synthhub.roomi-fields.com/mcp` as a remote MCP server (see
