@@ -260,6 +260,24 @@ fn midi_device_routes(root: &mut Node, d: &Device, unlisted: &mut Vec<String>) {
             vec![Arg::new("s", "bank", json!({ "VALS": names })), Arg::int("number", lo, hi), Arg::channel()], 2, 2,
             format!("Recalls a stored {selects} by bank (its name, or its place from 0) and number: {}.", banks.join(", "))));
     }
+    if let Some(dump) = d.programs.as_ref().and_then(|pr| pr.dump.as_ref()).filter(|x| x.request.is_some() || x.script.is_some()) {
+        let names: Vec<&str> = d.programs.iter().flat_map(|pr| &pr.banks).map(|b| b.name.as_str()).collect();
+        let (args, what) = if dump.kind == "edit_buffer" || names.is_empty() {
+            (vec![Arg::channel()], "Asks the device for the sound it plays (recall the stored one first).")
+        } else {
+            (vec![Arg::new("s", "bank", json!({ "VALS": names })), Arg::int("number", 0, 16383), Arg::channel()],
+             "Asks the device for a stored sound, by bank and number.")
+        };
+        let required = if args.len() == 3 { 2 } else { 0 };
+        root.add(&p(crate::programs::DUMP), Method::write(args, required, required, what.into()));
+    }
+    // Every MIDI device: who it is, the same address whatever its maker.
+    root.add(&p(crate::programs::IDENTITY), Method::exact(2, vec![],
+        "Sends the request the device answers with its identity (the Universal Identity Request unless its driver names another).".into()));
+    if d.identity.as_ref().is_some_and(|i| !i.reply.is_empty() || i.script.is_some()) {
+        root.add(&p(crate::programs::IDENTITY_REPLY), Method::exact(1, vec![Arg::new("s", "firmware", Value::Null), Arg::new("s", "hex", Value::Null)],
+            "Sent by the bridge: the device's identity reply, with the firmware version read from it.".into()));
+    }
     command_routes(root, d, false, unlisted);
     root.add(&p("/raw/syx"), Method::exact(2, vec![Arg::new("s", "hex", Value::Null)],
         "Sends one SysEx message as it is, written in hex from F0 to F7.".into()));
@@ -606,6 +624,10 @@ mod tests {
         assert!(n["DESCRIPTION"].as_str().unwrap().contains("stored sound by bank"), "{n}");
         let plain = namespace(&[load("korg/minilogue")]);
         assert!(node(&plain, "/minilogue/program/recall").is_null(), "no banks, no recall");
+        assert_eq!(node(&plain, "/minilogue/identity")["ACCESS"], 2, "every MIDI device answers /identity");
+        let dump = node(&ns, "/box/program/dump");
+        assert_eq!((dump["TYPE"].as_str(), dump["OVERLOADS"][0]["TYPE"].as_str()), (Some("si"), Some("sii")));
+        assert_eq!(node(&ns, "/box/identity/reply")["TYPE"], "ss");
     }
 
     #[test]

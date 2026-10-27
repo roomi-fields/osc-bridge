@@ -661,6 +661,11 @@ pub fn handle_midi_in(
     }
 
     if msg.first() == Some(&0xF0) {
+        // The device's identity reply, the same address whatever its maker.
+        if let Some(m) = crate::programs::identity_reply(dev, msg) {
+            send(m);
+            return;
+        }
         // Attempt to match one of the reply patterns
         for rp in &dev.replies {
             if let Some(bindings) = match_reply(msg, dev, &rp.match_frame) {
@@ -999,8 +1004,8 @@ fn handle_message(
         return;
     }
 
-    // A stored program, by bank and number (the `programs` block).
-    match crate::programs::recall_osc(dev, &msg.addr, &msg.args) {
+    // The same addresses on every device: identity, program recall and dump.
+    match crate::programs::uniform_osc(dev, &msg.addr, &msg.args) {
         Some(Ok(frames)) => { for f in frames { enqueue(tx, f, &msg.addr, from); } return; }
         Some(Err(e)) => { eprintln!("  {}: {e}", msg.addr); return; }
         None => {}

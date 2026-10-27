@@ -147,7 +147,9 @@ impl DeviceIndex {
         let mut by_slug: HashMap<String, usize> = HashMap::new();
         let _ = walk_json(dir, &mut |path, doc| {
             // Which sounds it loads comes with the MIDI it shares (midi_of).
-            let shared = crate::device::resolve_midi_of(path, doc.clone()).ok();
+            // A maker's profile is not a driver.
+            if path.file_name().and_then(|f| f.to_str()).is_some_and(|f| f.starts_with('_')) { return; }
+            let shared = crate::device::resolve(path, doc.clone()).ok();
             let body = shared.as_ref().unwrap_or(doc);
             let device = doc.get("device");
             let get = |k: &str| device.and_then(|d| d.get(k)).and_then(Value::as_str);
@@ -1676,8 +1678,15 @@ fn list_routes(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
         "match_frame_len": r.match_frame.len(),
         "emit_osc": r.emit_osc,
     })).collect();
+    let identity = (dev.device.transport.as_ref().is_none_or(|t| t.kind != "osc")).then(|| json!({
+        "address": format!("{prefix}{}", crate::programs::IDENTITY),
+        "reply_address": format!("{prefix}{} <firmware> <hex>", crate::programs::IDENTITY_REPLY),
+        "profile": dev.identity.as_ref().and_then(|i| i.profile.clone()),
+    }));
     let programs = dev.programs.as_ref().map(|p| json!({
         "address": (!p.banks.is_empty()).then(|| format!("{prefix}{} <bank> <number> [channel]", crate::programs::RECALL)),
+        "dump_address": p.dump.as_ref().filter(|d| d.request.is_some() || d.script.is_some())
+            .map(|_| format!("{prefix}{} [<bank> <number>] [channel]", crate::programs::DUMP)),
         "selects": p.selects,
         "banks": p.banks,
         "requires": p.requires,
@@ -1688,6 +1697,7 @@ fn list_routes(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
         "vendor": dev.device.vendor,
         "osc_prefix": prefix,
         "kind": dev.device.kind,
+        "identity": identity,
         "programs": programs,
         "commands": cmds,
         "cc_params": cc_params,

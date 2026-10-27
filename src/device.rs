@@ -123,9 +123,13 @@ pub struct TriggerEntry {
 fn default_channel_mode() -> String { "fixed".to_string() }
 
 /// How a device is recognised (`identity`). Every key is optional: a device
-/// known by its USB port name only has `ports` alone.
+/// known by its USB port name only has `ports` alone. What a maker's models
+/// share is in its profile (`profile`, see [`resolve_profiles`]).
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
 pub struct DeviceIdentity {
+    /// The profile the block was completed from, as loaded.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub profile: Option<String>,
     /// The message that makes it answer, F0 to F7. Absent: the Universal
     /// Identity Request `F0 7E {dev} 06 01 F7`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -139,6 +143,13 @@ pub struct DeviceIdentity {
     /// misread.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub to: Option<String>,
+    /// The model's bytes, written where `{family}` and `{member}` stand in
+    /// `request`, `reply` and the `programs` frames (`{family:0}`: its first
+    /// byte only). A model gives them, its maker's profile places them.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub family: Vec<u8>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub member: Vec<u8>,
     /// The start of the reply, F0 included: literals must match, any
     /// placeholder (`"{dev}"`, `"{any}"`) matches one byte. Empty: no reply
     /// is known (the port name alone tells the device).
@@ -152,6 +163,11 @@ pub struct DeviceIdentity {
     /// and `firmware.at` then read the unpacked data (offset 0 its first byte).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub unpack: Option<String>,
+    /// Lua that tells whether a reply is this device's, for what `reply`
+    /// cannot say: it reads `reply` (the bytes, from 1) and returns true or
+    /// false. With `reply`, both must hold.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub script: Option<String>,
     /// Where the firmware version is in the reply.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub firmware: Option<FirmwareRule>,
@@ -172,11 +188,15 @@ pub struct DeviceIdRule {
 }
 
 /// How to read the firmware version from a reply: the bytes at `at`
-/// (offsets from F0), read by `decode`, one of [`FIRMWARE_DECODES`].
+/// (offsets from F0), read by `decode`, one of [`FIRMWARE_DECODES`]; with
+/// `lua`, `script` reads `reply` (the bytes, from 1) and returns the version.
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct FirmwareRule {
     pub decode: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub at: Vec<usize>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub script: Option<String>,
 }
 
 /// - `raw_bytes`: each byte in decimal, joined by dots (`00 03 00 00` → `0.3.0.0`);
@@ -185,11 +205,15 @@ pub struct FirmwareRule {
 ///   (`major.minor`).
 /// - `yamaha_tenths`: one byte n, version 1.0 + n / 10 (SEQTRAK).
 /// - `ascii`: the printable text starting at the one offset given.
-pub const FIRMWARE_DECODES: [&str; 4] = ["raw_bytes", "korg_minor_major", "yamaha_tenths", "ascii"];
+/// - `lua`: what `script` returns, for a maker no rule covers.
+pub const FIRMWARE_DECODES: [&str; 5] = ["raw_bytes", "korg_minor_major", "yamaha_tenths", "ascii", "lua"];
 
 /// What a program change recalls, and how (`programs`).
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
 pub struct Programs {
+    /// The profile the block was completed from, as loaded.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub profile: Option<String>,
     /// What a program change selects: `sound`, `kit`, `pattern`, `scene`,
     /// `sequence`, `performance`, `project`, `snapshot`, `file`… A bank
     /// may say otherwise.
@@ -209,6 +233,12 @@ pub struct Programs {
     /// on their own (a SysEx scene change, Song Select).
     #[serde(default = "default_true")]
     pub program_change: bool,
+    /// Lua that writes the recall itself, in place of `before`, the bank
+    /// select, the program change and `after`: it reads `ctx` (see
+    /// [`PROGRAM_PLACEHOLDERS`], `ctx.bank_name`, `ctx.family`) and returns
+    /// the messages, a list of byte lists.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub recall_script: Option<String>,
     /// Wait after a recall before reading the sound back, in ms.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub delay_ms: Option<u32>,
@@ -249,12 +279,15 @@ pub struct Bank {
 fn default_first_number() -> u16 { 1 }
 
 /// How a stored sound is read back: `kind` one of [`DUMP_KINDS`], and the
-/// request when its bytes are known.
+/// request when its bytes are known (or Lua that writes it: `script` reads
+/// `ctx` as `recall_script` does and returns one byte list).
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Dump {
     pub kind: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub request: Option<Vec<FrameToken>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub script: Option<String>,
 }
 
 /// - `request`: the request names the stored program.
@@ -265,9 +298,34 @@ pub const DUMP_KINDS: [&str; 4] = ["request", "edit_buffer", "manual", "none"];
 
 /// The values a `programs` frame may name: the channel (0-15), the
 /// device-id byte, the bank's select bytes, its index in `banks`, the
-/// program change value, the program's index over all banks, and the
-/// number the device shows.
-pub const PROGRAM_PLACEHOLDERS: [&str; 8] = ["channel", "dev", "msb", "lsb", "bank", "program", "index", "number"];
+/// program change value, the program's index over all banks, the number the
+/// device shows, the model's identity bytes, and a checksum
+/// (`{checksum:twos@N}`: the two's complement, 7 bits, of the bytes from
+/// offset N to it — Roland, Yamaha).
+pub const PROGRAM_PLACEHOLDERS: [&str; 11] =
+    ["channel", "dev", "msb", "lsb", "bank", "program", "index", "number", "family", "member", "checksum"];
+
+/// Placeholders standing for the model's bytes (`DeviceIdentity::family`).
+pub const IDENTITY_BYTES: [&str; 2] = ["family", "member"];
+
+impl DeviceIdentity {
+    /// `tokens` with `{family}` and `{member}` (`{family:N}`: byte N) written
+    /// out as the model's bytes.
+    pub fn expand(&self, tokens: &[FrameToken]) -> Vec<FrameToken> {
+        let mut out = Vec::with_capacity(tokens.len());
+        for t in tokens {
+            let FrameToken::Placeholder(p) = t else { out.push(t.clone()); continue };
+            let inner = p.trim_matches(|c| c == '{' || c == '}');
+            let (name, kind) = inner.split_once(':').unwrap_or((inner, ""));
+            let bytes = match name.trim() { "family" => &self.family, "member" => &self.member, _ => { out.push(t.clone()); continue } };
+            match kind.trim().parse::<usize>() {
+                Ok(i) => out.extend(bytes.get(i).map(|b| FrameToken::Literal(*b))),
+                Err(_) => out.extend(bytes.iter().map(|b| FrameToken::Literal(*b))),
+            }
+        }
+        out
+    }
+}
 
 impl Device {
     /// Refuse an `identity` or `programs` block the engine could not use.
@@ -288,16 +346,24 @@ impl Device {
                 if req.first() != Some(&FrameToken::Literal(0xF0)) || req.last() != Some(&FrameToken::Literal(0xF7)) {
                     bail!("identity.request runs from F0 to F7");
                 }
-                if let Some(n) = names(req).into_iter().find(|n| n != "dev") { bail!("identity.request names {{{n}}}: only {{dev}}"); }
+                if let Some(n) = names(req).into_iter().find(|n| n != "dev" && !IDENTITY_BYTES.contains(&n.as_str())) {
+                    bail!("identity.request names {{{n}}}: only {{dev}}, {{family}}, {{member}}");
+                }
                 if names(req).iter().any(|n| n == "dev") && id.device_id.is_none() { bail!("identity.request names {{dev}}: give device_id"); }
             }
             if let Some(fw) = &id.firmware {
                 if !FIRMWARE_DECODES.contains(&fw.decode.as_str()) { bail!("identity.firmware.decode {:?}: one of {FIRMWARE_DECODES:?}", fw.decode); }
-                let want = match fw.decode.as_str() { "korg_minor_major" => Some(4), "yamaha_tenths" | "ascii" => Some(1), _ => None };
-                if fw.at.is_empty() || want.is_some_and(|n| fw.at.len() != n) { bail!("identity.firmware.at: wrong number of offsets for {}", fw.decode); }
-                if id.reply.is_empty() { bail!("identity.firmware without a reply"); }
+                if fw.decode == "lua" {
+                    if fw.script.is_none() { bail!("identity.firmware.decode lua needs its script"); }
+                } else {
+                    let want = match fw.decode.as_str() { "korg_minor_major" => Some(4), "yamaha_tenths" | "ascii" => Some(1), _ => None };
+                    if fw.at.is_empty() || want.is_some_and(|n| fw.at.len() != n) { bail!("identity.firmware.at: wrong number of offsets for {}", fw.decode); }
+                }
+                if id.reply.is_empty() && id.script.is_none() { bail!("identity.firmware without a reply"); }
             }
-            if id.reply.is_empty() && id.ports.is_empty() { bail!("identity: a reply or ports"); }
+            if id.reply.is_empty() && id.script.is_none() && id.ports.is_empty() { bail!("identity: a reply, a script or ports"); }
+            let frames = id.reply.iter().chain(id.request.iter().flatten()).cloned().collect::<Vec<_>>();
+            if names(&frames).iter().any(|n| n == "family") && id.family.is_empty() { bail!("identity names {{family}}: give family"); }
             if id.unpack.as_deref().is_some_and(|u| u != "lsb_8to7") { bail!("identity.unpack: lsb_8to7"); }
         }
         if let Some(p) = &self.programs {
@@ -309,16 +375,23 @@ impl Device {
                 if names(f).iter().any(|n| n == "dev") && self.identity.as_ref().and_then(|i| i.device_id.as_ref()).is_none() {
                     bail!("programs: a frame names {{dev}}: give identity.device_id");
                 }
+                if names(f).iter().any(|n| n == "family") && self.identity.as_ref().is_none_or(|i| i.family.is_empty()) {
+                    bail!("programs: a frame names {{family}}: give identity.family");
+                }
             }
             if let Some(d) = &p.dump {
                 if !DUMP_KINDS.contains(&d.kind.as_str()) { bail!("programs.dump.kind {:?}: one of {DUMP_KINDS:?}", d.kind); }
             }
-            if !p.program_change && p.before.is_empty() && p.after.is_empty() { bail!("programs: no program change and no message to recall"); }
+            if !p.program_change && p.before.is_empty() && p.after.is_empty() && p.recall_script.is_none() {
+                bail!("programs: no program change and no message to recall");
+            }
             let mut seen = std::collections::HashSet::new();
             for b in &p.banks {
                 if !seen.insert(b.name.as_str()) { bail!("programs: bank {:?} twice", b.name); }
                 if b.size == 0 { bail!("programs: bank {:?} is empty", b.name); }
-                if p.program_change && b.first_pc as u16 + b.size > 128 { bail!("programs: bank {:?} runs past program change 127", b.name); }
+                if p.program_change && p.recall_script.is_none() && b.first_pc as u16 + b.size > 128 {
+                    bail!("programs: bank {:?} runs past program change 127", b.name);
+                }
                 if b.msb.is_some_and(|v| v > 127) || b.lsb.is_some_and(|v| v > 127) { bail!("programs: bank {:?}: bank select over 127", b.name); }
                 if b.channel.is_some_and(|c| c > 15) { bail!("programs: bank {:?}: channel 0-15", b.name); }
             }
@@ -703,6 +776,78 @@ pub fn resolve_midi_of(path: &Path, doc: serde_json::Value) -> anyhow::Result<se
 /// The most `midi_of` links followed from one file.
 pub const MIDI_OF_DEPTH: usize = 8;
 
+/// A driver file as the engine uses it: its `midi_of` link followed, then
+/// its blocks completed from their profiles ([`resolve_profiles`]).
+pub fn resolve(path: &Path, doc: serde_json::Value) -> anyhow::Result<serde_json::Value> {
+    let doc = resolve_midi_of(path, doc)?;
+    resolve_profiles(path, doc)
+}
+
+/// The most profile links followed from one block.
+pub const PROFILE_DEPTH: usize = 8;
+
+/// Where profile `id` is kept, next to its maker's drivers: `korg` is
+/// `<maker folder>/_profile.json`, `korg/logue` `_profile.logue.json`.
+pub fn profile_file(id: &str) -> Option<String> {
+    let (maker, family) = match id.split_once('/') { Some((m, f)) => (m, Some(f)), None => (id, None) };
+    let ok = |s: &str| !s.is_empty() && !s.starts_with('.') && s.bytes().all(|b| b.is_ascii_alphanumeric() || b"-_.+".contains(&b));
+    if !ok(maker) || family.is_some_and(|f| !ok(f) || f.contains('/')) { return None; }
+    Some(match family { Some(f) => format!("{maker}/_profile.{f}"), None => format!("{maker}/_profile") })
+}
+
+/// The profiles a driver's blocks name (`identity.profile`,
+/// `programs.profile`), as profile ids.
+pub fn profiles_named(doc: &serde_json::Value) -> Vec<String> {
+    OWN_BLOCKS.iter().filter_map(|k| doc.get(*k)?.get("profile")?.as_str().map(str::to_string)).collect()
+}
+
+/// What a maker's models share is written once, in a profile kept in the
+/// maker's folder (`profile_file`): `"identity": {"profile": "roland",
+/// "family": [89, 1], "member": [0, 0]}` takes the Roland identity request,
+/// reply pattern and firmware rule, the model giving its bytes. A block
+/// naming a profile is that profile's block (itself completed from the
+/// profile it names, up to [`PROFILE_DEPTH`] links, never in a circle) with
+/// the block's own keys in place of the profile's; a key set to null drops
+/// the profile's. The profile is the same maker's (the driver's folder).
+pub fn resolve_profiles(path: &Path, mut doc: serde_json::Value) -> anyhow::Result<serde_json::Value> {
+    let folder = path.parent().ok_or_else(|| anyhow::anyhow!("{}: no catalogue folder", path.display()))?;
+    for key in OWN_BLOCKS {
+        if let Some(block) = doc.get(key).cloned() {
+            let resolved = complete(folder, key, block, &mut Vec::new())
+                .map_err(|e| anyhow::anyhow!("{}: {key}: {e}", path.display()))?;
+            doc[key] = resolved;
+        }
+    }
+    Ok(doc)
+}
+
+fn complete(folder: &Path, key: &str, block: serde_json::Value, chain: &mut Vec<String>) -> anyhow::Result<serde_json::Value> {
+    use anyhow::bail;
+    use serde_json::Value;
+    let Some(id) = block.get("profile").cloned() else { return Ok(block) };
+    let id = id.as_str().ok_or_else(|| anyhow::anyhow!("profile is not a profile id"))?.to_string();
+    let file = profile_file(&id).ok_or_else(|| anyhow::anyhow!("profile {id:?} is not a profile id (<maker> or <maker>/<name>)"))?;
+    let maker = folder.file_name().and_then(|f| f.to_str()).unwrap_or("");
+    if file.split('/').next() != Some(maker) { bail!("profile {id} is another maker's"); }
+    if chain.contains(&id) { bail!("profile {id}: the links come back to it (a circle)"); }
+    chain.push(id.clone());
+    if chain.len() > PROFILE_DEPTH { bail!("more than {PROFILE_DEPTH} profile links"); }
+    let fpath = folder.join(format!("{}.json", file.split_once('/').map(|(_, f)| f).unwrap_or(&file)));
+    let txt = std::fs::read_to_string(&fpath).map_err(|e| anyhow::anyhow!("profile {id}: reading {}: {e}", fpath.display()))?;
+    let prof: Value = serde_json::from_str(&txt).map_err(|e| anyhow::anyhow!("profile {id}: parsing {}: {e}", fpath.display()))?;
+    let base = prof.get(key).cloned().ok_or_else(|| anyhow::anyhow!("profile {id} has no {key}"))?;
+    let mut out = complete(folder, key, base, chain)?;
+    let obj = out.as_object_mut().ok_or_else(|| anyhow::anyhow!("profile {id}: {key} is not an object"))?;
+    for (k, v) in block.as_object().into_iter().flatten() {
+        match v {
+            Value::Null => { obj.remove(k); }
+            v => { obj.insert(k.clone(), v.clone()); }
+        }
+    }
+    obj.insert("profile".into(), Value::String(id));
+    Ok(out)
+}
+
 fn resolve_chain(path: &Path, doc: serde_json::Value, chain: &mut Vec<std::path::PathBuf>) -> anyhow::Result<serde_json::Value> {
     use serde_json::Value;
     let Some(target) = doc.get("midi_of") else { return Ok(doc) };
@@ -802,7 +947,7 @@ impl Device {
             .map_err(|e| anyhow::anyhow!("reading {}: {e}", p.display()))?;
         let doc: serde_json::Value = serde_json::from_str(&txt)
             .map_err(|e| anyhow::anyhow!("parsing {}: {e}", p.display()))?;
-        let mut dev: Device = serde_json::from_value(resolve_midi_of(p, doc)?)
+        let mut dev: Device = serde_json::from_value(resolve(p, doc)?)
             .map_err(|e| anyhow::anyhow!("parsing {}: {e}", p.display()))?;
         dev.check_blocks().map_err(|e| anyhow::anyhow!("{}: {e}", p.display()))?;
         // Optional companion markdown at <stem>.md — integration guide for
@@ -924,6 +1069,40 @@ mod tests {
     }
 
     #[test]
+    fn a_model_takes_what_its_maker_shares_from_a_profile() {
+        let roland = r#"{"identity":{"device_id":{"default":16,"min":16,"max":31},
+            "reply":[240,126,"{dev}",6,2,65,"{family}","{member}"],"firmware":{"decode":"raw_bytes","at":[10,11,12,13]}},
+            "programs":{"selects":"sound","dump":{"kind":"edit_buffer"}}}"#;
+        let groove = r#"{"identity":{"profile":"acme"},"programs":{"profile":"acme","selects":"pattern"}}"#;
+        let model = |blocks: &str| format!(r#"{{"device":{{"name":"Box","vendor":"Acme","osc_prefix":"/box"}}{blocks}}}"#);
+        let root = catalogue(&[("acme/_profile.json", roland), ("acme/_profile.groove.json", groove),
+            ("acme/box.json", &model(r#","identity":{"profile":"acme","family":[89,1],"member":[0,0]},"programs":{"profile":"acme/groove","dump":null}"#)),
+            ("acme/fork.json", r#"{"device":{"name":"Box","vendor":"Acme","osc_prefix":"/fork"},"midi_of":"acme/box"}"#),
+            ("acme/odd.json", &model(r#","identity":{"profile":"acme","firmware":null,"family":[1]}"#)),
+            ("acme/far.json", &model(r#","identity":{"profile":"other"}"#)),
+            ("acme/circle.json", &model(r#","identity":{"profile":"acme/c1"}"#)),
+            ("acme/_profile.c1.json", r#"{"identity":{"profile":"acme/c2"}}"#), ("acme/_profile.c2.json", r#"{"identity":{"profile":"acme/c1"}}"#),
+            ("acme/missing.json", &model(r#","programs":{"profile":"acme/none"}"#))]);
+        let dev = Device::load(root.join("acme/box.json")).unwrap();
+        let id = dev.identity.as_ref().unwrap();
+        assert_eq!((id.profile.as_deref(), id.family.as_slice(), id.firmware.as_ref().map(|f| f.at.len())), (Some("acme"), &[89u8, 1][..], Some(4)));
+        let p = dev.programs.as_ref().unwrap();
+        assert_eq!((p.profile.as_deref(), p.selects.as_deref()), (Some("acme/groove"), Some("pattern")), "the nearest profile, its own key last");
+        assert!(p.dump.is_none(), "null drops the profile's key");
+        let fork = Device::load(root.join("acme/fork.json")).unwrap();
+        assert_eq!(fork.identity.unwrap().family, [89, 1], "a firmware sharing the MIDI shares the blocks, profiles resolved");
+        assert!(Device::load(root.join("acme/odd.json")).unwrap().identity.unwrap().firmware.is_none());
+        for (f, why) in [("far", "another maker's"), ("circle", "circle"), ("missing", "reading")] {
+            let err = Device::load(root.join(format!("acme/{f}.json"))).unwrap_err().to_string();
+            assert!(err.contains(why), "{f}: {err}");
+        }
+        assert_eq!(profile_file("korg/logue").as_deref(), Some("korg/_profile.logue"));
+        assert_eq!(profile_file("korg").as_deref(), Some("korg/_profile"));
+        assert!(profile_file("../x").is_none() && profile_file("a/b/c").is_none());
+        std::fs::remove_dir_all(root).ok();
+    }
+
+    #[test]
     fn identity_and_programs_blocks_the_engine_cannot_use_are_refused() {
         let check = |blocks: &str| -> Result<(), String> {
             let d: Device = serde_json::from_str(&format!(r#"{{"device":{{"name":"B","osc_prefix":"/b"}}{blocks}}}"#)).unwrap();
@@ -932,7 +1111,9 @@ mod tests {
         assert!(check(r#","identity":{"reply":[240,126],"firmware":{"decode":"raw_bytes","at":[12]}},
             "programs":{"banks":[{"name":"A","msb":81,"size":128}],"dump":{"kind":"edit_buffer"}}"#).is_ok());
         for (bad, why) in [
-            (r#","identity":{}"#, "a reply or ports"),
+            (r#","identity":{}"#, "a reply, a script or ports"),
+            (r#","identity":{"reply":[240,"{family}"]}"#, "give family"),
+            (r#","identity":{"reply":[240],"firmware":{"decode":"lua"}}"#, "needs its script"),
             (r#","identity":{"reply":[240],"firmware":{"decode":"bcd","at":[1]}}"#, "decode"),
             (r#","identity":{"reply":[240],"firmware":{"decode":"korg_minor_major","at":[1]}}"#, "offsets"),
             (r#","identity":{"request":[240,126,"{dev}",6,1,247],"reply":[240]}"#, "device_id"),

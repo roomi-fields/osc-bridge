@@ -74,6 +74,47 @@ others name that file instead of copying it:
   device whose MIDI, as loaded, is the same unless both take it from one file
   that has it, and two files adding the same routes of their own.
 
+## Maker profiles — what a maker's models share, written once
+
+A maker's identity request, reply pattern, firmware rule, bank style or dump
+request pattern repeats across its models. It is written once, in a profile
+kept with the maker's drivers, and each model names it, like `midi_of`:
+
+```jsonc
+// <maker folder>/_profile.json — profile "roland"
+{
+  "_about": "Roland's Universal Identity Reply …",
+  "identity": {
+    "device_id": { "default": 16, "min": 16, "max": 31 },
+    "reply": [240, 126, "{dev}", 6, 2, 65, "{family}", "{member}"],
+    "firmware": { "decode": "raw_bytes", "at": [10, 11, 12, 13] }
+  }
+}
+// a model
+{ "identity": { "profile": "roland", "family": [89, 1], "member": [0, 0] } }
+```
+
+- Profile `roland` is the file `roland/_profile.json`; `korg/logue` is
+  `korg/_profile.logue.json`. A profile is the same maker's (the driver's
+  folder); its blocks may name another profile of that maker (`korg/logue`
+  takes `korg`), up to 8 links, never in a circle. Files starting with `_`
+  are not drivers.
+- `identity` and `programs` each may name a profile. As loaded, the block is
+  the profile's, completed from the profiles it names, with the block's own
+  keys in place of the profile's; a key set to `null` drops the profile's
+  (a model without the maker's firmware rule). The loaded block keeps the
+  profile's id in `profile`.
+- `{family}` and `{member}` in `request`, `reply` and the `programs` frames
+  stand for the model's `identity.family` and `identity.member` bytes
+  (`{family:0}`: its first byte): the maker's pattern, the model's bytes.
+- A firmware sharing another file's MIDI (`midi_of`) takes its blocks, and
+  their profiles, unless it has its own.
+- The engine fetches the profiles a driver names with it (from
+  `/api/v1/devices/<maker>/_profile….json`, kept in the same cache), one at
+  a time like a `midi_of` target; the hosted server serves them there.
+- The catalogue refuses a block that two files of one maker hold alike: it
+  belongs in a profile.
+
 ## Identity — how the device is recognised
 
 What `osc-bridge detect` (and the server's `/v1/detect`) sends to find the
@@ -87,7 +128,10 @@ only by its USB port name has `ports` alone.
     "device_id": { "default": 0x10, "min": 0x10, "max": 0x1F }, // the byte {dev} stands for
     "to":        "every_port",          // or "named_ports": only ports matching `ports`
     "reply":     [0xF0, 0x7E, "{dev}", 0x06, 0x02, 0x41, 0x59, 0x01, 0x00, 0x00],
+    "family":    [0x59, 0x01],          // the model's bytes, for {family} / {member}
+    "member":    [0x00, 0x00],
     "reply_text": "FM-1_9",             // text the reply must also hold
+    "script":    "return reply[7] == 0x59", // Lua: is this reply the device's?
     "unpack":    "lsb_8to7",            // the reply is packed 8-bit data (M-VAVE)
     "firmware":  { "decode": "raw_bytes", "at": [10, 11, 12, 13] },
     "ports":     ["PlinkySynth"]        // fragments of USB port names, any case
@@ -116,6 +160,11 @@ only by its USB port name has `ports` alone.
 | `korg_minor_major` | 4: minor LSB, minor MSB, major LSB, major MSB | `major.minor` |
 | `yamaha_tenths` | 1: n | `1.0 + n / 10` (SEQTRAK) |
 | `ascii` | 1: where the text starts | the printable text from there |
+| `lua` | none: `"script"` reads `reply` (its bytes, from 1) | what the script returns |
+
+- `script` (identity) and `firmware.script` are Lua (`scripting.md`): they
+  read `reply`, the bytes of one answer (from 1), and return true or false,
+  or the version. A maker whose replies no rule reads needs no new engine.
 
 - A driver whose identity recognises the answer (or the port name) is put
   first, and among the variants of a device the one whose `_sources` firmware
@@ -164,11 +213,23 @@ only by its USB port name has `ports` alone.
   `{msb}`, `{lsb}`, `{bank}` (its place in `banks`, from 0), `{program}` (the
   program change value), `{index}` (the program's place over all banks, from
   0) and `{number}` (as the device shows it).
+- `recall_script` (Lua) writes the recall in place of `before`, the bank
+  select, the program change and `after`, and `dump.script` the dump
+  request: they read `ctx` (`channel`, `dev`, `family`, `member`, `bank`,
+  `bank_name`, `msb`, `lsb`, `program`, `index`, `number`) and return the
+  messages as byte lists — a stored sound named in text, say.
+- `{checksum:twos@N}` in a frame is the two's complement, 7 bits, of the bytes
+  from offset N to it (Roland, Yamaha).
 - The bridge answers `/<prefix>/program/recall <bank> <number> [channel]`:
   the bank by name (any case) or by its place from 0, the number as the device
   shows it; it sends `before`, the bank select, the program change and
-  `after`. OSCQuery lists the route; MIDNAM writes one `PatchBank` per bank
-  with its bank select.
+  `after`. `/<prefix>/program/dump [<bank> <number>] [channel]` sends the
+  dump request (for an edit buffer, recall first and wait `delay_ms`). Every
+  MIDI device answers `/<prefix>/identity` (the request its identity block
+  names, else the Universal one); the reply comes back as
+  `/<prefix>/identity/reply <firmware> <hex>`. The addresses are the same
+  whatever the maker. OSCQuery lists them; MIDNAM writes one `PatchBank` per
+  bank with its bank select.
 - A block the engine cannot use (an unknown `decode` or dump kind, a bank
   past program change 127, a placeholder it does not know) makes the driver
   fail to load.

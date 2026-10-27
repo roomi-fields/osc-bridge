@@ -314,6 +314,21 @@ impl ScriptEngine {
         })
     }
 
+    /// Run `code` on `ctx` (a JSON value, `ctx` in the script; its fields
+    /// also as locals when it is an object) and return what it returns, as
+    /// JSON. A driver's identity and programs scripts run this way.
+    pub fn call_json(&self, code: &str, ctx: &JsonValue) -> Result<JsonValue> {
+        self.with_profile(Profile::Default, || {
+            let locals: String = ctx.as_object().into_iter().flatten().map(|(k, _)| k)
+                .filter(|k| k.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') && !k.starts_with(|c: char| c.is_ascii_digit()))
+                .map(|k| format!("local {k} = ctx.{k}\n")).collect();
+            let wrapped = format!("local ctx = ...\n{locals}{code}");
+            let arg = json_to_lua(&self.lua, ctx)?;
+            let ret: Value = self.lua.load(&wrapped).call(arg).context("script call")?;
+            lua_to_json(&ret)
+        })
+    }
+
     /// Execute arbitrary Lua code, returning nothing. Used by higher layers
     /// (Phase 3+) to drive state-mutating hooks like preset ingestion.
     pub fn exec(&self, code: &str, profile: Profile) -> Result<()> {

@@ -11,7 +11,7 @@ described yet (at most written in `_limitations`).
 | Aspect | Schema today | Status | Carried by |
 |---|---|---|---|
 | Identity: maker, model, firmware, SysEx manufacturer and device id | `device`, `_sources.firmware`, `midi_of`, `identity` | yes | MIDI-CI discovery, MIDNAM |
-| Detection: identity request (universal or the maker's), its reply, the firmware in it | `identity` | yes | MIDI-CI, KnobKraft |
+| Detection: identity request (universal or the maker's), its reply, the firmware in it | `identity`, maker profiles, Lua | yes | MIDI-CI, KnobKraft |
 | Transport: DIN, USB, Bluetooth; port names; OSC host and port | OSC `transport`; USB port names in `identity.ports` | part | OSCQuery (OSC) |
 | Channels and modes: basic channel, omni/poly/mono, multitimbral parts | `midi_out.default_channel`, trigger `channel_mode` | part | MIDNAM (channel name sets) |
 | Performance: notes, velocity, release velocity, aftertouch, pitch bend | `midi_out`, `midi_in` | yes | MIDNAM, MIDI-CI |

@@ -48,6 +48,8 @@ bridge's own `/bridge/status` and `/bridge/docs`.
 | `midi_out` routes (`/note/on`, `/pitchbend`, `/cc/0` to `/cc/127`…) | as the bridge reads them | 2 |
 | `/raw/syx`, `/param/get` | `s`, `iiii` | 2 |
 | `/program/recall` (a driver with `programs` banks) | `si` (bank name, number), `sii` with the channel; the bank names as `VALS` | 2 |
+| `/program/dump` (a driver whose dump request is known) | `si` / `sii` for a stored sound, `i` (channel) for an edit buffer | 2 |
+| `/identity` (every MIDI driver); `/identity/reply` (with an identity reply) | none; `ss` (firmware, hex) | 2; 1 |
 | What the bridge sends: `midi_in`, `replies`, `/sysex/raw` | one tag per argument | 1 |
 | An address both sent to and sent back | | 3 |
 | `custom_commands` (Lua scripts) | none: the script reads its arguments | 2 |

@@ -299,15 +299,20 @@ impl Online {
         Ok(v)
     }
 
-    /// Fetch driver `id` into `cache` (`driver_path`), with its notes, and
-    /// the drivers it takes its MIDI from (`midi_of`), so that it loads there.
+    /// Fetch driver `id` into `cache` (`driver_path`), with its notes, the
+    /// drivers it takes its MIDI from (`midi_of`) and the maker profiles its
+    /// blocks name (`device::resolve_profiles`, kept as
+    /// `<maker>/_profile….json` beside the drivers), so that it loads there.
     /// A driver the server no longer has is an error; the cached copy stays.
     pub fn fetch_driver(&self, id: &str, cache: &Path) -> Result<PathBuf> {
-        let mut next = Some(id.to_string());
+        let mut queue = vec![id.to_string()];
         let mut seen = Vec::new();
-        while let Some(id) = next.take() {
+        let limit = 1 + crate::device::MIDI_OF_DEPTH * (1 + 2 * crate::device::PROFILE_DEPTH);
+        while let Some(id) = queue.pop() {
             if !is_driver_id(&id) { bail!("{id:?} is not a driver id (<maker>/<name>)"); }
-            if seen.contains(&id) || seen.len() > crate::device::MIDI_OF_DEPTH { break; }
+            if seen.contains(&id) { continue; }
+            if seen.len() > limit { break; }
+            let profile = id.split_once('/').is_some_and(|(_, f)| f.starts_with("_profile"));
             let (status, text) = self.get_text(&format!("/api/v1/devices/{id}.json"))?;
             match status {
                 200 => {}
@@ -318,13 +323,16 @@ impl Online {
             let path = driver_path(cache, &id);
             std::fs::create_dir_all(path.parent().expect("a maker folder"))?;
             std::fs::write(&path, &text).with_context(|| format!("write {}", path.display()))?;
-            let notes = path.with_extension("md");
-            match self.get_text(&format!("/api/v1/devices/{id}.md"))? {
-                (200, md) => std::fs::write(&notes, md).with_context(|| format!("write {}", notes.display()))?,
-                (404, _) => { let _ = std::fs::remove_file(&notes); }
-                (s, _) => bail!("notes of {id}: HTTP {s}"),
+            if !profile {
+                let notes = path.with_extension("md");
+                match self.get_text(&format!("/api/v1/devices/{id}.md"))? {
+                    (200, md) => std::fs::write(&notes, md).with_context(|| format!("write {}", notes.display()))?,
+                    (404, _) => { let _ = std::fs::remove_file(&notes); }
+                    (s, _) => bail!("notes of {id}: HTTP {s}"),
+                }
+                queue.extend(doc["midi_of"].as_str().map(str::to_string));
             }
-            next = doc["midi_of"].as_str().map(str::to_string);
+            queue.extend(crate::device::profiles_named(&doc).iter().filter_map(|p| crate::device::profile_file(p)));
             seen.push(id);
         }
         Ok(driver_path(cache, id))

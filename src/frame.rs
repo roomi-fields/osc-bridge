@@ -45,12 +45,21 @@ pub fn build_frame(device: &Device, tokens: &[FrameToken], bindings: &Bindings) 
 }
 
 /// A whole message from `tokens` (F0 to F7 written in them, no header or
-/// footer added).
+/// footer added). `{checksum:twos@N}` is the two's complement, 7 bits, of
+/// the sum of the bytes written from offset N (Roland, Yamaha).
 pub fn build_message(tokens: &[FrameToken], bindings: &Bindings) -> Result<Vec<u8>> {
     let mut out = Vec::with_capacity(tokens.len());
     for tok in tokens {
         match tok {
             FrameToken::Literal(b) => out.push(*b),
+            FrameToken::Placeholder(s) if s.trim_matches(|c| c == '{' || c == '}').starts_with("checksum") => {
+                let inner = s.trim_matches(|c| c == '{' || c == '}');
+                let from: usize = inner.strip_prefix("checksum:twos@").and_then(|n| n.parse().ok())
+                    .ok_or_else(|| anyhow!("'{s}': a checksum is {{checksum:twos@N}}"))?;
+                let sum: u32 = out.get(from..).ok_or_else(|| anyhow!("'{s}': offset {from} is past the message"))?
+                    .iter().map(|b| *b as u32).sum();
+                out.push(((128 - sum % 128) % 128) as u8);
+            }
             FrameToken::Placeholder(s) => emit_placeholder(s, bindings, &mut out)?,
         }
     }

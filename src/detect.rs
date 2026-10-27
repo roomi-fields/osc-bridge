@@ -139,7 +139,7 @@ pub fn probe_of(id: &DeviceIdentity) -> Result<Option<Probe>> {
     let Some(tokens) = &id.request else { return Ok(None) };
     let dev = id.device_id.as_ref().map(|d| d.default).unwrap_or(0x7F);
     let mut bytes = Vec::with_capacity(tokens.len());
-    for t in tokens {
+    for t in &id.expand(tokens) {
         match t {
             FrameToken::Literal(b) => bytes.push(*b),
             FrameToken::Placeholder(_) => bytes.push(dev & 0x7F),
@@ -185,7 +185,7 @@ pub fn recognise(id: &DeviceIdentity, port: &str, replies: &[Vec<u8>]) -> Option
         Some(_) => replies.iter().map(|r| unpack_lsb_8to7(r)).collect(),
         None => replies.to_vec(),
     };
-    let matching = (!id.reply.is_empty()).then(|| read.iter().find(|r| reply_matches(id, r))).flatten();
+    let matching = (!id.reply.is_empty() || id.script.is_some()).then(|| read.iter().find(|r| reply_matches(id, r))).flatten();
     let by_port = !id.ports.is_empty() && port_matches(&id.ports, port);
     if matching.is_none() && !by_port {
         return None;
@@ -217,18 +217,36 @@ pub fn unpack_lsb_8to7(msg: &[u8]) -> Vec<u8> {
 }
 
 fn reply_matches(id: &DeviceIdentity, reply: &[u8]) -> bool {
-    reply.len() >= id.reply.len()
-        && id.reply.iter().zip(reply).all(|(t, b)| match t {
+    let pattern = id.expand(&id.reply);
+    reply.len() >= pattern.len()
+        && pattern.iter().zip(reply).all(|(t, b)| match t {
             FrameToken::Literal(l) => l == b,
             FrameToken::Placeholder(_) => true,
         })
         && id.reply_text.as_deref().map_or(true, |text| {
             !text.is_empty() && reply.windows(text.len()).any(|w| w == text.as_bytes())
         })
+        && id.script.as_deref().map_or(true, |code| {
+            matches!(run_lua(code, reply), Some(serde_json::Value::Bool(true)))
+        })
+}
+
+/// What a driver's Lua returns for `reply` (given as `reply`, bytes from
+/// 1); None when it fails.
+fn run_lua(code: &str, reply: &[u8]) -> Option<serde_json::Value> {
+    let engine = crate::scripting::ScriptEngine::new().ok()?;
+    engine.call_json(code, &serde_json::json!({ "reply": reply })).ok()
 }
 
 /// The firmware version `rule` reads from `reply` (see `FIRMWARE_DECODES`).
 pub fn decode_firmware(rule: &FirmwareRule, reply: &[u8]) -> Option<String> {
+    if rule.decode == "lua" {
+        return match run_lua(rule.script.as_deref()?, reply)? {
+            serde_json::Value::String(s) if !s.trim().is_empty() => Some(s.trim().to_string()),
+            serde_json::Value::Number(n) => Some(n.to_string()),
+            _ => None,
+        };
+    }
     let bytes: Vec<u8> = rule.at.iter().map(|&i| reply.get(i).copied()).collect::<Option<_>>()?;
     match (rule.decode.as_str(), bytes.as_slice()) {
         ("raw_bytes", b) if !b.is_empty() => Some(b.iter().map(u8::to_string).collect::<Vec<_>>().join(".")),
@@ -654,6 +672,24 @@ mod tests {
     }
 
     #[test]
+    fn a_maker_pattern_takes_the_models_bytes_and_lua_reads_what_no_rule_covers() {
+        let id = ident(r#"{"family":[89,1],"member":[0,0],"reply":[240,126,"{dev}",6,2,65,"{family}","{member}"]}"#);
+        assert!(recognise(&id, "x", &[ROLAND.to_vec()]).is_some());
+        let other = DeviceIdentity { family: vec![20, 2], ..id.clone() };
+        assert!(recognise(&other, "x", &[ROLAND.to_vec()]).is_none(), "another model's bytes");
+        let req = ident(r#"{"request":[240,0,32,50,0,1,"{family}",8,0,247],"family":[36,0],"reply":[240]}"#);
+        assert_eq!(probe_of(&req).unwrap().unwrap().request, [0xF0, 0, 0x20, 0x32, 0, 1, 0x24, 0, 8, 0, 0xF7]);
+        // A version written as BCD in one byte: no built-in rule, a few lines of Lua.
+        let lua = ident(r#"{"reply":[240,126,"{any}",6,2,65],
+            "script":"return reply[7] == 0x59",
+            "firmware":{"decode":"lua","script":"local b = reply[12]\nreturn string.format('%d.%02d', b >> 4, b & 15)"}}"#);
+        let r = recognise(&lua, "x", &[ROLAND.to_vec()]).unwrap();
+        assert_eq!(r.firmware.as_deref(), Some("0.03"));
+        let not_it = [0xF0, 0x7E, 0x10, 0x06, 0x02, 0x41, 0x14, 0x02, 0, 0, 0, 0x12, 0, 0, 0xF7];
+        assert!(recognise(&lua, "x", &[not_it.to_vec()]).is_none(), "its script says no");
+    }
+
+    #[test]
     fn a_usb_port_name_recognises_a_device_that_answers_nothing() {
         let cat = vec![with_id("plinky", None, r#"{"ports":["PlinkySynth"]}"#), cand("other", "Other", "Acme", &[])];
         let best = rank("plinkysynth MIDI 1", &[], &cat, 3);
@@ -663,7 +699,7 @@ mod tests {
 
     #[test]
     fn firmware_decodes_as_each_maker_writes_it() {
-        let rule = |decode: &str, at: &[usize]| FirmwareRule { decode: decode.into(), at: at.to_vec() };
+        let rule = |decode: &str, at: &[usize]| FirmwareRule { decode: decode.into(), at: at.to_vec(), script: None };
         // Korg: minor 10 (LSB, MSB), major 2.
         let korg = [0xF0, 0x7E, 0x00, 0x06, 0x02, 0x42, 0x51, 0x01, 0x00, 0x00, 10, 0, 2, 0, 0xF7];
         assert_eq!(decode_firmware(&rule("korg_minor_major", &[10, 11, 12, 13]), &korg).as_deref(), Some("2.10"));
