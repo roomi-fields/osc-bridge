@@ -32,6 +32,35 @@ described yet (at most written in `_limitations`).
 | MIDI 2.0: UMP, function blocks, profiles, property exchange, per-note controllers | none | no | MIDI 2.0 |
 | OSC address space: addresses, types, ranges, access | OSC `commands`, `replies` | yes | OSCQuery |
 
+## What a device holds and exchanges
+
+Beyond its controls, a device stores contents it can send and receive,
+each with its own request, format and place. A driver should name each one
+the device has, how to ask for it, how to recognise it and how to send it
+back (to its edit buffer or a given place), as it does for sounds.
+
+| Content | Examples | Schema today | Status |
+|---|---|---|---|
+| Sounds (single, multi, performance, combination) | DX7 voice, M1 program, Blofeld multi | none (KnobKraft on the hosted server) | no |
+| Drum kits | TR-8S kit, Digitone kit | none | no |
+| Banks: many sounds at once | DX7 32-voice bank | none | no |
+| Arpeggiator patterns | user arpeggios of Yamaha Motif, Roland JD-Xi | none | no |
+| Sequences: patterns, songs, chains | Elektron patterns and songs, electribe patterns, Circuit sessions | none | no |
+| Wave sequences and step modulation | Korg Wavestation and wavestate | none | no |
+| Wavetables and user waveforms | Waldorf Blofeld wavetables, MicroFreak user waves | none | no |
+| Samples | Sample Dump Standard, maker transfer protocols | none | no |
+| Tunings and scales | MIDI Tuning Standard, scale memories | none | no |
+| Chord and scale memories | NDLR, Hapax | none | no |
+| Controller templates and mappings | Novation Components, Arturia MIDI Control Center, Electra One | none | no |
+| Global settings | system dump, MIDI settings | none | no |
+| Effect presets, amp profiles | Strymon, Chase Bliss, Kemper rigs | none | no |
+| Scripts | Electra One Lua, norns scripts | norns scripts as firmware variants | part |
+| The whole device state | MIDI-CI Property Exchange State resource, full backups | none | no |
+
+SynthHub already shares contents by kind (sound, kit, sequence, bank,
+project, clip); what is missing is each device's way to ask for, recognise
+and send back each kind.
+
 ## Formats to read and write
 
 | Format | Read into drivers | Write from drivers |
