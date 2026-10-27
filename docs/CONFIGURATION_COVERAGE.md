@@ -10,17 +10,17 @@ described yet (at most written in `_limitations`).
 
 | Aspect | Schema today | Status | Carried by |
 |---|---|---|---|
-| Identity: maker, model, firmware, SysEx manufacturer and device id | `device`, `_sources.firmware`, `midi_of` | yes | MIDI-CI discovery, MIDNAM |
-| Detection: Universal Identity Request and its reply | `replies` (patterns), no identity block | part | MIDI-CI, KnobKraft |
-| Transport: DIN, USB, Bluetooth; port names; OSC host and port | OSC `transport`; MIDI ports chosen at run time | part | OSCQuery (OSC) |
+| Identity: maker, model, firmware, SysEx manufacturer and device id | `device`, `_sources.firmware`, `midi_of`, `identity` | yes | MIDI-CI discovery, MIDNAM |
+| Detection: identity request (universal or the maker's), its reply, the firmware in it | `identity` | yes | MIDI-CI, KnobKraft |
+| Transport: DIN, USB, Bluetooth; port names; OSC host and port | OSC `transport`; USB port names in `identity.ports` | part | OSCQuery (OSC) |
 | Channels and modes: basic channel, omni/poly/mono, multitimbral parts | `midi_out.default_channel`, trigger `channel_mode` | part | MIDNAM (channel name sets) |
 | Performance: notes, velocity, release velocity, aftertouch, pitch bend | `midi_out`, `midi_in` | yes | MIDNAM, MIDI-CI |
 | Pitch bend range and other RPNs | `cc_params` RPN entries | part | MIDI-CI PE |
 | MPE: zones, manager and member channels, per-note bend, pressure, timbre | none | no | MPE spec (MCM, RPN 6), MIDI-CI profile |
 | Controllers: CC (7 and 14 bit), NRPN, ranges, named values, nature | `cc_params`, `expects` | yes | MIDNAM, MIDI-CI PE, Electra, Ctrlr |
 | SysEx parameters and commands, checksums, address maps | `params`, `commands`, frame grammar | yes | Electra, Ctrlr |
-| Sounds: request, recognise, name, rename, identity, send back | none (KnobKraft adaptations on the hosted server) | no | KnobKraft, Edisyn |
-| Programs and banks: bank select scheme, numbering, bank names, recall sequence | `/program_change` only | no | MIDNAM, MIDI-CI PE ProgramList |
+| Sounds: request, recognise, name, rename, identity, send back | `programs.dump` (how one is read back); the rest by the KnobKraft adaptations on the hosted server | part | KnobKraft, Edisyn |
+| Programs and banks: bank select scheme, numbering, bank names, recall sequence | `programs` | yes | MIDNAM, OSCQuery, MIDI-CI PE ProgramList |
 | Sound names: factory banks, user banks | shared sounds on SynthHub | part | MIDNAM |
 | Drum and note maps | `triggers` | yes | MIDNAM (note name lists) |
 | What the device sends: knob CCs, replies, state broadcasts | `midi_in`, `replies` | part | MIDI-CI PE |
@@ -41,7 +41,7 @@ back (to its edit buffer or a given place), as it does for sounds.
 
 | Content | Examples | Schema today | Status |
 |---|---|---|---|
-| Sounds (single, multi, performance, combination) | DX7 voice, M1 program, Blofeld multi | none (KnobKraft on the hosted server) | no |
+| Sounds (single, multi, performance, combination) | DX7 voice, M1 program, Blofeld multi | `programs.dump`: request, edit buffer, manual, none (KnobKraft on the hosted server) | part |
 | Drum kits | TR-8S kit, Digitone kit | none | no |
 | Banks: many sounds at once | DX7 32-voice bank | none | no |
 | Arpeggiator patterns | user arpeggios of Yamaha Motif, Roland JD-Xi | none | no |

@@ -249,6 +249,17 @@ fn midi_device_routes(root: &mut Node, d: &Device, unlisted: &mut Vec<String>) {
                 format!("{}: SysEx parameter {} {} {} {}.", label(&e.osc), e.pr, e.p, e.c, e.r)).tagged([e.expects.clone()]));
         }
     }
+    if let Some(pr) = d.programs.as_ref().filter(|pr| !pr.banks.is_empty()) {
+        let names: Vec<&str> = pr.banks.iter().map(|b| b.name.as_str()).collect();
+        let lo = pr.banks.iter().map(|b| b.first_number as i64).min().unwrap_or(0);
+        let hi = pr.banks.iter().map(|b| b.first_number as i64 + b.size as i64 - 1).max().unwrap_or(0);
+        let banks: Vec<String> = pr.banks.iter().map(|b| format!("{} {}-{}", b.name, b.first_number,
+            b.first_number as u32 + b.size as u32 - 1)).collect();
+        let selects = pr.selects.as_deref().unwrap_or("program");
+        root.add(&p(crate::programs::RECALL), Method::write(
+            vec![Arg::new("s", "bank", json!({ "VALS": names })), Arg::int("number", lo, hi), Arg::channel()], 2, 2,
+            format!("Recalls a stored {selects} by bank (its name, or its place from 0) and number: {}.", banks.join(", "))));
+    }
     command_routes(root, d, false, unlisted);
     root.add(&p("/raw/syx"), Method::exact(2, vec![Arg::new("s", "hex", Value::Null)],
         "Sends one SysEx message as it is, written in hex from F0 to F7.".into()));
@@ -582,6 +593,19 @@ mod tests {
 
     fn node<'a>(ns: &'a Value, path: &str) -> &'a Value {
         path.split('/').filter(|s| !s.is_empty()).fold(ns, |n, seg| &n["CONTENTS"][seg])
+    }
+
+    #[test]
+    fn a_driver_with_banks_lists_the_program_recall() {
+        let dev = load("acme/box.vendor.fw-2");
+        let ns = namespace(std::slice::from_ref(&dev));
+        let n = node(&ns, "/box/program/recall");
+        assert_eq!((n["TYPE"].as_str(), n["ACCESS"].as_i64()), (Some("si"), Some(2)));
+        assert_eq!(n["RANGE"], json!([{ "VALS": ["User", "Factory"] }, { "MIN": 1, "MAX": 64 }]));
+        assert_eq!(n["OVERLOADS"][0]["TYPE"], "sii", "a channel may follow");
+        assert!(n["DESCRIPTION"].as_str().unwrap().contains("stored sound by bank"), "{n}");
+        let plain = namespace(&[load("korg/minilogue")]);
+        assert!(node(&plain, "/minilogue/program/recall").is_null(), "no banks, no recall");
     }
 
     #[test]

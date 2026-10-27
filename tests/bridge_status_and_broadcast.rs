@@ -26,7 +26,7 @@ fn stub(name: &str, prefix: &str) -> Device {
         commands: vec![], params: None, cc_params: None,
         midi_out: None, midi_in: Default::default(), replies: vec![],
         subscriptions: vec![],
-        custom_commands: vec![], docs: None, triggers: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
+        custom_commands: vec![], docs: None, triggers: None, identity: None, programs: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
     }
 }
 
@@ -72,7 +72,7 @@ fn runtime_options_accepts_multiple_clients() {
             commands: vec![], params: None, cc_params: None,
             midi_out: None, midi_in: Default::default(), replies: vec![],
             subscriptions: vec![],
-            custom_commands: vec![], docs: None, triggers: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
+            custom_commands: vec![], docs: None, triggers: None, identity: None, programs: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
         },
         midi_out_port_idx: 0,
         midi_in_port_idx: None,
@@ -103,7 +103,7 @@ fn runtime_options_accepts_zero_clients() {
             commands: vec![], params: None, cc_params: None,
             midi_out: None, midi_in: Default::default(), replies: vec![],
             subscriptions: vec![],
-            custom_commands: vec![], docs: None, triggers: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
+            custom_commands: vec![], docs: None, triggers: None, identity: None, programs: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
         },
         midi_out_port_idx: 0,
         midi_in_port_idx: None,

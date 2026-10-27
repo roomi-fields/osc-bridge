@@ -341,9 +341,24 @@ impl Online {
         }
     }
 
+    /// The maker requests to send while detecting, after the Universal
+    /// Identity Request (`GET /v1/detect`): those the catalogue's identity
+    /// blocks name, each with the ports it may go to.
+    pub fn probes(&self) -> Result<Vec<crate::detect::Probe>> {
+        let (status, v) = self.get("/v1/detect")?;
+        if status != 200 { bail!("detect probes: HTTP {status}"); }
+        v["probes"].as_array().into_iter().flatten().map(|p| {
+            let request = crate::librarian::parse_hex(p["request_hex"].as_str().unwrap_or_default())?;
+            if request.first() != Some(&0xF0) || request.last() != Some(&0xF7) { bail!("a detect probe is not one SysEx message"); }
+            let ports = p["ports"].as_array().into_iter().flatten().filter_map(Value::as_str).map(str::to_string).collect();
+            Ok(crate::detect::Probe { request, ports })
+        }).collect()
+    }
+
     /// The drivers matching MIDI ports found on this machine
-    /// (`POST /v1/detect`): `ports` is `[{ "port", "identity_hex"? }]`, the
-    /// answer `{ "ports": [{ "port", "candidates": [...] }] }` in the same order.
+    /// (`POST /v1/detect`): `ports` is `[{ "port", "replies_hex": [...] }]`
+    /// (the SysEx each device sent back while detected), the answer
+    /// `{ "ports": [{ "port", "candidates": [...] }] }` in the same order.
     pub fn detect(&self, ports: &[Value]) -> Result<Vec<Value>> {
         let mut out = Vec::new();
         for batch in ports.chunks(PORTS_PER_REQUEST) {

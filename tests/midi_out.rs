@@ -30,7 +30,7 @@ fn bare_device(mo: Option<MidiOut>) -> Device {
         midi_in: Default::default(),
         replies: vec![],
         subscriptions: vec![],
-        custom_commands: vec![], docs: None, triggers: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
+        custom_commands: vec![], docs: None, triggers: None, identity: None, programs: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
     }
 }
 

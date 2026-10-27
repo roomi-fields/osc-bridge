@@ -10,6 +10,7 @@
 //! The identity request changes nothing on the device; it is the standard
 //! "who are you?" every editor sends on connection.
 
+use crate::device::{DeviceIdentity, FirmwareRule, FrameToken};
 use anyhow::{anyhow, Result};
 use midir::{Ignore, MidiInput, MidiInputConnection, MidiOutput};
 use std::collections::HashSet;
@@ -112,6 +113,148 @@ pub struct Candidate {
     pub file: String,
     pub tier: String,
     pub manufacturer_id: Vec<u8>,
+    /// How the driver's device is recognised, and the firmware the driver
+    /// is for (its first source's).
+    pub identity: Option<DeviceIdentity>,
+    pub firmware: Option<String>,
+}
+
+/// One message sent while detecting, and the ports it goes to (all of them
+/// when `ports` is empty).
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Probe {
+    pub request: Vec<u8>,
+    pub ports: Vec<String>,
+}
+
+impl Probe {
+    pub fn goes_to(&self, port: &str) -> bool {
+        self.ports.is_empty() || port_matches(&self.ports, port)
+    }
+}
+
+/// The request `id` names, its `{dev}` set to the device-id rule's default;
+/// None for the Universal Identity Request, which every scan sends.
+pub fn probe_of(id: &DeviceIdentity) -> Result<Option<Probe>> {
+    let Some(tokens) = &id.request else { return Ok(None) };
+    let dev = id.device_id.as_ref().map(|d| d.default).unwrap_or(0x7F);
+    let mut bytes = Vec::with_capacity(tokens.len());
+    for t in tokens {
+        match t {
+            FrameToken::Literal(b) => bytes.push(*b),
+            FrameToken::Placeholder(_) => bytes.push(dev & 0x7F),
+        }
+    }
+    if bytes == IDENTITY_REQUEST {
+        return Ok(None);
+    }
+    let ports = if id.to.as_deref() == Some("named_ports") { id.ports.clone() } else { vec![] };
+    Ok(Some(Probe { request: bytes, ports }))
+}
+
+/// Every distinct request the identities name, in a stable order.
+pub fn probes<'a>(identities: impl IntoIterator<Item = &'a DeviceIdentity>) -> Vec<Probe> {
+    let mut out: Vec<Probe> = identities.into_iter().filter_map(|i| probe_of(i).ok().flatten()).collect();
+    out.sort_by(|a, b| (&a.request, &a.ports).cmp(&(&b.request, &b.ports)));
+    out.dedup();
+    out
+}
+
+/// A port name holds one of `patterns`, any case.
+pub fn port_matches(patterns: &[String], port: &str) -> bool {
+    let port = port.to_lowercase();
+    patterns.iter().any(|p| !p.is_empty() && port.contains(&p.to_lowercase()))
+}
+
+/// How a device was recognised by its identity block.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Recognised {
+    /// One of the replies matched (`reply`, `reply_text`).
+    pub by_reply: bool,
+    /// The port name matched `ports`.
+    pub by_port: bool,
+    /// The reply answered a maker's own request, not the universal one.
+    pub own_request: bool,
+    /// The firmware version read from the reply.
+    pub firmware: Option<String>,
+}
+
+/// Whether `id` recognises the device on `port` that sent `replies`.
+pub fn recognise(id: &DeviceIdentity, port: &str, replies: &[Vec<u8>]) -> Option<Recognised> {
+    let read: Vec<Vec<u8>> = match id.unpack.as_deref() {
+        Some(_) => replies.iter().map(|r| unpack_lsb_8to7(r)).collect(),
+        None => replies.to_vec(),
+    };
+    let matching = (!id.reply.is_empty()).then(|| read.iter().find(|r| reply_matches(id, r))).flatten();
+    let by_port = !id.ports.is_empty() && port_matches(&id.ports, port);
+    if matching.is_none() && !by_port {
+        return None;
+    }
+    Some(Recognised {
+        by_reply: matching.is_some(),
+        by_port,
+        own_request: matching.is_some() && probe_of(id).ok().flatten().is_some(),
+        firmware: matching.and_then(|r| id.firmware.as_ref().and_then(|f| decode_firmware(f, r))),
+    })
+}
+
+/// The 8-bit data of a SysEx message whose bytes between F0 and F7 are one
+/// stream of 7-bit groups, least significant bit first (M-VAVE).
+pub fn unpack_lsb_8to7(msg: &[u8]) -> Vec<u8> {
+    let body = msg.strip_prefix(&[0xF0]).unwrap_or(msg);
+    let body = body.strip_suffix(&[0xF7]).unwrap_or(body);
+    let (mut out, mut acc, mut bits) = (Vec::with_capacity(body.len()), 0u32, 0u32);
+    for b in body {
+        acc |= ((*b & 0x7F) as u32) << bits;
+        bits += 7;
+        while bits >= 8 {
+            out.push((acc & 0xFF) as u8);
+            acc >>= 8;
+            bits -= 8;
+        }
+    }
+    out
+}
+
+fn reply_matches(id: &DeviceIdentity, reply: &[u8]) -> bool {
+    reply.len() >= id.reply.len()
+        && id.reply.iter().zip(reply).all(|(t, b)| match t {
+            FrameToken::Literal(l) => l == b,
+            FrameToken::Placeholder(_) => true,
+        })
+        && id.reply_text.as_deref().map_or(true, |text| {
+            !text.is_empty() && reply.windows(text.len()).any(|w| w == text.as_bytes())
+        })
+}
+
+/// The firmware version `rule` reads from `reply` (see `FIRMWARE_DECODES`).
+pub fn decode_firmware(rule: &FirmwareRule, reply: &[u8]) -> Option<String> {
+    let bytes: Vec<u8> = rule.at.iter().map(|&i| reply.get(i).copied()).collect::<Option<_>>()?;
+    match (rule.decode.as_str(), bytes.as_slice()) {
+        ("raw_bytes", b) if !b.is_empty() => Some(b.iter().map(u8::to_string).collect::<Vec<_>>().join(".")),
+        ("korg_minor_major", [min_lo, min_hi, maj_lo, maj_hi]) => {
+            let v = |lo: &u8, hi: &u8| (*lo as u16) | ((*hi as u16) << 7);
+            Some(format!("{}.{}", v(maj_lo, maj_hi), v(min_lo, min_hi)))
+        }
+        ("yamaha_tenths", [n]) => Some(format!("{}.{}", 1 + n / 10, n % 10)),
+        ("ascii", [_]) => {
+            let text: String = reply[rule.at[0]..].iter().take_while(|b| (0x20..0x7F).contains(*b)).map(|b| *b as char).collect();
+            let text = text.trim().to_string();
+            (!text.is_empty()).then_some(text)
+        }
+        _ => None,
+    }
+}
+
+/// Two firmware versions name the same release: equal, or equal numbers
+/// once trailing zeros are dropped (`2.0` and `2.0.0`).
+pub fn same_version(a: &str, b: &str) -> bool {
+    let nums = |s: &str| -> Option<Vec<u32>> {
+        let mut v: Vec<u32> = s.trim().trim_start_matches(['v', 'V']).split('.').map(|p| p.parse().ok()).collect::<Option<_>>()?;
+        while v.len() > 1 && v.last() == Some(&0) { v.pop(); }
+        Some(v)
+    };
+    a.trim().eq_ignore_ascii_case(b.trim()) || matches!((nums(a), nums(b)), (Some(x), Some(y)) if x == y)
 }
 
 /// Words that say nothing about which device a port belongs to.
@@ -149,13 +292,27 @@ fn squash(s: &str) -> String {
     s.to_lowercase().chars().filter(|c| c.is_ascii_alphanumeric()).collect()
 }
 
-/// Score every candidate against a port name and an optional identity;
-/// return the best ones, highest score first. Zero-score drivers are dropped.
-pub fn rank(port_name: &str, identity: Option<&Identity>, catalogue: &[Candidate], limit: usize) -> Vec<(u32, usize)> {
+/// A candidate driver for a port: its score, its place in the catalogue,
+/// and what recognised it.
+#[derive(Debug, Clone)]
+pub struct Ranked {
+    pub score: u32,
+    pub index: usize,
+    pub recognised: Option<Recognised>,
+}
+
+/// Score every candidate against a port name and the SysEx the device sent
+/// back while detected (its Identity Reply, its answers to maker requests);
+/// return the best ones, highest score first. A driver whose identity block
+/// recognises the device ranks first, the one for the firmware it reported
+/// above the others; drivers matching neither the name nor the identity are
+/// dropped.
+pub fn rank(port_name: &str, replies: &[Vec<u8>], catalogue: &[Candidate], limit: usize) -> Vec<Ranked> {
     let port_tokens = tokens(port_name);
     let port_squashed = squash(port_name);
-    let id_vendor = identity.and_then(|i| manufacturer_name(&i.manufacturer)).map(squash);
-    let mut scored: Vec<(u32, usize)> = catalogue.iter().enumerate().filter_map(|(i, c)| {
+    let identity = replies.iter().find_map(|r| parse_identity_reply(r));
+    let id_vendor = identity.as_ref().and_then(|i| manufacturer_name(&i.manufacturer)).map(squash);
+    let mut scored: Vec<Ranked> = catalogue.iter().enumerate().filter_map(|(i, c)| {
         let mut score = 0u32;
         let name_tokens = tokens(&c.name);
         score += 10 * name_tokens.intersection(&port_tokens).count() as u32;
@@ -172,23 +329,34 @@ pub fn rank(port_name: &str, identity: Option<&Identity>, catalogue: &[Candidate
         {
             score += 10 + 3 * len as u32;
         }
-        if score == 0 {
+        let recognised = c.identity.as_ref().and_then(|id| recognise(id, port_name, replies));
+        if score == 0 && recognised.is_none() {
             return None;
         }
         let vendor = vendor_sq;
         if !vendor.is_empty() && port_squashed.contains(&vendor) {
             score += 5;
         }
-        if let Some(id) = identity {
+        if let Some(id) = &identity {
             if !c.manufacturer_id.is_empty() && c.manufacturer_id.starts_with(&id.manufacturer) {
                 score += 40;
             } else if id_vendor.as_deref().is_some_and(|v| vendor.contains(v) || v.contains(&vendor)) {
                 score += 20;
             }
         }
-        Some((score, i))
+        if let Some(r) = &recognised {
+            if r.by_reply { score += 100; }
+            if r.own_request { score += 20; }
+            if r.by_port { score += 60; }
+            match (&r.firmware, &c.firmware) {
+                (Some(got), Some(fw)) if same_version(got, fw) => score += 50,
+                (Some(_), Some(_)) => score = score.saturating_sub(30),
+                _ => {}
+            }
+        }
+        Some(Ranked { score, index: i, recognised })
     }).collect();
-    scored.sort_by(|a, b| b.0.cmp(&a.0).then_with(|| catalogue[a.1].slug.cmp(&catalogue[b.1].slug)));
+    scored.sort_by(|a, b| b.score.cmp(&a.score).then_with(|| catalogue[a.index].id.cmp(&catalogue[b.index].id)));
     scored.truncate(limit);
     scored
 }
@@ -201,6 +369,8 @@ pub struct Probed {
     pub in_index: Option<usize>,
     pub in_name: Option<String>,
     pub identity: Option<Identity>,
+    /// Every SysEx message its input sent while detecting, in order.
+    pub replies: Vec<Vec<u8>>,
 }
 
 impl Probed {
@@ -209,10 +379,16 @@ impl Probed {
     }
 }
 
+/// SysEx messages kept per input while detecting.
+const REPLIES_KEPT: usize = 32;
+/// Gap between two requests on one port.
+const PROBE_GAP: Duration = Duration::from_millis(10);
+
 /// List MIDI ports, pair inputs with outputs by name, and — when `probe` is
-/// true — send the Identity Request on every output and collect replies for
-/// `wait`.
-pub fn scan(probe: bool, wait: Duration) -> Result<Vec<Probed>> {
+/// true — send the Identity Request, then each of `probes` (the maker
+/// requests the catalogue's identity blocks name, each to its ports), on
+/// every output and collect the SysEx that comes back for `wait`.
+pub fn scan(probe: bool, wait: Duration, probes: &[Probe]) -> Result<Vec<Probed>> {
     let output = MidiOutput::new("osc-bridge-detect")?;
     let out_ports = output.ports();
     let out_names: Vec<String> = out_ports.iter()
@@ -240,12 +416,13 @@ pub fn scan(probe: bool, wait: Duration) -> Result<Vec<Probed>> {
             in_index,
             in_name: in_index.map(|ii| in_names[ii].clone()),
             identity: None,
+            replies: Vec::new(),
         });
     }
     for (ii, iname) in in_names.iter().enumerate() {
         if !used_in.contains(&ii) {
             devices.push(Probed { out_index: None, out_name: None, in_index: Some(ii),
-                                  in_name: Some(iname.clone()), identity: None });
+                                  in_name: Some(iname.clone()), identity: None, replies: Vec::new() });
         }
     }
     if !probe {
@@ -253,33 +430,46 @@ pub fn scan(probe: bool, wait: Duration) -> Result<Vec<Probed>> {
     }
 
     // Listen on every input, then ask every output who it is.
-    let replies: Arc<Mutex<Vec<(usize, Identity)>>> = Arc::new(Mutex::new(Vec::new()));
+    let replies: Arc<Mutex<Vec<(usize, Vec<u8>)>>> = Arc::new(Mutex::new(Vec::new()));
     let mut listeners: Vec<MidiInputConnection<()>> = Vec::new();
     for (ii, port) in in_ports.iter().enumerate() {
         let mut inp = MidiInput::new("osc-bridge-detect-in")?;
         inp.ignore(Ignore::None);
         let sink = replies.clone();
         if let Ok(conn) = inp.connect(port, "osc-bridge-detect-in", move |_, msg, _| {
-            if let Some(id) = parse_identity_reply(msg) {
-                if let Ok(mut g) = sink.lock() { g.push((ii, id)); }
+            if msg.first() == Some(&0xF0) {
+                if let Ok(mut g) = sink.lock() {
+                    if g.iter().filter(|(i, _)| *i == ii).count() < REPLIES_KEPT { g.push((ii, msg.to_vec())); }
+                }
             }
         }, ()) {
             listeners.push(conn);
         }
     }
-    for port in &out_ports {
+    let mut conns = Vec::new();
+    for (oi, port) in out_ports.iter().enumerate() {
         let out = MidiOutput::new("osc-bridge-detect-out")?;
-        if let Ok(mut conn) = out.connect(port, "osc-bridge-detect-out") {
-            let _ = conn.send(&IDENTITY_REQUEST);
+        if let Ok(conn) = out.connect(port, "osc-bridge-detect-out") {
+            conns.push((oi, conn));
         }
+    }
+    let universal = Probe { request: IDENTITY_REQUEST.to_vec(), ports: vec![] };
+    for p in std::iter::once(&universal).chain(probes) {
+        for (oi, conn) in conns.iter_mut() {
+            if p.goes_to(&out_names[*oi]) {
+                let _ = conn.send(&p.request);
+            }
+        }
+        std::thread::sleep(PROBE_GAP);
     }
     std::thread::sleep(wait);
     drop(listeners);
 
-    let got = replies.lock().map_err(|_| anyhow!("identity replies lock poisoned"))?.clone();
-    for (ii, id) in got {
+    let got = replies.lock().map_err(|_| anyhow!("detect replies lock poisoned"))?.clone();
+    for (ii, msg) in got {
         if let Some(d) = devices.iter_mut().find(|d| d.in_index == Some(ii)) {
-            d.identity.get_or_insert(id);
+            if d.identity.is_none() { d.identity = parse_identity_reply(&msg); }
+            if !d.replies.contains(&msg) { d.replies.push(msg); }
         }
     }
     Ok(devices)
@@ -292,7 +482,13 @@ mod tests {
     fn cand(slug: &str, name: &str, vendor: &str, mfr: &[u8]) -> Candidate {
         Candidate { id: format!("acme/{slug}"), slug: slug.into(), name: name.into(), vendor: vendor.into(),
                     file: format!("devices/{slug}.json"), tier: "pencilresearch".into(),
-                    manufacturer_id: mfr.to_vec() }
+                    manufacturer_id: mfr.to_vec(), identity: None, firmware: None }
+    }
+
+    fn ident(json: &str) -> DeviceIdentity { serde_json::from_str(json).unwrap() }
+
+    fn with_id(slug: &str, firmware: Option<&str>, id: &str) -> Candidate {
+        Candidate { identity: Some(ident(id)), firmware: firmware.map(str::to_string), ..cand(slug, "Box", "Acme", &[]) }
     }
 
     #[test]
@@ -329,10 +525,10 @@ mod tests {
             cand("keystep", "KeyStep", "Arturia", &[]),
             cand("tr_8s", "TR-8S", "Roland", &[]),
         ];
-        let best = rank("Minilab3 MIDI", None, &cat, 3);
-        assert_eq!(cat[best[0].1].slug, "minilab3");
-        let best = rank("TR-8S", None, &cat, 3);
-        assert_eq!(cat[best[0].1].slug, "tr_8s");
+        let best = rank("Minilab3 MIDI", &[], &cat, 3);
+        assert_eq!(cat[best[0].index].slug, "minilab3");
+        let best = rank("TR-8S", &[], &cat, 3);
+        assert_eq!(cat[best[0].index].slug, "tr_8s");
     }
 
     #[test]
@@ -342,8 +538,8 @@ mod tests {
             cand("ms_20_arturia", "MS-20", "Arturia", &[]),
         ];
         let korg = Identity { manufacturer: vec![0x42], family: 0, model: 0, version: [0; 4] };
-        let best = rank("MS-20 mini", Some(&korg), &cat, 2);
-        assert_eq!(cat[best[0].1].slug, "ms_20_korg");
+        let best = rank("MS-20 mini", &[korg.reply()], &cat, 2);
+        assert_eq!(cat[best[0].index].slug, "ms_20_korg");
     }
 
     #[test]
@@ -361,6 +557,106 @@ mod tests {
             cand("minilab3", "MiniLab 3", "Arturia", &[]),
             cand("pcm_80_v1_14", "PCM 80 v1.14", "Lexicon", &[]),
         ];
-        assert!(rank("Midi Through:Midi Through Port-0 14:0", None, &cat, 3).is_empty());
+        assert!(rank("Midi Through:Midi Through Port-0 14:0", &[], &cat, 3).is_empty());
+    }
+
+    // A Roland reply: device id 10h, family 59 01, member 00 00, revision 00 03 00 00.
+    const ROLAND: [u8; 15] = [0xF0, 0x7E, 0x10, 0x06, 0x02, 0x41, 0x59, 0x01, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0xF7];
+
+    #[test]
+    fn an_identity_reply_finds_the_device_behind_a_nameless_port() {
+        let cat = vec![
+            with_id("mc909", None, r#"{"reply":[240,126,"{dev}",6,2,65,89,1,0,0],"firmware":{"decode":"raw_bytes","at":[10,11,12,13]}}"#),
+            with_id("mc808", None, r#"{"reply":[240,126,"{dev}",6,2,65,20,2,0,0]}"#),
+            cand("tr_8s", "TR-8S", "Roland", &[0x41]),
+        ];
+        let best = rank("USB MIDI Interface", &[ROLAND.to_vec()], &cat, 3);
+        assert_eq!(best.len(), 1, "only the recognised driver: {best:?}");
+        assert_eq!(cat[best[0].index].slug, "mc909");
+        assert_eq!(best[0].recognised.as_ref().unwrap().firmware.as_deref(), Some("0.3.0.0"));
+        assert!(rank("USB MIDI Interface", &[], &cat, 3).is_empty(), "no reply, nothing to go by");
+    }
+
+    #[test]
+    fn the_firmware_in_the_reply_picks_the_variant() {
+        let id = r#"{"reply":[240,126,"{dev}",6,2,65,89,1,0,0],"firmware":{"decode":"raw_bytes","at":[10,11,12,13]}}"#;
+        let cat = vec![with_id("old", Some("0.2"), id), with_id("new", Some("0.3"), id), with_id("any", None, id)];
+        let order: Vec<&str> = rank("x", &[ROLAND.to_vec()], &cat, 3).iter().map(|r| cat[r.index].slug.as_str()).collect();
+        assert_eq!(order, ["new", "any", "old"], "the same version first, another version last");
+    }
+
+    #[test]
+    fn a_maker_request_and_its_text_tell_a_firmware_apart() {
+        let stock = with_id("stock", None, r#"{"reply":[240,126,"{dev}",6,2,0,32,60,2,0]}"#);
+        let fork = with_id("mdx", None, r#"{"request":[240,0,32,60,2,0,112,48,247],"reply":[240,0,32,60,2,0,114,48]}"#);
+        let named = with_id("felucca", None, r#"{"request":[240,125,70,76,1,247],"to":"named_ports","ports":["FM-1"],
+            "reply":[240,125,70,76],"reply_text":"Dinghy","firmware":{"decode":"ascii","at":[5]}}"#);
+        let cat = vec![stock, fork, named];
+        let uir = [0xF0, 0x7E, 0x00, 0x06, 0x02, 0x00, 0x20, 0x3C, 0x02, 0x00, 0x00, 0x00, 1, 2, 3, 4, 0xF7].to_vec();
+        let mdx = [0xF0, 0x00, 0x20, 0x3C, 0x02, 0x00, 0x72, 0x30, 1, 0, 0, 0, 0xF7].to_vec();
+        let best = rank("x", &[uir.clone(), mdx], &cat, 3);
+        assert_eq!(cat[best[0].index].slug, "mdx", "{best:?}");
+        assert_eq!(cat[rank("x", &[uir], &cat, 3)[0].index].slug, "stock");
+
+        let info = [&[0xF0, 0x7D, 0x46, 0x4C, 0x02][..], b"Dinghy 0.4", &[0xF7]].concat();
+        let r = recognise(cat[2].identity.as_ref().unwrap(), "FM-1 Midi", &[info.clone()]).unwrap();
+        assert!(r.by_reply && r.by_port && r.own_request);
+        assert_eq!(r.firmware.as_deref(), Some("Dinghy 0.4"));
+        let other = [&[0xF0, 0x7D, 0x46, 0x4C, 0x02][..], b"Grimm", &[0xF7]].concat();
+        assert!(recognise(cat[2].identity.as_ref().unwrap(), "x", &[other]).is_none(), "its text is not there");
+
+        let all = probes(cat.iter().filter_map(|c| c.identity.as_ref()));
+        assert_eq!(all.len(), 2, "the universal request is not a probe: {all:?}");
+        let felucca = all.iter().find(|p| p.request[1] == 0x7D).unwrap();
+        assert!(felucca.goes_to("FM-1 Midi") && !felucca.goes_to("Digitakt"), "sent only where it is safe");
+        assert!(all.iter().find(|p| p.request[1] == 0x00).unwrap().goes_to("anything"));
+    }
+
+    #[test]
+    fn a_packed_reply_is_read_once_unpacked() {
+        // The M-VAVE identify query, as sent and as its 8-bit data.
+        let query = [0xF0, 0x00, 0x32, 0x45, 0x00, 0x00, 0x00, 0x40, 0x7F, 0xF7];
+        assert_eq!(unpack_lsb_8to7(&query), [0x00, 0x59, 0x11, 0x00, 0x00, 0x00, 0xFF]);
+        let pack = |data: &[u8]| -> Vec<u8> {
+            let (mut out, mut acc, mut bits) = (vec![0xF0], 0u32, 0u32);
+            for b in data {
+                acc |= (*b as u32) << bits;
+                bits += 8;
+                while bits >= 7 { out.push((acc & 0x7F) as u8); acc >>= 7; bits -= 7; }
+            }
+            if bits > 0 { out.push((acc & 0x7F) as u8); }
+            out.push(0xF7);
+            out
+        };
+        assert_eq!(pack(&[0x00, 0x59, 0x11, 0x00, 0x00, 0x00, 0xFF]), query, "the test packs as the device does");
+        let reply = pack(&[&[0x00, 0x59, 0x11, 0x1B, 0x00, 0x00][..], b"FM-1_016", &[0; 19], &[0x42]].concat());
+        let v16 = ident(r#"{"request":[240,0,50,69,0,0,0,64,127,247],"unpack":"lsb_8to7","reply":[0,89,17],"reply_text":"FM-1_016",
+            "firmware":{"decode":"ascii","at":[6]}}"#);
+        let r = recognise(&v16, "FM-1 Midi", &[reply.clone()]).unwrap();
+        assert_eq!(r.firmware.as_deref(), Some("FM-1_016"));
+        let v15 = DeviceIdentity { reply_text: Some("FM-1_015".into()), ..v16.clone() };
+        assert!(recognise(&v15, "FM-1 Midi", &[reply]).is_none());
+    }
+
+    #[test]
+    fn a_usb_port_name_recognises_a_device_that_answers_nothing() {
+        let cat = vec![with_id("plinky", None, r#"{"ports":["PlinkySynth"]}"#), cand("other", "Other", "Acme", &[])];
+        let best = rank("plinkysynth MIDI 1", &[], &cat, 3);
+        assert_eq!(cat[best[0].index].slug, "plinky");
+        assert!(best[0].recognised.as_ref().unwrap().by_port);
+    }
+
+    #[test]
+    fn firmware_decodes_as_each_maker_writes_it() {
+        let rule = |decode: &str, at: &[usize]| FirmwareRule { decode: decode.into(), at: at.to_vec() };
+        // Korg: minor 10 (LSB, MSB), major 2.
+        let korg = [0xF0, 0x7E, 0x00, 0x06, 0x02, 0x42, 0x51, 0x01, 0x00, 0x00, 10, 0, 2, 0, 0xF7];
+        assert_eq!(decode_firmware(&rule("korg_minor_major", &[10, 11, 12, 13]), &korg).as_deref(), Some("2.10"));
+        assert_eq!(decode_firmware(&rule("raw_bytes", &[10, 12]), &korg).as_deref(), Some("10.2"));
+        let seqtrak = [0xF0, 0x7E, 0x7F, 0x06, 0x02, 0x43, 0x00, 0x41, 0x64, 0x06, 5, 0, 0, 0x7F, 0xF7];
+        assert_eq!(decode_firmware(&rule("yamaha_tenths", &[10]), &seqtrak).as_deref(), Some("1.5"));
+        assert_eq!(decode_firmware(&rule("raw_bytes", &[40]), &seqtrak), None, "past the end");
+        assert!(same_version("2.0", "2.0.0") && same_version("v1.5", "1.5") && !same_version("2.1", "2.10"));
+        assert!(same_version("hacktribe-94c8e60", "hacktribe-94c8e60") && !same_version("1.2", "x"));
     }
 }

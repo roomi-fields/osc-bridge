@@ -44,6 +44,19 @@ pub fn build_frame(device: &Device, tokens: &[FrameToken], bindings: &Bindings) 
     Ok(out)
 }
 
+/// A whole message from `tokens` (F0 to F7 written in them, no header or
+/// footer added).
+pub fn build_message(tokens: &[FrameToken], bindings: &Bindings) -> Result<Vec<u8>> {
+    let mut out = Vec::with_capacity(tokens.len());
+    for tok in tokens {
+        match tok {
+            FrameToken::Literal(b) => out.push(*b),
+            FrameToken::Placeholder(s) => emit_placeholder(s, bindings, &mut out)?,
+        }
+    }
+    Ok(out)
+}
+
 fn emit_placeholder(ph: &str, b: &Bindings, out: &mut Vec<u8>) -> Result<()> {
     // Strip the surrounding `{}` — placeholders come in as `"{name}"` literal strings.
     let inner = ph.trim_matches(|c| c == '{' || c == '}');
@@ -54,6 +67,16 @@ fn emit_placeholder(ph: &str, b: &Bindings, out: &mut Vec<u8>) -> Result<()> {
 
     let val = b.get(name).ok_or_else(|| anyhow!("unbound placeholder '{name}'"))?;
 
+    // `u7+N`: the value plus N (decimal or 0x hex), a channel in a status
+    // nibble (Korg `3g`: `{channel:u7+0x30}`).
+    if let Some(n) = kind.strip_prefix("u7+") {
+        let n = match n.strip_prefix("0x") { Some(h) => u8::from_str_radix(h, 16), None => n.parse() }
+            .map_err(|_| anyhow!("bad offset in '{ph}'"))?;
+        return match val {
+            Value::U7(v) => { out.push(v.wrapping_add(n) & 0x7F); Ok(()) }
+            _ => bail!("expected u7 for '{name}'"),
+        };
+    }
     match kind {
         "u7" => match val {
             Value::U7(v) => out.push(*v & 0x7F),
@@ -212,7 +235,7 @@ mod tests {
             midi_out: None,
             midi_in: Default::default(), replies: vec![],
             subscriptions: vec![],
-            custom_commands: vec![], docs: None, triggers: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
+            custom_commands: vec![], docs: None, triggers: None, identity: None, programs: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
         }
     }
 

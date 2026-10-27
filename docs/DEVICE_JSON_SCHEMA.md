@@ -25,6 +25,8 @@ The `osc-bridge` engine reads this file, registers OSC routes, and builds MIDI/S
   "midi_in":    { ...MidiInMap... },
   "triggers":   { "entries": [ ...Trigger... ] },
   "replies":    [ ...ReplyPattern... ],
+  "identity":   { ...Identity... },
+  "programs":   { ...Programs... },
   "loads_sounds_of": ["dx7"]
 }
 ```
@@ -60,6 +62,9 @@ others name that file instead of copying it:
   file's. As loaded, it also holds `_midi_of_sources`: the shared file's
   `_sources` (and those of the files it shares from), so what is written
   from it credits where its MIDI came from (`EXPORT.md`).
+- It may hold its own `identity` and `programs`, which then replace the
+  shared file's: a firmware that answers in its own way, or whose program
+  changes recall other things.
 - It may add routes of its own: `commands`, `custom_commands`, and the
   `entries` of `params`, `cc_params` and `triggers` (a script's parameters on
   the instrument that runs it). They come after the shared file's routes; on
@@ -68,6 +73,104 @@ others name that file instead of copying it:
 - `osc-bridge lint` refuses a broken link. The tests refuse two files of one
   device whose MIDI, as loaded, is the same unless both take it from one file
   that has it, and two files adding the same routes of their own.
+
+## Identity — how the device is recognised
+
+What `osc-bridge detect` (and the server's `/v1/detect`) sends to find the
+device, and how it reads the answer. Every key is optional; a device known
+only by its USB port name has `ports` alone.
+
+```jsonc
+{
+  "identity": {
+    "request":   [0xF0, 0x7E, "{dev}", 0x06, 0x01, 0xF7], // absent: the Universal Identity Request
+    "device_id": { "default": 0x10, "min": 0x10, "max": 0x1F }, // the byte {dev} stands for
+    "to":        "every_port",          // or "named_ports": only ports matching `ports`
+    "reply":     [0xF0, 0x7E, "{dev}", 0x06, 0x02, 0x41, 0x59, 0x01, 0x00, 0x00],
+    "reply_text": "FM-1_9",             // text the reply must also hold
+    "unpack":    "lsb_8to7",            // the reply is packed 8-bit data (M-VAVE)
+    "firmware":  { "decode": "raw_bytes", "at": [10, 11, 12, 13] },
+    "ports":     ["PlinkySynth"]        // fragments of USB port names, any case
+  }
+}
+```
+
+- `request` is the whole message, F0 to F7; `{dev}` is the only placeholder,
+  set to `device_id.default` (give `device_id` when it is used). Without a
+  `request`, the device answers the Universal Identity Request, which every
+  scan sends with device byte 7F. A maker's own request (Elektron, Behringer,
+  M-VAVE…) is sent after it, to every port, or with `"to": "named_ports"` only
+  to ports whose name matches `ports` — for a message another device could
+  misread.
+- `reply` is the start of the answer, F0 included: each number must match,
+  each placeholder (`"{dev}"`, `"{any}"`) matches any one byte. The answer
+  may go on past it (the version bytes).
+- `"unpack": "lsb_8to7"`: the bytes between F0 and F7 are 8-bit data packed
+  into 7-bit bytes, least significant bit first; `reply`, `reply_text` and
+  `firmware.at` then read the unpacked data, offset 0 its first byte.
+- `firmware.at` gives byte offsets from F0; `decode` reads them:
+
+| `decode` | Bytes at `at` | Version |
+|---|---|---|
+| `raw_bytes` | any number | each byte in decimal, joined by dots: Roland revisions, Arturia (major first), Korg major/minor/release (`00 03 00 00` → `0.3.0.0`) |
+| `korg_minor_major` | 4: minor LSB, minor MSB, major LSB, major MSB | `major.minor` |
+| `yamaha_tenths` | 1: n | `1.0 + n / 10` (SEQTRAK) |
+| `ascii` | 1: where the text starts | the printable text from there |
+
+- A driver whose identity recognises the answer (or the port name) is put
+  first, and among the variants of a device the one whose `_sources` firmware
+  is the version read (`2.0` and `2.0.0` are the same) comes before those of
+  unknown firmware, and those of another firmware last. A firmware file that
+  answers differently carries its own `identity` (see `midi_of`).
+
+## Programs — what a program change recalls
+
+```jsonc
+{
+  "programs": {
+    "selects":  "sound",            // or kit, pattern, scene, sequence, performance, project, snapshot, file…
+    "banks": [
+      { "name": "User", "msb": 81, "lsb": 0, "size": 128, "display": "001-128" },
+      { "name": "B", "lsb": 1, "first_pc": 1, "size": 72, "first_number": 129, "selects": "kit", "channel": 9 }
+    ],
+    "requires": ["Rx.PG and Rx.Bank Sel on"],
+    "before":   [[0xF0, 0x42, "{channel:u7+0x30}", 0x75, 0x4E, 0x02, 0xF7]],
+    "after":    [],
+    "program_change": true,
+    "delay_ms": 10,
+    "dump": { "kind": "request", "request": [0xF0, 0x42, "{channel:u7+0x30}", 0x00, 0x01, 0x51, 0x1C, "{index:u14_lsb}", "{index:u14_msb}", 0xF7] },
+    "notes": "free text"
+  }
+}
+```
+
+- A bank sends CC 0 when it has `msb`, CC 32 when it has `lsb` (none, one or
+  both), then the program change `first_pc` + the program's place in the
+  bank. `size` programs, numbered from `first_number` (1 by default) as the
+  device shows them; `display` says how the device writes them
+  (`A01-A16`, `000-127`). A bank's `selects` and `channel` (0-15) override
+  the block's when a bank recalls something else, or on its own channel.
+- `requires`: device settings that must be on first (receive switches, a
+  mode). `before` and `after`: whole messages sent before the bank select
+  and after the program change (a mode change, a panel button). With
+  `"program_change": false` no program change is sent: `before` and `after`
+  recall on their own (a SysEx scene change, Song Select `[0xF3, "{program}"]`).
+- `dump` says how a stored sound is read back: `request` (a request names the
+  stored program), `edit_buffer` (recall it, wait `delay_ms`, then ask for the
+  sound being played), `manual` (sent from the device's menu only) or `none`;
+  `request` holds the message when its bytes are known.
+- The frames may use `{channel}` (0-15), `{dev}` (`identity.device_id`),
+  `{msb}`, `{lsb}`, `{bank}` (its place in `banks`, from 0), `{program}` (the
+  program change value), `{index}` (the program's place over all banks, from
+  0) and `{number}` (as the device shows it).
+- The bridge answers `/<prefix>/program/recall <bank> <number> [channel]`:
+  the bank by name (any case) or by its place from 0, the number as the device
+  shows it; it sends `before`, the bank select, the program change and
+  `after`. OSCQuery lists the route; MIDNAM writes one `PatchBank` per bank
+  with its bank select.
+- A block the engine cannot use (an unknown `decode` or dump kind, a bank
+  past program change 127, a placeholder it does not know) makes the driver
+  fail to load.
 
 ## Command — fixed SysEx utility routes
 
@@ -296,6 +399,7 @@ For device-initiated messages (GET replies, unsolicited state broadcasts).
 | `"{name}"`   | one byte from bound arg `name` (clamped 0..127) |
 | `"{name:u14_msb}"` | high 7 bits of a u14 arg |
 | `"{name:u14_lsb}"` | low 7 bits  |
+| `"{name:u7+N}"` | the value plus N (decimal or `0x` hex): a channel in a status nibble, Korg `3g` = `{channel:u7+0x30}` |
 | `"{name:s32}"`     | five bytes: a signed value in two's complement, 7 bits each, bits 28-31 first (Korg M3 and later); with `value_type: "s32"` the range may go below 0 |
 | `"{name:ascii}"`   | zero-terminated ASCII bytes injected at this position |
 | `"{name:bytes}"`   | raw byte array inlined |

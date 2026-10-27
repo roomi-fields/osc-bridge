@@ -1,5 +1,21 @@
 {
   "_sources": [{ "type": "vendor-doc", "firmware": "2", "license": "CC0-1.0", "attribution": "osc-bridge test fixture" }],
   "device": { "name": "Box", "vendor": "Acme", "osc_prefix": "/box", "manufacturer_id": [0, 33, 9] },
-  "cc_params": { "channel": 0, "entries": [ { "osc": "/filter/cutoff", "cc": 74 }, { "osc": "/filter/resonance", "cc": 71 } ] }
+  "cc_params": { "channel": 0, "entries": [ { "osc": "/filter/cutoff", "cc": 74 }, { "osc": "/filter/resonance", "cc": 71 } ] },
+  "identity": {
+    "device_id": { "default": 127 },
+    "reply": [240, 126, "{dev}", 6, 2, 0, 33, 9, 1, 0, 1, 0],
+    "firmware": { "decode": "raw_bytes", "at": [12, 13, 14, 15] },
+    "ports": ["Acme Box"]
+  },
+  "programs": {
+    "selects": "sound",
+    "banks": [
+      { "name": "User", "msb": 0, "lsb": 0, "size": 64, "display": "U01-U64" },
+      { "name": "Factory", "msb": 0, "lsb": 1, "size": 64, "display": "F01-F64" }
+    ],
+    "requires": ["Program Change receive on"],
+    "delay_ms": 10,
+    "dump": { "kind": "request", "request": [240, 0, 33, 9, 16, "{bank}", "{program}", 247] }
+  }
 }

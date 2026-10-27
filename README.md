@@ -77,9 +77,10 @@ asks the SynthHub server for one driver at a time, when it needs it:
 - `osc-bridge run --device korg/minilogue` (a driver id) or `--device minilogue`
   (a slug: the device's best variant) fetches that driver and keeps it in the
   cache (`~/.cache/osc-bridge/drivers/`, or `$XDG_CACHE_HOME`, `%LOCALAPPDATA%`);
-- `osc-bridge detect` and the MCP tool `detect_hardware` send the names of the
-  MIDI ports found here (and the devices' Identity Replies) to the server,
-  which names the matching drivers; `list_devices` searches the catalogue there;
+- `osc-bridge detect` and the MCP tool `detect_hardware` ask the server which
+  makers' identity requests to send, then send it the names of the MIDI
+  ports found here and what the devices answered, and it names the matching
+  drivers and firmware; `list_devices` searches the catalogue there;
 - offline (`osc-bridge privacy --offline on`, `OSC_BRIDGE_OFFLINE=1`), only
   the drivers already cached are used and nothing is sent.
 
@@ -328,9 +329,11 @@ announced at the time of writing.
 osc-bridge detect
 ```
 Lists MIDI ports, asks each device who it is (the standard MIDI Identity
-Request — harmless), has the SynthHub server match them against the catalogue
-(offline: the drivers cached here) and prints a ready-to-run
-`osc-bridge run` line. `--no-probe` matches by port name only.
+Request, then the makers' own requests the drivers name — harmless), has the
+SynthHub server match the answers against the drivers' identity blocks
+(offline: the drivers cached here), with the firmware read from them, and
+prints a ready-to-run `osc-bridge run` line. `--no-probe` matches by port
+name only.
 
 ### Back up and restore presets (SysEx librarian)
 ```

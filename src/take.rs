@@ -194,7 +194,7 @@ pub struct Hardware {
 
 impl Hardware {
     pub fn open() -> Result<Self> {
-        let pairs = crate::detect::scan(false, Duration::ZERO)?;
+        let pairs = crate::detect::scan(false, Duration::ZERO, &[])?;
         let probe = MidiOutput::new("osc-bridge-take")?;
         let out_ports = probe.ports();
         let in_ports = MidiInput::new("osc-bridge-take")?.ports();

@@ -122,6 +122,9 @@ pub struct DeviceIndexEntry {
     pub tier: String,
     pub firmware: Option<String>,
     pub manufacturer_id: Vec<u8>,
+    /// How the device is recognised (its own block, else the one of the
+    /// file it shares its MIDI with).
+    pub identity: Option<crate::device::DeviceIdentity>,
     /// Slugs of the devices whose sounds this one loads as they are.
     pub loads_sounds_of: Vec<String>,
 }
@@ -180,6 +183,7 @@ impl DeviceIndex {
                     .and_then(Value::as_array)
                     .map(|a| a.iter().filter_map(Value::as_u64).map(|b| b as u8).collect())
                     .unwrap_or_default(),
+                identity: body.get("identity").and_then(|v| serde_json::from_value(v.clone()).ok()),
                 loads_sounds_of: body.get("loads_sounds_of").and_then(Value::as_array)
                     .map(|a| a.iter().filter_map(Value::as_str).map(str::to_string).collect())
                     .unwrap_or_default(),
@@ -672,7 +676,7 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "detect_hardware",
-                "description": "Find the MIDI devices plugged into this computer and match them to catalogue drivers. Lists MIDI ports, sends the standard MIDI Identity Request (harmless: it changes nothing on the device) and reads each device's manufacturer, model and firmware. Returns, per device, the best matching drivers and a ready-to-run 'osc-bridge run' command with the right port numbers.",
+                "description": "Find the MIDI devices plugged into this computer and match them to catalogue drivers. Lists MIDI ports, sends the standard MIDI Identity Request, then the makers' own identity requests the drivers name (harmless: they change nothing on the device), and reads each device's manufacturer, model and firmware. A driver whose identity block recognises the reply (or the USB port name) comes first, the variant for the firmware read from it above the others. Returns, per device, the best matching drivers (with recognised_by and firmware when recognised) and a ready-to-run 'osc-bridge run' command with the right port numbers.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -1224,17 +1228,44 @@ pub fn hardware_candidates(index: &DeviceIndex) -> Vec<crate::detect::Candidate>
         file: e.path.display().to_string(),
         tier: e.tier.clone(),
         manufacturer_id: e.manufacturer_id.clone(),
+        identity: e.identity.clone(),
+        firmware: e.firmware.clone(),
     }).collect()
 }
 
+/// The maker requests the identity blocks of `index` name, sent while
+/// detecting after the Universal Identity Request.
+pub fn detect_probes(index: &DeviceIndex) -> Vec<crate::detect::Probe> {
+    crate::detect::probes(index.entries.iter().filter(|e| e.kind != "software").filter_map(|e| e.identity.as_ref()))
+}
+
+/// The probes as the hosted server lists them (`GET /v1/detect`).
+pub fn probes_json(probes: &[crate::detect::Probe]) -> Value {
+    json!({ "probes": probes.iter().map(|p| json!({ "request_hex": hex_bytes(&p.request), "ports": p.ports })).collect::<Vec<_>>() })
+}
+
+/// Bytes as `F0 7E 7F …`.
+pub fn hex_bytes(bytes: &[u8]) -> String {
+    bytes.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ")
+}
+
 /// The drivers of `catalogue` (`hardware_candidates`) that best match a MIDI
-/// port, by its name and the device's Identity Reply, best first: id, slug,
-/// name, vendor, source tier and score. The hosted server answers
+/// port, by its name and the SysEx the device sent back while detected
+/// (`detect::rank`), best first: id, slug, name, vendor, source tier,
+/// score, and, when its identity block recognised the device, how and the
+/// firmware read from the reply. The hosted server answers
 /// `POST /v1/detect` with them.
-pub fn match_port(catalogue: &[crate::detect::Candidate], port: &str, identity: Option<&crate::detect::Identity>) -> Vec<Value> {
-    crate::detect::rank(port, identity, catalogue, 3).iter().map(|(score, i)| {
-        let c = &catalogue[*i];
-        json!({ "id": c.id, "slug": c.slug, "name": c.name, "vendor": c.vendor, "source_tier": c.tier, "score": score })
+pub fn match_port(catalogue: &[crate::detect::Candidate], port: &str, replies: &[Vec<u8>]) -> Vec<Value> {
+    crate::detect::rank(port, replies, catalogue, 3).iter().map(|r| {
+        let c = &catalogue[r.index];
+        let mut out = json!({ "id": c.id, "slug": c.slug, "name": c.name, "vendor": c.vendor, "source_tier": c.tier, "score": r.score });
+        if let Some(rec) = &r.recognised {
+            let by: Vec<&str> = [(rec.by_reply, "identity reply"), (rec.by_port, "port name")].iter()
+                .filter(|(on, _)| *on).map(|(_, what)| *what).collect();
+            out["recognised_by"] = json!(by);
+            if let Some(fw) = &rec.firmware { out["firmware"] = json!(fw); }
+        }
+        out
     }).collect()
 }
 
@@ -1244,11 +1275,16 @@ pub fn match_port(catalogue: &[crate::detect::Candidate], port: &str, identity: 
 /// file when `by_file` (a folder the user keeps), else by its id.
 fn detect_hardware(index: &DeviceIndex, server: Option<&crate::online::Online>, by_file: bool, probe: bool,
                    wait: std::time::Duration) -> Result<Value, String> {
-    let found = crate::detect::scan(probe, wait).map_err(|e| format!("MIDI scan: {e}"))?;
+    let probes = match server {
+        Some(server) if probe => server.probes().map_err(|e| format!("detect_hardware asks the SynthHub server which \
+            requests recognise devices, and it could not be reached: {e}. Offline, the ports are matched against the drivers cached here."))?,
+        _ => detect_probes(index),
+    };
+    let found = crate::detect::scan(probe, wait, &probes).map_err(|e| format!("MIDI scan: {e}"))?;
     let matched: Vec<Vec<Value>> = match server {
         Some(server) => {
             let ports: Vec<Value> = found.iter().map(|d| json!({ "port": d.label(),
-                "identity_hex": d.identity.as_ref().map(|id| id.reply().iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ")) }))
+                "replies_hex": d.replies.iter().map(|r| hex_bytes(r)).collect::<Vec<_>>() }))
                 .collect();
             let answers = server.detect(&ports).map_err(|e| format!("detect_hardware asks the SynthHub server to match \
                 the ports, and it could not be reached: {e}. Offline, the ports are matched against the drivers cached here."))?;
@@ -1257,7 +1293,7 @@ fn detect_hardware(index: &DeviceIndex, server: Option<&crate::online::Online>, 
         }
         None => {
             let catalogue = hardware_candidates(index);
-            found.iter().map(|d| match_port(&catalogue, d.label(), d.identity.as_ref())).collect()
+            found.iter().map(|d| match_port(&catalogue, d.label(), &d.replies)).collect()
         }
     };
     let devices: Vec<Value> = found.iter().zip(matched).map(|(d, mut candidates)| {
@@ -1475,7 +1511,8 @@ pub fn print_detection(devices_dir: Option<&Path>, probe: bool) -> Result<()> {
             None => {}
         }
         for c in d["candidates"].as_array().into_iter().flatten() {
-            println!("  match: {} — {} ({}, score {})", c["slug"].as_str().unwrap_or(""),
+            let fw = c["firmware"].as_str().map(|f| format!(", firmware {f}")).unwrap_or_default();
+            println!("  match: {} — {} ({}, score {}{fw})", c["slug"].as_str().unwrap_or(""),
                 c["file"].as_str().or(c["id"].as_str()).unwrap_or(""), c["source_tier"].as_str().unwrap_or(""), c["score"]);
         }
         if let Some(cmd) = d["run_command"].as_str() {
@@ -1639,11 +1676,19 @@ fn list_routes(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
         "match_frame_len": r.match_frame.len(),
         "emit_osc": r.emit_osc,
     })).collect();
+    let programs = dev.programs.as_ref().map(|p| json!({
+        "address": (!p.banks.is_empty()).then(|| format!("{prefix}{} <bank> <number> [channel]", crate::programs::RECALL)),
+        "selects": p.selects,
+        "banks": p.banks,
+        "requires": p.requires,
+        "dump": p.dump.as_ref().map(|d| d.kind.clone()),
+    }));
     let payload = json!({
         "device": dev.device.name,
         "vendor": dev.device.vendor,
         "osc_prefix": prefix,
         "kind": dev.device.kind,
+        "programs": programs,
         "commands": cmds,
         "cc_params": cc_params,
         "params": params,
@@ -2035,13 +2080,20 @@ mod tests {
         let cat = hardware_candidates(&fixtures());
         for (port, want) in [("minilogue MIDI 1", "korg/minilogue"), ("Bass Station II", "novation/bass_station_ii"),
                              ("Electra Controller Electra Port 1", "electra-one/electra-one")] {
-            let best = match_port(&cat, port, None);
+            let best = match_port(&cat, port, &[]);
             assert_eq!(best.first().map(|c| c["id"].clone()), Some(json!(want)), "{port}: {best:?}");
         }
         // An Identity Reply from the maker puts its driver first.
         let acme = crate::detect::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
-        let best = match_port(&cat, "Box", Some(&acme));
+        let best = match_port(&cat, "Box", &[acme.reply()]);
         assert_eq!(best[0]["slug"], "box", "{best:?}");
+        // Its identity block names the firmware, which picks the variant for it.
+        assert_eq!(best[0]["id"], "acme/box.vendor.fw-2", "{best:?}");
+        assert_eq!((best[0]["firmware"].as_str(), &best[0]["recognised_by"]), (Some("2.0.0.0"), &json!(["identity reply"])));
+        let nameless = match_port(&cat, "USB MIDI Interface", &[acme.reply()]);
+        assert_eq!(nameless[0]["id"], "acme/box.vendor.fw-2", "behind a port named after nothing: {nameless:?}");
+        let other_fw = crate::detect::Identity { version: [3, 0, 0, 0], ..acme.clone() };
+        assert!(match_port(&cat, "Box", &[other_fw.reply()])[0]["score"].as_u64() < best[0]["score"].as_u64());
         assert!(best.iter().all(|c| c.get("file").is_none()), "no path of the machine that matched them");
     }
 
@@ -2115,11 +2167,15 @@ mod tests {
                         }
                         None => (404, json!({ "error": "no such device" }).to_string()),
                     },
+                    "/v1/detect" if req.method() == &tiny_http::Method::Get => (200, probes_json(&detect_probes(&index)).to_string()),
                     "/v1/detect" => {
                         let asked: Value = serde_json::from_str(&body).unwrap();
                         let cat = hardware_candidates(&index);
-                        let ports: Vec<Value> = asked["ports"].as_array().unwrap().iter().map(|p| json!({ "port": p["port"],
-                            "candidates": match_port(&cat, p["port"].as_str().unwrap(), None) })).collect();
+                        let ports: Vec<Value> = asked["ports"].as_array().unwrap().iter().map(|p| {
+                            let replies: Vec<Vec<u8>> = p["replies_hex"].as_array().into_iter().flatten()
+                                .map(|h| crate::librarian::parse_hex(h.as_str().unwrap()).unwrap()).collect();
+                            json!({ "port": p["port"], "candidates": match_port(&cat, p["port"].as_str().unwrap(), &replies) })
+                        }).collect();
                         (200, json!({ "ports": ports }).to_string())
                     }
                     "/mcp" => {
@@ -2183,6 +2239,10 @@ mod tests {
         assert_eq!(listed["structuredContent"]["devices"][0]["id"], "korg/minilogue", "{listed}");
         let matched = link.client.detect(&[json!({"port": "minilogue MIDI 1"})]).unwrap();
         assert_eq!(matched[0]["candidates"][0]["id"], "korg/minilogue", "{matched:?}");
+        let acme = crate::detect::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
+        let matched = link.client.detect(&[json!({"port": "USB MIDI", "replies_hex": [hex_bytes(&acme.reply())]})]).unwrap();
+        assert_eq!(matched[0]["candidates"][0]["firmware"], "2.0.0.0", "{matched:?}");
+        assert_eq!(link.client.probes().unwrap(), detect_probes(&DeviceIndex::build(Path::new(FIXTURES))));
 
         // Reports go out under the account kept on this machine.
         let user = link.user(false).unwrap();

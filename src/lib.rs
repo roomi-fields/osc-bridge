@@ -30,6 +30,7 @@ pub mod take;
 pub mod export;
 pub mod oscquery;
 pub mod midnam;
+pub mod programs;
 
 pub use device::Device;
 pub use runtime::{Runtime, RuntimeOptions};

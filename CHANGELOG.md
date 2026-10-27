@@ -11,6 +11,24 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Added — how a device is recognised, and how its programs are recalled
+- Drivers may carry an `identity` block (the request a device answers,
+  universal or the maker's own, the start of its reply, where the firmware
+  version is in it and how to read it, its USB port names) and a `programs`
+  block (what a program change selects, the banks with their bank select and
+  numbering, settings to switch on, messages around the program change, how
+  a stored sound is read back). A firmware file sharing another's MIDI may
+  hold its own. `DEVICE_JSON_SCHEMA.md` describes both.
+- Detection sends, after the Universal Identity Request, the makers' requests
+  the identity blocks name, keeps every SysEx answer per port, and puts first
+  the driver whose identity recognises it, the variant for the firmware read
+  from the reply above the others. `GET /v1/detect` lists the requests;
+  `POST /v1/detect` takes each port's answers as `replies_hex` (in place of
+  `identity_hex`); candidates carry `recognised_by` and `firmware`.
+- `/<prefix>/program/recall <bank> <number> [channel]` recalls a stored
+  program by bank (name or place) and number as the device shows it. OSCQuery
+  lists it; MIDNAM writes each bank with its bank select and programs.
+
 ### Changed — the catalogue lives on SynthHub
 - The driver catalogue (`devices/`, its listings and import scripts) left
   this repository: it lives on the SynthHub server, which hands drivers out

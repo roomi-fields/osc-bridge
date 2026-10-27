@@ -17,9 +17,11 @@ other users and agents fixed and confirmed them:
   report on it), it fetches that one driver, by its id or slug, and keeps it in
   a cache on your machine (`<cache>/osc-bridge/drivers`: `~/.cache` on Linux,
   `%LOCALAPPDATA%` on Windows). **Detecting your hardware**
-  (`osc-bridge detect`, `detect_hardware`) sends the names of your MIDI ports
-  and the identity your devices answer with (maker, model, firmware), so the
-  server names the matching drivers; **listing devices** sends the search
+  (`osc-bridge detect`, `detect_hardware`) first asks the server which
+  identity requests to send, then sends it the names of your MIDI ports and
+  what your devices answered them (maker, model, firmware, and any other
+  SysEx a device sent while being asked), so the server names the matching
+  drivers; **listing devices** sends the search
   words. These requests carry no account. What the server keeps of them is
   counters only, with no visitor, account, address or time of day attached:
   per driver, how many times it was fetched each day; per device name asked

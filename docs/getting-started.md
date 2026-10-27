@@ -36,8 +36,9 @@ osc-bridge detect
 ```
 
 It lists MIDI ports, asks each device who it is (the standard MIDI Identity
-Request — it changes nothing on the device) and prints the matching driver and
-a ready-to-run line. Search the [catalogue](https://synthhub.roomi-fields.com/catalogue/) if your device does
+Request, then the makers' own requests the drivers name — they change nothing
+on the device) and prints the matching driver, the firmware it read, and a
+ready-to-run line. Search the [catalogue](https://synthhub.roomi-fields.com/catalogue/) if your device does
 not answer.
 
 ## 3. Start the bridge

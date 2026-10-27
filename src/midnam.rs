@@ -3,10 +3,12 @@
 //! Digital Performer read to name a device's controllers and notes.
 //!
 //! Written: the controllers of `cc_params` (7-bit and 14-bit CC, NRPN, RPN,
-//! with their range and the named values the source states) and the notes
-//! of `triggers` (drum maps), per MIDI channel. Not representable, left
-//! out: SysEx parameters and commands, OSC routes, sound names (the
-//! program bank is empty).
+//! with their range and the named values the source states), the notes
+//! of `triggers` (drum maps), per MIDI channel, and the program banks of
+//! `programs` with their bank select. Not representable, left out: SysEx
+//! parameters and commands, OSC routes, recall messages other than bank
+//! select and program change, sound names (programs are named by bank and
+//! number).
 
 use anyhow::{bail, Result};
 use std::collections::BTreeMap;
@@ -77,10 +79,7 @@ pub fn midnam(dev: &Device) -> Result<String> {
         if !controls.is_empty() {
             let _ = writeln!(x, r#"      <UsesControlNameList Name="Controls"/>"#);
         }
-        // The DTD wants a bank; sound names are not part of a driver.
-        let _ = writeln!(x, r#"      <PatchBank Name="Programs">"#);
-        let _ = writeln!(x, "        <PatchNameList/>");
-        let _ = writeln!(x, "      </PatchBank>");
+        write_banks(&mut x, dev, chans);
         let _ = writeln!(x, "    </ChannelNameSet>");
     }
     for (name, notes, _) in sets.iter().filter(|(_, n, _)| !n.is_empty()) {
@@ -111,6 +110,40 @@ pub fn midnam(dev: &Device) -> Result<String> {
     let _ = writeln!(x, "  </MasterDeviceNames>");
     let _ = writeln!(x, "</MIDINameDocument>");
     Ok(x)
+}
+
+/// The program banks the channels `chans` recall, each with its bank select
+/// and program changes; programs are named by bank and number, as the
+/// driver holds no sound names. The DTD wants a bank: an empty one when the
+/// driver lists none, or recalls without a program change.
+fn write_banks(x: &mut String, dev: &Device, chans: &[u8]) {
+    let banks: Vec<_> = dev.programs.iter().filter(|p| p.program_change).flat_map(|p| &p.banks)
+        .filter(|b| b.channel.is_none_or(|c| chans.contains(&c))).collect();
+    if banks.is_empty() {
+        let _ = writeln!(x, r#"      <PatchBank Name="Programs">"#);
+        let _ = writeln!(x, "        <PatchNameList/>");
+        let _ = writeln!(x, "      </PatchBank>");
+        return;
+    }
+    for b in banks {
+        let _ = writeln!(x, r#"      <PatchBank Name="{}">"#, esc(&b.name));
+        if b.msb.is_some() || b.lsb.is_some() {
+            let _ = writeln!(x, "        <MIDICommands>");
+            for (cc, v) in [(0, b.msb), (32, b.lsb)] {
+                if let Some(v) = v {
+                    let _ = writeln!(x, r#"          <ControlChange Control="{cc}" Value="{v}"/>"#);
+                }
+            }
+            let _ = writeln!(x, "        </MIDICommands>");
+        }
+        let _ = writeln!(x, r#"        <PatchNameList Name="{}">"#, esc(&b.name));
+        for i in 0..b.size {
+            let n = b.first_number + i;
+            let _ = writeln!(x, r#"          <Patch Number="{n}" Name="{} {n}" ProgramChange="{}"/>"#, esc(&b.name), b.first_pc as u16 + i);
+        }
+        let _ = writeln!(x, "        </PatchNameList>");
+        let _ = writeln!(x, "      </PatchBank>");
+    }
 }
 
 /// A channel name set: its name, the notes it names, its channels (0-15).
@@ -317,6 +350,23 @@ mod tests {
         assert!(xml.contains("MIDI shared from arturia/microfreak"));
         assert!(!all(&doc, "Control").is_empty(), "the shared controllers");
         assert!(midnam(&load("bitwig/bitwig-studio.third-party-osc.fw-5")).is_err());
+    }
+
+    #[test]
+    fn program_banks_carry_their_bank_select_and_program_changes() {
+        let xml = midnam(&load("acme/box.vendor.fw-2")).unwrap();
+        let doc = parse(&xml);
+        let banks = all(&doc, "PatchBank");
+        let names: Vec<&str> = banks.iter().filter_map(|b| b.attribute("Name")).collect();
+        assert_eq!(names, ["User", "Factory"]);
+        let cc: Vec<(&str, &str)> = banks[1].descendants().filter(|n| n.has_tag_name("ControlChange"))
+            .map(|n| (n.attribute("Control").unwrap(), n.attribute("Value").unwrap())).collect();
+        assert_eq!(cc, [("0", "0"), ("32", "1")]);
+        let patches: Vec<_> = banks[1].descendants().filter(|n| n.has_tag_name("Patch")).collect();
+        assert_eq!(patches.len(), 64);
+        assert_eq!((patches[63].attribute("Number"), patches[63].attribute("ProgramChange")), (Some("64"), Some("63")));
+        let plain = midnam(&load("korg/minilogue")).unwrap();
+        assert!(plain.contains(r#"<PatchBank Name="Programs">"#), "no banks: the empty one the DTD wants");
     }
 
     #[test]

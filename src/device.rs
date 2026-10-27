@@ -47,6 +47,14 @@ pub struct Device {
     /// named OSC address that fires one MIDI note on the right channel.
     #[serde(default)]
     pub triggers: Option<TriggerTable>,
+    /// How the device is recognised: the request it answers, its reply,
+    /// where the firmware version is in it, its USB port names.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub identity: Option<DeviceIdentity>,
+    /// What a program change selects, the banks, and how a stored sound is
+    /// recalled and read back.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub programs: Option<Programs>,
     /// Catalogue id of the file whose MIDI this one shares (see
     /// [`resolve_midi_of`]); its routes are already merged in.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -113,6 +121,211 @@ pub struct TriggerEntry {
 }
 
 fn default_channel_mode() -> String { "fixed".to_string() }
+
+/// How a device is recognised (`identity`). Every key is optional: a device
+/// known by its USB port name only has `ports` alone.
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
+pub struct DeviceIdentity {
+    /// The message that makes it answer, F0 to F7. Absent: the Universal
+    /// Identity Request `F0 7E {dev} 06 01 F7`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub request: Option<Vec<FrameToken>>,
+    /// The device-id byte `{dev}` stands for in `request` (and in the
+    /// `programs` frames).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub device_id: Option<DeviceIdRule>,
+    /// `"every_port"` (default) or `"named_ports"`: the request goes only to
+    /// ports whose name matches `ports`, for a message other devices could
+    /// misread.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub to: Option<String>,
+    /// The start of the reply, F0 included: literals must match, any
+    /// placeholder (`"{dev}"`, `"{any}"`) matches one byte. Empty: no reply
+    /// is known (the port name alone tells the device).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub reply: Vec<FrameToken>,
+    /// Text the reply must also contain (a product string).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub reply_text: Option<String>,
+    /// `"lsb_8to7"`: the bytes between F0 and F7 carry 8-bit data packed
+    /// into 7-bit bytes, least significant bit first; `reply`, `reply_text`
+    /// and `firmware.at` then read the unpacked data (offset 0 its first byte).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub unpack: Option<String>,
+    /// Where the firmware version is in the reply.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub firmware: Option<FirmwareRule>,
+    /// Fragments of the USB MIDI port names the device shows, any case.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ports: Vec<String>,
+}
+
+/// The device-id byte of a request: the one sent, and the range the device
+/// may be set to.
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct DeviceIdRule {
+    pub default: u8,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub min: Option<u8>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max: Option<u8>,
+}
+
+/// How to read the firmware version from a reply: the bytes at `at`
+/// (offsets from F0), read by `decode`, one of [`FIRMWARE_DECODES`].
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct FirmwareRule {
+    pub decode: String,
+    pub at: Vec<usize>,
+}
+
+/// - `raw_bytes`: each byte in decimal, joined by dots (`00 03 00 00` → `0.3.0.0`);
+///   Roland revisions, Arturia (major first), Korg major/minor/release.
+/// - `korg_minor_major`: four bytes, minor LSB and MSB then major LSB and MSB
+///   (`major.minor`).
+/// - `yamaha_tenths`: one byte n, version 1.0 + n / 10 (SEQTRAK).
+/// - `ascii`: the printable text starting at the one offset given.
+pub const FIRMWARE_DECODES: [&str; 4] = ["raw_bytes", "korg_minor_major", "yamaha_tenths", "ascii"];
+
+/// What a program change recalls, and how (`programs`).
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
+pub struct Programs {
+    /// What a program change selects: `sound`, `kit`, `pattern`, `scene`,
+    /// `sequence`, `performance`, `project`, `snapshot`, `file`… A bank
+    /// may say otherwise.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub selects: Option<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub banks: Vec<Bank>,
+    /// Device settings that must be on first (receive switches, mode).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub requires: Vec<String>,
+    /// Messages sent before the bank select, and after the program change.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub before: Vec<Vec<FrameToken>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub after: Vec<Vec<FrameToken>>,
+    /// False when no program change is sent: `before` and `after` recall
+    /// on their own (a SysEx scene change, Song Select).
+    #[serde(default = "default_true")]
+    pub program_change: bool,
+    /// Wait after a recall before reading the sound back, in ms.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub delay_ms: Option<u32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dump: Option<Dump>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub notes: Option<String>,
+}
+
+/// One bank: the bank select it takes, its program changes, how the device
+/// numbers its programs.
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct Bank {
+    pub name: String,
+    /// Bank select MSB (CC 0) and LSB (CC 32), each sent when given.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub msb: Option<u8>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lsb: Option<u8>,
+    /// Program change value of its first program.
+    #[serde(default)]
+    pub first_pc: u8,
+    pub size: u16,
+    /// The number the device shows for its first program (1 by default):
+    /// a recall names a program by that numbering.
+    #[serde(default = "default_first_number")]
+    pub first_number: u16,
+    /// How the device shows the bank's programs (`A01-A16`, `001-128`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub display: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub selects: Option<String>,
+    /// MIDI channel 0-15 the bank is recalled on, when fixed.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub channel: Option<u8>,
+}
+
+fn default_first_number() -> u16 { 1 }
+
+/// How a stored sound is read back: `kind` one of [`DUMP_KINDS`], and the
+/// request when its bytes are known.
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct Dump {
+    pub kind: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub request: Option<Vec<FrameToken>>,
+}
+
+/// - `request`: the request names the stored program.
+/// - `edit_buffer`: recall it, then ask for the sound being played.
+/// - `manual`: the device sends it from its own menu only.
+/// - `none`: it cannot be read over MIDI.
+pub const DUMP_KINDS: [&str; 4] = ["request", "edit_buffer", "manual", "none"];
+
+/// The values a `programs` frame may name: the channel (0-15), the
+/// device-id byte, the bank's select bytes, its index in `banks`, the
+/// program change value, the program's index over all banks, and the
+/// number the device shows.
+pub const PROGRAM_PLACEHOLDERS: [&str; 8] = ["channel", "dev", "msb", "lsb", "bank", "program", "index", "number"];
+
+impl Device {
+    /// Refuse an `identity` or `programs` block the engine could not use.
+    pub fn check_blocks(&self) -> anyhow::Result<()> {
+        use anyhow::bail;
+        let names = |frame: &[FrameToken]| -> Vec<String> {
+            frame.iter().filter_map(|t| match t {
+                FrameToken::Placeholder(p) => Some(p.trim_matches(|c| c == '{' || c == '}').split(':').next().unwrap_or("").trim().to_string()),
+                FrameToken::Literal(_) => None,
+            }).collect()
+        };
+        if let Some(id) = &self.identity {
+            if let Some(to) = id.to.as_deref() {
+                if !["every_port", "named_ports"].contains(&to) { bail!("identity.to {to:?}: every_port or named_ports"); }
+                if to == "named_ports" && id.ports.is_empty() { bail!("identity.to named_ports needs ports"); }
+            }
+            if let Some(req) = &id.request {
+                if req.first() != Some(&FrameToken::Literal(0xF0)) || req.last() != Some(&FrameToken::Literal(0xF7)) {
+                    bail!("identity.request runs from F0 to F7");
+                }
+                if let Some(n) = names(req).into_iter().find(|n| n != "dev") { bail!("identity.request names {{{n}}}: only {{dev}}"); }
+                if names(req).iter().any(|n| n == "dev") && id.device_id.is_none() { bail!("identity.request names {{dev}}: give device_id"); }
+            }
+            if let Some(fw) = &id.firmware {
+                if !FIRMWARE_DECODES.contains(&fw.decode.as_str()) { bail!("identity.firmware.decode {:?}: one of {FIRMWARE_DECODES:?}", fw.decode); }
+                let want = match fw.decode.as_str() { "korg_minor_major" => Some(4), "yamaha_tenths" | "ascii" => Some(1), _ => None };
+                if fw.at.is_empty() || want.is_some_and(|n| fw.at.len() != n) { bail!("identity.firmware.at: wrong number of offsets for {}", fw.decode); }
+                if id.reply.is_empty() { bail!("identity.firmware without a reply"); }
+            }
+            if id.reply.is_empty() && id.ports.is_empty() { bail!("identity: a reply or ports"); }
+            if id.unpack.as_deref().is_some_and(|u| u != "lsb_8to7") { bail!("identity.unpack: lsb_8to7"); }
+        }
+        if let Some(p) = &self.programs {
+            let frames = p.before.iter().chain(&p.after).chain(p.dump.iter().filter_map(|d| d.request.as_ref()));
+            for f in frames {
+                if let Some(n) = names(f).into_iter().find(|n| !PROGRAM_PLACEHOLDERS.contains(&n.as_str())) {
+                    bail!("programs: a frame names {{{n}}}: one of {PROGRAM_PLACEHOLDERS:?}");
+                }
+                if names(f).iter().any(|n| n == "dev") && self.identity.as_ref().and_then(|i| i.device_id.as_ref()).is_none() {
+                    bail!("programs: a frame names {{dev}}: give identity.device_id");
+                }
+            }
+            if let Some(d) = &p.dump {
+                if !DUMP_KINDS.contains(&d.kind.as_str()) { bail!("programs.dump.kind {:?}: one of {DUMP_KINDS:?}", d.kind); }
+            }
+            if !p.program_change && p.before.is_empty() && p.after.is_empty() { bail!("programs: no program change and no message to recall"); }
+            let mut seen = std::collections::HashSet::new();
+            for b in &p.banks {
+                if !seen.insert(b.name.as_str()) { bail!("programs: bank {:?} twice", b.name); }
+                if b.size == 0 { bail!("programs: bank {:?} is empty", b.name); }
+                if p.program_change && b.first_pc as u16 + b.size > 128 { bail!("programs: bank {:?} runs past program change 127", b.name); }
+                if b.msb.is_some_and(|v| v > 127) || b.lsb.is_some_and(|v| v > 127) { bail!("programs: bank {:?}: bank select over 127", b.name); }
+                if b.channel.is_some_and(|c| c > 15) { bail!("programs: bank {:?}: channel 0-15", b.name); }
+            }
+        }
+        Ok(())
+    }
+}
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct CustomCommand {
@@ -343,7 +556,7 @@ pub struct PreBind {
     pub expr: String,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 #[serde(untagged)]
 pub enum FrameToken {
     Literal(u8),
@@ -465,6 +678,9 @@ pub const IDENTITY: [&str; 5] = ["name", "vendor", "revision", "osc_prefix", "ki
 pub const OWN_LISTS: [&str; 2] = ["commands", "custom_commands"];
 /// Route tables (`entries`) a `midi_of` file may add to its target's.
 pub const OWN_TABLES: [&str; 3] = ["params", "cc_params", "triggers"];
+/// Blocks a `midi_of` file may hold in place of its target's: how this
+/// firmware is recognised and what its program changes recall.
+pub const OWN_BLOCKS: [&str; 2] = ["identity", "programs"];
 
 /// A driver file as its firmware runs it. A file naming another with
 /// `midi_of` (its catalogue id, `m-vave/fm-1.vendor.fw-15`: a firmware that
@@ -477,8 +693,9 @@ pub const OWN_TABLES: [&str; 3] = ["params", "cc_params", "triggers"];
 /// [`MIDI_OF_DEPTH`] links and never in a circle. The file may add routes of its own
 /// ([`OWN_LISTS`], the `entries` of [`OWN_TABLES`]; a norns script's
 /// parameters on the norns): appended to the target's, its own winning on
-/// the same OSC address. Transport, SysEx framing, MIDI in and out and the
-/// tables' framing stay the target's.
+/// the same OSC address. Its own [`OWN_BLOCKS`] replace the target's.
+/// Transport, SysEx framing, MIDI in and out and the tables' framing stay
+/// the target's.
 pub fn resolve_midi_of(path: &Path, doc: serde_json::Value) -> anyhow::Result<serde_json::Value> {
     resolve_chain(path, doc, &mut Vec::new())
 }
@@ -500,7 +717,7 @@ fn resolve_chain(path: &Path, doc: serde_json::Value, chain: &mut Vec<std::path:
         return Err(fail("names another maker's driver".into()));
     }
     let allowed = |k: &str| k.starts_with('_') || ["device", "midi_of"].contains(&k)
-        || OWN_LISTS.contains(&k) || OWN_TABLES.contains(&k);
+        || OWN_LISTS.contains(&k) || OWN_TABLES.contains(&k) || OWN_BLOCKS.contains(&k);
     if let Some(own) = doc.as_object().and_then(|o| o.keys().find(|k| !allowed(k))) {
         return Err(fail(format!("{own} is the target's (a midi_of file adds routes only)")));
     }
@@ -587,6 +804,7 @@ impl Device {
             .map_err(|e| anyhow::anyhow!("parsing {}: {e}", p.display()))?;
         let mut dev: Device = serde_json::from_value(resolve_midi_of(p, doc)?)
             .map_err(|e| anyhow::anyhow!("parsing {}: {e}", p.display()))?;
+        dev.check_blocks().map_err(|e| anyhow::anyhow!("{}: {e}", p.display()))?;
         // Optional companion markdown at <stem>.md — integration guide for
         // clients (Kanopi, LLM agents). Silently absent is fine.
         let md_path = p.with_extension("md");
@@ -686,6 +904,49 @@ mod tests {
         assert_eq!(dev.device.osc_prefix, "/norns_awake");
         assert!(dev.device.transport.is_some(), "the transport is the target's");
         std::fs::remove_dir_all(root).ok();
+    }
+
+    #[test]
+    fn a_firmware_has_its_own_identity_and_programs_or_the_shared_ones() {
+        let stock = STOCK.replace(r#""loads_sounds_of""#, r#""identity":{"reply":[240,126,"{any}",6,2,67]},
+            "programs":{"banks":[{"name":"A","size":32}]},"loads_sounds_of""#);
+        let fork = |own: &str| format!(r#"{{"device":{{"name":"Box","vendor":"Acme","osc_prefix":"/box_fork"}},
+            "midi_of":"acme/box.vendor.fw-15"{own}}}"#);
+        let root = catalogue(&[("acme/box.vendor.fw-15.json", &stock), ("acme/plain.json", &fork("")),
+            ("acme/own.json", &fork(r#","identity":{"ports":["Fork"]},"programs":{"banks":[{"name":"B","size":8}]}"#))]);
+        let plain = Device::load(root.join("acme/plain.json")).unwrap();
+        assert_eq!(plain.identity.unwrap().reply.len(), 6, "the shared file's");
+        let own = Device::load(root.join("acme/own.json")).unwrap();
+        let id = own.identity.unwrap();
+        assert!(id.reply.is_empty() && id.ports == ["Fork"], "its own, in place of the shared one");
+        assert_eq!(own.programs.unwrap().banks[0].name, "B");
+        std::fs::remove_dir_all(root).ok();
+    }
+
+    #[test]
+    fn identity_and_programs_blocks_the_engine_cannot_use_are_refused() {
+        let check = |blocks: &str| -> Result<(), String> {
+            let d: Device = serde_json::from_str(&format!(r#"{{"device":{{"name":"B","osc_prefix":"/b"}}{blocks}}}"#)).unwrap();
+            d.check_blocks().map_err(|e| e.to_string())
+        };
+        assert!(check(r#","identity":{"reply":[240,126],"firmware":{"decode":"raw_bytes","at":[12]}},
+            "programs":{"banks":[{"name":"A","msb":81,"size":128}],"dump":{"kind":"edit_buffer"}}"#).is_ok());
+        for (bad, why) in [
+            (r#","identity":{}"#, "a reply or ports"),
+            (r#","identity":{"reply":[240],"firmware":{"decode":"bcd","at":[1]}}"#, "decode"),
+            (r#","identity":{"reply":[240],"firmware":{"decode":"korg_minor_major","at":[1]}}"#, "offsets"),
+            (r#","identity":{"request":[240,126,"{dev}",6,1,247],"reply":[240]}"#, "device_id"),
+            (r#","identity":{"request":[240,126,6,1],"reply":[240]}"#, "F0 to F7"),
+            (r#","identity":{"to":"named_ports","reply":[240]}"#, "needs ports"),
+            (r#","programs":{"banks":[{"name":"A","first_pc":100,"size":64}]}"#, "past program change 127"),
+            (r#","programs":{"banks":[{"name":"A","size":1},{"name":"A","size":1}]}"#, "twice"),
+            (r#","programs":{"after":[[240,"{slot}",247]],"banks":[]}"#, "{slot}"),
+            (r#","programs":{"dump":{"kind":"sometimes"}}"#, "dump.kind"),
+            (r#","programs":{"program_change":false}"#, "no message"),
+        ] {
+            let err = check(bad).expect_err(bad);
+            assert!(err.contains(why), "{bad}: {err}");
+        }
     }
 
     #[test]

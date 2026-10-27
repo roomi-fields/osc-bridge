@@ -47,6 +47,7 @@ bridge's own `/bridge/status` and `/bridge/docs`.
 | `commands` entry | one tag per declared argument (`i`, `f`, `s`, `T`) | 2 |
 | `midi_out` routes (`/note/on`, `/pitchbend`, `/cc/0` to `/cc/127`…) | as the bridge reads them | 2 |
 | `/raw/syx`, `/param/get` | `s`, `iiii` | 2 |
+| `/program/recall` (a driver with `programs` banks) | `si` (bank name, number), `sii` with the channel; the bank names as `VALS` | 2 |
 | What the bridge sends: `midi_in`, `replies`, `/sysex/raw` | one tag per argument | 1 |
 | An address both sent to and sent back | | 3 |
 | `custom_commands` (Lua scripts) | none: the script reads its arguments | 2 |
@@ -103,9 +104,15 @@ advertising (`_oscjson._tcp`): give clients the address by hand.
   notes share one channel name set; a trigger on the device's basic, omni or
   active channel names its notes on every channel. A trigger without a
   natural note names each note of its range.
-- The program bank is empty: sound names are not in drivers (shared sounds
-  are on SynthHub).
+- `PatchBank`: one per bank of `programs`, with its bank select as
+  `MIDICommands` (CC 0, CC 32) and a `Patch` per program, its number as the
+  device shows it and its program change. Programs are named by bank and
+  number: sound names are not in drivers (shared sounds are on SynthHub). A
+  driver without banks, or whose programs are recalled without a program
+  change, has one empty bank (the DTD wants one); a bank on a fixed channel
+  goes only in that channel's name set.
 
-Left out: SysEx parameters and commands, OSC routes, performance messages
+Left out: SysEx parameters and commands, OSC routes, the recall messages
+other than bank select and program change (`before`, `after`), performance messages
 (notes, bend, aftertouch need no names). A software driver (OSC only) has
 no MIDNAM: the export fails.

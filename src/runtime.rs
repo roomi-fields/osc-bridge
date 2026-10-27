@@ -999,6 +999,13 @@ fn handle_message(
         return;
     }
 
+    // A stored program, by bank and number (the `programs` block).
+    match crate::programs::recall_osc(dev, &msg.addr, &msg.args) {
+        Some(Ok(frames)) => { for f in frames { enqueue(tx, f, &msg.addr, from); } return; }
+        Some(Err(e)) => { eprintln!("  {}: {e}", msg.addr); return; }
+        None => {}
+    }
+
     // Performance MIDI out (midi_out section enables these routes).
     if let Some(mo) = &dev.midi_out {
         if let Some(bytes) = try_midi_out(&msg, mo, &dev.device.osc_prefix) {
