@@ -25,6 +25,9 @@ is tracked explicitly under each release.
   from the reply above the others. `GET /v1/detect` lists the requests;
   `POST /v1/detect` takes each port's answers as `replies_hex` (in place of
   `identity_hex`); candidates carry `recognised_by` and `firmware`.
+  When several drivers match the replies equally, the one the others share
+  their MIDI with (`midi_of`) comes first, and each lists the others in
+  `equally_matching`.
 - Maker profiles: what a maker's models share (identity request, reply
   pattern with `{family}` / `{member}`, firmware rule, banks, dump request
   pattern) is written once in `<maker>/_profile[.<name>].json`; a block

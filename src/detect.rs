@@ -117,6 +117,8 @@ pub struct Candidate {
     /// is for (its first source's).
     pub identity: Option<DeviceIdentity>,
     pub firmware: Option<String>,
+    /// The driver this one shares its MIDI with (`midi_of`), by id.
+    pub midi_of: Option<String>,
 }
 
 /// One message sent while detecting, and the ports it goes to (all of them
@@ -328,6 +330,9 @@ pub struct Ranked {
     pub score: u32,
     pub index: usize,
     pub recognised: Option<Recognised>,
+    /// The other recognised candidates with the same score (indexes in the
+    /// catalogue), which the device's replies match as well.
+    pub equally: Vec<usize>,
 }
 
 /// Score every candidate against a port name and the SysEx the device sent
@@ -384,12 +389,23 @@ pub fn rank(port_name: &str, replies: &[Vec<u8>], catalogue: &[Candidate], limit
                 _ => {}
             }
         }
-        Some(Ranked { score, index: i, recognised })
+        Some(Ranked { score, index: i, recognised, equally: vec![] })
     }).collect();
-    // Equal scores: the most trustworthy source first, as a slug resolves.
+    // Equal scores: the driver the others share their MIDI with first (they
+    // are built on it), then the most trustworthy source, as a slug resolves.
+    let shared: HashSet<(u32, &str)> = scored.iter()
+        .filter_map(|r| catalogue[r.index].midi_of.as_deref().map(|m| (r.score, m))).collect();
+    let builds_others = |r: &Ranked| !shared.contains(&(r.score, catalogue[r.index].id.as_str()));
     scored.sort_by(|a, b| b.score.cmp(&a.score)
+        .then_with(|| builds_others(a).cmp(&builds_others(b)))
         .then_with(|| crate::mcp::tier_rank(&catalogue[a.index].tier).cmp(&crate::mcp::tier_rank(&catalogue[b.index].tier)))
         .then_with(|| catalogue[a.index].id.cmp(&catalogue[b.index].id)));
+    let equally: Vec<Vec<usize>> = scored.iter().map(|r| match r.recognised {
+        Some(_) => scored.iter().filter(|o| o.index != r.index && o.score == r.score && o.recognised.is_some())
+            .map(|o| o.index).collect(),
+        None => vec![],
+    }).collect();
+    for (r, e) in scored.iter_mut().zip(equally) { r.equally = e; }
     scored.truncate(limit);
     scored
 }
@@ -515,7 +531,7 @@ mod tests {
     fn cand(slug: &str, name: &str, vendor: &str, mfr: &[u8]) -> Candidate {
         Candidate { id: format!("acme/{slug}"), slug: slug.into(), name: name.into(), vendor: vendor.into(),
                     file: format!("devices/{slug}.json"), tier: "pencilresearch".into(),
-                    manufacturer_id: mfr.to_vec(), identity: None, firmware: None }
+                    manufacturer_id: mfr.to_vec(), identity: None, firmware: None, midi_of: None }
     }
 
     fn ident(json: &str) -> DeviceIdentity { serde_json::from_str(json).unwrap() }
@@ -616,6 +632,19 @@ mod tests {
         let cat = vec![with_id("old", Some("0.2"), id), with_id("new", Some("0.3"), id), with_id("any", None, id)];
         let order: Vec<&str> = rank("x", &[ROLAND.to_vec()], &cat, 3).iter().map(|r| cat[r.index].slug.as_str()).collect();
         assert_eq!(order, ["new", "any", "old"], "the same version first, another version last");
+    }
+
+    #[test]
+    fn of_equal_matches_the_driver_the_others_build_on_comes_first() {
+        let id = r#"{"reply":[240,126,"{dev}",6,2,65,89,1,0,0]}"#;
+        let fork = Candidate { midi_of: Some("acme/zbase".into()), ..with_id("afork", None, id) };
+        let cat = vec![fork, with_id("zbase", None, id), cand("other", "Other", "Acme", &[])];
+        let best = rank("USB MIDI Interface", &[ROLAND.to_vec()], &cat, 3);
+        let order: Vec<&str> = best.iter().map(|r| cat[r.index].slug.as_str()).collect();
+        assert_eq!(order, ["zbase", "afork"], "the shared MIDI first, though its id sorts last");
+        assert_eq!((best[0].equally.as_slice(), best[1].equally.as_slice()), (&[0][..], &[1][..]), "each says the other matches too");
+        let alone = rank("USB MIDI Interface", &[ROLAND.to_vec()], &cat[1..], 3);
+        assert!(alone[0].equally.is_empty(), "no other match, nothing to say");
     }
 
     #[test]

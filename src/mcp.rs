@@ -127,6 +127,8 @@ pub struct DeviceIndexEntry {
     pub identity: Option<crate::device::DeviceIdentity>,
     /// Slugs of the devices whose sounds this one loads as they are.
     pub loads_sounds_of: Vec<String>,
+    /// The driver this one shares its MIDI with (`midi_of`), by id.
+    pub midi_of: Option<String>,
 }
 
 /// Built once over a folder of drivers. Without it, every device tool call
@@ -189,6 +191,7 @@ impl DeviceIndex {
                 loads_sounds_of: body.get("loads_sounds_of").and_then(Value::as_array)
                     .map(|a| a.iter().filter_map(Value::as_str).map(str::to_string).collect())
                     .unwrap_or_default(),
+                midi_of: doc.get("midi_of").and_then(Value::as_str).map(str::to_string),
             });
         });
         Self { entries, by_slug }
@@ -678,7 +681,7 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "detect_hardware",
-                "description": "Find the MIDI devices plugged into this computer and match them to catalogue drivers. Lists MIDI ports, sends the standard MIDI Identity Request, then the makers' own identity requests the drivers name (harmless: they change nothing on the device), and reads each device's manufacturer, model and firmware. A driver whose identity block recognises the reply (or the USB port name) comes first, the variant for the firmware read from it above the others. Returns, per device, the best matching drivers (with recognised_by and firmware when recognised) and a ready-to-run 'osc-bridge run' command with the right port numbers.",
+                "description": "Find the MIDI devices plugged into this computer and match them to catalogue drivers. Lists MIDI ports, sends the standard MIDI Identity Request, then the makers' own identity requests the drivers name (harmless: they change nothing on the device), and reads each device's manufacturer, model and firmware. A driver whose identity block recognises the reply (or the USB port name) comes first, the variant for the firmware read from it above the others; of drivers matching equally, the one the others share their MIDI with comes first, and each lists the others in equally_matching. Returns, per device, the best matching drivers (with recognised_by and firmware when recognised) and a ready-to-run 'osc-bridge run' command with the right port numbers.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -1232,6 +1235,7 @@ pub fn hardware_candidates(index: &DeviceIndex) -> Vec<crate::detect::Candidate>
         manufacturer_id: e.manufacturer_id.clone(),
         identity: e.identity.clone(),
         firmware: e.firmware.clone(),
+        midi_of: e.midi_of.clone(),
     }).collect()
 }
 
@@ -1254,8 +1258,8 @@ pub fn hex_bytes(bytes: &[u8]) -> String {
 /// The drivers of `catalogue` (`hardware_candidates`) that best match a MIDI
 /// port, by its name and the SysEx the device sent back while detected
 /// (`detect::rank`), best first: id, slug, name, vendor, source tier,
-/// score, and, when its identity block recognised the device, how and the
-/// firmware read from the reply. The hosted server answers
+/// score, and, when its identity block recognised the device, how, the
+/// firmware read from the reply and the drivers matching it equally. The hosted server answers
 /// `POST /v1/detect` with them.
 pub fn match_port(catalogue: &[crate::detect::Candidate], port: &str, replies: &[Vec<u8>]) -> Vec<Value> {
     crate::detect::rank(port, replies, catalogue, 3).iter().map(|r| {
@@ -1266,6 +1270,9 @@ pub fn match_port(catalogue: &[crate::detect::Candidate], port: &str, replies: &
                 .filter(|(on, _)| *on).map(|(_, what)| *what).collect();
             out["recognised_by"] = json!(by);
             if let Some(fw) = &rec.firmware { out["firmware"] = json!(fw); }
+        }
+        if !r.equally.is_empty() {
+            out["equally_matching"] = json!(r.equally.iter().map(|&i| &catalogue[i].id).collect::<Vec<_>>());
         }
         out
     }).collect()
