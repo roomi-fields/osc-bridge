@@ -30,7 +30,7 @@ A question no step of the circuit settles goes up to the supervisor, with its ev
 
 ## Commands
 
-- `cargo build --release`; `cargo test -q`; `cargo clippy --workspace --all-targets -- -D warnings`.
+- `cargo build --release` builds the application; `cargo test --workspace -q` and `cargo clippy --workspace --all-targets -- -D warnings` cover every member of the workspace. The version, edition, licence, lints and shared dependencies live in the root `Cargo.toml` (`[workspace.package]`, `[workspace.lints]`, `[workspace.dependencies]`); a crate joins the workspace by being listed in its `members`.
 - `python3 scripts/sync_version.py --check` keeps the published version mirrors equal (until the tools are Rust).
 - The framework does not know Rust yet: `npm run verifier`, `grillhouse maj` and the night pass wait for its Rust tooling.
 - Ticket prefix: `OB-`.

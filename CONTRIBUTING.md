@@ -17,7 +17,7 @@ Code changes follow the usual workflow: fork → branch → commit → PR.
 ## General rules
 
 - **One concern per PR.**
-- **Run `cargo test --release` before you submit.** PRs with failing tests won't be merged.
+- **Run `cargo test --workspace --release` and `cargo clippy --workspace --all-targets -- -D warnings` before you submit.** PRs with failing tests won't be merged.
 - **No `transform` / `script` unless absolutely needed.** The Lua escape hatch is documented in [`docs/scripting.md`](docs/scripting.md); `osc-bridge lint` warns on every use. Reach for it only when the declarative schema genuinely can't express the protocol.
 - Commit style: imperative present, include a why. Co-author trailers welcome.
 

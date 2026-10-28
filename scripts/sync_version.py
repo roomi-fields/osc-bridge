@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Propagate the version from Cargo.toml (the source of truth) to every mirror.
+"""Propagate the version from Cargo.toml's [workspace.package] (the source of
+truth) to every mirror.
 
 Mirrors kept in sync:
   - npm/package.json              "version"
@@ -17,20 +18,20 @@ Usage:
 from __future__ import annotations
 import re
 import sys
+import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
 
 def cargo_version() -> str:
-    txt = (ROOT / "Cargo.toml").read_text(encoding="utf-8")
-    # The [package] version is the first line-anchored `version = "..."`.
-    # Dependency versions are mid-line (`crate = { version = "..." }`), so the
-    # anchor keeps us on the package version.
-    m = re.search(r'(?m)^version\s*=\s*"([^"]+)"', txt)
-    if not m:
-        sys.exit("error: no [package] version in Cargo.toml")
-    return m.group(1)
+    # The workspace's shared version, which every member inherits.
+    with (ROOT / "Cargo.toml").open("rb") as f:
+        manifest = tomllib.load(f)
+    version = manifest.get("workspace", {}).get("package", {}).get("version")
+    if not isinstance(version, str):
+        sys.exit("error: no [workspace.package] version in Cargo.toml")
+    return version
 
 
 # Each mirror: (relative path, [compiled patterns]). Every pattern has 3

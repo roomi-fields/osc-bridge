@@ -71,8 +71,15 @@ is tracked explicitly under each release.
 - A loaded `midi_of` file keeps the shared file's sources as
   `_midi_of_sources`, so what is written from it credits both.
 
+### Changed — a Cargo workspace
+- The root `Cargo.toml` declares a workspace whose root package is the
+  application; version, edition, licence, lints and dependencies come from
+  `[workspace.package]`, `[workspace.lints]` and `[workspace.dependencies]`,
+  and unsafe code is denied. The released binary is unchanged.
+- `scripts/sync_version.py` reads the version from `[workspace.package]`.
+
 ### Changed — clippy with warnings denied
-- CI runs `cargo clippy --all-targets -- -D warnings`, so a new lint fails
+- CI runs `cargo clippy --workspace --all-targets -- -D warnings`, so a new lint fails
   the build; the code is clean of them, with no behaviour change.
 
 ## [0.16.0] — 2026-10-24

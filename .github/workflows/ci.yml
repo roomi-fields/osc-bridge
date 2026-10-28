@@ -30,11 +30,11 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libasound2-dev
       - name: Clippy, warnings denied
-        run: cargo clippy --all-targets -- -D warnings
+        run: cargo clippy --workspace --all-targets -- -D warnings
       - name: Build
         run: cargo build --release --verbose
       - name: Unit tests
-        run: cargo test --release --verbose
+        run: cargo test --workspace --release --verbose
       - name: Inspect a test driver
         run: cargo run --release -- inspect tests/fixtures/devices/novation/launch-control-xl-3.json
       - name: Version mirrors are in sync with Cargo.toml

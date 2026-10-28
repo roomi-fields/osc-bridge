@@ -1,12 +1,17 @@
-[package]
-name = "osc-bridge"
+[workspace]
+# The application is the root package; its libraries live under crates/,
+# each listed here when it gets its Cargo.toml (a glob would refuse the
+# directories that hold only their docs/).
+members = ["."]
+resolver = "2"
+
+[workspace.package]
 version = "0.16.0"
 edition = "2021"
-description = "Declarative OSC ↔ MIDI/SysEx bridge for hardware synthesizers"
 license = "AGPL-3.0-or-later"
 repository = "https://github.com/roomi-fields/osc-bridge"
 
-[dependencies]
+[workspace.dependencies]
 midir = "0.10"
 rosc = "0.11"
 clap = { version = "4", features = ["derive"] }
@@ -22,6 +27,40 @@ rustls = { version = "0.23", default-features = false, features = ["ring", "std"
 ureq = { version = "3", default-features = false, features = ["rustls"] }
 ring = "0.17"
 base64 = "0.23"
+tiny_http = "0.12"
+pretty_assertions = "1"
+roxmltree = "0.20"
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+
+[package]
+name = "osc-bridge"
+version.workspace = true
+edition.workspace = true
+description = "Declarative OSC ↔ MIDI/SysEx bridge for hardware synthesizers"
+license.workspace = true
+repository.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+midir.workspace = true
+rosc.workspace = true
+clap.workspace = true
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+crossbeam-channel.workspace = true
+chrono.workspace = true
+mlua.workspace = true
+toml.workspace = true
+tungstenite.workspace = true
+rustls.workspace = true
+ureq.workspace = true
+ring.workspace = true
+base64.workspace = true
 
 [[bin]]
 name = "osc-bridge"
@@ -36,6 +75,6 @@ lto = true
 strip = true
 
 [dev-dependencies]
-tiny_http = "0.12"
-pretty_assertions = "1"
-roxmltree = "0.20"
+tiny_http.workspace = true
+pretty_assertions.workspace = true
+roxmltree.workspace = true

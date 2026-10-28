@@ -51,6 +51,8 @@ flowchart TB
 
 The single-device mode is the orchestrator with one device: one dispatch path.
 
+The workspace is the root `Cargo.toml`, as in ripgrep and uv: the application is its root package, and each crate under `crates/` is listed in its `members` once it has its own `Cargo.toml`. The members take their version, edition and licence from `[workspace.package]`, their lints from `[workspace.lints]` and their shared dependencies from `[workspace.dependencies]`; so the version that `scripts/sync_version.py` mirrors is the workspace's. `cargo build --release` builds the `osc-bridge` binary; `cargo test --workspace` and `cargo clippy --workspace --all-targets -- -D warnings` cover every member.
+
 ## 4. Data
 
 | Data | Shape | Made by | Read by | Lifetime |
