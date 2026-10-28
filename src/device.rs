@@ -682,7 +682,7 @@ fn default_range() -> [i64; 2] {
 /// Performance MIDI output: when present, activates standard OSC routes
 /// (`/note/on`, `/note/off`, `/pitchbend`, `/aftertouch`, `/poly_aftertouch`,
 /// `/cc/{num}`, `/program_change`) prefixed by `device.osc_prefix`.
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
 pub struct MidiOut {
     /// Default MIDI channel (0-15, i.e. "channel 1" .. "channel 16"). Every
     /// performance route accepts an optional trailing OSC arg to override
@@ -693,12 +693,6 @@ pub struct MidiOut {
     /// non-standard note mapping (e.g. kick at note 24 instead of 36).
     #[serde(default)]
     pub note_offset: i8,
-}
-
-impl Default for MidiOut {
-    fn default() -> Self {
-        Self { default_channel: 0, note_offset: 0 }
-    }
 }
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
@@ -905,7 +899,7 @@ fn resolve_chain(path: &Path, doc: serde_json::Value, chain: &mut Vec<std::path:
     // Appended to the target's routes, its own replacing one at the same address.
     let merge = |base: Vec<Value>, own: Vec<Value>| -> Vec<Value> {
         let mine: std::collections::HashSet<_> = own.iter().filter_map(osc).collect();
-        base.into_iter().filter(|e| osc(e).map_or(true, |a| !mine.contains(&a))).chain(own).collect()
+        base.into_iter().filter(|e| osc(e).is_none_or(|a| !mine.contains(&a))).chain(own).collect()
     };
     let obj = out.as_object_mut().ok_or_else(|| fail("the target is not a driver".into()))?;
     // Credit for the MIDI taken from the target: its sources and those it took from.

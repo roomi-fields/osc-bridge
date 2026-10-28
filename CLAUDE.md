@@ -30,7 +30,7 @@ A question no step of the circuit settles goes up to the supervisor, with its ev
 
 ## Commands
 
-- `cargo build --release`; `cargo test -q`; `cargo clippy --workspace -- -D warnings`.
+- `cargo build --release`; `cargo test -q`; `cargo clippy --workspace --all-targets -- -D warnings`.
 - `python3 scripts/sync_version.py --check` keeps the published version mirrors equal (until the tools are Rust).
 - The framework does not know Rust yet: `npm run verifier`, `grillhouse maj` and the night pass wait for its Rust tooling.
 - Ticket prefix: `OB-`.

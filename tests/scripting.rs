@@ -16,7 +16,7 @@ fn transform_exp_curve() {
     let e = ScriptEngine::new().unwrap();
     // Map 0..127 through an exp curve. Just verify it runs and produces a sensible value.
     let v = e.eval_transform("local e = math.exp(1); return math.floor(127 * (math.exp(value / 127) - 1) / (e - 1))", 64).unwrap();
-    assert!(v >= 0 && v <= 127, "got {v}");
+    assert!((0..=127).contains(&v), "got {v}");
 }
 
 #[test]
@@ -203,7 +203,7 @@ fn preset_ingest_profile_widens_timeout() {
     let busy = "local x=0; for i=1,40000 do x=x+i end; return x % 127";
     let _ = e.eval_transform_with(Profile::Default, busy, 0);
     let v = e.eval_transform_with(Profile::PresetIngest, busy, 0).unwrap();
-    assert!(v >= 0 && v < 127);
+    assert!((0..127).contains(&v));
 }
 
 #[test]

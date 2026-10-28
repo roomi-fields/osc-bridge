@@ -1,5 +1,5 @@
 use anyhow::{Context, Result};
-use clap::{Parser, Subcommand};
+use clap::{Args, Parser, Subcommand};
 use midir::{MidiInput, MidiOutput};
 use std::path::PathBuf;
 
@@ -102,45 +102,7 @@ enum Cmd {
         device: PathBuf,
     },
     /// Run the bridge for a given device JSON.
-    Run {
-        /// The driver: a JSON file, or its catalogue id (arturia/minilab3)
-        /// or slug (minilab3), fetched from the SynthHub server and kept in
-        /// the cache (offline: the cached copy).
-        #[arg(long)]
-        device: PathBuf,
-        /// MIDI OUT port index. Required for hardware (MIDI/SysEx) drivers,
-        /// ignored when the driver declares `device.transport.kind = "osc"`.
-        #[arg(long)]
-        out_port: Option<usize>,
-        /// Optional MIDI IN port index — enables MIDI→OSC feedback. Ignored
-        /// when the driver declares `device.transport.kind = "osc"`.
-        #[arg(long)]
-        in_port: Option<usize>,
-        /// UDP address to bind for incoming OSC.
-        #[arg(long, default_value = "127.0.0.1:7777")]
-        bind: String,
-        /// OSC client address for outbound events. Repeatable — every listed
-        /// client receives a copy of each MIDI-in event, SysEx reply, and
-        /// `/bridge/status` response.
-        #[arg(long = "osc-client")]
-        osc_clients: Vec<String>,
-        /// Optional WebSocket listen address (e.g. 127.0.0.1:7890) for
-        /// browser clients. Binary WS frames carry raw OSC packets (same
-        /// bytes as UDP); each connected client acts as an extra
-        /// --osc-client and can send commands through the same dispatch.
-        #[arg(long = "ws-bind")]
-        ws_bind: Option<String>,
-        /// Browser origin allowed to connect to the WebSocket, e.g.
-        /// https://example.org (repeatable; `*` allows any site). Pages
-        /// served from localhost and non-browser clients are always allowed.
-        #[arg(long = "ws-allow-origin")]
-        ws_allow_origins: Vec<String>,
-        /// Optional HTTP listen address (e.g. 127.0.0.1:7891) answering
-        /// OSCQuery requests: `/` gives the device's OSC namespace (routes,
-        /// types, ranges), `/?HOST_INFO` the OSC port and transport.
-        #[arg(long = "oscquery-bind")]
-        oscquery_bind: Option<String>,
-    },
+    Run(RunArgs),
     /// Write a device JSON in another format on stdout: `oscquery` (its OSC
     /// namespace, JSON) or `midnam` (its MIDI names, MIDI Name Document XML).
     Export {
@@ -200,6 +162,48 @@ enum Cmd {
     },
 }
 
+// The options of `run`.
+#[derive(Args)]
+struct RunArgs {
+    /// The driver: a JSON file, or its catalogue id (arturia/minilab3)
+    /// or slug (minilab3), fetched from the SynthHub server and kept in
+    /// the cache (offline: the cached copy).
+    #[arg(long)]
+    device: PathBuf,
+    /// MIDI OUT port index. Required for hardware (MIDI/SysEx) drivers,
+    /// ignored when the driver declares `device.transport.kind = "osc"`.
+    #[arg(long)]
+    out_port: Option<usize>,
+    /// Optional MIDI IN port index — enables MIDI→OSC feedback. Ignored
+    /// when the driver declares `device.transport.kind = "osc"`.
+    #[arg(long)]
+    in_port: Option<usize>,
+    /// UDP address to bind for incoming OSC.
+    #[arg(long, default_value = "127.0.0.1:7777")]
+    bind: String,
+    /// OSC client address for outbound events. Repeatable — every listed
+    /// client receives a copy of each MIDI-in event, SysEx reply, and
+    /// `/bridge/status` response.
+    #[arg(long = "osc-client")]
+    osc_clients: Vec<String>,
+    /// Optional WebSocket listen address (e.g. 127.0.0.1:7890) for
+    /// browser clients. Binary WS frames carry raw OSC packets (same
+    /// bytes as UDP); each connected client acts as an extra
+    /// --osc-client and can send commands through the same dispatch.
+    #[arg(long = "ws-bind")]
+    ws_bind: Option<String>,
+    /// Browser origin allowed to connect to the WebSocket, e.g.
+    /// https://example.org (repeatable; `*` allows any site). Pages
+    /// served from localhost and non-browser clients are always allowed.
+    #[arg(long = "ws-allow-origin")]
+    ws_allow_origins: Vec<String>,
+    /// Optional HTTP listen address (e.g. 127.0.0.1:7891) answering
+    /// OSCQuery requests: `/` gives the device's OSC namespace (routes,
+    /// types, ranges), `/?HOST_INFO` the OSC port and transport.
+    #[arg(long = "oscquery-bind")]
+    oscquery_bind: Option<String>,
+}
+
 fn main() -> Result<()> {
     match Cli::parse().cmd {
         Cmd::List => cmd_list(),
@@ -226,8 +230,7 @@ fn main() -> Result<()> {
         }
         Cmd::Detect { no_probe, devices_dir } => osc_bridge::mcp::print_detection(devices_dir.as_deref(), !no_probe),
         Cmd::Inspect { device } => cmd_inspect(device),
-        Cmd::Run { device, out_port, in_port, bind, osc_clients, ws_bind, ws_allow_origins, oscquery_bind } =>
-            cmd_run(device, out_port, in_port, bind, osc_clients, ws_bind, ws_allow_origins, oscquery_bind),
+        Cmd::Run(args) => cmd_run(args),
         Cmd::Export { device, format } => {
             let dev = Device::load(osc_bridge::catalogue::locate(&device)?)?;
             print!("{}", osc_bridge::export::export(&dev, format.parse()?)?);
@@ -355,8 +358,8 @@ fn hex_vec(v: &[u8]) -> String {
     v.iter().map(|b| format!("{:02X}", b)).collect::<Vec<_>>().join(" ")
 }
 
-fn cmd_run(path: PathBuf, out_port: Option<usize>, in_port: Option<usize>, bind: String, clients: Vec<String>,
-           ws_bind: Option<String>, ws_allow_origins: Vec<String>, oscquery_bind: Option<String>) -> Result<()> {
+fn cmd_run(args: RunArgs) -> Result<()> {
+    let RunArgs { device: path, out_port, in_port, bind, osc_clients: clients, ws_bind, ws_allow_origins, oscquery_bind } = args;
     let dev = Device::load(osc_bridge::catalogue::locate(&path)?)?;
     let is_osc = dev.device.transport.as_ref().map(|t| t.kind.as_str()) == Some("osc");
     let out_port = match (out_port, is_osc) {

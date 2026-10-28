@@ -28,7 +28,7 @@ use rosc::OscPacket;
 use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
-use tungstenite::handshake::server::{ErrorResponse, Request, Response};
+use tungstenite::handshake::server::{Callback, ErrorResponse, Request, Response};
 use tungstenite::{HandshakeError, Message, WebSocket};
 
 /// Callback invoked for every OSC packet decoded from an incoming WS frame.
@@ -140,21 +140,31 @@ pub fn origin_allowed(origin: Option<&str>, allowed: &[String]) -> bool {
     matches!(host, "localhost" | "127.0.0.1" | "::1")
 }
 
+/// The handshake's origin check: accepts the request when its origin is
+/// allowed, answers 403 otherwise.
+struct OriginCheck<'a> {
+    allowed: &'a [String],
+    peer: SocketAddr,
+}
+
+impl Callback for OriginCheck<'_> {
+    fn on_request(self, req: &Request, resp: Response) -> std::result::Result<Response, ErrorResponse> {
+        let origin = req.headers().get("origin").and_then(|v| v.to_str().ok());
+        if origin_allowed(origin, self.allowed) {
+            return Ok(resp);
+        }
+        eprintln!("WS refused origin {} from {} (allow it with --ws-allow-origin)", origin.unwrap_or("?"), self.peer);
+        let mut deny = ErrorResponse::new(Some("origin not allowed".into()));
+        *deny.status_mut() = tungstenite::http::StatusCode::FORBIDDEN;
+        Err(deny)
+    }
+}
+
 fn handle_conn(stream: TcpStream, clients: WsClients, dispatch: WsDispatch, allowed: &[String]) -> Result<()> {
     let peer = stream.peer_addr().context("WS peer_addr")?;
     stream.set_read_timeout(Some(HANDSHAKE_TIMEOUT))?;
     stream.set_write_timeout(Some(WRITE_TIMEOUT))?;
-    let check = |req: &Request, resp: Response| -> std::result::Result<Response, ErrorResponse> {
-        let origin = req.headers().get("origin").and_then(|v| v.to_str().ok());
-        if origin_allowed(origin, allowed) {
-            return Ok(resp);
-        }
-        eprintln!("WS refused origin {} from {peer} (allow it with --ws-allow-origin)", origin.unwrap_or("?"));
-        let mut deny = ErrorResponse::new(Some("origin not allowed".into()));
-        *deny.status_mut() = tungstenite::http::StatusCode::FORBIDDEN;
-        Err(deny)
-    };
-    let mut ws: WebSocket<TcpStream> = match tungstenite::accept_hdr(stream, check) {
+    let mut ws: WebSocket<TcpStream> = match tungstenite::accept_hdr(stream, OriginCheck { allowed, peer }) {
         Ok(ws) => ws,
         Err(HandshakeError::Interrupted(_)) => bail!("WS handshake timeout from {peer}"),
         Err(HandshakeError::Failure(e)) => bail!("WS handshake with {peer}: {e}"),

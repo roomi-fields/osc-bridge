@@ -178,7 +178,7 @@ pub fn uniform_osc(dev: &Device, addr: &str, args: &[OscType]) -> Option<Result<
         match v? { OscType::String(s) => Some(s.clone()), v => int(v).map(|i| i.to_string()) }
     };
     let channel = |i: usize| args.get(i).and_then(int).map(|c| c.clamp(0, 15) as u8);
-    if addr == dev.full_osc_path(IDENTITY) && !dev.device.transport.as_ref().is_some_and(|t| t.kind == "osc") {
+    if addr == dev.full_osc_path(IDENTITY) && dev.device.transport.as_ref().is_none_or(|t| t.kind != "osc") {
         return Some(Ok(vec![identity_request(dev)]));
     }
     dev.programs.as_ref()?;

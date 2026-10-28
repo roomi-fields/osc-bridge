@@ -71,6 +71,10 @@ is tracked explicitly under each release.
 - A loaded `midi_of` file keeps the shared file's sources as
   `_midi_of_sources`, so what is written from it credits both.
 
+### Changed — clippy with warnings denied
+- CI runs `cargo clippy --all-targets -- -D warnings`, so a new lint fails
+  the build; the code is clean of them, with no behaviour change.
+
 ## [0.16.0] — 2026-10-24
 
 ### Added — shared presets

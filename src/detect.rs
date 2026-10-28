@@ -225,10 +225,10 @@ fn reply_matches(id: &DeviceIdentity, reply: &[u8]) -> bool {
             FrameToken::Literal(l) => l == b,
             FrameToken::Placeholder(_) => true,
         })
-        && id.reply_text.as_deref().map_or(true, |text| {
+        && id.reply_text.as_deref().is_none_or(|text| {
             !text.is_empty() && reply.windows(text.len()).any(|w| w == text.as_bytes())
         })
-        && id.script.as_deref().map_or(true, |code| {
+        && id.script.as_deref().is_none_or(|code| {
             matches!(run_lua(code, reply), Some(serde_json::Value::Bool(true)))
         })
 }
@@ -437,6 +437,8 @@ impl Probed {
 
 /// SysEx messages kept per input while detecting.
 const REPLIES_KEPT: usize = 32;
+/// The SysEx messages heard while detecting, each with the index of its input.
+type Replies = Arc<Mutex<Vec<(usize, Vec<u8>)>>>;
 /// Gap between two requests on one port.
 const PROBE_GAP: Duration = Duration::from_millis(10);
 
@@ -486,7 +488,7 @@ pub fn scan(probe: bool, wait: Duration, probes: &[Probe]) -> Result<Vec<Probed>
     }
 
     // Listen on every input, then ask every output who it is.
-    let replies: Arc<Mutex<Vec<(usize, Vec<u8>)>>> = Arc::new(Mutex::new(Vec::new()));
+    let replies: Replies = Arc::new(Mutex::new(Vec::new()));
     let mut listeners: Vec<MidiInputConnection<()>> = Vec::new();
     for (ii, port) in in_ports.iter().enumerate() {
         let mut inp = MidiInput::new("osc-bridge-detect-in")?;
@@ -668,7 +670,7 @@ mod tests {
         assert_eq!(cat[rank("x", &[uir], &cat, 3)[0].index].slug, "stock");
 
         let info = [&[0xF0, 0x7D, 0x46, 0x4C, 0x02][..], b"Dinghy 0.4", &[0xF7]].concat();
-        let r = recognise(cat[2].identity.as_ref().unwrap(), "FM-1 Midi", &[info.clone()]).unwrap();
+        let r = recognise(cat[2].identity.as_ref().unwrap(), "FM-1 Midi", std::slice::from_ref(&info)).unwrap();
         assert!(r.by_reply && r.by_port && r.own_request);
         assert_eq!(r.firmware.as_deref(), Some("Dinghy 0.4"));
         let other = [&[0xF0, 0x7D, 0x46, 0x4C, 0x02][..], b"Grimm", &[0xF7]].concat();
@@ -701,7 +703,7 @@ mod tests {
         let reply = pack(&[&[0x00, 0x59, 0x11, 0x1B, 0x00, 0x00][..], b"FM-1_016", &[0; 19], &[0x42]].concat());
         let v16 = ident(r#"{"request":[240,0,50,69,0,0,0,64,127,247],"unpack":"lsb_8to7","reply":[0,89,17],"reply_text":"FM-1_016",
             "firmware":{"decode":"ascii","at":[6]}}"#);
-        let r = recognise(&v16, "FM-1 Midi", &[reply.clone()]).unwrap();
+        let r = recognise(&v16, "FM-1 Midi", std::slice::from_ref(&reply)).unwrap();
         assert_eq!(r.firmware.as_deref(), Some("FM-1_016"));
         let v15 = DeviceIdentity { reply_text: Some("FM-1_015".into()), ..v16.clone() };
         assert!(recognise(&v15, "FM-1 Midi", &[reply]).is_none());

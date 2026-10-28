@@ -85,7 +85,7 @@ fn fill_template(tpl: &str, prefix: &str, vars: &[(&str, OscType)]) -> OscMessag
                     OscType::Int(i) => addr.push_str(&i.to_string()),
                     OscType::Long(i) => addr.push_str(&i.to_string()),
                     OscType::String(s) => addr.push_str(s),
-                    _ => addr.push_str("?"),
+                    _ => addr.push('?'),
                 }
             }
             rest = &rest[open + close + 1..];

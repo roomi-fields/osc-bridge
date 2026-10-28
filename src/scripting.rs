@@ -122,10 +122,10 @@ impl ScriptEngine {
 
         // Inject `ob.*` helpers.
         let ob = lua.create_table().map_err(|e| anyhow!("ob table: {e}"))?;
-        ob.set("u14_lsb", lua.create_function(|_, v: i64| Ok((v & 0x7F) as i64))
+        ob.set("u14_lsb", lua.create_function(|_, v: i64| Ok(v & 0x7F))
             .map_err(|e| anyhow!("u14_lsb: {e}"))?)
             .map_err(|e| anyhow!("set u14_lsb: {e}"))?;
-        ob.set("u14_msb", lua.create_function(|_, v: i64| Ok(((v >> 7) & 0x7F) as i64))
+        ob.set("u14_msb", lua.create_function(|_, v: i64| Ok((v >> 7) & 0x7F))
             .map_err(|e| anyhow!("u14_msb: {e}"))?)
             .map_err(|e| anyhow!("set u14_msb: {e}"))?;
         ob.set("u7_clamp", lua.create_function(|_, v: i64| Ok(v.clamp(0, 127)))
@@ -454,8 +454,7 @@ fn install_list_routes_fn(
         let g = h.lock().map_err(|_| mlua::Error::external(anyhow!("routes lock poisoned")))?;
         // Iterate by_osc so each route is surfaced exactly once, independent
         // of how many CcKey entries shadow it per page.
-        let mut i: i64 = 1;
-        for (_addr, r) in &g.by_osc {
+        for (i, r) in (1i64..).zip(g.by_osc.values()) {
             let row = lua.create_table().map_err(|e| mlua::Error::external(anyhow!("row: {e}")))?;
             row.set("osc_addr", r.osc_addr.as_str())
                 .and_then(|_| row.set("channel", r.channel as i64))
@@ -465,7 +464,6 @@ fn install_list_routes_fn(
                 .and_then(|_| row.set("max", r.max))
                 .map_err(|e| mlua::Error::external(anyhow!("row fields: {e}")))?;
             out.set(i, row).map_err(|e| mlua::Error::external(anyhow!("out set: {e}")))?;
-            i += 1;
         }
         Ok(out)
     }).map_err(|e| anyhow!("list_routes: {e}"))?;
@@ -532,7 +530,7 @@ fn lua_to_json(v: &Value) -> Result<JsonValue> {
                 }
             }
             if is_seq {
-                let mut arr = Vec::with_capacity(len as usize);
+                let mut arr = Vec::with_capacity(len);
                 for i in 1..=len {
                     let item: Value = t.raw_get(i as i64)
                         .map_err(|e| anyhow!("lua arr get: {e}"))?;
@@ -611,9 +609,7 @@ impl ScriptContext {
         let command: String = t.get("command").unwrap_or_default();
         let mut bindings = std::collections::HashMap::new();
         if let Ok(bt) = t.get::<Table>("bindings") {
-            for pair in bt.pairs::<String, i64>() {
-                if let Ok((k, v)) = pair { bindings.insert(k, v); }
-            }
+            for (k, v) in bt.pairs::<String, i64>().flatten() { bindings.insert(k, v); }
         }
         Ok(ScriptContext { args, args_str, payload, checksum, direction, device, command, bindings })
     }

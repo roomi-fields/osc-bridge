@@ -127,27 +127,24 @@ impl Runtime {
         for c in &opts.osc_clients { eprintln!("OSC OUT  {c}"); }
 
         // Build dispatcher maps (Arc so WS connection threads share them).
-        let cmds = Arc::new(build_command_map(&dev));
-        let params = Arc::new(build_param_map(&dev));
-        let cc_params = Arc::new(build_cc_param_map(&dev));
+        let state = Arc::new(DeviceDispatch {
+            device: dev.clone(),
+            cmds: build_command_map(&dev),
+            params: build_param_map(&dev),
+            cc_params: build_cc_param_map(&dev),
+            routes: routes.clone(),
+            scripts: script_engine.clone(),
+            tx: tx.clone(),
+        });
 
         // WebSocket transport — every connected browser client goes through
         // the exact same dispatch as the UDP loop below.
         let mut ws_local = None;
         if let (Some(bind), Some(wsc)) = (&opts.ws_bind, &ws_clients) {
             let dispatch_cb: crate::ws::WsDispatch = {
-                let dev = dev.clone();
-                let cmds = cmds.clone();
-                let params = params.clone();
-                let cc_params = cc_params.clone();
-                let routes = routes.clone();
-                let scripts = script_engine.clone();
-                let tx = tx.clone();
+                let state = state.clone();
                 let send_osc = send_osc.clone();
-                Arc::new(move |pkt, from| {
-                    dispatch(pkt, &dev, &cmds, &params, &cc_params, &routes,
-                             &scripts, &tx, &send_osc, from);
-                })
+                Arc::new(move |pkt, from| dispatch(pkt, &state, &send_osc, from))
             };
             let local = crate::ws::serve(bind, wsc.clone(), dispatch_cb, opts.ws_allow_origins.clone())?;
             eprintln!("WS IN    {local}");
@@ -168,7 +165,7 @@ impl Runtime {
             match rosc::decoder::decode_udp(&buf[..n]) {
                 Ok((_, pkt)) => {
                     answer_query(&sock, &pkt, from, std::slice::from_ref(dev.as_ref()), &opts.osc_clients);
-                    dispatch(pkt, &dev, &cmds, &params, &cc_params, &routes, &script_engine, &tx, &send_osc, from)
+                    dispatch(pkt, &state, &send_osc, from)
                 }
                 Err(e) => eprintln!("OSC decode err from {from}: {e}"),
             }
@@ -672,10 +669,8 @@ pub fn handle_midi_in(
                 // Optional reply.script: lets drivers update state (e.g.
                 // ob.set_current_page) in response to device-initiated events.
                 // Returning nil from the script drops the OSC emission.
-                if rp.script.is_some() {
-                    if !run_reply_script(rp, &bindings, dev, scripts) {
-                        return;
-                    }
+                if rp.script.is_some() && !run_reply_script(rp, &bindings, dev, scripts) {
+                    return;
                 }
                 let m = emit_reply_osc(&rp.emit_osc, &dev.device.osc_prefix, &bindings);
                 send(m);
@@ -713,7 +708,7 @@ fn match_reply(msg: &[u8], dev: &Device, pattern: &[crate::device::FrameToken]) 
             }
             crate::device::FrameToken::Placeholder(ph) => {
                 let inner = ph.trim_matches(|c| c == '{' || c == '}');
-                let name = inner.splitn(2, ':').next().unwrap_or("").trim();
+                let name = inner.split(':').next().unwrap_or("").trim();
                 b.set_u7(name, *byte);
             }
         }
@@ -893,8 +888,7 @@ pub fn dispatch_to_device(
     send_osc: &SendOsc,
     from: SocketAddr,
 ) {
-    handle_message(msg, &state.device, &state.cmds, &state.params, &state.cc_params,
-                   &state.routes, &state.scripts, &state.tx, send_osc, from);
+    handle_message(msg, state, send_osc, from);
 }
 
 /// Per-device dispatch state for an OSC-transport (software) device — the
@@ -938,38 +932,17 @@ pub fn dispatch_osc_to_device(
                        &handle.target_sock, handle.target_addr, send_osc, from);
 }
 
-fn dispatch(
-    pkt: OscPacket,
-    dev: &Arc<Device>,
-    cmds: &[CommandHandler],
-    params: &HashMap<String, ParamEntry>,
-    cc_params: &HashMap<String, (CcParamEntry, u8)>,
-    routes: &Arc<Mutex<DynamicRoutes>>,
-    scripts: &ScriptCell,
-    tx: &Sender<Vec<u8>>,
-    send_osc: &SendOsc,
-    from: SocketAddr,
-) {
+fn dispatch(pkt: OscPacket, state: &DeviceDispatch, send_osc: &SendOsc, from: SocketAddr) {
     match pkt {
-        OscPacket::Message(m) => handle_message(m, dev, cmds, params, cc_params, routes, scripts, tx, send_osc, from),
+        OscPacket::Message(m) => handle_message(m, state, send_osc, from),
         OscPacket::Bundle(b) => {
-            for p in b.content { dispatch(p, dev, cmds, params, cc_params, routes, scripts, tx, send_osc, from); }
+            for p in b.content { dispatch(p, state, send_osc, from); }
         }
     }
 }
 
-fn handle_message(
-    msg: OscMessage,
-    dev: &Arc<Device>,
-    cmds: &[CommandHandler],
-    params: &HashMap<String, ParamEntry>,
-    cc_params: &HashMap<String, (CcParamEntry, u8)>,
-    routes: &Arc<Mutex<DynamicRoutes>>,
-    scripts: &ScriptCell,
-    tx: &Sender<Vec<u8>>,
-    send_osc: &SendOsc,
-    from: SocketAddr,
-) {
+fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, from: SocketAddr) {
+    let DeviceDispatch { device: dev, cmds, params, cc_params, routes, scripts, tx } = state;
     // /bridge/status — RPC-style health check; emit one reply per device.
     if msg.addr == "/bridge/status" {
         for reply in bridge_status_replies(std::slice::from_ref(dev.as_ref())) {
