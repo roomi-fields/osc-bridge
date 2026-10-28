@@ -262,6 +262,13 @@ pub fn decode_firmware(rule: &FirmwareRule, reply: &[u8]) -> Option<String> {
             let text = text.trim().to_string();
             (!text.is_empty()).then_some(text)
         }
+        ("json", [_]) => {
+            let end = reply.iter().rposition(|b| *b == 0xF7).unwrap_or(reply.len());
+            let doc: serde_json::Value = serde_json::from_slice(reply.get(rule.at[0]..end)?).ok()?;
+            let v = doc.get(rule.field.as_deref()?)?.as_str()?.trim();
+            let v = v.strip_prefix(['v', 'V']).unwrap_or(v);
+            (!v.is_empty()).then(|| v.to_string())
+        }
         _ => None,
     }
 }
@@ -728,7 +735,7 @@ mod tests {
 
     #[test]
     fn firmware_decodes_as_each_maker_writes_it() {
-        let rule = |decode: &str, at: &[usize]| FirmwareRule { decode: decode.into(), at: at.to_vec(), script: None };
+        let rule = |decode: &str, at: &[usize]| FirmwareRule { decode: decode.into(), at: at.to_vec(), field: None, script: None };
         // Korg: minor 10 (LSB, MSB), major 2.
         let korg = [0xF0, 0x7E, 0x00, 0x06, 0x02, 0x42, 0x51, 0x01, 0x00, 0x00, 10, 0, 2, 0, 0xF7];
         assert_eq!(decode_firmware(&rule("korg_minor_major", &[10, 11, 12, 13]), &korg).as_deref(), Some("2.10"));
@@ -736,6 +743,11 @@ mod tests {
         let seqtrak = [0xF0, 0x7E, 0x7F, 0x06, 0x02, 0x43, 0x00, 0x41, 0x64, 0x06, 5, 0, 0, 0x7F, 0xF7];
         assert_eq!(decode_firmware(&rule("yamaha_tenths", &[10]), &seqtrak).as_deref(), Some("1.5"));
         assert_eq!(decode_firmware(&rule("raw_bytes", &[40]), &seqtrak), None, "past the end");
+        // Electra One: its info reply is JSON after six header bytes.
+        let electra = [&[0xF0, 0x00, 0x21, 0x45, 0x01, 0x7F][..], br#"{"versionText":"v4.1.4","model":"mk2"}"#, &[0xF7]].concat();
+        let json = FirmwareRule { field: Some("versionText".into()), ..rule("json", &[6]) };
+        assert_eq!(decode_firmware(&json, &electra).as_deref(), Some("4.1.4"));
+        assert_eq!(decode_firmware(&FirmwareRule { field: Some("serial".into()), ..json }, &electra), None, "no such key");
         assert!(same_version("2.0", "2.0.0") && same_version("v1.5", "1.5") && !same_version("2.1", "2.10"));
         assert!(same_version("hacktribe-94c8e60", "hacktribe-94c8e60") && !same_version("1.2", "x"));
         assert!(same_version("1.2.1", "community-1.2.1") && same_version("FM-1_015", "15") && !same_version("1.1", "1.2.1"));

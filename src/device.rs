@@ -195,6 +195,9 @@ pub struct FirmwareRule {
     pub decode: String,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub at: Vec<usize>,
+    /// With `json`: the key whose text is the version.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub field: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub script: Option<String>,
 }
@@ -205,8 +208,10 @@ pub struct FirmwareRule {
 ///   (`major.minor`).
 /// - `yamaha_tenths`: one byte n, version 1.0 + n / 10 (SEQTRAK).
 /// - `ascii`: the printable text starting at the one offset given.
+/// - `json`: the reply from the one offset given to F7 is a JSON object;
+///   the version is its `field`, a leading `v` left out (Electra One).
 /// - `lua`: what `script` returns, for a maker no rule covers.
-pub const FIRMWARE_DECODES: [&str; 5] = ["raw_bytes", "korg_minor_major", "yamaha_tenths", "ascii", "lua"];
+pub const FIRMWARE_DECODES: [&str; 6] = ["raw_bytes", "korg_minor_major", "yamaha_tenths", "ascii", "json", "lua"];
 
 /// What a program change recalls, and how (`programs`).
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
@@ -356,9 +361,10 @@ impl Device {
                 if fw.decode == "lua" {
                     if fw.script.is_none() { bail!("identity.firmware.decode lua needs its script"); }
                 } else {
-                    let want = match fw.decode.as_str() { "korg_minor_major" => Some(4), "yamaha_tenths" | "ascii" => Some(1), _ => None };
+                    let want = match fw.decode.as_str() { "korg_minor_major" => Some(4), "yamaha_tenths" | "ascii" | "json" => Some(1), _ => None };
                     if fw.at.is_empty() || want.is_some_and(|n| fw.at.len() != n) { bail!("identity.firmware.at: wrong number of offsets for {}", fw.decode); }
                 }
+                if (fw.decode == "json") != fw.field.is_some() { bail!("identity.firmware.field: with decode json, and only then"); }
                 if id.reply.is_empty() && id.script.is_none() { bail!("identity.firmware without a reply"); }
             }
             if id.reply.is_empty() && id.script.is_none() && id.ports.is_empty() { bail!("identity: a reply, a script or ports"); }
