@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+# A closed ticket keeps its one delivery (Grillhouse): a second commit for a closed ticket whose delivery stands is refused, a commit for an open (reopened) ticket is a correction and passes; a revert (Revert "…", Reapply "…") passes and withdraws the delivery it names. Without the package @roomi-fields/grillhouse installed, nothing.
+_gh_commande="$(git rev-parse --show-toplevel)/node_modules/.bin/grillhouse"
+if [ -x "$_gh_commande" ]; then "$_gh_commande" hook commit-msg "$@" || exit 1; fi

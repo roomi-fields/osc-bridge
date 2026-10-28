@@ -33,5 +33,5 @@ A question no step of the circuit settles goes up to the supervisor, with its ev
 - `cargo build --release`; `cargo test -q`; `cargo clippy --workspace -- -D warnings`.
 - `python3 scripts/sync_version.py --check` keeps the published version mirrors equal (until the tools are Rust).
 - The framework does not know Rust yet: `npm run verifier`, `grillhouse maj` and the night pass wait for its Rust tooling.
-- Ticket prefix: `SH-`.
+- Ticket prefix: `OB-`.
 - Push policy: each commit goes to main and is pushed; ask before rewriting history, deleting a branch, changing a CI that publishes a release, or acting outside the repository. Commits and texts sent to other projects carry no mention of AI.
