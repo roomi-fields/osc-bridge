@@ -243,7 +243,7 @@ pub fn value_names(usage: &str) -> Option<Vec<(i64, String)>> {
             None => num,
         };
         let name = name.trim();
-        Some((low.trim().parse::<i64>().ok()?, name.to_string())).filter(|_| !name.is_empty())
+        (!name.is_empty()).then_some((low.trim().parse::<i64>().ok()?, name.to_string()))
     }).collect();
     let out = out?;
     let distinct: std::collections::HashSet<i64> = out.iter().map(|(n, _)| *n).collect();
