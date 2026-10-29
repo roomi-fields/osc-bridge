@@ -11,6 +11,8 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+## [0.17.0] — 2026-10-29
+
 ### Added — how a device is recognised, and how its programs are recalled
 - Drivers may carry an `identity` block (the request a device answers,
   universal or the maker's own, the start of its reply, where the firmware
