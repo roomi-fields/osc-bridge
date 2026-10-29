@@ -7,13 +7,19 @@
 //!   — by id (`GET /api/v1/devices/<id>.json`, its notes `<id>.md`), by slug
 //!   (`GET /v1/devices/<slug>`: the device's variants, best first) or for
 //!   the MIDI ports it found (`POST /v1/detect`) — and keeps it in a cache
-//!   (`cache_dir`), which is all it has offline. These requests carry no
-//!   account;
+//!   (`cache_dir`), which is all it has offline. Each kept file has the ETag
+//!   the server gave beside it (`<file>.etag`); the next fetch sends it in
+//!   `If-None-Match`, and `304 Not Modified` leaves the kept file as it is.
+//!   These requests carry no account;
 //! - trust: how far other users confirmed each driver (`GET /v1/trust`);
 //! - reports and contributions: `report_result`, `report_mapping`,
 //!   `get_trust`, `submit_driver`, `submit_fix` and `get_contribution` are
 //!   forwarded to the server's MCP endpoint under the account kept on this
 //!   machine (`account_file`, the same one `osc-bridge connect` uses).
+//!
+//! A reply marking this osc-bridge as deprecated (`Deprecation` with
+//! `Link: <url>; rel="deprecation"`, RFC 9745) is told once per run: on
+//! standard error, and in the next MCP tool result (`newer_notice_once`).
 //!
 //! The MIDI ports never leave the machine. Sharing is on by default; the
 //! user turns it off with `osc-bridge privacy` (`Settings`): `--offline on`
@@ -24,6 +30,8 @@
 use anyhow::{anyhow, bail, Context, Result};
 use serde_json::{json, Value};
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::OnceLock;
 use std::time::Duration;
 
 pub const SERVER: &str = "https://mcp.synthhub.roomi-fields.com";
@@ -147,6 +155,54 @@ pub fn cache_dir() -> Option<PathBuf> {
     Some(dir_from(&["XDG_CACHE_HOME", "LOCALAPPDATA"], ".cache")?.join("osc-bridge").join("drivers"))
 }
 
+/// Where the ETag the server gave with a kept file is kept: beside it, in
+/// `<file>.etag`.
+fn etag_path(file: &Path) -> PathBuf {
+    let mut name = file.as_os_str().to_owned();
+    name.push(".etag");
+    PathBuf::from(name)
+}
+
+/// Where a newer osc-bridge is, once a reply of the server marked this one
+/// as deprecated.
+static NEWER: OnceLock<String> = OnceLock::new();
+/// Whether an MCP tool result already carried the notice.
+static NEWER_TOLD: AtomicBool = AtomicBool::new(false);
+
+fn newer_notice(url: &str) -> String {
+    format!("A newer osc-bridge exists: {url} (the SynthHub server marks this one, {}, as deprecated).",
+        env!("CARGO_PKG_VERSION"))
+}
+
+/// Note a reply's `Deprecation` with its `Link rel="deprecation"`: told on
+/// standard error the first time in this run.
+fn note_deprecation(headers: &ureq::http::HeaderMap) {
+    if !headers.contains_key("deprecation") { return; }
+    let link = headers.get_all("link").iter().filter_map(|v| v.to_str().ok()).find_map(deprecation_link);
+    if let Some(url) = link {
+        if NEWER.set(url.clone()).is_ok() {
+            eprintln!("{}", newer_notice(&url));
+        }
+    }
+}
+
+/// The target of the `rel="deprecation"` link in a `Link` header (RFC 8288).
+fn deprecation_link(header: &str) -> Option<String> {
+    header.split(',').find_map(|link| {
+        let (target, params) = link.trim().strip_prefix('<')?.split_once('>')?;
+        params.split(';').any(|p| p.split_once('=').is_some_and(|(k, v)| k.trim().eq_ignore_ascii_case("rel")
+            && v.trim().trim_matches('"').split_ascii_whitespace().any(|r| r.eq_ignore_ascii_case("deprecation"))))
+            .then(|| target.to_string())
+    })
+}
+
+/// The notice that a newer osc-bridge exists and where, for the next MCP
+/// tool result: once per run, after a reply marked this one as deprecated.
+pub fn newer_notice_once() -> Option<String> {
+    let url = NEWER.get()?;
+    (!NEWER_TOLD.swap(true, Ordering::SeqCst)).then(|| newer_notice(url))
+}
+
 pub fn is_user_id(s: &str) -> bool {
     s.len() == 32 && s.bytes().all(|b| b.is_ascii_hexdigit())
 }
@@ -199,16 +255,47 @@ impl Online {
     }
 
     fn read(&self, mut resp: ureq::http::Response<ureq::Body>) -> Result<(u16, Value)> {
+        note_deprecation(resp.headers());
         let status = resp.status().as_u16();
         let text = resp.body_mut().with_config().limit(64 << 20).read_to_string()?;
         Ok((status, serde_json::from_str(&text).unwrap_or(Value::Null)))
     }
 
-    /// `GET path` as text, for a driver file and its notes.
-    fn get_text(&self, path: &str) -> Result<(u16, String)> {
-        let mut resp = self.agent.get(format!("{}{path}", self.base)).call().with_context(|| format!("GET {path}"))?;
-        let status = resp.status().as_u16();
-        Ok((status, resp.body_mut().with_config().limit(16 << 20).read_to_string()?))
+    /// `GET path`, kept in `file` with the ETag the server gave
+    /// (`etag_path`), as Cargo's sparse registry keeps its index files: a
+    /// file kept with its ETag is asked for with `If-None-Match`, and
+    /// `304 Not Modified` leaves it as it is. On 200 the text, once `check`
+    /// accepts it, replaces the kept file and its ETag. The status, and the
+    /// file's text on 200 or 304.
+    fn fetch_kept(&self, path: &str, file: &Path, check: impl Fn(&str) -> Result<()>) -> Result<(u16, Option<String>)> {
+        let etag_file = etag_path(file);
+        let kept = std::fs::read_to_string(&etag_file).ok().filter(|e| !e.trim().is_empty() && file.is_file());
+        let mut req = self.agent.get(format!("{}{path}", self.base));
+        if let Some(etag) = &kept {
+            req = req.header("If-None-Match", etag.trim());
+        }
+        let mut resp = req.call().with_context(|| format!("GET {path}"))?;
+        note_deprecation(resp.headers());
+        match resp.status().as_u16() {
+            304 if kept.is_some() => {
+                let text = std::fs::read_to_string(file).with_context(|| format!("read {}", file.display()))?;
+                Ok((304, Some(text)))
+            }
+            200 => {
+                let text = resp.body_mut().with_config().limit(16 << 20).read_to_string()?;
+                check(&text)?;
+                let etag = resp.headers().get("etag").and_then(|v| v.to_str().ok()).map(str::to_string);
+                // The old ETag goes first, so that it never stands for the new file.
+                let _ = std::fs::remove_file(&etag_file);
+                std::fs::create_dir_all(file.parent().expect("a maker folder"))?;
+                std::fs::write(file, &text).with_context(|| format!("write {}", file.display()))?;
+                if let Some(etag) = etag {
+                    std::fs::write(&etag_file, etag).with_context(|| format!("write {}", etag_file.display()))?;
+                }
+                Ok((200, Some(text)))
+            }
+            status => Ok((status, None)),
+        }
     }
 
     fn get(&self, path: &str) -> Result<(u16, Value)> {
@@ -303,7 +390,9 @@ impl Online {
     /// drivers it takes its MIDI from (`midi_of`) and the maker profiles its
     /// blocks name (`device::resolve_profiles`, kept as
     /// `<maker>/_profile….json` beside the drivers), so that it loads there.
-    /// A driver the server no longer has is an error; the cached copy stays.
+    /// Each file already kept is downloaded again only when the server's copy
+    /// changed (`fetch_kept`). A driver the server no longer has is an error;
+    /// the cached copy stays.
     pub fn fetch_driver(&self, id: &str, cache: &Path) -> Result<PathBuf> {
         let mut queue = vec![id.to_string()];
         let mut seen = Vec::new();
@@ -313,21 +402,22 @@ impl Online {
             if seen.contains(&id) { continue; }
             if seen.len() > limit { break; }
             let profile = id.split_once('/').is_some_and(|(_, f)| f.starts_with("_profile"));
-            let (status, text) = self.get_text(&format!("/api/v1/devices/{id}.json"))?;
-            match status {
-                200 => {}
-                404 => bail!("the SynthHub catalogue has no driver {id}"),
-                s => bail!("driver {id}: HTTP {s}"),
-            }
-            let doc: Value = serde_json::from_str(&text).with_context(|| format!("driver {id} from the server"))?;
             let path = driver_path(cache, &id);
-            std::fs::create_dir_all(path.parent().expect("a maker folder"))?;
-            std::fs::write(&path, &text).with_context(|| format!("write {}", path.display()))?;
+            let json = |text: &str| serde_json::from_str::<Value>(text).map(drop).with_context(|| format!("driver {id} from the server"));
+            let text = match self.fetch_kept(&format!("/api/v1/devices/{id}.json"), &path, json)? {
+                (200 | 304, Some(text)) => text,
+                (404, _) => bail!("the SynthHub catalogue has no driver {id}"),
+                (s, _) => bail!("driver {id}: HTTP {s}"),
+            };
+            let doc: Value = serde_json::from_str(&text).with_context(|| format!("driver {id} kept in {}", path.display()))?;
             if !profile {
                 let notes = path.with_extension("md");
-                match self.get_text(&format!("/api/v1/devices/{id}.md"))? {
-                    (200, md) => std::fs::write(&notes, md).with_context(|| format!("write {}", notes.display()))?,
-                    (404, _) => { let _ = std::fs::remove_file(&notes); }
+                match self.fetch_kept(&format!("/api/v1/devices/{id}.md"), &notes, |_| Ok(()))? {
+                    (200 | 304, Some(_)) => {}
+                    (404, _) => {
+                        let _ = std::fs::remove_file(&notes);
+                        let _ = std::fs::remove_file(etag_path(&notes));
+                    }
                     (s, _) => bail!("notes of {id}: HTTP {s}"),
                 }
                 queue.extend(doc["midi_of"].as_str().map(str::to_string));
@@ -428,5 +518,16 @@ mod tests {
         assert_eq!(driver_path(Path::new("/c"), "korg/minilogue"), Path::new("/c/korg/minilogue.json"));
         assert_eq!(driver_path(Path::new("/c"), "arturia/x.fw-1.0"), Path::new("/c/arturia/x.fw-1.0.json"));
         assert_eq!(sha256_hex(b""), "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+        assert_eq!(etag_path(Path::new("/c/korg/minilogue.json")), Path::new("/c/korg/minilogue.json.etag"));
+    }
+
+    #[test]
+    fn the_deprecation_link_is_read_from_a_link_header() {
+        assert_eq!(deprecation_link(r#"<https://x.example/new>; rel="deprecation""#).as_deref(), Some("https://x.example/new"));
+        assert_eq!(deprecation_link(r#"<https://a.example/>; rel="next", <https://x.example/new>; type="text/html"; rel=deprecation"#).as_deref(),
+            Some("https://x.example/new"));
+        assert_eq!(deprecation_link(r#"<https://x.example/new>; rel="alternate deprecation""#).as_deref(), Some("https://x.example/new"));
+        assert_eq!(deprecation_link(r#"<https://a.example/>; rel="next""#), None);
+        assert_eq!(deprecation_link("not a link"), None);
     }
 }

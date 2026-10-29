@@ -264,11 +264,21 @@ fn driver_wanted(req: &Value) -> Option<&str> {
     }
 }
 
+/// The MCP server over stdio, linked to `online::SERVER`, its drivers kept
+/// in `online::cache_dir`.
 pub fn run(opts: McpOptions) -> Result<()> {
+    serve(opts, crate::online::SERVER, crate::online::cache_dir(), std::io::stdin().lock(), std::io::stdout().lock())
+}
+
+/// One MCP session: a JSON-RPC message per line of `input`, each reply a
+/// line of `out`. Linked (`opts.online`), it asks the server at `base` for
+/// the drivers it needs and keeps them in `cache`, unless the user gave
+/// `opts.devices_dir`.
+pub fn serve(opts: McpOptions, base: &str, cache: Option<PathBuf>, input: impl BufRead, mut out: impl Write) -> Result<()> {
     use std::sync::{Arc, RwLock};
-    let link = opts.online.then(|| Arc::new(Link::new(crate::online::SERVER)));
+    let link = opts.online.then(|| Arc::new(Link::new(base)));
     // Drivers from the server are kept in the cache; a folder the user gave is theirs.
-    let cache = if opts.devices_dir.is_some() { None } else { crate::online::cache_dir() };
+    let cache = if opts.devices_dir.is_some() { None } else { cache };
     let root = opts.devices_dir.clone().or_else(|| cache.clone()).unwrap_or_default();
     let index = RwLock::new(Arc::new(build_index(&root, &opts)));
     if let Some(link) = &link {
@@ -276,11 +286,7 @@ pub fn run(opts: McpOptions) -> Result<()> {
     }
     let mut fetched = std::collections::HashSet::new();
 
-    let stdin = std::io::stdin();
-    let stdout = std::io::stdout();
-    let mut out = stdout.lock();
-
-    for line in stdin.lock().lines() {
+    for line in input.lines() {
         let line = match line {
             Ok(l) if l.trim().is_empty() => continue,
             Ok(l) => l,
@@ -308,6 +314,12 @@ pub fn run(opts: McpOptions) -> Result<()> {
         if let Some(mut resp) = handle_request(&req, &opts, &current, link.as_deref()) {
             if let (true, Some(result)) = (link.is_some() && req["method"] == "initialize", resp.get_mut("result")) {
                 result["instructions"] = json!(LINKED_INSTRUCTIONS);
+            }
+            // A newer osc-bridge the server announced is told once, in the next tool result.
+            if let (true, Some(content)) = (req["method"] == "tools/call", resp.pointer_mut("/result/content").and_then(Value::as_array_mut)) {
+                if let Some(notice) = crate::online::newer_notice_once() {
+                    content.push(json!({ "type": "text", "text": notice }));
+                }
             }
             let s = serde_json::to_string(&resp)?;
             writeln!(out, "{s}")?;

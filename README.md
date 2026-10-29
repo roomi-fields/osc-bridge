@@ -76,7 +76,8 @@ asks the SynthHub server for one driver at a time, when it needs it:
 
 - `osc-bridge run --device korg/minilogue` (a driver id) or `--device minilogue`
   (a slug: the device's best variant) fetches that driver and keeps it in the
-  cache (`~/.cache/osc-bridge/drivers/`, or `$XDG_CACHE_HOME`, `%LOCALAPPDATA%`);
+  cache (`~/.cache/osc-bridge/drivers/`, or `$XDG_CACHE_HOME`, `%LOCALAPPDATA%`),
+  then downloads it again only when the server's copy changed;
 - `osc-bridge detect` and the MCP tool `detect_hardware` ask the server which
   makers' identity requests to send, then send it the names of the MIDI
   ports found here and what the devices answered, and it names the matching

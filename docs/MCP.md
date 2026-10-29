@@ -104,9 +104,16 @@ linked to it.
   needs a driver (`list_routes`, `get_device_docs`, `export_device`, a report)
   fetches it once per session, with its notes and the driver it shares its
   MIDI with, into `<cache>/osc-bridge/drivers` (`~/.cache` on Linux,
-  `%LOCALAPPDATA%` on Windows). These requests carry no account. Offline, the
-  cached drivers are all there is. (A folder you point to with
-  `--devices-dir` is used as it is.)
+  `%LOCALAPPDATA%` on Windows). Each file is kept there with the ETag the
+  server gave; a later session asks whether it changed (`If-None-Match`) and
+  downloads it again only then. Nothing else of the catalogue is asked
+  for. These requests carry no account. Offline, or when the server cannot
+  be reached, the cached drivers are all there is. (A folder you point to
+  with `--devices-dir` is used as it is.)
+- **A newer osc-bridge.** When the server marks your version as deprecated
+  (RFC 9745 `Deprecation`), osc-bridge says once, on standard error and in
+  the result of the next tool call, that a newer osc-bridge exists and
+  where to get it.
 - **Trust.** `list_devices` gives each driver's `usage_status`: how far other
   users confirmed it on the real device.
 - **More tools**, run on the server under an anonymous account kept on

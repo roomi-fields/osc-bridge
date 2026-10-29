@@ -60,6 +60,21 @@ is tracked explicitly under each release.
   and the lookup of `devices/` next to the executable (`OSC_BRIDGE_HOME`).
 - The tests read a few drivers kept in `tests/fixtures/devices/`.
 
+### Changed — a kept driver is checked for freshness
+- A driver, maker profile or notes file fetched from SynthHub is kept in
+  the cache with the ETag the server gave (`<file>.etag` beside it). The
+  next fetch sends it in `If-None-Match`: on `304 Not Modified` the kept
+  file is used without being downloaded again; on `200` the file and its
+  ETag are replaced; when the server cannot be reached the kept file is
+  used, as before. osc-bridge never asks for the whole catalogue, only for
+  the drivers a session uses.
+- When a reply of the server marks this osc-bridge as deprecated
+  (`Deprecation` with `Link: <url>; rel="deprecation"`, RFC 9745), osc-bridge
+  says once per run, on standard error and in the result of the next MCP
+  tool call, that a newer osc-bridge exists and where.
+- `mcp::serve` runs one MCP session over any reader and writer, linked to a
+  given server and cache; `mcp::run` is it over stdio.
+
 ### Added — OSCQuery and MIDNAM
 - `osc-bridge export --device <file> --format oscquery|midnam` and the MCP
   tool `export_device` (shared with the hosted server) write a driver as an

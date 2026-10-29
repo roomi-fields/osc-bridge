@@ -4,8 +4,9 @@
 //! at a time (`crate::online`). A driver is named by a file on this machine,
 //! or by its catalogue id (`korg/minilogue`) or slug (`minilogue`, the best
 //! variant of the device): linked to the server, the driver is fetched into
-//! the cache (`online::cache_dir`) and loaded from there; offline, only the
-//! cached drivers are found.
+//! the cache (`online::cache_dir`), downloaded again only when the server's
+//! copy changed, and loaded from there; offline, only the cached drivers are
+//! found.
 
 use anyhow::{bail, Context, Result};
 use std::path::{Path, PathBuf};
