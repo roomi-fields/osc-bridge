@@ -31,8 +31,8 @@ A question no step of the circuit settles goes up to the supervisor, with its ev
 ## Commands
 
 - `cargo build --release` builds the application; `cargo test --workspace -q` and `cargo clippy --workspace --all-targets -- -D warnings` cover every member of the workspace. The version, edition, licence, lints and shared dependencies live in the root `Cargo.toml` (`[workspace.package]`, `[workspace.lints]`, `[workspace.dependencies]`); a crate joins the workspace by being listed in its `members`.
-- A test's temporary folder or file goes through `tempfile` (`TempDir`, `NamedTempFile`; `common::temp` in `tests/`), removed when dropped, a failed test included; no code builds a path under `std::env::temp_dir()` by hand. The temporary folder is often a memory disk shared by every session of the machine. CI runs the tests in a temporary folder of their own and fails on anything they leave there.
+- The tests make their temporary folders and files with `tempfile` (`common::temp` in `tests/`).
 - `python3 scripts/sync_version.py --check` keeps the published version mirrors equal (until the tools are Rust).
-- The framework does not know Rust yet: `npm run verifier`, `grillhouse maj` and the night pass wait for its Rust tooling.
+- `npm test -- <paths>` and `npm run verifier` run the tests and the guards through the framework (nextest, clippy, cargo-deny); the dependencies' licences allowed are in `deny.toml`.
 - Ticket prefix: `OB-`.
 - Push policy: each commit goes to main and is pushed; ask before rewriting history, deleting a branch, changing a CI that publishes a release, or acting outside the repository. Commits and texts sent to other projects carry no mention of AI.

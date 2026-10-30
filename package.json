@@ -3,9 +3,23 @@
   "private": true,
   "description": "The Grillhouse framework for osc-bridge; the engine builds with cargo, and the published npm package lives in npm/.",
   "scripts": {
-    "prepare": "grillhouse hooks"
+    "prepare": "grillhouse hooks",
+    "tableau": "grillhouse tableau --texte",
+    "grillhouse:maj": "grillhouse maj",
+    "grillhouse:gardes": "grillhouse gardes-du-cadre",
+    "grillhouse:dette:inscrire": "GRILLHOUSE_DETTE=inscrire npm run --silent grillhouse:gardes",
+    "grillhouse:dette:elaguer": "GRILLHOUSE_DETTE=elaguer npm run --silent grillhouse:gardes",
+    "test": "grillhouse tests",
+    "test:forcer": "grillhouse tests --force",
+    "verifier": "grillhouse verifier"
   },
   "devDependencies": {
-    "@roomi-fields/grillhouse": "^0.24.13"
+    "@roomi-fields/grillhouse": "^0.25.1"
+  },
+  "grillhouse": {
+    "langages": [
+      "cargo"
+    ],
+    "version": "0.25.1"
   }
 }

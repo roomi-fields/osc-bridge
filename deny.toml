@@ -1,0 +1,41 @@
+# The policy of cargo-deny, which `npm run verifier` plays (`cargo deny check`): without it,
+# cargo-deny permits no licence and refuses every crate (code 4). The project owns this file; the
+# frame's update writes it once, where the project has none.
+
+[graph]
+all-features = true
+
+[advisories]
+# A crate with a known vulnerability, or no longer maintained, is refused.
+version = 2
+yanked = "deny"
+
+[licenses]
+version = 2
+# The licences the project accepts in its dependencies.
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "CDLA-Permissive-2.0",
+    "ISC",
+    "Unicode-3.0",
+    "Zlib",
+]
+confidence-threshold = 0.8
+
+# The workspace's own crates (`publish = false`) are not dependencies: their licence is the project's.
+[licenses.private]
+ignore = true
+
+[bans]
+# Two versions of a crate are named, not refused.
+multiple-versions = "warn"
+wildcards = "deny"
+
+[sources]
+# A crate from an unknown registry or repository is refused.
+unknown-registry = "deny"
+unknown-git = "deny"

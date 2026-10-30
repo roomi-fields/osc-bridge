@@ -1,0 +1,8 @@
+# The project's configuration of nextest. The frame passes its own profile, `grillhouse`, as a
+# tool's configuration under this one (`grillhouse tests`, `grillhouse verifier`): its JUnit
+# report lands where the verdict reads it. A profile `grillhouse` here would override the frame's;
+# this file defines none.
+
+[profile.default]
+# Every test runs, as the frame's commands run them (`--no-fail-fast`).
+fail-fast = false
