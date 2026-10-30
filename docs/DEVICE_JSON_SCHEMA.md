@@ -218,8 +218,18 @@ only by its USB port name has `ports` alone.
   request: they read `ctx` (`channel`, `dev`, `family`, `member`, `bank`,
   `bank_name`, `msb`, `lsb`, `program`, `index`, `number`) and return the
   messages as byte lists — a stored sound named in text, say.
-- `{checksum:twos@N}` in a frame is the two's complement, 7 bits, of the bytes
-  from offset N to it (Roland, Yamaha).
+- `{checksum:<algorithm>@<from>}` or `{checksum:<algorithm>@<from>+<length>}`
+  in any frame (commands, `params.set_frame` and `get_frame`, `programs`,
+  `identity.request`) is one byte computed over the bytes already written,
+  F0 = offset 0, as in the Electra One preset format. Without `<length>` it
+  covers every byte from `<from>` up to it; the footer and the bytes after it
+  are never covered. `<algorithm>` is `twos7` (Roland: `(128 - sum mod 128)
+  & 0x7F`), `sum7` (Waldorf: `sum & 0x7F`) or `xor7` (Fractal: the XOR of the
+  bytes `& 0x7F`). An unknown algorithm, or a `<from>` or `<length>` past the
+  bytes written, refuses the driver at load, naming the token (after a
+  `{bytes}`, `{ascii}` or a bare `{family}`, whose size is known only at
+  build, the build refuses it). In `replies.match_frame` it matches any
+  byte. The first form, with `twos` alone, is gone: write `twos7`.
 - The bridge answers `/<prefix>/program/recall <bank> <number> [channel]`:
   the bank by name (any case) or by its place from 0, the number as the device
   shows it; it sends `before`, the bank select, the program change and

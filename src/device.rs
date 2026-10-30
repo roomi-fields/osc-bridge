@@ -305,8 +305,7 @@ pub const DUMP_KINDS: [&str; 4] = ["request", "edit_buffer", "manual", "none"];
 /// device-id byte, the bank's select bytes, its index in `banks`, the
 /// program change value, the program's index over all banks, the number the
 /// device shows, the model's identity bytes, and a checksum
-/// (`{checksum:twos@N}`: the two's complement, 7 bits, of the bytes from
-/// offset N to it — Roland, Yamaha).
+/// (`{checksum:<twos7|sum7|xor7>@<from>[+<length>]}`, see `frame::Checksum`).
 pub const PROGRAM_PLACEHOLDERS: [&str; 11] =
     ["channel", "dev", "msb", "lsb", "bank", "program", "index", "number", "family", "member", "checksum"];
 
@@ -342,6 +341,19 @@ impl Device {
                 FrameToken::Literal(_) => None,
             }).collect()
         };
+        // Commands and parameters sit after the header; identity and programs frames are whole messages.
+        let head = self.sysex.header.len();
+        for c in &self.commands { crate::frame::check_checksums(&c.frame, head)?; }
+        if let Some(pt) = &self.params {
+            crate::frame::check_checksums(&pt.set_frame, head)?;
+            crate::frame::check_checksums(&pt.get_frame, head)?;
+        }
+        if let Some(req) = self.identity.as_ref().and_then(|i| i.request.as_ref()) { crate::frame::check_checksums(req, 0)?; }
+        if let Some(p) = &self.programs {
+            for f in p.before.iter().chain(&p.after).chain(p.dump.iter().filter_map(|d| d.request.as_ref())) {
+                crate::frame::check_checksums(f, 0)?;
+            }
+        }
         if let Some(id) = &self.identity {
             if let Some(to) = id.to.as_deref() {
                 if !["every_port", "named_ports"].contains(&to) { bail!("identity.to {to:?}: every_port or named_ports"); }
@@ -351,8 +363,8 @@ impl Device {
                 if req.first() != Some(&FrameToken::Literal(0xF0)) || req.last() != Some(&FrameToken::Literal(0xF7)) {
                     bail!("identity.request runs from F0 to F7");
                 }
-                if let Some(n) = names(req).into_iter().find(|n| n != "dev" && !IDENTITY_BYTES.contains(&n.as_str())) {
-                    bail!("identity.request names {{{n}}}: only {{dev}}, {{family}}, {{member}}");
+                if let Some(n) = names(req).into_iter().find(|n| n != "dev" && n != "checksum" && !IDENTITY_BYTES.contains(&n.as_str())) {
+                    bail!("identity.request names {{{n}}}: only {{dev}}, {{family}}, {{member}}, {{checksum:...}}");
                 }
                 if names(req).iter().any(|n| n == "dev") && id.device_id.is_none() { bail!("identity.request names {{dev}}: give device_id"); }
             }

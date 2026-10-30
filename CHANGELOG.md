@@ -11,6 +11,14 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed — the engine computes three checksum algorithms in every frame
+- `{checksum:<algorithm>@<from>[+<length>]}` works in command, parameter,
+  `programs` and `identity.request` frames, with `twos7` (Roland), `sum7`
+  (Waldorf) and `xor7` (Fractal), as the Electra One preset format defines
+  them; F0 is offset 0. An unknown algorithm or an offset past the bytes
+  written is a load error naming the driver and the token. The former
+  `{checksum:twos@N}` is removed: write `{checksum:twos7@N}`.
+
 ### Changed — PRIVACY.md says what the service keeps of a call
 - PRIVACY.md now says that the service keeps each forwarded tool call with
   its outcome, a shortened error message and its duration, and each search

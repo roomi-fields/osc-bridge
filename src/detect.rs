@@ -140,13 +140,9 @@ impl Probe {
 pub fn probe_of(id: &DeviceIdentity) -> Result<Option<Probe>> {
     let Some(tokens) = &id.request else { return Ok(None) };
     let dev = id.device_id.as_ref().map(|d| d.default).unwrap_or(0x7F);
-    let mut bytes = Vec::with_capacity(tokens.len());
-    for t in &id.expand(tokens) {
-        match t {
-            FrameToken::Literal(b) => bytes.push(*b),
-            FrameToken::Placeholder(_) => bytes.push(dev & 0x7F),
-        }
-    }
+    let mut bind = crate::frame::Bindings::new();
+    bind.set_u7("dev", dev);
+    let bytes = crate::frame::build_message(&id.expand(tokens), &bind)?;
     if bytes == IDENTITY_REQUEST {
         return Ok(None);
     }

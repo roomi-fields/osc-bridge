@@ -235,7 +235,7 @@ mod tests {
     #[test]
     fn a_dump_request_takes_the_models_bytes_and_a_checksum() {
         let d = dev(r#"{"banks":[{"name":"A","size":64}],
-            "dump":{"kind":"request","request":[240,66,"{channel:u7+0x30}","{family:0}",28,"{index}","{checksum:twos@3}",247]}}"#);
+            "dump":{"kind":"request","request":[240,66,"{channel:u7+0x30}","{family:0}",28,"{index}","{checksum:twos7@3}",247]}}"#);
         // 51 + 1C + 05 = 0x72; 128 - 0x72 = 0x0E.
         assert_eq!(dump(&d, Some(("A", 6)), None).unwrap(), vec![vec![0xF0, 0x42, 0x32, 81, 0x1C, 5, 0x0E, 0xF7]]);
         let edit = dev(r#"{"dump":{"kind":"edit_buffer","request":[240,66,"{channel:u7+0x30}","{family:0}",16,247]}}"#);

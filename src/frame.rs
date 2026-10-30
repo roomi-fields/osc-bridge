@@ -37,6 +37,7 @@ pub fn build_frame(device: &Device, tokens: &[FrameToken], bindings: &Bindings) 
     for tok in tokens {
         match tok {
             FrameToken::Literal(b) => out.push(*b),
+            FrameToken::Placeholder(s) if is_checksum(s) => push_checksum(s, &mut out)?,
             FrameToken::Placeholder(s) => emit_placeholder(s, bindings, &mut out)?,
         }
     }
@@ -45,25 +46,116 @@ pub fn build_frame(device: &Device, tokens: &[FrameToken], bindings: &Bindings) 
 }
 
 /// A whole message from `tokens` (F0 to F7 written in them, no header or
-/// footer added). `{checksum:twos@N}` is the two's complement, 7 bits, of
-/// the sum of the bytes written from offset N (Roland, Yamaha).
+/// footer added); its `{checksum:...}` are computed by `Checksum`.
 pub fn build_message(tokens: &[FrameToken], bindings: &Bindings) -> Result<Vec<u8>> {
     let mut out = Vec::with_capacity(tokens.len());
     for tok in tokens {
         match tok {
             FrameToken::Literal(b) => out.push(*b),
-            FrameToken::Placeholder(s) if s.trim_matches(|c| c == '{' || c == '}').starts_with("checksum") => {
-                let inner = s.trim_matches(|c| c == '{' || c == '}');
-                let from: usize = inner.strip_prefix("checksum:twos@").and_then(|n| n.parse().ok())
-                    .ok_or_else(|| anyhow!("'{s}': a checksum is {{checksum:twos@N}}"))?;
-                let sum: u32 = out.get(from..).ok_or_else(|| anyhow!("'{s}': offset {from} is past the message"))?
-                    .iter().map(|b| *b as u32).sum();
-                out.push(((128 - sum % 128) % 128) as u8);
-            }
+            FrameToken::Placeholder(s) if is_checksum(s) => push_checksum(s, &mut out)?,
             FrameToken::Placeholder(s) => emit_placeholder(s, bindings, &mut out)?,
         }
     }
     Ok(out)
+}
+
+/// The three checksum algorithms of the Electra One preset format
+/// (https://docs.electra.one/developers/presetformat.html, "SysEx template",
+/// checksum): `twos7` is roland, `sum7` waldorf, `xor7` fractal.
+pub const CHECKSUM_ALGORITHMS: [&str; 3] = ["twos7", "sum7", "xor7"];
+
+/// A parsed `{checksum:<algorithm>@<from>}` or `{checksum:<algorithm>@<from>+<length>}`.
+/// `from` counts from the first byte of the message (F0 = 0).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Checksum {
+    pub algorithm: &'static str,
+    pub from: usize,
+    pub length: Option<usize>,
+}
+
+/// Whether a placeholder token is a `{checksum:...}`.
+pub fn is_checksum(token: &str) -> bool {
+    token.trim_matches(|c| c == '{' || c == '}').split(':').next().map(str::trim) == Some("checksum")
+}
+
+impl Checksum {
+    /// Read the token; an unknown algorithm or a malformed form names the token.
+    pub fn parse(token: &str) -> Result<Self> {
+        let form = || anyhow!("'{token}': a checksum is {{checksum:<algorithm>@<from>}} or {{checksum:<algorithm>@<from>+<length>}}, the algorithm one of {CHECKSUM_ALGORITHMS:?}");
+        let inner = token.trim_matches(|c| c == '{' || c == '}');
+        let rest = inner.strip_prefix("checksum:").ok_or_else(form)?;
+        let (name, at) = rest.split_once('@').ok_or_else(form)?;
+        let algorithm = CHECKSUM_ALGORITHMS.iter().copied().find(|a| *a == name).ok_or_else(form)?;
+        let (from, length) = match at.split_once('+') {
+            Some((f, l)) => (f, Some(l.parse::<usize>().map_err(|_| form())?)),
+            None => (at, None),
+        };
+        Ok(Checksum { algorithm, from: from.parse().map_err(|_| form())?, length })
+    }
+
+    /// The checksum byte of `written`, the message so far (nothing after the
+    /// checksum, never the footer). `token` names the error.
+    pub fn of(&self, token: &str, written: &[u8]) -> Result<u8> {
+        let end = match self.length {
+            Some(l) => self.from.checked_add(l).filter(|e| *e <= written.len())
+                .ok_or_else(|| anyhow!("'{token}': {} bytes from offset {} run past the {} bytes written", l, self.from, written.len()))?,
+            None => written.len(),
+        };
+        let covered = written.get(self.from..end)
+            .filter(|c| !c.is_empty())
+            .ok_or_else(|| anyhow!("'{token}': offset {} is past the {} bytes written", self.from, written.len()))?;
+        Ok(checksum_byte(self.algorithm, covered))
+    }
+}
+
+/// The one computation of a checksum byte, 7 bits (Electra One definitions):
+/// `twos7` `(128 - (sum mod 128)) & 0x7F`, `sum7` `sum & 0x7F`, `xor7` the XOR of the bytes `& 0x7F`.
+pub fn checksum_byte(algorithm: &str, bytes: &[u8]) -> u8 {
+    let sum = bytes.iter().map(|b| *b as u32).sum::<u32>();
+    match algorithm {
+        "twos7" => ((128 - sum % 128) & 0x7F) as u8,
+        "sum7" => (sum & 0x7F) as u8,
+        _ => bytes.iter().fold(0u8, |a, b| a ^ b) & 0x7F,
+    }
+}
+
+/// Write the checksum byte `token` asks for after `out`.
+fn push_checksum(token: &str, out: &mut Vec<u8>) -> Result<()> {
+    let b = Checksum::parse(token)?.of(token, out)?;
+    out.push(b);
+    Ok(())
+}
+
+/// Refuse at load a checksum no frame could compute. `base` is the number of
+/// bytes written before the first token (the header). A `from` at or past the
+/// token's smallest position is refused always; a length past it only when
+/// every earlier token has a fixed size, else the build refuses it.
+pub fn check_checksums(tokens: &[FrameToken], base: usize) -> Result<()> {
+    let (mut min, mut fixed) = (base, true);
+    for tok in tokens {
+        let FrameToken::Placeholder(s) = tok else { min += 1; continue };
+        if is_checksum(s) {
+            let c = Checksum::parse(s)?;
+            if c.from >= min { bail!("'{s}': offset {} is not before the checksum, written at offset {min}", c.from); }
+            if let Some(l) = c.length.filter(|l| fixed && c.from + l > min) {
+                bail!("'{s}': {l} bytes from offset {} run past the {min} bytes written", c.from);
+            }
+            min += 1;
+            continue;
+        }
+        let inner = s.trim_matches(|c| c == '{' || c == '}');
+        let (name, kind) = inner.split_once(':').map(|(n, k)| (n.trim(), k.trim())).unwrap_or((inner.trim(), ""));
+        match (name, kind) {
+            ("family" | "member", k) if k.parse::<usize>().is_err() => {
+                fixed = false;
+                if name == "family" { min += 1; }
+            }
+            (_, "ascii" | "bytes") => fixed = false,
+            (_, "s32") => min += 5,
+            _ => min += 1,
+        }
+    }
+    Ok(())
 }
 
 fn emit_placeholder(ph: &str, b: &Bindings, out: &mut Vec<u8>) -> Result<()> {
