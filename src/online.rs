@@ -486,8 +486,8 @@ mod tests {
 
     #[test]
     fn settings_default_to_sharing_and_round_trip() {
-        let dir = std::env::temp_dir().join(format!("osc-bridge-settings-{}", std::process::id()));
-        let path = dir.join("osc-bridge/settings.toml");
+        let dir = tempfile::Builder::new().prefix("osc-bridge-settings-").tempdir().unwrap();
+        let path = dir.path().join("osc-bridge/settings.toml");
         assert_eq!(Settings::load(Some(&path)).unwrap(), Settings { offline: false, private: vec![] });
         assert_eq!(Settings::load(None).unwrap(), Settings::default());
         let mine = Settings { offline: true, private: vec!["korg/minilogue".into()] };
@@ -498,7 +498,7 @@ mod tests {
         let text = mine.render();
         assert!(text.contains("# true: do not contact the server") && text.contains("\"korg/minilogue\","), "{text}");
         assert_eq!(toml::from_str::<Settings>(&text).unwrap(), mine, "the commented file reads back");
-        let fresh = dir.join("fresh/settings.toml");
+        let fresh = dir.path().join("fresh/settings.toml");
         assert_eq!(Settings::load_or_create(&fresh).unwrap(), Settings::default());
         assert!(std::fs::read_to_string(&fresh).unwrap().contains("Edit this file freely"));
         let p = vec!["korg/*".to_string(), "minilab3".to_string(), "moog/sub37".to_string()];
@@ -506,7 +506,6 @@ mod tests {
         assert!(Settings::covers(&p, "arturia/minilab3.vendor.fw-1", "minilab3"));
         assert!(Settings::covers(&p, "moog/sub37", "sub37"));
         assert!(!Settings::covers(&p, "korgish/x", "x") && !Settings::covers(&p, "moog/sub37_v2", "sub37_v2"));
-        std::fs::remove_dir_all(dir).ok();
     }
 
     #[test]

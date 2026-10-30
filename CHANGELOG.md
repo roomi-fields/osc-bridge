@@ -11,6 +11,15 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed — tests leave no temporary file behind
+- The tests make their temporary folders and files with `tempfile`, removed
+  when dropped, a failed test included; CI runs them in a temporary folder of
+  their own and fails on anything they leave there.
+- `take_sound` without `file` saves the sound in the system's temporary
+  folder under a name of its own (`<synth>-<sound>-<random>.syx`), so a
+  second take no longer overwrites the first.
+  On Linux and macOS that file is readable by its owner only.
+
 ## [0.17.0] — 2026-10-29
 
 ### Added — how a device is recognised, and how its programs are recalled

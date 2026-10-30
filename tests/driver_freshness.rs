@@ -20,7 +20,7 @@ fn etag_of(file: &Path) -> String {
 #[test]
 fn a_kept_driver_is_asked_again_with_its_etag_and_used_on_304() {
     let dir = temp("fresh-304");
-    let (root, cache) = (dir.join("server"), dir.join("cache"));
+    let (root, cache) = (dir.path().join("server"), dir.path().join("cache"));
     catalogue(&root);
     let server = FakeSynthHub::start(&root, None);
 
@@ -43,13 +43,12 @@ fn a_kept_driver_is_asked_again_with_its_etag_and_used_on_304() {
         assert_eq!(std::fs::read(cache.join(file)).unwrap(), std::fs::read(root.join(file)).unwrap(),
             "{file}: the kept copy is used as it is");
     }
-    std::fs::remove_dir_all(dir).ok();
 }
 
 #[test]
 fn a_changed_driver_replaces_the_kept_one_and_its_etag() {
     let dir = temp("fresh-200");
-    let (root, cache) = (dir.join("server"), dir.join("cache"));
+    let (root, cache) = (dir.path().join("server"), dir.path().join("cache"));
     catalogue(&root);
     let server = FakeSynthHub::start(&root, None);
     Online::new(&server.base).fetch_driver("acme/synth", &cache).unwrap();
@@ -69,13 +68,12 @@ fn a_changed_driver_replaces_the_kept_one_and_its_etag() {
     let asked = server.driver_requests();
     assert_eq!(asked[0].if_none_match.as_deref(), Some(etag_of(&root.join("acme/synth.json")).as_str()));
     assert_eq!(asked[0].status, 304);
-    std::fs::remove_dir_all(dir).ok();
 }
 
 #[test]
 fn notes_the_server_no_longer_has_are_dropped_with_their_etag() {
     let dir = temp("fresh-notes");
-    let (root, cache) = (dir.join("server"), dir.join("cache"));
+    let (root, cache) = (dir.path().join("server"), dir.path().join("cache"));
     catalogue(&root);
     let server = FakeSynthHub::start(&root, None);
     Online::new(&server.base).fetch_driver("acme/synth", &cache).unwrap();
@@ -90,13 +88,12 @@ fn notes_the_server_no_longer_has_are_dropped_with_their_etag() {
     let notes = server.driver_requests().into_iter().find(|s| s.url.ends_with("synth.md")).unwrap();
     assert_eq!((notes.if_none_match, notes.status), (None, 200), "no ETag kept for notes that went away");
     assert_eq!(std::fs::read_to_string(cache.join("acme/synth.md")).unwrap(), "# Synth\n\nNew notes.\n");
-    std::fs::remove_dir_all(dir).ok();
 }
 
 #[test]
 fn an_unreachable_server_leaves_the_kept_driver_in_use() {
     let dir = temp("fresh-offline");
-    let (root, cache) = (dir.join("server"), dir.join("cache"));
+    let (root, cache) = (dir.path().join("server"), dir.path().join("cache"));
     catalogue(&root);
     let server = FakeSynthHub::start(&root, None);
     Online::new(&server.base).fetch_driver("acme/box", &cache).unwrap();
@@ -106,13 +103,12 @@ fn an_unreachable_server_leaves_the_kept_driver_in_use() {
     let path = osc_bridge::catalogue::from_cache_or_server("acme/box", &cache, Some(&unreachable)).unwrap();
     assert_eq!(path, cache.join("acme/box.json"));
     assert_eq!(std::fs::read(&path).unwrap(), kept);
-    std::fs::remove_dir_all(dir).ok();
 }
 
 #[test]
 fn a_session_with_two_devices_asks_only_for_those_two_drivers() {
     let dir = temp("fresh-session");
-    let (root, cache) = (dir.join("server"), dir.join("cache"));
+    let (root, cache) = (dir.path().join("server"), dir.path().join("cache"));
     catalogue(&root);
     // Drivers the session does not use, which must stay on the server.
     std::fs::create_dir_all(root.join("other")).unwrap();
@@ -147,5 +143,4 @@ fn a_session_with_two_devices_asks_only_for_those_two_drivers() {
     let again = server.driver_requests();
     assert_eq!(again.len(), 5, "{again:?}");
     assert!(again.iter().all(|s| s.if_none_match.is_some() && s.status == 304), "{again:?}");
-    std::fs::remove_dir_all(dir).ok();
 }

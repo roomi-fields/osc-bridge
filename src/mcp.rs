@@ -1449,7 +1449,14 @@ fn take_sound(args: &Value, link: &Link) -> Result<Value, String> {
     drop(midi);
     let file = match args["file"].as_str() {
         Some(p) => PathBuf::from(p),
-        None => std::env::temp_dir().join(format!("{}-{}.syx", slugify(&f.name, '-'), slugify(if taken.name.is_empty() { "sound" } else { &taken.name }, '-'))),
+        // In the temporary folder, under a name of its own: kept, since it is the user's sound.
+        None => tempfile::Builder::new()
+            .prefix(&format!("{}-{}-", slugify(&f.name, '-'), slugify(if taken.name.is_empty() { "sound" } else { &taken.name }, '-')))
+            .suffix(".syx")
+            .tempfile()
+            .and_then(|t| t.keep().map_err(|e| e.error))
+            .map_err(|e| e.to_string())?
+            .1,
     };
     crate::librarian::write_syx(&file, &taken.messages).map_err(|e| e.to_string())?;
     let synth = lib["synths"].as_array().into_iter().flatten().find(|s| s["synth"] == f.synth.as_str());
@@ -1921,9 +1928,8 @@ mod tests {
 
     #[test]
     fn a_presets_files_on_this_machine_are_read_before_sharing() {
-        let dir = std::env::temp_dir().join(format!("osc-bridge-share-{}", std::process::id()));
-        std::fs::create_dir_all(&dir).unwrap();
-        let (syx, mid, ogg) = (dir.join("p.syx"), dir.join("p.mid"), dir.join("p.ogg"));
+        let dir = tempfile::Builder::new().prefix("osc-bridge-share-").tempdir().unwrap();
+        let (syx, mid, ogg) = (dir.path().join("p.syx"), dir.path().join("p.mid"), dir.path().join("p.ogg"));
         std::fs::write(&syx, [0xF0, 0x42, 0x30, 0x01, 0xF7, 0xF0, 0x42, 0x30, 0x02, 0xF7]).unwrap();
         std::fs::write(&mid, b"MThd").unwrap();
         std::fs::write(&ogg, b"OggS").unwrap();
@@ -1933,7 +1939,6 @@ mod tests {
         assert_eq!(sent, json!({"device": "korg/minilogue", "hex": "F0 42 30 01 F7 F0 42 30 02 F7", "midi_base64": "TVRoZA=="}));
         assert_eq!(audio.as_deref(), Some(&b"OggS"[..]));
         assert!(read_local_files(&json!({"file": p(&syx), "hex": "F0 F7"})).unwrap_err().contains("not both"));
-        std::fs::remove_dir_all(dir).ok();
         let opts = McpOptions { online: true, ..test_opts() };
         assert!(tool_names(&opts).contains(&"load_preset") && !tool_names(&test_opts()).contains(&"load_preset"),
             "loading a shared preset is offered only when linked to the server");
@@ -1941,7 +1946,8 @@ mod tests {
 
     #[test]
     fn the_privacy_command_records_choices_by_catalogue_id() {
-        let path = std::env::temp_dir().join(format!("osc-bridge-privacy-{}/settings.toml", std::process::id()));
+        let dir = tempfile::Builder::new().prefix("osc-bridge-privacy-").tempdir().unwrap();
+        let path = dir.path().join("settings.toml");
         let devices = fixtures();
         let shown = privacy(&path, &devices, None, None, &[], &[]).unwrap();
         assert!(shown.contains("Linked to the SynthHub server") && shown.contains("Private devices: none"), "{shown}");
@@ -1953,7 +1959,6 @@ mod tests {
         assert!(privacy(&path, &devices, None, None, &["no-such-synth".into()], &[]).is_err());
         privacy(&path, &devices, None, Some(false), &[], &["korg/minilogue".into()]).unwrap();
         assert_eq!(crate::online::Settings::load(Some(&path)).unwrap(), crate::online::Settings::default());
-        std::fs::remove_dir_all(path.parent().unwrap()).ok();
     }
 
     #[test]
@@ -2245,8 +2250,8 @@ mod tests {
 
     #[test]
     fn a_local_copy_fetches_the_drivers_it_needs_and_forwards_reports() {
-        let tmp = std::env::temp_dir().join(format!("osc-bridge-link-{}", std::process::id()));
-        let _ = std::fs::remove_dir_all(&tmp);
+        let dir = tempfile::Builder::new().prefix("osc-bridge-link-").tempdir().unwrap();
+        let tmp = dir.path();
         let cache = tmp.join("cache");
         let (base, calls) = fake_server(Path::new(FIXTURES));
         let link = Link { client: crate::online::Online::keeping_account_in(&base, Some(tmp.join("user"))), ..Link::new("unused") };
@@ -2287,6 +2292,5 @@ mod tests {
         assert_eq!(trust["content"][0]["text"], "get_trust", "an account the server forgot is replaced: {trust}");
         assert_ne!(std::fs::read_to_string(tmp.join("user")).unwrap(), "0".repeat(32));
         assert_eq!(*calls.lock().unwrap(), ["report_result", "get_trust"]);
-        std::fs::remove_dir_all(&tmp).ok();
     }
 }

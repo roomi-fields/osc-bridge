@@ -77,39 +77,38 @@ pub fn cached(name: &str, cache: &Path) -> Option<PathBuf> {
 mod tests {
     use super::*;
 
-    fn cache(tag: &str) -> PathBuf {
-        let root = std::env::temp_dir().join(format!("osc-bridge-locate-{tag}-{}", std::process::id()));
-        let _ = std::fs::remove_dir_all(&root);
-        std::fs::create_dir_all(root.join("acme")).unwrap();
-        std::fs::write(root.join("acme/box.json"), r#"{"device":{"name":"Box","vendor":"Acme","osc_prefix":"/box"}}"#).unwrap();
-        root
+    fn cache(tag: &str) -> tempfile::TempDir {
+        let dir = tempfile::Builder::new().prefix(&format!("osc-bridge-locate-{tag}-")).tempdir().unwrap();
+        std::fs::create_dir_all(dir.path().join("acme")).unwrap();
+        std::fs::write(dir.path().join("acme/box.json"), r#"{"device":{"name":"Box","vendor":"Acme","osc_prefix":"/box"}}"#).unwrap();
+        dir
     }
 
     #[test]
     fn a_file_on_this_machine_is_used_as_it_is() {
-        let root = cache("file");
+        let dir = cache("file");
+        let root = dir.path();
         let file = root.join("acme/box.json");
         assert_eq!(locate(&file).unwrap(), file);
-        std::fs::remove_dir_all(root).ok();
     }
 
     #[test]
     fn offline_a_driver_is_found_in_the_cache_by_id_or_slug() {
-        let root = cache("offline");
-        assert_eq!(from_cache_or_server("acme/box", &root, None).unwrap(), root.join("acme/box.json"));
-        assert_eq!(from_cache_or_server("box", &root, None).unwrap(), root.join("acme/box.json"));
-        let missing = from_cache_or_server("acme/other", &root, None).unwrap_err().to_string();
+        let dir = cache("offline");
+        let root = dir.path();
+        assert_eq!(from_cache_or_server("acme/box", root, None).unwrap(), root.join("acme/box.json"));
+        assert_eq!(from_cache_or_server("box", root, None).unwrap(), root.join("acme/box.json"));
+        let missing = from_cache_or_server("acme/other", root, None).unwrap_err().to_string();
         assert!(missing.contains("not in the drivers cached") && missing.contains("offline"), "{missing}");
         assert!(locate(Path::new("no/such/file.json")).unwrap_err().to_string().contains("no such file"));
-        std::fs::remove_dir_all(root).ok();
     }
 
     #[test]
     fn an_unreachable_server_falls_back_to_the_cache() {
-        let root = cache("unreachable");
+        let dir = cache("unreachable");
+        let root = dir.path();
         let server = Online::new("http://127.0.0.1:9");
-        assert_eq!(from_cache_or_server("acme/box", &root, Some(&server)).unwrap(), root.join("acme/box.json"));
-        assert!(from_cache_or_server("acme/other", &root, Some(&server)).is_err());
-        std::fs::remove_dir_all(root).ok();
+        assert_eq!(from_cache_or_server("acme/box", root, Some(&server)).unwrap(), root.join("acme/box.json"));
+        assert!(from_cache_or_server("acme/other", root, Some(&server)).is_err());
     }
 }

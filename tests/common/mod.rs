@@ -11,7 +11,7 @@
 #![allow(dead_code)]
 
 use serde_json::Value;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::sync::{Arc, Mutex};
 
 /// One request the fake server received.
@@ -94,12 +94,10 @@ pub fn sha256_hex(bytes: &[u8]) -> String {
     ring::digest::digest(&ring::digest::SHA256, bytes).as_ref().iter().map(|b| format!("{b:02x}")).collect()
 }
 
-/// A fresh folder for one test, under the system's temporary folder.
-pub fn temp(tag: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("osc-bridge-{tag}-{}", std::process::id()));
-    let _ = std::fs::remove_dir_all(&dir);
-    std::fs::create_dir_all(&dir).unwrap();
-    dir
+/// A fresh folder for one test, under the system's temporary folder,
+/// removed when dropped, a failed test included.
+pub fn temp(tag: &str) -> tempfile::TempDir {
+    tempfile::Builder::new().prefix(&format!("osc-bridge-{tag}-")).tempdir().unwrap()
 }
 
 /// A catalogue of two Acme devices: `acme/box` (with its notes, naming the

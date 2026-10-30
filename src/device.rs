@@ -989,12 +989,10 @@ mod tests {
         assert_eq!(e.expects, "switch");
     }
 
-    fn catalogue(files: &[(&str, &str)]) -> std::path::PathBuf {
-        use std::sync::atomic::{AtomicUsize, Ordering};
-        static N: AtomicUsize = AtomicUsize::new(0);
-        let root = std::env::temp_dir().join(format!("osc-bridge-midi-of-{}-{}", std::process::id(), N.fetch_add(1, Ordering::SeqCst)));
+    fn catalogue(files: &[(&str, &str)]) -> tempfile::TempDir {
+        let root = tempfile::Builder::new().prefix("osc-bridge-midi-of-").tempdir().unwrap();
         for (rel, txt) in files {
-            let p = root.join(rel);
+            let p = root.path().join(rel);
             std::fs::create_dir_all(p.parent().unwrap()).unwrap();
             std::fs::write(p, txt).unwrap();
         }
@@ -1012,20 +1010,19 @@ mod tests {
                 "device":{"name":"Box","vendor":"Acme","revision":"Fork 1.0","osc_prefix":"/box_fork"},
                 "midi_of":"acme/box.vendor.fw-15"}"#),
             ("acme/box.vendor.fw-fork-1.0.md", "# Fork")]);
-        let dev = Device::load(root.join("acme/box.vendor.fw-fork-1.0.json")).unwrap();
+        let dev = Device::load(root.path().join("acme/box.vendor.fw-fork-1.0.json")).unwrap();
         assert_eq!((dev.device.revision.as_str(), dev.device.osc_prefix.as_str()), ("Fork 1.0", "/box_fork"));
         assert_eq!(dev.device.manufacturer_id, vec![67], "the MIDI identity comes with the shared interface");
         assert_eq!(dev.commands.len(), 1);
         assert_eq!(dev.docs.as_deref(), Some("# Fork"), "its own README");
-        let raw: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(root.join("acme/box.vendor.fw-fork-1.0.json")).unwrap()).unwrap();
-        let doc = resolve_midi_of(&root.join("acme/box.vendor.fw-fork-1.0.json"), raw).unwrap();
+        let raw: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(root.path().join("acme/box.vendor.fw-fork-1.0.json")).unwrap()).unwrap();
+        let doc = resolve_midi_of(&root.path().join("acme/box.vendor.fw-fork-1.0.json"), raw).unwrap();
         assert_eq!(doc["_sources"][0]["firmware"], "fork-1.0");
         assert!(doc.get("_limitations").is_none(), "the target's limitations are its own");
         assert_eq!(doc["_midi_of_sources"][0]["firmware"], "15", "the shared MIDI is credited to its sources");
         assert_eq!((dev.sources[0].firmware.as_deref(), dev.midi_of_sources[0].firmware.as_deref()),
                    (Some("fork-1.0"), Some("15")));
         assert_eq!(doc["loads_sounds_of"][0], "dx7");
-        std::fs::remove_dir_all(root).ok();
     }
 
     #[test]
@@ -1039,7 +1036,7 @@ mod tests {
                 "commands":[{"osc":"/param/{id}","frame":[1]},{"osc":"/param/step_div","frame":[2]}],
                 "cc_params":{"entries":[{"osc":"/cutoff","cc":74}]},
                 "triggers":{"entries":[{"osc":"/kick","sound":"Kick","note_range":[36,36],"note":36}]}}"#)]);
-        let dev = Device::load(root.join("monome/norns.script-awake.json")).unwrap();
+        let dev = Device::load(root.path().join("monome/norns.script-awake.json")).unwrap();
         let cmds: Vec<_> = dev.commands.iter().map(|c| c.osc.as_str()).collect();
         assert_eq!(cmds, ["/remote/key", "/param/{id}", "/param/step_div"], "the target's, then its own");
         assert_eq!(dev.commands[1].frame.len(), 1, "its own wins on the same address");
@@ -1048,7 +1045,6 @@ mod tests {
         assert_eq!(dev.triggers.as_ref().unwrap().entries.len(), 1, "a table the target lacks is the file's");
         assert_eq!(dev.device.osc_prefix, "/norns_awake");
         assert!(dev.device.transport.is_some(), "the transport is the target's");
-        std::fs::remove_dir_all(root).ok();
     }
 
     #[test]
@@ -1059,13 +1055,12 @@ mod tests {
             "midi_of":"acme/box.vendor.fw-15"{own}}}"#);
         let root = catalogue(&[("acme/box.vendor.fw-15.json", &stock), ("acme/plain.json", &fork("")),
             ("acme/own.json", &fork(r#","identity":{"ports":["Fork"]},"programs":{"banks":[{"name":"B","size":8}]}"#))]);
-        let plain = Device::load(root.join("acme/plain.json")).unwrap();
+        let plain = Device::load(root.path().join("acme/plain.json")).unwrap();
         assert_eq!(plain.identity.unwrap().reply.len(), 6, "the shared file's");
-        let own = Device::load(root.join("acme/own.json")).unwrap();
+        let own = Device::load(root.path().join("acme/own.json")).unwrap();
         let id = own.identity.unwrap();
         assert!(id.reply.is_empty() && id.ports == ["Fork"], "its own, in place of the shared one");
         assert_eq!(own.programs.unwrap().banks[0].name, "B");
-        std::fs::remove_dir_all(root).ok();
     }
 
     #[test]
@@ -1083,23 +1078,22 @@ mod tests {
             ("acme/circle.json", &model(r#","identity":{"profile":"acme/c1"}"#)),
             ("acme/_profile.c1.json", r#"{"identity":{"profile":"acme/c2"}}"#), ("acme/_profile.c2.json", r#"{"identity":{"profile":"acme/c1"}}"#),
             ("acme/missing.json", &model(r#","programs":{"profile":"acme/none"}"#))]);
-        let dev = Device::load(root.join("acme/box.json")).unwrap();
+        let dev = Device::load(root.path().join("acme/box.json")).unwrap();
         let id = dev.identity.as_ref().unwrap();
         assert_eq!((id.profile.as_deref(), id.family.as_slice(), id.firmware.as_ref().map(|f| f.at.len())), (Some("acme"), &[89u8, 1][..], Some(4)));
         let p = dev.programs.as_ref().unwrap();
         assert_eq!((p.profile.as_deref(), p.selects.as_deref()), (Some("acme/groove"), Some("pattern")), "the nearest profile, its own key last");
         assert!(p.dump.is_none(), "null drops the profile's key");
-        let fork = Device::load(root.join("acme/fork.json")).unwrap();
+        let fork = Device::load(root.path().join("acme/fork.json")).unwrap();
         assert_eq!(fork.identity.unwrap().family, [89, 1], "a firmware sharing the MIDI shares the blocks, profiles resolved");
-        assert!(Device::load(root.join("acme/odd.json")).unwrap().identity.unwrap().firmware.is_none());
+        assert!(Device::load(root.path().join("acme/odd.json")).unwrap().identity.unwrap().firmware.is_none());
         for (f, why) in [("far", "another maker's"), ("circle", "circle"), ("missing", "reading")] {
-            let err = Device::load(root.join(format!("acme/{f}.json"))).unwrap_err().to_string();
+            let err = Device::load(root.path().join(format!("acme/{f}.json"))).unwrap_err().to_string();
             assert!(err.contains(why), "{f}: {err}");
         }
         assert_eq!(profile_file("korg/logue").as_deref(), Some("korg/_profile.logue"));
         assert_eq!(profile_file("korg").as_deref(), Some("korg/_profile"));
         assert!(profile_file("../x").is_none() && profile_file("a/b/c").is_none());
-        std::fs::remove_dir_all(root).ok();
     }
 
     #[test]
@@ -1150,17 +1144,16 @@ mod tests {
             ("acme/framing.json", &link("acme/script", r#","cc_params":{"channel":2,"entries":[]}"#)),
             ("acme/script.json", &STOCK.replace(r#""commands""#, r#""cc_params":{"channel":0,"entries":[]},"commands""#)),
             ("acme/up.json", &link("../box", ""))]);
-        assert!(Device::load(root.join("acme/a.json")).is_ok());
-        let chained = Device::load(root.join("acme/chain.json")).unwrap();
+        assert!(Device::load(root.path().join("acme/a.json")).is_ok());
+        let chained = Device::load(root.path().join("acme/chain.json")).unwrap();
         assert_eq!(chained.commands.iter().map(|c| c.osc.as_str()).collect::<Vec<_>>(), ["/init", "/more"],
             "a link to a link: the first target's routes, then its own");
         for (file, why) in [("circle1", "a circle"), ("self", "a circle"), ("missing", "reading"), ("maker", "another maker"),
                             ("device", "another device"), ("body", "is the target's"), ("up", "not a catalogue id"),
                             ("twice", "twice in its own commands"), ("framing", "cc_params.channel is the target's")] {
-            let err = Device::load(root.join(format!("acme/{file}.json"))).unwrap_err().to_string();
+            let err = Device::load(root.path().join(format!("acme/{file}.json"))).unwrap_err().to_string();
             assert!(err.contains(why), "{file}: {err}");
         }
-        std::fs::remove_dir_all(root).ok();
     }
 
     #[test]
@@ -1170,10 +1163,9 @@ mod tests {
         files.extend((1..=MIDI_OF_DEPTH + 1).map(|n| (format!("acme/l{n}.json"), link(n))));
         let refs: Vec<(&str, &str)> = files.iter().map(|(a, b)| (a.as_str(), b.as_str())).collect();
         let root = catalogue(&refs);
-        assert!(Device::load(root.join(format!("acme/l{MIDI_OF_DEPTH}.json"))).is_ok());
-        let err = Device::load(root.join(format!("acme/l{}.json", MIDI_OF_DEPTH + 1))).unwrap_err().to_string();
+        assert!(Device::load(root.path().join(format!("acme/l{MIDI_OF_DEPTH}.json"))).is_ok());
+        let err = Device::load(root.path().join(format!("acme/l{}.json", MIDI_OF_DEPTH + 1))).unwrap_err().to_string();
         assert!(err.contains("more than"), "{err}");
-        std::fs::remove_dir_all(root).ok();
     }
 
     #[test]

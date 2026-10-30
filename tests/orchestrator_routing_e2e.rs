@@ -16,23 +16,14 @@
 use osc_bridge::orchestrator::Orchestrator;
 use rosc::{OscMessage, OscPacket, OscType};
 use std::net::{SocketAddr, UdpSocket};
-use std::path::PathBuf;
 use std::time::Duration;
 
 fn pick_free_port() -> u16 {
     UdpSocket::bind("127.0.0.1:0").unwrap().local_addr().unwrap().port()
 }
 
-fn unique_tmp_dir(tag: &str) -> PathBuf {
-    let d = std::env::temp_dir().join(format!(
-        "osc-bridge-test-{}-{}-{}",
-        tag,
-        std::process::id(),
-        std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()
-    ));
-    std::fs::create_dir_all(&d).unwrap();
-    d
+fn unique_tmp_dir(tag: &str) -> tempfile::TempDir {
+    tempfile::Builder::new().prefix(&format!("osc-bridge-test-{tag}-")).tempdir().unwrap()
 }
 
 #[test]
@@ -47,7 +38,7 @@ fn inter_device_route_remaps_and_forwards() {
     // Temp device JSON: a /synth OSC device whose /cutoff command forwards
     // to /fx/cutoff on the fake target.
     let dir = unique_tmp_dir("routing");
-    let synth_json = dir.join("synth.json");
+    let synth_json = dir.path().join("synth.json");
     std::fs::write(&synth_json, format!(r#"{{
         "device": {{
             "name": "Test Synth", "vendor": "Test",
@@ -64,7 +55,7 @@ fn inter_device_route_remaps_and_forwards() {
     }}"#)).unwrap();
 
     // Temp bridge.toml: the /synth device + a route from /ctrl/knob/1.
-    let bridge_toml = dir.join("bridge.toml");
+    let bridge_toml = dir.path().join("bridge.toml");
     std::fs::write(&bridge_toml, format!(r#"
 [osc]
 bind = "127.0.0.1:{orch_bind_port}"
@@ -114,7 +105,6 @@ map.to = [0, 1]
         other => panic!("expected message, got {other:?}"),
     }
 
-    let _ = std::fs::remove_dir_all(&dir);
 }
 
 #[test]
@@ -125,7 +115,7 @@ fn route_without_map_passes_args_through() {
     let orch_bind_port = pick_free_port();
 
     let dir = unique_tmp_dir("routing-nomap");
-    let synth_json = dir.join("synth.json");
+    let synth_json = dir.path().join("synth.json");
     std::fs::write(&synth_json, format!(r#"{{
         "device": {{
             "name": "Test Synth", "vendor": "Test",
@@ -141,7 +131,7 @@ fn route_without_map_passes_args_through() {
         ]
     }}"#)).unwrap();
 
-    let bridge_toml = dir.join("bridge.toml");
+    let bridge_toml = dir.path().join("bridge.toml");
     std::fs::write(&bridge_toml, format!(r#"
 [osc]
 bind = "127.0.0.1:{orch_bind_port}"
@@ -179,5 +169,4 @@ to = "/synth/gate"
         other => panic!("expected message, got {other:?}"),
     }
 
-    let _ = std::fs::remove_dir_all(&dir);
 }

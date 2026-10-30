@@ -33,8 +33,29 @@ jobs:
         run: cargo clippy --workspace --all-targets -- -D warnings
       - name: Build
         run: cargo build --release --verbose
-      - name: Unit tests
-        run: cargo test --workspace --release --verbose
+      - name: Build the tests
+        run: cargo test --workspace --release --no-run
+      # The tests get a temporary folder of this run only (TMPDIR on Linux and
+      # macOS, TMP and TEMP on Windows), so whatever is left in it is theirs:
+      # the step fails on any entry left behind, failed tests included (they
+      # all run, and the folder is checked whatever their result).
+      - name: Unit tests, leaving no temporary file behind
+        shell: bash
+        env:
+          TESTS_TMP: ${{ runner.temp }}/osc-bridge-tests
+        run: |
+          # On Windows, a path both bash and the tests read (D:/a/_temp/...).
+          if command -v cygpath >/dev/null; then TESTS_TMP=$(cygpath -m "$TESTS_TMP"); fi
+          mkdir -p "$TESTS_TMP"
+          status=0
+          TMPDIR="$TESTS_TMP" TMP="$TESTS_TMP" TEMP="$TESTS_TMP" cargo test --workspace --release --no-fail-fast --verbose || status=$?
+          left=$(ls -A "$TESTS_TMP")
+          if [ -n "$left" ]; then
+            echo "::error::the tests left these in their temporary folder:"
+            echo "$left"
+            exit 1
+          fi
+          exit $status
       - name: Inspect a test driver
         run: cargo run --release -- inspect tests/fixtures/devices/novation/launch-control-xl-3.json
       - name: Version mirrors are in sync with Cargo.toml

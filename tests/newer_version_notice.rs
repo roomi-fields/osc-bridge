@@ -35,7 +35,7 @@ fn a_newer_osc_bridge_is_announced_once_per_run() {
 /// from the server marked as deprecated.
 fn one_run() {
     let dir = temp("newer");
-    let (root, cache) = (dir.join("server"), dir.join("cache"));
+    let (root, cache) = (dir.path().join("server"), dir.path().join("cache"));
     catalogue(&root);
     let server = FakeSynthHub::start(&root, Some(NEWER));
 
@@ -53,7 +53,6 @@ fn one_run() {
     assert!(texts(&replies[2]).iter().all(|t| !t.contains(NEWER)), "once: {}", replies[2]);
 
     // Another client of the same run says nothing more.
-    let unused = dir.join("cache2");
+    let unused = dir.path().join("cache2");
     osc_bridge::online::Online::new(&server.base).fetch_driver("acme/synth", &unused).unwrap();
-    std::fs::remove_dir_all(dir).ok();
 }

@@ -179,11 +179,10 @@ mod tests {
 
     #[test]
     fn syx_file_round_trips() {
-        let dir = std::env::temp_dir().join(format!("osc-bridge-syx-{}", std::process::id()));
-        let path = dir.join("bank.syx");
+        let dir = tempfile::Builder::new().prefix("osc-bridge-syx-").tempdir().unwrap();
+        let path = dir.path().join("bank.syx");
         let msgs = vec![vec![0xF0, 0x43, 0x00, 0xF7], vec![0xF0, 0x43, 0x01, 0x02, 0xF7]];
         write_syx(&path, &msgs).unwrap();
         assert_eq!(read_syx(&path).unwrap(), msgs);
-        std::fs::remove_dir_all(dir).ok();
     }
 }
