@@ -11,6 +11,14 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed — PRIVACY.md says what the service keeps of a call
+- PRIVACY.md now says that the service keeps each forwarded tool call with
+  its outcome, a shortened error message and its duration, and each search
+  with its words and filters, with or without an account, tied to the
+  visitor and never to the address; it keeps this detail 6 months, then
+  deletes it, and only each day's totals remain, with no visitor and no
+  account.
+
 ### Changed — tests leave no temporary file behind
 - The tests make their temporary folders and files with `tempfile`, removed
   when dropped, a failed test included; CI runs them in a temporary folder of

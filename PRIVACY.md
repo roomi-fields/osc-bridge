@@ -21,17 +21,20 @@ other users and agents fixed and confirmed them:
   identity requests to send, then sends it the names of your MIDI ports and
   what your devices answered them (maker, model, firmware, and any other
   SysEx a device sent while being asked), so the server names the matching
-  drivers; **listing devices** sends the search
-  words. These requests carry no account. What the server keeps of them is
-  counters only, with no visitor, account, address or time of day attached:
-  per driver, how many times it was fetched each day; per device name asked
-  for, how many times it was found or missing; per MIDI port name (lower
-  case, without its numbers), how many times it was seen, whether the device
-  identified itself, and which driver came first, or none. It learns which
-  drivers are used and which devices are missing, never who uses what. Its
-  general request log names only the kind of request (`/api/v1/devices/…`,
-  `/v1/devices/…`, `/v1/detect`, a search), never the driver, device, ports
-  or search words.
+  drivers; **listing devices** sends the search words and filters. These
+  requests carry no account. Of detection and of driver fetches the server
+  keeps counters only, with no visitor, account, address or time of day
+  attached: per driver, how many times it was fetched each day; per device
+  name asked for, how many times it was found or missing; per MIDI port
+  name (lower case, without its numbers), how many times it was seen,
+  whether the device identified itself, and which driver came first, or
+  none. It learns which drivers are used and which devices are missing,
+  never who uses what. Its general request log names only the kind of
+  request (`/api/v1/devices/…`, `/v1/devices/…`, `/v1/detect`, a search),
+  never the driver, device or ports. A search is different: it is kept with
+  its words and filters, tied to the visitor, never to your address. What
+  the server keeps of the calls your copy forwards, and for how long, is
+  written under *Visits and activity* below.
 - **An anonymous account** is issued by the server the first time your agent
   reports or contributes, and kept on your machine in `<config>/osc-bridge/user`.
 - **When your agent reports or contributes** (`report_result`,
@@ -105,13 +108,23 @@ request it answers, each page of the site viewed, each sign-in, each relay
 opened and closed, and each tool call: the time, what was asked, the
 answer's status, the browser or program's name, and — for page views — the
 page, the site you came from (its address only), your language and screen
-size. You appear in it only as a **fingerprint of your address**, computed
+size. A tool call your copy forwards (a tool call of your agent) is kept
+with its outcome, its duration and, when it failed, the error message,
+shortened to its first characters; a search is kept with its words and
+filters. This holds on every surface, with or without an account: a copy
+that sends no account is recorded too. Each of these records is tied to the
+visitor — the fingerprint below — and never to your address. You appear in
+it only as a **fingerprint of your address**, computed
 with a secret key kept on the server: the same address always gives the same
 fingerprint, so visits that come back can be counted, but the address itself
 is never written and cannot be read back from it. An IPv6 address is
 fingerprinted by its network (its first half), which a home's devices share. The site sets no cookie for
 this and keeps nothing in your browser. These records stay on the server and
 are read only by its administrator.
+
+The server keeps this detail (each call, search and visit, with its visitor)
+for 6 months, then deletes it. Beyond that only each day's totals remain,
+with no visitor and no account, the words of the searches included.
 
 What the server records — accounts, tool calls, reports, device identities —
 is described in the
