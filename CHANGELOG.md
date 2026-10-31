@@ -11,6 +11,8 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+## [0.19.0] — 2026-10-31
+
 ### Fixed — a driver with a checksum the engine cannot compute loads again
 - A driver holding a checksum token the engine cannot compute (`{checksum}`
   without an algorithm, an unknown algorithm, an offset at or past the token,
