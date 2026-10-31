@@ -20,6 +20,13 @@ is tracked explicitly under each release.
   `lint` and `inspect` print a `WARN` line for each such token, and `lint`
   counts them in its `N warning(s)`.
 
+### Added — a driver's Lua reads Electra One's `parameterMap.get` and the device channel
+- A command `script` calls `parameterMap.get(deviceId, PT_<TYPE>, number)` and
+  `devices.get(id):getChannel()` (1..16), as an Electra One preset's functions do
+  (<https://docs.electra.one/developers/luaext.html>); `print` goes to the log.
+- A command carries Electra's parameter number under the annotation key
+  `_electra`: `{"_electra": {"parameter": {"type": "sysex", "number": 1}}}`.
+
 ## [0.18.0] — 2026-10-31
 
 ### Changed — the engine computes three checksum algorithms in every frame

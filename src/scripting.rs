@@ -21,6 +21,9 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
+use std::collections::HashMap;
+
+use crate::device::Device;
 use crate::routing::{CcRoute, DynamicRoutes};
 
 const DEFAULT_MEMORY_LIMIT_BYTES: usize = 1_024 * 1_024; // 1 MiB
@@ -91,18 +94,47 @@ pub struct ScriptEngine {
     emit_queue: Arc<Mutex<Vec<EmitBlock>>>,
     /// OSC messages queued by `ob.emit_osc` (introspection / status reports).
     osc_queue: Arc<Mutex<Vec<EmitOsc>>>,
+    /// Last value sent or received per OSC address, read by `parameterMap.get`.
+    values: Arc<Mutex<HashMap<String, i64>>>,
 }
 
+/// What `parameterMap.get` knows of one command: its OSC address and the
+/// value to answer when none was recorded (default, else range low end, else 0).
+struct ParamEntry {
+    osc: String,
+    fallback: i64,
+}
+
+/// Electra One parameter types, the names of the `PT_*` constants.
+const ELECTRA_PARAM_TYPES: [&str; 11] = [
+    "none", "cc7", "cc14", "nrpn", "rpn", "note", "program", "sysex", "virtual", "start", "stop",
+];
+
 impl ScriptEngine {
-    pub fn new() -> Result<Self> { Self::new_inner(None) }
+    pub fn new() -> Result<Self> { Self::new_inner(None, None) }
 
     /// Construct with a routes handle. Lua scripts can then call
     /// `ob.register_cc_route`, `ob.clear_routes`, `ob.set_current_page`.
     pub fn new_with_routes(routes: Arc<Mutex<DynamicRoutes>>) -> Result<Self> {
-        Self::new_inner(Some(routes))
+        Self::new_inner(Some(routes), None)
     }
 
-    fn new_inner(routes: Option<Arc<Mutex<DynamicRoutes>>>) -> Result<Self> {
+    /// Construct for a driver: its Lua also gets Electra One's
+    /// `parameterMap.get` and `devices.get(id):getChannel()`.
+    pub fn new_for_device(dev: &Device) -> Result<Self> { Self::new_inner(None, Some(dev)) }
+
+    /// As [`Self::new_with_routes`], for a driver.
+    pub fn new_with_routes_for_device(routes: Arc<Mutex<DynamicRoutes>>, dev: &Device) -> Result<Self> {
+        Self::new_inner(Some(routes), Some(dev))
+    }
+
+    /// Store the last value sent or received for the command at `osc`
+    /// (its address as the driver writes it), for `parameterMap.get`.
+    pub fn record_value(&self, osc: &str, value: i64) {
+        if let Ok(mut m) = self.values.lock() { m.insert(osc.to_string(), value); }
+    }
+
+    fn new_inner(routes: Option<Arc<Mutex<DynamicRoutes>>>, dev: Option<&Device>) -> Result<Self> {
         // Load only the safe subset: math, string, table. (Lua 5.4 drops bit32;
         // bitwise ops are available via operators `&`, `|`, `~`, `<<`, `>>`.)
         let libs = StdLib::MATH | StdLib::STRING | StdLib::TABLE;
@@ -199,6 +231,9 @@ impl ScriptEngine {
 
         lua.globals().set("ob", ob).map_err(|e| anyhow!("set ob: {e}"))?;
 
+        let values: Arc<Mutex<HashMap<String, i64>>> = Arc::new(Mutex::new(HashMap::new()));
+        if let Some(dev) = dev { install_electra_api(&lua, dev, values.clone())?; }
+
         let deadline_flag = Arc::new(AtomicBool::new(false));
         let flag_hook = deadline_flag.clone();
         let triggers = mlua::HookTriggers::new().every_nth_instruction(INSTRUCTION_INTERVAL);
@@ -210,7 +245,7 @@ impl ScriptEngine {
             }
         });
 
-        Ok(Self { lua, deadline_flag, emit_queue, osc_queue })
+        Ok(Self { lua, deadline_flag, emit_queue, osc_queue, values })
     }
 
     /// Drain SysEx blocks emitted during the last script call. The runtime
@@ -439,6 +474,66 @@ fn install_emit_osc_fn(lua: &Lua, ob: &Table, queue: Arc<Mutex<Vec<EmitOsc>>>) -
         Ok(())
     }).map_err(|e| anyhow!("emit_osc: {e}"))?;
     ob.set("emit_osc", emit).map_err(|e| anyhow!("set emit_osc: {e}"))?;
+    Ok(())
+}
+
+/// Electra One's Lua API, under the names Electra gives it
+/// (https://docs.electra.one/developers/luaext.html):
+/// - `parameterMap.get(deviceId, parameterType, parameterNumber)` reads a
+///   parameter's current value. Here: the value held for the command whose
+///   `_electra.parameter` is (type, number) — last sent or received, else its
+///   default, else the low end of its range, else 0; 0 when no command is so
+///   numbered. The `PT_*` constants name the parameter types.
+/// - `devices.get(deviceId):getChannel()` gives the device's MIDI channel,
+///   1..16: the channel the engine sends this driver on.
+/// - `print` goes to the log.
+///
+/// One engine serves one driver, so `deviceId` is not looked up.
+fn install_electra_api(lua: &Lua, dev: &Device, values: Arc<Mutex<HashMap<String, i64>>>) -> Result<()> {
+    let e = |what: &str| { let what = what.to_string(); move |er: mlua::Error| anyhow!("{what}: {er}") };
+    let mut table: HashMap<(String, i64), ParamEntry> = HashMap::new();
+    for cmd in &dev.commands {
+        let Some(p) = cmd.electra.as_ref().and_then(|a| a.parameter.as_ref()) else { continue };
+        let arg = cmd.args.first();
+        let fallback = arg
+            .and_then(|a| a.default.as_ref().and_then(|d| d.as_i64().or_else(|| d.as_f64().map(|f| f as i64))))
+            .or_else(|| arg.and_then(|a| a.range.map(|r| r[0])))
+            .unwrap_or(0);
+        table.entry((p.ty.to_ascii_lowercase(), p.number))
+            .or_insert(ParamEntry { osc: cmd.osc.clone(), fallback });
+    }
+    let g = lua.globals();
+    for t in ELECTRA_PARAM_TYPES {
+        g.set(format!("PT_{}", t.to_ascii_uppercase()), t).map_err(e("PT constant"))?;
+    }
+    let pm = lua.create_table().map_err(e("parameterMap"))?;
+    pm.set("get", lua.create_function(move |_, (_id, ty, number): (Value, String, i64)| {
+        let Some(p) = table.get(&(ty.to_ascii_lowercase(), number)) else { return Ok(0) };
+        let held = values.lock().ok().and_then(|m| m.get(&p.osc).copied());
+        Ok(held.unwrap_or(p.fallback))
+    }).map_err(e("parameterMap.get"))?).map_err(e("set parameterMap.get"))?;
+    g.set("parameterMap", pm).map_err(e("set parameterMap"))?;
+
+    let channel = i64::from(
+        dev.midi_out.as_ref().map(|m| m.default_channel)
+            .or(dev.cc_params.as_ref().map(|c| c.channel))
+            .unwrap_or(0) & 0x0F,
+    ) + 1;
+    let devices = lua.create_table().map_err(e("devices"))?;
+    devices.set("get", lua.create_function(move |lua, _id: Value| {
+        let d = lua.create_table()?;
+        d.set("getChannel", lua.create_function(move |_, _self: Value| Ok(channel))?)?;
+        Ok(d)
+    }).map_err(e("devices.get"))?).map_err(e("set devices.get"))?;
+    g.set("devices", devices).map_err(e("set devices"))?;
+
+    g.set("print", lua.create_function(|lua, args: mlua::Variadic<Value>| {
+        let tostring: mlua::Function = lua.globals().get("tostring")?;
+        let parts: Vec<String> = args.into_iter()
+            .map(|v| tostring.call::<String>(v)).collect::<mlua::Result<_>>()?;
+        eprintln!("[lua] {}", parts.join("\t"));
+        Ok(())
+    }).map_err(e("print"))?).map_err(e("set print"))?;
     Ok(())
 }
 

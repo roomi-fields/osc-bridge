@@ -58,6 +58,7 @@ fn ableton_like(target_port: u16, reply_port: u16) -> Device {
                     args: vec![ForwardArg::Str("{bpm}".into())],
                 }),
                 script: None,
+                electra: None,
             },
         ],
         params: None,

@@ -606,6 +606,27 @@ pub struct Command {
     /// must `return ctx` (possibly with a mutated `payload` / `checksum`).
     #[serde(default)]
     pub script: Option<String>,
+    /// Electra One's own annotation (`_electra`, a free `^_` key in OSD 0.5),
+    /// kept for compatibility: the parameter (type, number) a preset's Lua
+    /// reads through `parameterMap.get`. Nothing else reads it.
+    #[serde(default, rename = "_electra", skip_serializing_if = "Option::is_none")]
+    pub electra: Option<ElectraAnnotation>,
+}
+
+/// The `_electra` annotation of a command.
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ElectraAnnotation {
+    #[serde(default)]
+    pub parameter: Option<ElectraParameter>,
+}
+
+/// Electra One's parameter address: its type (`sysex`, `virtual`, `cc7`, …)
+/// and its parameterNumber.
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ElectraParameter {
+    #[serde(rename = "type")]
+    pub ty: String,
+    pub number: i64,
 }
 
 /// OSC message template emitted to an OSC target (DAW, live-coding env).

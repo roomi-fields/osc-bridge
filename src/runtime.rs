@@ -89,7 +89,7 @@ impl Runtime {
         // reply.script (e.g. Electra's /page/switched updating current_page).
         let script_engine: ScriptCell = Arc::new(OnceLock::new());
         if device_uses_scripting(&dev) {
-            match ScriptEngine::new_with_routes(routes.clone()) {
+            match ScriptEngine::new_with_routes_for_device(routes.clone(), &dev) {
                 Ok(e) => {
                     let _ = script_engine.set(Mutex::new(e));
                     eprintln!("Lua scripting: enabled (device uses transform/script fields)");
@@ -398,6 +398,30 @@ fn device_uses_scripting(dev: &Device) -> bool {
             e.transform.is_some() || e.transform_reverse.is_some())).unwrap_or(false)
 }
 
+/// Hand the engine the value a command just sent (its last numeric OSC
+/// argument), for `parameterMap.get`.
+fn record_sent_value(cell: &ScriptCell, cmd: &Command, args: &[OscType]) {
+    if cmd.electra.is_none() { return; }
+    let Some(m) = cell.get() else { return };
+    let v = args.iter().rev().find_map(|a| match a {
+        OscType::Int(i) => Some(*i as i64),
+        OscType::Long(i) => Some(*i),
+        OscType::Float(f) => Some(*f as i64),
+        OscType::Double(f) => Some(*f as i64),
+        _ => None,
+    });
+    if let (Some(v), Ok(e)) = (v, m.lock()) { e.record_value(&cmd.osc, v); }
+}
+
+/// Hand the engine the value a device reply carries (its last numeric OSC
+/// argument) when the reply's address is that of a command annotated
+/// `_electra`, for `parameterMap.get`.
+fn record_received_value(cell: &ScriptCell, dev: &Device, m: &OscMessage) {
+    let Some(rel) = m.addr.strip_prefix(&dev.device.osc_prefix) else { return };
+    let Some(cmd) = dev.commands.iter().find(|c| c.electra.is_some() && c.osc == rel) else { return };
+    record_sent_value(cell, cmd, &m.args);
+}
+
 /// Run a command's `script` field (if any) against the assembled frame.
 /// Returns the (possibly mutated) frame, or None to drop the message.
 fn maybe_run_cmd_script(cell: &ScriptCell, cmd: &Command, frame: Vec<u8>, device: &str) -> Option<Vec<u8>> {
@@ -673,6 +697,7 @@ pub fn handle_midi_in(
                     return;
                 }
                 let m = emit_reply_osc(&rp.emit_osc, &dev.device.osc_prefix, &bindings);
+                record_received_value(scripts, dev, &m);
                 send(m);
                 return;
             }
@@ -859,7 +884,7 @@ impl DeviceDispatch {
         let routes = DynamicRoutes::handle();
         let scripts: ScriptCell = Arc::new(OnceLock::new());
         if device_uses_scripting(&dev) {
-            if let Ok(e) = ScriptEngine::new_with_routes(routes.clone()) {
+            if let Ok(e) = ScriptEngine::new_with_routes_for_device(routes.clone(), &dev) {
                 let _ = scripts.set(Mutex::new(e));
             }
         }
@@ -1058,6 +1083,7 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
         if let Some(caps) = match_osc_path(&h.pattern_parts, &msg.addr) {
             match dispatch_command(&h.cmd, &caps, &msg.args, dev) {
                 Ok(frm) => {
+                    record_sent_value(scripts, &h.cmd, &msg.args);
                     if let Some(post) = maybe_run_cmd_script(scripts, &h.cmd, frm.clone(), &dev.device.name) {
                         enqueue(tx, post, &msg.addr, from);
                     }
@@ -1889,7 +1915,7 @@ mod tests {
                 ArgSpec { name: "n".into(), ty: "int".into(), range: None, values: None, default: None },
                 ArgSpec { name: "v".into(), ty: "float".into(), range: None, values: None, default: None },
             ],
-            pre: vec![], frame: vec![], forward: None, script: None,
+            pre: vec![], frame: vec![], forward: None, script: None, electra: None,
         };
         let mut caps = HashMap::new();
         caps.insert("n".into(), "7".to_string());

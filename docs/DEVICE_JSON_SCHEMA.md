@@ -274,6 +274,27 @@ display text, pad colors, etc.).
 }
 ```
 
+### `_electra` — Electra One's parameter number
+
+The number is Electra One's own, kept for compatibility; it is not a standard OSD field.
+A command carries it under a key starting with `_` (OSD 0.5 accepts such keys as free annotations):
+
+```jsonc
+{ "osc": "/level_s1", "_electra": { "parameter": { "type": "sysex", "number": 1 } }, … }
+```
+
+`type` is Electra's parameter type (`sysex`, `virtual`, `cc7`, `cc14`, `nrpn`, `rpn`, `note`,
+`program`…), `number` its parameterNumber. Only the Lua APIs below read it. A command `script`
+then calls Electra One's functions
+(<https://docs.electra.one/developers/luaext.html>):
+
+- `parameterMap.get(deviceId, PT_<TYPE>, number)` returns the value held for the command so
+  numbered: the last sent or received (a device reply whose `emit_osc` is the command's address), else the first arg's `default`, else the low end of its `range`, else 0
+  (a virtual parameter with none reads 0; so does a number no command carries).
+- `devices.get(deviceId):getChannel()` returns the channel the engine sends the driver on, 1..16
+  (`midi_out.default_channel`, else `cc_params.channel`, plus one).
+- `print(…)` writes to the engine's log.
+
 ## Param — bulk read/write with shared opcode
 
 For devices where one opcode family (like Arturia `20/21 <sec> 40 <id>`) addresses

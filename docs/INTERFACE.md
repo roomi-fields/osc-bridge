@@ -26,6 +26,13 @@ The tools are described once, from Rust types; the list the server offers is gen
 
 Each device's addresses come from its driver, under its prefix; the uniform addresses (`/identity`, `/program/recall`, `/program/dump`) are the same on every device; `/bridge/status` and `/bridge/docs` describe the bridge itself. OSCQuery publishes the whole namespace.
 
+## The Lua a driver declares
+
+A command `script` sees, besides `ctx` and `ob`, Electra One's two APIs under Electra's names (<https://docs.electra.one/developers/luaext.html>), so a preset's function runs unchanged:
+
+- `parameterMap.get(deviceId, PT_<TYPE>, number)` answers the value held for the command whose `_electra.parameter` is (type, number): last sent or received, else its default, else the low end of its range, else 0.
+- `devices.get(deviceId):getChannel()` answers the channel the engine sends the driver on, 1..16.
+
 ## The faults
 
 - `NoDriver` — no driver matches the name, in the cache or the service.
