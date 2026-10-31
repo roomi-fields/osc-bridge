@@ -320,12 +320,12 @@ fn criterion_11_inspect_prints_the_same_warn_lines_on_stderr_and_succeeds() {
 // ---- criterion 12: the changelog ----
 
 #[test]
-fn criterion_12_the_changelog_says_it_under_unreleased() {
+fn criterion_12_the_changelog_says_it_under_the_release_that_carries_the_fix() {
     let changelog = std::fs::read_to_string("CHANGELOG.md").unwrap();
-    let start = changelog.find(&format!("## [{}]", ["Unre", "leased"].concat())).expect("an Unreleased section");
+    let start = changelog.find("## [0.19.0]").expect("a 0.19.0 section");
     let rest = &changelog[start + 1..];
-    let unreleased = &rest[..rest.find("\n## [").unwrap_or(rest.len())];
+    let section = &rest[..rest.find("\n## [").unwrap_or(rest.len())];
     for w in ["checksum", "loads", "build", "lint", "inspect"] {
-        assert!(unreleased.contains(w), "Unreleased should say {w}:\n{unreleased}");
+        assert!(section.contains(w), "0.19.0 should say {w}:\n{section}");
     }
 }
