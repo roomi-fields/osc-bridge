@@ -11,6 +11,8 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+## [0.18.0] — 2026-10-31
+
 ### Changed — the engine computes three checksum algorithms in every frame
 - `{checksum:<algorithm>@<from>[+<length>]}` works in command, parameter,
   `programs` and `identity.request` frames, with `twos7` (Roland), `sum7`
