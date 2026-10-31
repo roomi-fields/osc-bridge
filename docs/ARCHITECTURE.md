@@ -41,13 +41,13 @@ flowchart TB
   fmt --> osd
 ```
 
-| Crate | Responsibility | Owns | Calls |
-|---|---|---|---|
-| `synth-core` | the session of a device: messages ↔ MIDI or OSC messages, replies, recognition, programs, the Lua capability, a virtual device that answers | the compiled device, the session state | `osd` |
-| `synth-io` | carry core messages: MIDI 1 ports, MIDI 2, OSC over UDP, WebSocket, OSCQuery, output pacing | ports, sockets | `synth-core` (types) |
-| `formats` | export to and import from other formats: MIDNAM, OSCQuery, Electra One, Ctrlr | the converters | `osd` |
-| `synthhub-protocol` | the types exchanged with the service: versioned API, relay frames, identity | the contract | nothing |
-| `osc-bridge` (root) | the application: CLI, MCP server (stdio, HTTP with a token), orchestrator of several devices with routes between them, relay door, driver cache, privacy settings | the installation's configuration | all four |
+| Crate | Responsibility | Owns | Calls | Langage |
+|---|---|---|---|---|
+| `synth-core` | the session of a device: messages ↔ MIDI or OSC messages, replies, recognition, programs, the Lua capability, a virtual device that answers | the compiled device, the session state | `osd` | |
+| `synth-io` | carry core messages: MIDI 1 ports, MIDI 2, OSC over UDP, WebSocket, OSCQuery, output pacing | ports, sockets | `synth-core` (types) | |
+| `formats` | export to and import from other formats: MIDNAM, OSCQuery, Electra One, Ctrlr | the converters | `osd` | |
+| `synthhub-protocol` | the types exchanged with the service: versioned API, relay frames, identity | the contract | nothing | |
+| `osc-bridge` (root) | the application: CLI, MCP server (stdio, HTTP with a token), orchestrator of several devices with routes between them, relay door, driver cache, privacy settings | the installation's configuration | all four | cargo |
 
 The single-device mode is the orchestrator with one device: one dispatch path.
 
