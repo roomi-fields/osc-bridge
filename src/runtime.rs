@@ -1043,7 +1043,7 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
                     Ok(b) => {
                         match frame::build_frame(dev, &pt.set_frame, &b) {
                             Ok(frm) => { enqueue(tx, frm, &msg.addr, from); return; }
-                            Err(e) => eprintln!("build_frame err: {e}"),
+                            Err(e) => eprintln!("build_frame err: {}: {}: {e}", dev.device.name, msg.addr),
                         }
                     }
                     Err(e) => eprintln!("coerce err: {e}"),
@@ -1094,9 +1094,9 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
                 (as_u7(&msg.args[0]), as_u7(&msg.args[1]), as_u7(&msg.args[2]), as_u7(&msg.args[3])) {
                 let mut b = Bindings::new();
                 b.set_u7("pr", pr); b.set_u7("p", p); b.set_u7("c", c); b.set_u7("r", r);
-                if let Ok(frm) = frame::build_frame(dev, &pt.get_frame, &b) {
-                    enqueue(tx, frm, &msg.addr, from);
-                    return;
+                match frame::build_frame(dev, &pt.get_frame, &b) {
+                    Ok(frm) => { enqueue(tx, frm, &msg.addr, from); return; }
+                    Err(e) => eprintln!("build_frame err: {}: {}: {e}", dev.device.name, msg.addr),
                 }
             }
         }
@@ -1153,6 +1153,7 @@ fn dispatch_command(cmd: &Command, caps: &HashMap<String, String>, args: &[OscTy
     }
 
     frame::build_frame(dev, &cmd.frame, &b)
+        .map_err(|e| anyhow::anyhow!("{}: {}: {e}", dev.device.name, dev.full_osc_path(&cmd.osc)))
 }
 
 /// Extremely limited expression evaluator supporting `name + N`, `name - N`,

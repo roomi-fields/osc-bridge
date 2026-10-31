@@ -109,7 +109,7 @@ fn run_script(code: &str, ctx: &serde_json::Value) -> Result<Vec<Vec<u8>>, Strin
 fn build(dev: &Device, frames: &[Vec<FrameToken>], bind: &Bindings) -> Result<Vec<Vec<u8>>, String> {
     frames.iter().map(|f| {
         let f = match &dev.identity { Some(id) => id.expand(f), None => f.clone() };
-        build_message(&f, bind).map_err(|e| e.to_string())
+        build_message(&f, bind).map_err(|e| format!("{}: programs: {e}", dev.device.name))
     }).collect()
 }
 

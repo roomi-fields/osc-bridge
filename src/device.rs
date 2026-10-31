@@ -332,6 +332,33 @@ impl DeviceIdentity {
 }
 
 impl Device {
+    /// The checksums the engine cannot compute, as `(place, problem)`: the
+    /// place is the OSC address of a command or parameter, or the block
+    /// (`programs`, `identity.request`). Nothing refuses a driver for them;
+    /// `lint` and `inspect` warn, the build fails.
+    pub fn checksum_problems(&self) -> Vec<(String, String)> {
+        use crate::frame::checksum_problems as check;
+        let mut out = Vec::new();
+        let mut add = |place: String, frame: &[FrameToken], base: usize| {
+            out.extend(check(frame, base).into_iter().map(|p| (place.clone(), p)));
+        };
+        // Commands and parameters sit after the header; identity and programs frames are whole messages.
+        let head = self.sysex.header.len();
+        for c in &self.commands { add(self.full_osc_path(&c.osc), &c.frame, head); }
+        if let Some(pt) = &self.params {
+            let set = pt.entries.first().map(|e| self.full_osc_path(&e.osc)).unwrap_or_else(|| "param set".into());
+            add(set, &pt.set_frame, head);
+            add(self.full_osc_path("/param/get"), &pt.get_frame, head);
+        }
+        if let Some(req) = self.identity.as_ref().and_then(|i| i.request.as_ref()) { add("identity.request".into(), req, 0); }
+        if let Some(p) = &self.programs {
+            for f in p.before.iter().chain(&p.after).chain(p.dump.iter().filter_map(|d| d.request.as_ref())) {
+                add("programs".into(), f, 0);
+            }
+        }
+        out
+    }
+
     /// Refuse an `identity` or `programs` block the engine could not use.
     pub fn check_blocks(&self) -> anyhow::Result<()> {
         use anyhow::bail;
@@ -341,19 +368,6 @@ impl Device {
                 FrameToken::Literal(_) => None,
             }).collect()
         };
-        // Commands and parameters sit after the header; identity and programs frames are whole messages.
-        let head = self.sysex.header.len();
-        for c in &self.commands { crate::frame::check_checksums(&c.frame, head)?; }
-        if let Some(pt) = &self.params {
-            crate::frame::check_checksums(&pt.set_frame, head)?;
-            crate::frame::check_checksums(&pt.get_frame, head)?;
-        }
-        if let Some(req) = self.identity.as_ref().and_then(|i| i.request.as_ref()) { crate::frame::check_checksums(req, 0)?; }
-        if let Some(p) = &self.programs {
-            for f in p.before.iter().chain(&p.after).chain(p.dump.iter().filter_map(|d| d.request.as_ref())) {
-                crate::frame::check_checksums(f, 0)?;
-            }
-        }
         if let Some(id) = &self.identity {
             if let Some(to) = id.to.as_deref() {
                 if !["every_port", "named_ports"].contains(&to) { bail!("identity.to {to:?}: every_port or named_ports"); }

@@ -126,19 +126,23 @@ fn push_checksum(token: &str, out: &mut Vec<u8>) -> Result<()> {
     Ok(())
 }
 
-/// Refuse at load a checksum no frame could compute. `base` is the number of
-/// bytes written before the first token (the header). A `from` at or past the
-/// token's smallest position is refused always; a length past it only when
-/// every earlier token has a fixed size, else the build refuses it.
-pub fn check_checksums(tokens: &[FrameToken], base: usize) -> Result<()> {
+/// The checksums no frame could compute, one line each (nothing refuses a
+/// driver). `base` is the number of bytes written before the first token (the
+/// header). A `from` at or past the token's smallest position is a problem
+/// always; a length past it only when every earlier token has a fixed size,
+/// else the build decides.
+pub fn checksum_problems(tokens: &[FrameToken], base: usize) -> Vec<String> {
+    let mut problems = Vec::new();
     let (mut min, mut fixed) = (base, true);
     for tok in tokens {
         let FrameToken::Placeholder(s) = tok else { min += 1; continue };
         if is_checksum(s) {
-            let c = Checksum::parse(s)?;
-            if c.from >= min { bail!("'{s}': offset {} is not before the checksum, written at offset {min}", c.from); }
-            if let Some(l) = c.length.filter(|l| fixed && c.from + l > min) {
-                bail!("'{s}': {l} bytes from offset {} run past the {min} bytes written", c.from);
+            match Checksum::parse(s) {
+                Err(e) => problems.push(e.to_string()),
+                Ok(c) if c.from >= min => problems.push(format!("'{s}': offset {} is not before the checksum, written at offset {min}", c.from)),
+                Ok(c) => if let Some(l) = c.length.filter(|l| fixed && c.from.saturating_add(*l) > min) {
+                    problems.push(format!("'{s}': {l} bytes from offset {} run past the {min} bytes written", c.from));
+                },
             }
             min += 1;
             continue;
@@ -155,7 +159,7 @@ pub fn check_checksums(tokens: &[FrameToken], base: usize) -> Result<()> {
             _ => min += 1,
         }
     }
-    Ok(())
+    problems
 }
 
 fn emit_placeholder(ph: &str, b: &Bindings, out: &mut Vec<u8>) -> Result<()> {

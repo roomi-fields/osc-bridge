@@ -225,10 +225,16 @@ only by its USB port name has `ports` alone.
   covers every byte from `<from>` up to it; the footer and the bytes after it
   are never covered. `<algorithm>` is `twos7` (Roland: `(128 - sum mod 128)
   & 0x7F`), `sum7` (Waldorf: `sum & 0x7F`) or `xor7` (Fractal: the XOR of the
-  bytes `& 0x7F`). An unknown algorithm, or a `<from>` or `<length>` past the
-  bytes written, refuses the driver at load, naming the token (after a
+  bytes `& 0x7F`). A token the engine cannot compute (an unreadable form such as
+  `{checksum}`, an unknown algorithm, a `<from>` at or after the token, a
+  `<length>` past the bytes written) never refuses the driver: it loads, its
+  other commands, parameters and CC work, and building a frame that holds the
+  token fails, naming the driver, the frame's origin (the OSC address, or
+  `programs`, `identity.request`) and the token, with the three algorithms
+  for an unreadable form; nothing is sent. `lint` and `inspect` print a
+  `WARN` line per such token. An offset past the bytes written after a
   `{bytes}`, `{ascii}` or a bare `{family}`, whose size is known only at
-  build, the build refuses it). In `replies.match_frame` it matches any
+  build, fails at build. In `replies.match_frame` it matches any
   byte. The first form, with `twos` alone, is gone: write `twos7`.
 - The bridge answers `/<prefix>/program/recall <bank> <number> [channel]`:
   the bank by name (any case) or by its place from 0, the number as the device

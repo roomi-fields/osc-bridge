@@ -284,6 +284,7 @@ fn cmd_lint(path: PathBuf) -> Result<()> {
         eprintln!("  WARN: scripted fallback at {where_} ({what}) — prefer declarative if possible.");
         *w += 1;
     };
+    for line in checksum_warnings(&dev) { eprintln!("{line}"); warnings += 1; }
     for c in &dev.commands {
         if c.script.is_some() { warn("command.script", &format!("/{}", c.osc), &mut warnings); }
     }
@@ -309,11 +310,18 @@ fn cmd_lint(path: PathBuf) -> Result<()> {
         dev.params.as_ref().map(|p| p.entries.len()).unwrap_or(0),
         dev.cc_params.as_ref().map(|p| p.entries.len()).unwrap_or(0),
     );
-    if warnings > 0 { eprintln!("{warnings} scripted-fallback warning(s)."); }
+    if warnings > 0 { eprintln!("{warnings} warning(s)."); }
     if errors > 0 {
         eprintln!("{errors} error(s)."); std::process::exit(1);
     }
     Ok(())
+}
+
+/// One `WARN` line per checksum the engine cannot compute; the build of that frame fails.
+fn checksum_warnings(dev: &Device) -> Vec<String> {
+    dev.checksum_problems().into_iter()
+        .map(|(place, problem)| format!("  WARN: checksum at {place}: {problem} — building this frame fails."))
+        .collect()
 }
 
 fn cmd_list() -> Result<()> {
@@ -332,6 +340,7 @@ fn cmd_list() -> Result<()> {
 
 fn cmd_inspect(path: PathBuf) -> Result<()> {
     let dev = Device::load(osc_bridge::catalogue::locate(&path)?)?;
+    for line in checksum_warnings(&dev) { eprintln!("{line}"); }
     println!("Device:   {} ({})", dev.device.name, dev.device.revision);
     println!("Vendor:   {}", dev.device.vendor);
     println!("OSC prefix: {}", dev.device.osc_prefix);

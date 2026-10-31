@@ -142,7 +142,8 @@ pub fn probe_of(id: &DeviceIdentity) -> Result<Option<Probe>> {
     let dev = id.device_id.as_ref().map(|d| d.default).unwrap_or(0x7F);
     let mut bind = crate::frame::Bindings::new();
     bind.set_u7("dev", dev);
-    let bytes = crate::frame::build_message(&id.expand(tokens), &bind)?;
+    let bytes = crate::frame::build_message(&id.expand(tokens), &bind)
+        .map_err(|e| anyhow!("identity.request: {e}"))?;
     if bytes == IDENTITY_REQUEST {
         return Ok(None);
     }

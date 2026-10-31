@@ -11,6 +11,15 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Fixed — a driver with a checksum the engine cannot compute loads again
+- A driver holding a checksum token the engine cannot compute (`{checksum}`
+  without an algorithm, an unknown algorithm, an offset at or past the token,
+  a length past the bytes) loads again, as in 0.17.0; its other commands,
+  parameters and CC work. The commands holding such a token fail at build,
+  naming the driver, the command and the token, and send nothing.
+  `lint` and `inspect` print a `WARN` line for each such token, and `lint`
+  counts them in its `N warning(s)`.
+
 ## [0.18.0] — 2026-10-31
 
 ### Changed — the engine computes three checksum algorithms in every frame
