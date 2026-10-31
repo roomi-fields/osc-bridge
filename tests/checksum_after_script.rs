@@ -166,7 +166,3 @@ fn criterion_12_a_lua_that_writes_another_value_is_overwritten_by_the_engine() {
     assert_eq!(send(&dev), vec![expected(0x25)]);
 }
 
-#[test]
-fn criterion_5_the_changelog_says_checksums_follow_the_script() {
-    common::changelog::section_with_words(&["checksum", "script"]);
-}

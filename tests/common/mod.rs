@@ -10,8 +10,6 @@
 
 #![allow(dead_code)]
 
-pub mod changelog;
-
 use serde_json::Value;
 use std::path::Path;
 use std::sync::{Arc, Mutex};

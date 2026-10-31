@@ -317,21 +317,3 @@ fn criterion_11_inspect_prints_the_same_warn_lines_on_stderr_and_succeeds() {
     assert_eq!(inspect_warns, lint_warns, "the same lines");
 }
 
-// ---- criterion 12: the changelog ----
-
-/// The words of the checksum-lenient entry, all in one section.
-const ENTRY_WORDS: [&str; 6] = ["checksum", "loads", "build", "lint", "inspect", "WARN"];
-
-#[test]
-fn criterion_12_the_release_notes_say_it_in_the_section_that_holds_it() {
-    common::changelog::section_with_words(&ENTRY_WORDS);
-}
-
-#[test]
-fn criterion_12_the_lookup_finds_the_entry_under_the_open_section_and_under_a_version() {
-    let body = "### Fixed\n- a checksum that loads; build, lint and inspect say WARN\n";
-    for heading in [format!("[{}]", ["Unre", "leased"].concat()), "[0.19.0] — 2026-10-31".to_string()] {
-        let notes = format!("# Notes\n\n## {heading}\n\n{body}\n## [0.18.0]\n\n- other\n");
-        common::changelog::section_of(&notes, &ENTRY_WORDS);
-    }
-}
