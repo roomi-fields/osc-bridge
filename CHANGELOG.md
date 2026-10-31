@@ -11,6 +11,8 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+## [0.19.1] — 2026-10-31
+
 ### Fixed — a command's checksums are computed after its script
 - When a command has a `script`, every `{checksum:...}` of its frame is
   computed after the script has run, over the bytes the script leaves: a
