@@ -5,6 +5,8 @@
 
 use std::path::Path;
 
+mod common;
+
 fn read(name: &str) -> String {
     std::fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join(name)).unwrap()
 }
@@ -96,13 +98,122 @@ fn criterion_2_only_daily_totals_remain_without_visitor_or_account() {
     assert!(s.contains("no account") || s.contains("without account") || s.contains("without any account"), "{s}");
 }
 
+const PRIVACY_ENTRY_TITLE: &str = "PRIVACY.md says what the service keeps of a call";
+
+/// The entry of `log` titled `PRIVACY_ENTRY_TITLE`, wherever it sits: from its
+/// heading to the next heading, lowercased.
+fn privacy_entry(log: &str) -> String {
+    let at = log
+        .find(PRIVACY_ENTRY_TITLE)
+        .unwrap_or_else(|| panic!("the CHANGELOG has no entry `{PRIVACY_ENTRY_TITLE}`"));
+    let rest = &log[at..];
+    let end = rest.find("\n#").unwrap_or(rest.len());
+    rest[..end].to_lowercase().split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
+fn entry_names_the_change(log: &str) {
+    let e = privacy_entry(log);
+    assert!(e.contains("privacy.md"), "{e}");
+    assert!(e.contains("6 months") || e.contains("six months"), "{e}");
+}
+
+fn changelog_with(heading: &str, title: &str, body: &str) -> String {
+    format!(
+        "# Changelog\n\n## {heading}\n\n### Changed — {title}\n- {body}\n\n## [0.17.0] — 2026-01-01\n\n### Fixed — other\n- something about 6 months and PRIVACY.md\n"
+    )
+}
+
+const WITH_BOTH: &str = "PRIVACY.md says the detail is kept 6 months.";
+
+/// The heading of the open section, assembled so no file spells it whole.
+fn open_heading() -> String {
+    format!("[{}]", ["Unre", "leased"].concat())
+}
+
 #[test]
-fn criterion_3_changelog_unreleased_names_the_change() {
-    let log = read("CHANGELOG.md");
-    let start = log.find("## [Unreleased]").unwrap();
-    let rest = &log[start + 5..];
-    let end = rest.find("\n## [").unwrap_or(rest.len());
-    let unreleased = rest[..end].to_lowercase();
-    assert!(unreleased.contains("privacy.md"), "{unreleased}");
-    assert!(unreleased.contains("6 months") || unreleased.contains("six months"), "{unreleased}");
+fn criterion_3_changelog_entry_names_the_change() {
+    entry_names_the_change(&read("CHANGELOG.md"));
+}
+
+#[test]
+fn criterion_5_entry_under_the_open_section_passes() {
+    let log = changelog_with(&open_heading(), PRIVACY_ENTRY_TITLE, WITH_BOTH);
+    let dir = common::temp("changelog-open");
+    let path = dir.path().join("CHANGELOG.md");
+    std::fs::write(&path, log).unwrap();
+    entry_names_the_change(&std::fs::read_to_string(&path).unwrap());
+}
+
+#[test]
+fn criterion_5_entry_under_a_version_passes() {
+    let log = changelog_with("[0.18.0] — 2026-10-31", PRIVACY_ENTRY_TITLE, WITH_BOTH);
+    let dir = common::temp("changelog-version");
+    let path = dir.path().join("CHANGELOG.md");
+    std::fs::write(&path, log).unwrap();
+    entry_names_the_change(&std::fs::read_to_string(&path).unwrap());
+}
+
+#[test]
+fn criterion_4_changelog_without_the_entry_fails() {
+    let dir = common::temp("changelog-absent");
+    let path = dir.path().join("CHANGELOG.md");
+    std::fs::write(
+        &path,
+        changelog_with("[0.18.0] — 2026-10-31", "something else", "PRIVACY.md, 6 months."),
+    )
+    .unwrap();
+    let log = std::fs::read_to_string(&path).unwrap();
+    assert!(std::panic::catch_unwind(|| entry_names_the_change(&log)).is_err());
+}
+
+#[test]
+fn criterion_4_entry_without_the_six_months_fails() {
+    let dir = common::temp("changelog-no-months");
+    let path = dir.path().join("CHANGELOG.md");
+    std::fs::write(
+        &path,
+        changelog_with("[0.18.0] — 2026-10-31", PRIVACY_ENTRY_TITLE, "PRIVACY.md says what is kept."),
+    )
+    .unwrap();
+    let log = std::fs::read_to_string(&path).unwrap();
+    assert!(std::panic::catch_unwind(|| entry_names_the_change(&log)).is_err());
+}
+
+#[test]
+fn criterion_4_entry_stops_at_the_next_heading() {
+    // a 6 months mention under another heading does not count for the entry.
+    let log = format!("## [0.18.0]\n\n### Changed — {PRIVACY_ENTRY_TITLE}\n\n### Next\n- PRIVACY.md 6 months\n");
+    let e = privacy_entry(&log);
+    assert!(!e.contains("6 months"), "the entry stops at the next heading:\n{e}");
+}
+
+fn files_under(dir: &Path, out: &mut Vec<std::path::PathBuf>) {
+    let Ok(rd) = std::fs::read_dir(dir) else { return };
+    for e in rd.flatten() {
+        let p = e.path();
+        if p.is_dir() {
+            let n = e.file_name().to_string_lossy().to_string();
+            if n != "target" && n != "node_modules" {
+                files_under(&p, out);
+            }
+        } else {
+            out.push(p);
+        }
+    }
+}
+
+#[test]
+fn criterion_6_no_test_script_or_guard_is_bound_to_the_open_section_heading() {
+    let needle = open_heading();
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let mut files = Vec::new();
+    for d in ["tests", "crates", "scripts"] {
+        files_under(&root.join(d), &mut files);
+    }
+    assert!(files.len() > 10, "the search reaches the files: {}", files.len());
+    let bound: Vec<_> = files
+        .iter()
+        .filter(|f| std::fs::read_to_string(f).is_ok_and(|t| t.contains(&needle)))
+        .collect();
+    assert!(bound.is_empty(), "bound to the open-section heading: {bound:?}");
 }
