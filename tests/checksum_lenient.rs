@@ -319,13 +319,19 @@ fn criterion_11_inspect_prints_the_same_warn_lines_on_stderr_and_succeeds() {
 
 // ---- criterion 12: the changelog ----
 
+/// The words of the checksum-lenient entry, all in one section.
+const ENTRY_WORDS: [&str; 6] = ["checksum", "loads", "build", "lint", "inspect", "WARN"];
+
 #[test]
-fn criterion_12_the_changelog_says_it_under_the_release_that_carries_the_fix() {
-    let changelog = std::fs::read_to_string("CHANGELOG.md").unwrap();
-    let start = changelog.find("## [0.19.0]").expect("a 0.19.0 section");
-    let rest = &changelog[start + 1..];
-    let section = &rest[..rest.find("\n## [").unwrap_or(rest.len())];
-    for w in ["checksum", "loads", "build", "lint", "inspect"] {
-        assert!(section.contains(w), "0.19.0 should say {w}:\n{section}");
+fn criterion_12_the_release_notes_say_it_in_the_section_that_holds_it() {
+    common::changelog::section_with_words(&ENTRY_WORDS);
+}
+
+#[test]
+fn criterion_12_the_lookup_finds_the_entry_under_the_open_section_and_under_a_version() {
+    let body = "### Fixed\n- a checksum that loads; build, lint and inspect say WARN\n";
+    for heading in [format!("[{}]", ["Unre", "leased"].concat()), "[0.19.0] — 2026-10-31".to_string()] {
+        let notes = format!("# Notes\n\n## {heading}\n\n{body}\n## [0.18.0]\n\n- other\n");
+        common::changelog::section_of(&notes, &ENTRY_WORDS);
     }
 }

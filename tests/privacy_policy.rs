@@ -103,10 +103,8 @@ const PRIVACY_ENTRY_TITLE: &str = "PRIVACY.md says what the service keeps of a c
 /// The entry of `log` titled `PRIVACY_ENTRY_TITLE`, wherever it sits: from its
 /// heading to the next heading, lowercased.
 fn privacy_entry(log: &str) -> String {
-    let at = log
-        .find(PRIVACY_ENTRY_TITLE)
-        .unwrap_or_else(|| panic!("the CHANGELOG has no entry `{PRIVACY_ENTRY_TITLE}`"));
-    let rest = &log[at..];
+    let section = common::changelog::section_of(log, &[PRIVACY_ENTRY_TITLE]);
+    let rest = &section[section.find(PRIVACY_ENTRY_TITLE).unwrap()..];
     let end = rest.find("\n#").unwrap_or(rest.len());
     rest[..end].to_lowercase().split_whitespace().collect::<Vec<_>>().join(" ")
 }
@@ -117,9 +115,9 @@ fn entry_names_the_change(log: &str) {
     assert!(e.contains("6 months") || e.contains("six months"), "{e}");
 }
 
-fn changelog_with(heading: &str, title: &str, body: &str) -> String {
+fn notes_with(heading: &str, title: &str, body: &str) -> String {
     format!(
-        "# Changelog\n\n## {heading}\n\n### Changed — {title}\n- {body}\n\n## [0.17.0] — 2026-01-01\n\n### Fixed — other\n- something about 6 months and PRIVACY.md\n"
+        "# Notes\n\n## {heading}\n\n### Changed — {title}\n- {body}\n\n## [0.17.0] — 2026-01-01\n\n### Fixed — other\n- something about 6 months and PRIVACY.md\n"
     )
 }
 
@@ -132,50 +130,30 @@ fn open_heading() -> String {
 
 #[test]
 fn criterion_3_changelog_entry_names_the_change() {
-    entry_names_the_change(&read("CHANGELOG.md"));
+    entry_names_the_change(&common::changelog::read());
 }
 
 #[test]
 fn criterion_5_entry_under_the_open_section_passes() {
-    let log = changelog_with(&open_heading(), PRIVACY_ENTRY_TITLE, WITH_BOTH);
-    let dir = common::temp("changelog-open");
-    let path = dir.path().join("CHANGELOG.md");
-    std::fs::write(&path, log).unwrap();
-    entry_names_the_change(&std::fs::read_to_string(&path).unwrap());
+    let log = notes_with(&open_heading(), PRIVACY_ENTRY_TITLE, WITH_BOTH);
+    entry_names_the_change(&log);
 }
 
 #[test]
 fn criterion_5_entry_under_a_version_passes() {
-    let log = changelog_with("[0.18.0] — 2026-10-31", PRIVACY_ENTRY_TITLE, WITH_BOTH);
-    let dir = common::temp("changelog-version");
-    let path = dir.path().join("CHANGELOG.md");
-    std::fs::write(&path, log).unwrap();
-    entry_names_the_change(&std::fs::read_to_string(&path).unwrap());
+    let log = notes_with("[0.18.0] — 2026-10-31", PRIVACY_ENTRY_TITLE, WITH_BOTH);
+    entry_names_the_change(&log);
 }
 
 #[test]
 fn criterion_4_changelog_without_the_entry_fails() {
-    let dir = common::temp("changelog-absent");
-    let path = dir.path().join("CHANGELOG.md");
-    std::fs::write(
-        &path,
-        changelog_with("[0.18.0] — 2026-10-31", "something else", "PRIVACY.md, 6 months."),
-    )
-    .unwrap();
-    let log = std::fs::read_to_string(&path).unwrap();
+    let log = notes_with("[0.18.0] — 2026-10-31", "something else", "PRIVACY.md, 6 months.");
     assert!(std::panic::catch_unwind(|| entry_names_the_change(&log)).is_err());
 }
 
 #[test]
 fn criterion_4_entry_without_the_six_months_fails() {
-    let dir = common::temp("changelog-no-months");
-    let path = dir.path().join("CHANGELOG.md");
-    std::fs::write(
-        &path,
-        changelog_with("[0.18.0] — 2026-10-31", PRIVACY_ENTRY_TITLE, "PRIVACY.md says what is kept."),
-    )
-    .unwrap();
-    let log = std::fs::read_to_string(&path).unwrap();
+    let log = notes_with("[0.18.0] — 2026-10-31", PRIVACY_ENTRY_TITLE, "PRIVACY.md says what is kept.");
     assert!(std::panic::catch_unwind(|| entry_names_the_change(&log)).is_err());
 }
 

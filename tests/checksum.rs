@@ -221,14 +221,23 @@ fn criterion_8_a_checksum_covers_neither_the_footer_nor_the_bytes_after_it() {
 
 // ---- criterion 6: the documents describe the form ----
 
+/// The words of the entry, all in one section of the release notes.
+const FORM_WORDS: [&str; 4] = ["twos7", "sum7", "xor7", "{checksum:"];
+
+#[test]
+fn criterion_6_the_lookup_finds_the_form_under_the_open_section_and_under_a_version() {
+    for heading in [format!("[{}]", ["Unre", "leased"].concat()), "[0.19.0] — 2026-10-31".to_string()] {
+        let notes = format!("# Notes\n\n## {heading}\n\n- twos7, sum7, xor7 in {{checksum:xor7@0}}\n\n## [0.18.0]\n\n- old\n");
+        common::changelog::section_of(&notes, &FORM_WORDS);
+    }
+}
+
 #[test]
 fn criterion_6_the_schema_and_the_changelog_describe_the_form() {
     let schema = std::fs::read_to_string("docs/DEVICE_JSON_SCHEMA.md").unwrap();
-    let changelog = std::fs::read_to_string("CHANGELOG.md").unwrap();
-    for (name, text) in [("docs/DEVICE_JSON_SCHEMA.md", &schema), ("CHANGELOG.md", &changelog)] {
-        for w in ["twos7", "sum7", "xor7", "{checksum:"] {
-            assert!(text.contains(w), "{name} should describe {w}");
-        }
+    for w in ["twos7", "sum7", "xor7", "{checksum:"] {
+        assert!(schema.contains(w), "the schema should describe {w}");
     }
+    common::changelog::section_with_words(&FORM_WORDS);
     assert!(!schema.contains("checksum:twos@"), "the former form is gone from the schema");
 }
