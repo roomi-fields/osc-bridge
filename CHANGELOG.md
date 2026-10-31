@@ -11,6 +11,15 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Fixed — a command's checksums are computed after its script
+- When a command has a `script`, every `{checksum:...}` of its frame is
+  computed after the script has run, over the bytes the script leaves: a
+  function byte the script writes before a checksum is covered. The script
+  sees 0x00 where a checksum goes, and the engine overwrites what it writes
+  there. A script that changes the frame's length on a command holding a
+  checksum is refused (nothing is sent, the error names the driver and the
+  command). Commands without a script build as in 0.19.0.
+
 ## [0.19.0] — 2026-10-31
 
 ### Fixed — a driver with a checksum the engine cannot compute loads again

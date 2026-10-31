@@ -51,7 +51,7 @@ Context fields:
 
 | field       | type           | meaning                                                |
 |-------------|----------------|--------------------------------------------------------|
-| `payload`   | table of ints  | assembled frame bytes (header + body + footer)         |
+| `payload`   | table of ints  | assembled frame bytes (header + body + footer); a command's `{checksum:…}` shows as 0x00, the engine writes it after the script |
 | `args`      | table of ints  | OSC args decoded to integers                           |
 | `checksum`  | int or nil     | scratch space — set it, or insert into `payload`       |
 | `direction` | string         | `"osc_to_midi"` or `"midi_to_osc"`                     |

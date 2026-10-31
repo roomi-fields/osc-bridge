@@ -32,17 +32,48 @@ impl Bindings {
 /// Assemble a full SysEx frame from `header + body + footer` where body is
 /// produced by substituting bindings into `tokens`.
 pub fn build_frame(device: &Device, tokens: &[FrameToken], bindings: &Bindings) -> Result<Vec<u8>> {
+    let (mut out, slots) = build_frame_deferred(device, tokens, bindings)?;
+    finish_checksums(&mut out, &slots)?;
+    Ok(out)
+}
+
+/// Where a command's frame holds a checksum, left for after the command's script.
+#[derive(Debug, Clone)]
+pub struct ChecksumSlot {
+    pub pos: usize,
+    pub token: String,
+}
+
+/// Like `build_frame`, but each checksum is checked as computable then written
+/// as 0x00, and its place returned: the checksums are computed by
+/// `finish_checksums` once the command's script has run.
+pub fn build_frame_deferred(device: &Device, tokens: &[FrameToken], bindings: &Bindings) -> Result<(Vec<u8>, Vec<ChecksumSlot>)> {
     let mut out = Vec::with_capacity(32);
+    let mut slots = Vec::new();
     out.extend_from_slice(&device.sysex.header);
     for tok in tokens {
         match tok {
             FrameToken::Literal(b) => out.push(*b),
-            FrameToken::Placeholder(s) if is_checksum(s) => push_checksum(s, &mut out)?,
+            FrameToken::Placeholder(s) if is_checksum(s) => {
+                Checksum::parse(s)?.of(s, &out)?;
+                slots.push(ChecksumSlot { pos: out.len(), token: s.clone() });
+                out.push(0);
+            }
             FrameToken::Placeholder(s) => emit_placeholder(s, bindings, &mut out)?,
         }
     }
     out.extend_from_slice(&device.sysex.footer);
-    Ok(out)
+    Ok((out, slots))
+}
+
+/// Write each slot's checksum, left to right, over the final bytes of `frame`
+/// (a checksum covering an earlier slot sees its final value).
+pub fn finish_checksums(frame: &mut [u8], slots: &[ChecksumSlot]) -> Result<()> {
+    for s in slots {
+        let b = Checksum::parse(&s.token)?.of(&s.token, &frame[..s.pos])?;
+        frame[s.pos] = b;
+    }
+    Ok(())
 }
 
 /// A whole message from `tokens` (F0 to F7 written in them, no header or

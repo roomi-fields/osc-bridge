@@ -1082,10 +1082,14 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
     for h in cmds {
         if let Some(caps) = match_osc_path(&h.pattern_parts, &msg.addr) {
             match dispatch_command(&h.cmd, &caps, &msg.args, dev) {
-                Ok(frm) => {
+                Ok((frm, slots)) => {
                     record_sent_value(scripts, &h.cmd, &msg.args);
-                    if let Some(post) = maybe_run_cmd_script(scripts, &h.cmd, frm.clone(), &dev.device.name) {
-                        enqueue(tx, post, &msg.addr, from);
+                    let built_len = frm.len();
+                    if let Some(post) = maybe_run_cmd_script(scripts, &h.cmd, frm, &dev.device.name) {
+                        match finish_cmd_checksums(dev, &h.cmd, built_len, post, &slots) {
+                            Ok(post) => enqueue(tx, post, &msg.addr, from),
+                            Err(e) => eprintln!("command '{}' err: {e}", h.cmd.osc),
+                        }
                     }
                 }
                 Err(e) => eprintln!("command '{}' err: {e}", h.cmd.osc),
@@ -1131,7 +1135,7 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
     eprintln!("  unknown OSC: {}", msg.addr);
 }
 
-fn dispatch_command(cmd: &Command, caps: &HashMap<String, String>, args: &[OscType], dev: &Device) -> Result<Vec<u8>> {
+fn dispatch_command(cmd: &Command, caps: &HashMap<String, String>, args: &[OscType], dev: &Device) -> Result<(Vec<u8>, Vec<frame::ChecksumSlot>)> {
     let mut b = Bindings::new();
 
     // Bind captured path parts as u7 (if they parse) or as strings
@@ -1178,8 +1182,23 @@ fn dispatch_command(cmd: &Command, caps: &HashMap<String, String>, args: &[OscTy
         b.set_u7(&pb.bind, v);
     }
 
-    frame::build_frame(dev, &cmd.frame, &b)
-        .map_err(|e| anyhow::anyhow!("{}: {}: {e}", dev.device.name, dev.full_osc_path(&cmd.osc)))
+    let origin = |e: anyhow::Error| anyhow::anyhow!("{}: {}: {e}", dev.device.name, dev.full_osc_path(&cmd.osc));
+    if cmd.script.is_some() {
+        return frame::build_frame_deferred(dev, &cmd.frame, &b).map_err(origin);
+    }
+    frame::build_frame(dev, &cmd.frame, &b).map(|f| (f, Vec::new())).map_err(origin)
+}
+
+/// Compute the checksums a command's frame left for after its script, over the
+/// script's final bytes; a script that changed the frame's length is refused.
+fn finish_cmd_checksums(dev: &Device, cmd: &Command, built_len: usize, mut frame: Vec<u8>, slots: &[frame::ChecksumSlot]) -> Result<Vec<u8>> {
+    if slots.is_empty() { return Ok(frame); }
+    let origin = || format!("{}: {}", dev.device.name, dev.full_osc_path(&cmd.osc));
+    if frame.len() != built_len {
+        anyhow::bail!("{}: script changed the frame from {built_len} to {} bytes; a command with a checksum keeps its length", origin(), frame.len());
+    }
+    frame::finish_checksums(&mut frame, slots).map_err(|e| anyhow::anyhow!("{}: {e}", origin()))?;
+    Ok(frame)
 }
 
 /// Extremely limited expression evaluator supporting `name + N`, `name - N`,

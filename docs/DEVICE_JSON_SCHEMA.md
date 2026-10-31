@@ -236,6 +236,14 @@ only by its USB port name has `ports` alone.
   `{bytes}`, `{ascii}` or a bare `{family}`, whose size is known only at
   build, fails at build. In `replies.match_frame` it matches any
   byte. The first form, with `twos` alone, is gone: write `twos7`.
+  In a command with a `script`, the checksums are computed after the script,
+  left to right, over the bytes it leaves (a checksum covering an earlier one
+  sees its final value). The script receives 0x00 in `ctx.payload` where each
+  checksum goes, and the engine overwrites whatever it writes there. A script
+  that changes the frame's length in a command holding a checksum is refused:
+  nothing is sent and the error names the driver and the command; checksum
+  offsets do not follow. A checksum the engine cannot compute is refused at
+  build, script or not.
 - The bridge answers `/<prefix>/program/recall <bank> <number> [channel]`:
   the bank by name (any case) or by its place from 0, the number as the device
   shows it; it sends `before`, the bank select, the program change and
