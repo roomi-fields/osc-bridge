@@ -41,7 +41,7 @@ flowchart TB
   fmt --> osd
 ```
 
-| Crate | Responsibility | Owns | Calls | Langage |
+| Crate | Responsibility | Owns | Calls | Language |
 |---|---|---|---|---|
 | `synth-core` | the session of a device: messages ↔ MIDI or OSC messages, replies, recognition, programs, the Lua capability, a virtual device that answers | the compiled device, the session state | `osd` | |
 | `synth-io` | carry core messages: MIDI 1 ports, MIDI 2, OSC over UDP, WebSocket, OSCQuery, output pacing | ports, sockets | `synth-core` (types) | |
