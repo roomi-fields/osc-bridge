@@ -107,7 +107,8 @@ linked to it.
   `%LOCALAPPDATA%` on Windows). Each file is kept there with the ETag the
   server gave; a later session asks whether it changed (`If-None-Match`) and
   downloads it again only then. Nothing else of the catalogue is asked
-  for. These requests carry no account. Offline, or when the server cannot
+  for. These requests present the anonymous account of this machine (the server
+  delivers one on first use). Offline, or when the server cannot
   be reached, the cached drivers are all there is. (A folder you point to
   with `--devices-dir` is used as it is.)
 - **A newer osc-bridge.** When the server marks your version as deprecated

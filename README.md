@@ -85,7 +85,7 @@ asks the SynthHub server for one driver at a time, when it needs it:
 - offline (`osc-bridge privacy --offline on`, `OSC_BRIDGE_OFFLINE=1`), only
   the drivers already cached are used and nothing is sent.
 
-These requests carry no account. A JSON file on your machine is used as it is
+These requests present the anonymous account of this machine. A JSON file on your machine is used as it is
 (`--device my-synth.json`, `osc-bridge mcp --devices-dir my-drivers/`).
 
 ## What makes it different

@@ -22,7 +22,7 @@ other users and agents fixed and confirmed them:
   what your devices answered them (maker, model, firmware, and any other
   SysEx a device sent while being asked), so the server names the matching
   drivers; **listing devices** sends the search words and filters. These
-  requests carry no account. Of detection and of driver fetches the server
+  requests present your machine's anonymous account (see below). Of detection and of driver fetches the server
   keeps counters only, with no visitor, account, address or time of day
   attached: per driver, how many times it was fetched each day; per device
   name asked for, how many times it was found or missing; per MIDI port
@@ -35,8 +35,8 @@ other users and agents fixed and confirmed them:
   its words and filters, tied to the visitor, never to your address. What
   the server keeps of the calls your copy forwards, and for how long, is
   written under *Visits and activity* below.
-- **An anonymous account** is issued by the server the first time your agent
-  reports or contributes, and kept on your machine in `<config>/osc-bridge/user`.
+- **An anonymous account** is issued by the server before your copy's first
+  request to it, and kept on your machine in `<config>/osc-bridge/user`.
 - **When your agent reports or contributes** (`report_result`,
   `report_mapping`, `submit_driver`, `submit_fix`), what it sends goes to the
   server under that account, to improve the catalogue for everyone.

@@ -41,7 +41,14 @@ impl FakeSynthHub {
             for req in server.incoming_requests() {
                 let url = req.url().to_string();
                 let if_none_match = req.headers().iter().find(|h| h.field.equiv("If-None-Match")).map(|h| h.value.to_string());
-                let (status, body, etag) = match url.strip_prefix("/api/v1/devices/") {
+                let (status, body, etag) = if url == "/v1/access/challenge" {
+                    // The service's delivery (accepts any proof: this fake does not check accounts).
+                    (200, br#"{"challenge":"fake","algorithm":"sha256","bits":4,"deliver":"/v1/access/deliver"}"#.to_vec(), None)
+                } else if url == "/v1/access/deliver" {
+                    let id = "0123456789abcdef0123456789abcdef";
+                    (200, serde_json::json!({ "id": id, "user_id": id, "mcp_path": format!("/u/{id}/mcp"), "tier": "free" })
+                        .to_string().into_bytes(), None)
+                } else { match url.strip_prefix("/api/v1/devices/") {
                     Some(rel) => match std::fs::read(root.join(rel)) {
                         Ok(bytes) => {
                             let etag = format!("\"{}\"", sha256_hex(&bytes));
@@ -60,7 +67,7 @@ impl FakeSynthHub {
                             "variants": [{ "id": format!("acme/{slug}"), "slug": slug }] }).to_string().into_bytes(), None),
                         None => (404, b"{}".to_vec(), None),
                     },
-                };
+                } };
                 seen.lock().unwrap().push(Seen { method: req.method().to_string(), url, if_none_match, status });
                 let mut resp = tiny_http::Response::from_data(body).with_status_code(status);
                 if let Some(etag) = etag {

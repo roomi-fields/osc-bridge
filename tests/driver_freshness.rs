@@ -133,7 +133,7 @@ fn a_session_with_two_devices_asks_only_for_those_two_drivers() {
         "each driver once, with its notes and profile, and nothing else of the catalogue");
     let all = server.requests.lock().unwrap().clone();
     let others: Vec<&str> = all.iter().map(|s| s.url.as_str()).filter(|u| !u.starts_with("/api/v1/devices/acme/")).collect();
-    assert!(others.iter().all(|u| ["/v1/devices/box", "/v1/devices/synth", "/v1/trust"].contains(u)), "{all:?}");
+    assert!(others.iter().all(|u| ["/v1/devices/box", "/v1/devices/synth", "/v1/trust", "/v1/access/challenge", "/v1/access/deliver"].contains(u)), "{all:?}");
     assert!(!cache.join("other").exists(), "the drivers not used are not on this machine");
 
     // The next session asks for the same files with their ETags, and uses the kept ones.

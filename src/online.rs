@@ -10,12 +10,19 @@
 //!   (`cache_dir`), which is all it has offline. Each kept file has the ETag
 //!   the server gave beside it (`<file>.etag`); the next fetch sends it in
 //!   `If-None-Match`, and `304 Not Modified` leaves the kept file as it is.
-//!   These requests carry no account;
+//!   These requests present the account kept on this machine;
 //! - trust: how far other users confirmed each driver (`GET /v1/trust`);
 //! - reports and contributions: `report_result`, `report_mapping`,
 //!   `get_trust`, `submit_driver`, `submit_fix` and `get_contribution` are
 //!   forwarded to the server's MCP endpoint under the account kept on this
 //!   machine (`account_file`, the same one `osc-bridge connect` uses).
+//!
+//! The server serves nothing without an account. Every request goes through
+//! `Online::send`, which presents the account in `X-Synthhub-Id` (a request to
+//! `/u/<id>/…` carries it in its path), only to the base address. A machine
+//! without one has it delivered first (`GET /v1/access/challenge`, a proof of
+//! work, `POST` of the answer); a 401 gets a new account and one replay; a 429
+//! sentence of the server is the error shown to the person.
 //!
 //! A reply marking this osc-bridge as deprecated (`Deprecation` with
 //! `Link: <url>; rel="deprecation"`, RFC 9745) is told once per run: on
@@ -93,7 +100,7 @@ const SETTINGS_HELP: &str = "\
 # Edit this file freely, or use `osc-bridge privacy`. Read when osc-bridge starts.
 #
 # Sharing is on by default: the drivers your devices need come from the
-# server, one at a time and without your account, as other users and agents
+# server, one at a time, as other users and agents
 # fixed and confirmed them; your reports and fixes go to the server under an
 # anonymous account. MIDI ports and the traffic of your devices never leave
 # this machine.
@@ -226,12 +233,47 @@ pub fn driver_path(root: &Path, id: &str) -> PathBuf {
     root.join(maker).join(format!("{name}.json"))
 }
 
+/// The header that presents the machine's account on every request that
+/// does not carry it in its path (`/u/<id>/…`).
+const ACCOUNT_HEADER: &str = "X-Synthhub-Id";
+/// Redirects followed per request.
+const MAX_REDIRECTS: usize = 5;
+/// The most zero bits a delivery challenge may ask for (about a minute of work).
+const MAX_CHALLENGE_BITS: u64 = 28;
+
+/// Leading zero bits of a digest.
+fn zero_bits(bytes: &[u8]) -> u32 {
+    let mut n = 0;
+    for b in bytes {
+        if *b == 0 { n += 8; } else { return n + b.leading_zeros(); }
+    }
+    n
+}
+
+/// The smallest decimal `nonce` such that SHA-256 of `<challenge>:<nonce>`
+/// starts with `bits` zero bits (the service's proof of work).
+fn solve_challenge(challenge: &str, bits: u32) -> u64 {
+    (0u64..).find(|n| zero_bits(ring::digest::digest(&ring::digest::SHA256, format!("{challenge}:{n}").as_bytes()).as_ref()) >= bits)
+        .expect("a nonce exists")
+}
+
+/// The service's sentence from a response body, or `fallback` when it gave none.
+fn sentence(body: &str, fallback: &str) -> String {
+    let t = body.trim();
+    if t.is_empty() { fallback.to_string() } else { t.to_string() }
+}
+
 /// A client of the hosted server.
 pub struct Online {
     base: String,
     agent: ureq::Agent,
     /// Where the account id is kept (`account_file` unless set otherwise).
     account_path: Option<PathBuf>,
+    /// Held while the account is read or delivered, so that simultaneous
+    /// requests on a machine without one deliver a single account.
+    delivering: std::sync::Mutex<()>,
+    /// The account this client delivered, for when the file cannot be kept.
+    delivered: std::sync::Mutex<Option<String>>,
 }
 
 impl Online {
@@ -245,20 +287,80 @@ impl Online {
             .timeout_connect(Some(Duration::from_secs(5)))
             .user_agent(concat!("osc-bridge/", env!("CARGO_PKG_VERSION")))
             .http_status_as_error(false)
+            .max_redirects(0)
             .build()
             .new_agent();
-        Self { base: base.trim_end_matches('/').to_string(), agent, account_path }
+        Self { base: base.trim_end_matches('/').to_string(), agent, account_path, delivering: std::sync::Mutex::new(()),
+            delivered: std::sync::Mutex::new(None) }
     }
 
     pub fn base(&self) -> &str {
         &self.base
     }
 
-    fn read(&self, mut resp: ureq::http::Response<ureq::Body>) -> Result<(u16, Value)> {
-        note_deprecation(resp.headers());
+    fn read_text(&self, mut resp: ureq::http::Response<ureq::Body>) -> Result<(u16, String)> {
         let status = resp.status().as_u16();
         let text = resp.body_mut().with_config().limit(64 << 20).read_to_string()?;
+        Ok((status, text))
+    }
+
+    fn read(&self, resp: ureq::http::Response<ureq::Body>) -> Result<(u16, Value)> {
+        let (status, text) = self.read_text(resp)?;
         Ok((status, serde_json::from_str(&text).unwrap_or(Value::Null)))
+    }
+
+    /// One HTTP exchange, redirects followed by hand: `id` goes in
+    /// `ACCOUNT_HEADER` only to the base address, never to another host.
+    /// The response, and whether it came from the base address.
+    fn exchange(&self, method: &str, path: &str, id: Option<&str>, headers: &[(&str, &str)], body: Option<&[u8]>)
+        -> Result<(ureq::http::Response<ureq::Body>, bool)> {
+        let mut url = format!("{}{path}", self.base);
+        for hop in 0..=MAX_REDIRECTS {
+            let same = url == self.base || url.starts_with(&format!("{}/", self.base)) || url.starts_with(&format!("{}?", self.base));
+            let mut req = ureq::http::Request::builder().method(if hop == 0 { method } else { "GET" }).uri(&url);
+            for (k, v) in headers { req = req.header(*k, *v); }
+            if let (Some(id), true) = (id, same) { req = req.header(ACCOUNT_HEADER, id); }
+            let payload = if hop == 0 { body.unwrap_or_default().to_vec() } else { Vec::new() };
+            let resp = self.agent.run(req.body(payload)?).with_context(|| format!("{method} {path}"))?;
+            let status = resp.status().as_u16();
+            let target = resp.headers().get("location").and_then(|v| v.to_str().ok());
+            match target {
+                Some(loc) if matches!(status, 301 | 302 | 303 | 307 | 308) && method == "GET" => {
+                    url = if loc.starts_with('/') { format!("{}{loc}", self.base) } else { loc.to_string() };
+                }
+                _ => return Ok((resp, same)),
+            }
+        }
+        bail!("{method} {path}: too many redirects")
+    }
+
+    /// Every request of the client goes through here: it presents the
+    /// machine's account (obtained first when there is none), replays the
+    /// request once with a new account when the service answers 401, and
+    /// turns the service's 429 sentence into the error. Requests to
+    /// `/u/<id>/…` carry the account in their path instead.
+    fn send(&self, method: &str, path: &str, headers: &[(&str, &str)], body: Option<&[u8]>) -> Result<ureq::http::Response<ureq::Body>> {
+        let in_path = path.starts_with("/u/");
+        // An account delivered for this very request is not delivered again on a 401: the request is replayed with it.
+        let delivered_now = !in_path && self.kept_account().is_none();
+        let mut id = if in_path { None } else { Some(self.account(false)?) };
+        let mut replayed = false;
+        loop {
+            let (mut resp, same) = self.exchange(method, path, id.as_deref(), headers, body)?;
+            note_deprecation(resp.headers());
+            let status = resp.status().as_u16();
+            if status == 401 && same && !in_path && !replayed {
+                replayed = true;
+                if !delivered_now { id = Some(self.renew(id.as_deref())?); }
+                continue;
+            }
+            if status == 429 && same {
+                let text = resp.body_mut().with_config().limit(1 << 16).read_to_string().unwrap_or_default();
+                let text = text.trim();
+                bail!("{}", if text.is_empty() { format!("{method} {path}: HTTP 429 (quota reached)") } else { text.to_string() });
+            }
+            return Ok(resp);
+        }
     }
 
     /// `GET path`, kept in `file` with the ETag the server gave
@@ -270,12 +372,11 @@ impl Online {
     fn fetch_kept(&self, path: &str, file: &Path, check: impl Fn(&str) -> Result<()>) -> Result<(u16, Option<String>)> {
         let etag_file = etag_path(file);
         let kept = std::fs::read_to_string(&etag_file).ok().filter(|e| !e.trim().is_empty() && file.is_file());
-        let mut req = self.agent.get(format!("{}{path}", self.base));
+        let mut headers = Vec::new();
         if let Some(etag) = &kept {
-            req = req.header("If-None-Match", etag.trim());
+            headers.push(("If-None-Match", etag.trim()));
         }
-        let mut resp = req.call().with_context(|| format!("GET {path}"))?;
-        note_deprecation(resp.headers());
+        let mut resp = self.send("GET", path, &headers, None)?;
         match resp.status().as_u16() {
             304 if kept.is_some() => {
                 let text = std::fs::read_to_string(file).with_context(|| format!("read {}", file.display()))?;
@@ -299,31 +400,65 @@ impl Online {
     }
 
     fn get(&self, path: &str) -> Result<(u16, Value)> {
-        let resp = self.agent.get(format!("{}{path}", self.base)).call().with_context(|| format!("GET {path}"))?;
+        let resp = self.send("GET", path, &[], None)?;
         self.read(resp)
     }
 
     fn post(&self, path: &str, body: &Value) -> Result<(u16, Value)> {
-        let resp = self.agent.post(format!("{}{path}", self.base))
-            .header("Content-Type", "application/json")
-            .send(body.to_string()).with_context(|| format!("POST {path}"))?;
+        let resp = self.send("POST", path, &[("Content-Type", "application/json")], Some(body.to_string().as_bytes()))?;
         self.read(resp)
     }
 
-    /// The account kept on this machine, or a new one the server issues
-    /// (then kept). `forget` drops a kept id the server no longer knows.
+    fn kept_account(&self) -> Option<String> {
+        let on_disk = self.account_path.as_ref().and_then(|f| std::fs::read_to_string(f).ok())
+            .map(|s| s.trim().to_ascii_lowercase()).filter(|id| is_user_id(id));
+        on_disk.or_else(|| self.delivered.lock().ok().and_then(|g| g.clone()))
+    }
+
+    /// The account kept on this machine, or a new one the service delivers
+    /// (then kept). `forget` drops a kept id the service no longer knows.
     pub fn account(&self, forget: bool) -> Result<String> {
-        let file = self.account_path.clone();
+        let _held = self.delivering.lock().map_err(|_| anyhow!("account unavailable"))?;
         if !forget {
-            let kept = file.as_ref().and_then(|f| std::fs::read_to_string(f).ok()).map(|s| s.trim().to_ascii_lowercase());
-            if let Some(id) = kept.filter(|id| is_user_id(id)) {
-                return Ok(id);
-            }
+            if let Some(id) = self.kept_account() { return Ok(id); }
         }
-        let (status, v) = self.get("/u/new")?;
-        let id = v["user_id"].as_str().filter(|id| status == 200 && is_user_id(id))
-            .ok_or_else(|| anyhow!("the server issued no account (HTTP {status})"))?.to_string();
-        if let Some(f) = file {
+        self.deliver()
+    }
+
+    /// A new account after the service refused `stale`; the one another
+    /// request already delivered meanwhile, when there is one.
+    fn renew(&self, stale: Option<&str>) -> Result<String> {
+        let _held = self.delivering.lock().map_err(|_| anyhow!("account unavailable"))?;
+        match self.kept_account() {
+            Some(id) if Some(id.as_str()) != stale => Ok(id),
+            _ => self.deliver(),
+        }
+    }
+
+    /// The service's delivery: `GET /v1/access/challenge`, the proof of work,
+    /// `POST <deliver>`; the id it gives is kept.
+    fn deliver(&self) -> Result<String> {
+        let failed = |why: String| anyhow!("account delivery failed: {why}");
+        let (resp, _) = self.exchange("GET", "/v1/access/challenge", None, &[], None).map_err(|e| failed(format!("{e:#}")))?;
+        let (status, text) = self.read_text(resp).map_err(|e| failed(format!("{e:#}")))?;
+        if status == 429 { bail!(failed(sentence(&text, "HTTP 429"))); }
+        let ch: Value = serde_json::from_str(&text).unwrap_or(Value::Null);
+        let challenge = ch["challenge"].as_str().filter(|_| status == 200 && ch["algorithm"] == "sha256");
+        let (Some(challenge), Some(bits), Some(deliver)) = (challenge, ch["bits"].as_u64(), ch["deliver"].as_str().filter(|d| d.starts_with('/'))) else {
+            bail!(failed(format!("the service gave no challenge (HTTP {status})")));
+        };
+        if bits > MAX_CHALLENGE_BITS { bail!(failed(format!("the challenge asks for {bits} bits"))); }
+        let nonce = solve_challenge(challenge, bits as u32);
+        let body = json!({ "challenge": challenge, "nonce": nonce.to_string() }).to_string();
+        let (resp, _) = self.exchange("POST", deliver, None, &[("Content-Type", "application/json")], Some(body.as_bytes()))
+            .map_err(|e| failed(format!("{e:#}")))?;
+        let (status, text) = self.read_text(resp).map_err(|e| failed(format!("{e:#}")))?;
+        if status == 429 { bail!(failed(sentence(&text, "HTTP 429"))); }
+        let v: Value = serde_json::from_str(&text).unwrap_or(Value::Null);
+        let id = v["id"].as_str().map(str::to_ascii_lowercase).filter(|id| status == 200 && is_user_id(id))
+            .ok_or_else(|| failed(format!("HTTP {status}")))?;
+        if let Ok(mut g) = self.delivered.lock() { *g = Some(id.clone()); }
+        if let Some(f) = &self.account_path {
             if let Some(dir) = f.parent() { let _ = std::fs::create_dir_all(dir); }
             let _ = std::fs::write(f, &id);
         }
@@ -335,7 +470,7 @@ impl Online {
     pub fn call_tool(&self, user: &str, name: &str, args: &Value) -> Result<Value> {
         let rpc = json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": { "name": name, "arguments": args } });
         let (status, v) = self.post(&format!("/u/{user}/mcp"), &rpc)?;
-        if status == 404 {
+        if status == 404 || status == 401 {
             bail!("unknown account");
         }
         match (v.get("result"), v.get("error")) {
@@ -348,9 +483,7 @@ impl Online {
     /// Attach a preview (`audio` or `image`) to a preset the account shared.
     pub fn upload(&self, user: &str, preset: &str, kind: &str, bytes: &[u8]) -> Result<()> {
         let path = format!("/u/{user}/v1/presets/{preset}/{kind}");
-        let resp = self.agent.put(format!("{}{path}", self.base))
-            .header("Content-Type", "application/octet-stream")
-            .send(bytes).with_context(|| format!("PUT {path}"))?;
+        let resp = self.send("PUT", &path, &[("Content-Type", "application/octet-stream")], Some(bytes))?;
         let (status, v) = self.read(resp)?;
         if status != 200 { bail!("{}", v["error"].as_str().unwrap_or("upload refused")); }
         Ok(())
@@ -467,8 +600,7 @@ impl Online {
         Ok(out)
     }
 
-    /// One of the server's catalogue tools (`list_devices`…), called without
-    /// an account (`POST /mcp`).
+    /// One of the server's catalogue tools (`list_devices`…), (`POST /mcp`).
     pub fn catalogue_call(&self, name: &str, args: &Value) -> Result<Value> {
         let rpc = json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": { "name": name, "arguments": args } });
         let (status, v) = self.post("/mcp", &rpc)?;
