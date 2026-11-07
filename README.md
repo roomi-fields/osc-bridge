@@ -3,6 +3,7 @@
 [![Release](https://img.shields.io/github/v/release/roomi-fields/osc-bridge?sort=semver&display_name=tag)](https://github.com/roomi-fields/osc-bridge/releases)
 [![CI](https://github.com/roomi-fields/osc-bridge/actions/workflows/ci.yml/badge.svg)](https://github.com/roomi-fields/osc-bridge/actions/workflows/ci.yml)
 [![License: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue.svg)](LICENSE)
+[![mcptry](https://mcptry.com/badge/io.github.roomi-fields/osc-bridge)](https://mcptry.com/servers/io.github.roomi-fields/osc-bridge)
 
 **Declarative OSC bridge for music hardware *and* software — and an MCP server to drive it from an LLM.**
 
