@@ -1,6 +1,6 @@
 // Relay door: carries MIDI between this browser's devices and the hosted
 // SynthHub server, so an agent can reach them. Runs only on the page that
-// holds the .ob-connect block. Protocol: see src/relay_protocol.rs.
+// holds the .ob-connect block. Protocol: see crates/osc-bridge/src/relay_protocol.rs.
 (function () {
   const root = document.querySelector(".ob-connect");
   if (!root) return;
@@ -29,7 +29,7 @@
   const asking = [];
   // The test synth keeps one sound (cutoff, resonance, attack, release,
   // waveform, set by their CC), dumps it when asked and takes a patch, like
-  // a real synth's edit buffer. Same as TestSynth in src/connect.rs.
+  // a real synth's edit buffer. Same as TestSynth in crates/osc-bridge/src/connect.rs.
   const DUMP_REQUEST = [0xF0, 0x7D, 0x01, 0x10, 0xF7];
   const PATCH = [0xF0, 0x7D, 0x01, 0x20];
   const SOUND_CC = [74, 71, 73, 72, 70];

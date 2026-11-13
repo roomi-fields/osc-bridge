@@ -6,7 +6,7 @@
 use std::path::Path;
 
 fn read(name: &str) -> String {
-    std::fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join(name)).unwrap()
+    std::fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("../..").join(name)).unwrap()
 }
 
 /// The text under the heading `## <title>`, up to the next `## `.

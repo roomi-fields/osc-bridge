@@ -21,10 +21,15 @@
   "grillhouse": {
     "version": "0.36.0",
     "flux": {
-      ".github/workflows/ci.yml": [],
+      ".github/workflows/ci.yml": [
+        "osc-bridge"
+      ],
       ".github/workflows/cla.yml": [],
       ".github/workflows/docs.yml": []
     }
   },
-  "packageManager": "npm@11.20.0"
+  "packageManager": "npm@11.20.0",
+  "workspaces": [
+    "crates/osc-bridge"
+  ]
 }

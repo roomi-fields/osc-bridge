@@ -1,5 +1,7 @@
 # osc-bridge (application) — interface
 
+**Langage** : cargo
+
 The application offers three published surfaces: its command line, its MCP tools, and its OSC addresses. Each is a contract with people, agents and software outside the repository; a change to one goes up to the owner.
 
 ## The command line

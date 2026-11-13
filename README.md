@@ -522,7 +522,7 @@ which GPL-3.0 section 13 allows to combine with AGPL-3.0 code.
 
 The driver catalogue is SynthHub's, each driver with the credit and licence of
 its sources in `_sources[]`. The few drivers kept here for the tests
-(`tests/fixtures/devices/`) keep theirs: those of type `pencilresearch` are
+(`crates/osc-bridge/tests/fixtures/devices/`) keep theirs: those of type `pencilresearch` are
 adapted from [MIDI Guide](https://midi.guide) by Pencil Research and
 contributors, licensed [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 (source: [pencilresearch/midi](https://github.com/pencilresearch/midi)); each

@@ -57,7 +57,7 @@ jobs:
           fi
           exit $status
       - name: Inspect a test driver
-        run: cargo run --release -- inspect tests/fixtures/devices/novation/launch-control-xl-3.json
+        run: cargo run --release -- inspect crates/osc-bridge/tests/fixtures/devices/novation/launch-control-xl-3.json
       - name: Version mirrors are in sync with Cargo.toml
         if: runner.os == 'Linux'
         run: python3 scripts/sync_version.py --check

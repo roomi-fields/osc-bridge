@@ -5,4 +5,4 @@ Une ligne par composant ; l'interface donne le détail.
 
 ## osc-bridge (application) — interface
 
-The application offers three published surfaces: its command line, its MCP tools, and its OSC addresses. (`docs/INTERFACE.md`)
+**Langage** : cargo (`crates/osc-bridge/docs/INTERFACE.md`)

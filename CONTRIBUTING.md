@@ -55,9 +55,9 @@ Schema extensions (new frame-token kinds, new arg types, new runtime behaviours)
 
 Once aligned, the PR should add:
 
-- The new Rust fields in `src/device.rs` (Option-wrapped, `#[serde(default)]`).
-- Handling in `src/frame.rs` and / or `src/runtime.rs`.
-- A test driver exercising the new capability under `tests/fixtures/devices/` (prefer a minimal synthetic one, e.g. under `acme/`), and its test.
+- The new Rust fields in `crates/osc-bridge/src/device.rs` (Option-wrapped, `#[serde(default)]`).
+- Handling in `crates/osc-bridge/src/frame.rs` and / or `crates/osc-bridge/src/runtime.rs`.
+- A test driver exercising the new capability under `crates/osc-bridge/tests/fixtures/devices/` (prefer a minimal synthetic one, e.g. under `acme/`), and its test.
 - Updated docs in `docs/DEVICE_JSON_SCHEMA.md` and `CHANGELOG.md` under the next minor version.
 
 ## Local-only files — the `.local/` zone

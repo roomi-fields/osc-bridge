@@ -1,6 +1,6 @@
 # osc-bridge
 
-osc-bridge lets agents and software drive music devices: it translates between OSC and MIDI (1 and 2) or OSC devices, recognises the device plugged in, recalls and takes its sounds, serves an MCP server to agents (locally or over HTTP), and opens a relay door so a hosted service reaches a person's devices. It reads devices described in the Open Synth Descriptors format (OSD) through the `osd` reader, and stays linked to the SyntHub service for its catalogue and shared knowledge. It is a Cargo workspace: the application at the root, its libraries under `crates/`.
+osc-bridge lets agents and software drive music devices: it translates between OSC and MIDI (1 and 2) or OSC devices, recognises the device plugged in, recalls and takes its sounds, serves an MCP server to agents (locally or over HTTP), and opens a relay door so a hosted service reaches a person's devices. It reads devices described in the Open Synth Descriptors format (OSD) through the `osd` reader, and stays linked to the SyntHub service for its catalogue and shared knowledge. It is a Cargo workspace: the application and its libraries are all under `crates/` (the application is `crates/osc-bridge`), and the root `Cargo.toml` is a virtual workspace.
 
 **Owner**: Romain Peyrichou. He validates this charter, `docs/ARCHITECTURE.md`, each `CADRE.md` and `INTERFACE.md`, and each ticket labelled `a-valider`; the supervisor validates the other documents. So the owner decides what the engine is.
 
@@ -31,7 +31,7 @@ A question no step of the circuit settles goes up to the supervisor, with its ev
 ## Commands
 
 - `cargo build --release` builds the application; `cargo test --workspace -q` and `cargo clippy --workspace --all-targets -- -D warnings` cover every member of the workspace. The version, edition, licence, lints and shared dependencies live in the root `Cargo.toml` (`[workspace.package]`, `[workspace.lints]`, `[workspace.dependencies]`); a crate joins the workspace by being listed in its `members`.
-- The tests make their temporary folders and files with `tempfile` (`common::temp` in `tests/`).
+- The tests make their temporary folders and files with `tempfile` (`common::temp` in `crates/osc-bridge/tests/`).
 - `python3 scripts/sync_version.py --check` keeps the published version mirrors equal (until the tools are Rust).
 - `npm test -- <paths>` and `npm run verifier` run the tests and the guards through the framework (nextest, clippy, cargo-deny); the dependencies' licences allowed are in `deny.toml`.
 - Ticket prefix: `OB-`.

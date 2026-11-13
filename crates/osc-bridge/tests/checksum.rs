@@ -223,7 +223,7 @@ fn criterion_8_a_checksum_covers_neither_the_footer_nor_the_bytes_after_it() {
 
 #[test]
 fn criterion_6_the_schema_describes_the_form() {
-    let schema = std::fs::read_to_string("docs/DEVICE_JSON_SCHEMA.md").unwrap();
+    let schema = std::fs::read_to_string("../../docs/DEVICE_JSON_SCHEMA.md").unwrap();
     for w in ["twos7", "sum7", "xor7", "{checksum:"] {
         assert!(schema.contains(w), "the schema should describe {w}");
     }

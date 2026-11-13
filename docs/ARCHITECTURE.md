@@ -47,11 +47,11 @@ flowchart TB
 | `synth-io` | carry core messages: MIDI 1 ports, MIDI 2, OSC over UDP, WebSocket, OSCQuery, output pacing | ports, sockets | `synth-core` (types) | |
 | `formats` | export to and import from other formats: MIDNAM, OSCQuery, Electra One, Ctrlr | the converters | `osd` | |
 | `synthhub-protocol` | the types exchanged with the service: versioned API, relay frames, identity | the contract | nothing | |
-| `osc-bridge` (root) | the application: CLI, MCP server (stdio, HTTP with a token), orchestrator of several devices with routes between them, relay door, driver cache, privacy settings | the installation's configuration | all four | cargo |
+| `crates/osc-bridge` | the application: CLI, MCP server (stdio, HTTP with a token), orchestrator of several devices with routes between them, relay door, driver cache, privacy settings | the installation's configuration | all four | cargo |
 
 The single-device mode is the orchestrator with one device: one dispatch path.
 
-The workspace is the root `Cargo.toml`, as in ripgrep and uv: the application is its root package, and each crate under `crates/` is listed in its `members` once it has its own `Cargo.toml`. The members take their version, edition and licence from `[workspace.package]`, their lints from `[workspace.lints]` and their shared dependencies from `[workspace.dependencies]`; so the version that `scripts/sync_version.py` mirrors is the workspace's. `cargo build --release` builds the `osc-bridge` binary; `cargo test --workspace` and `cargo clippy --workspace --all-targets -- -D warnings` cover every member.
+The workspace is the root `Cargo.toml`, a virtual workspace, as in rust-analyzer: the application is the crate `crates/osc-bridge` (it builds the `osc-bridge` binary), and each crate under `crates/` is listed in its `members` once it has its own `Cargo.toml`. The members take their version, edition and licence from `[workspace.package]`, their lints from `[workspace.lints]` and their shared dependencies from `[workspace.dependencies]`; so the version that `scripts/sync_version.py` mirrors is the workspace's. `cargo build --release` builds the `osc-bridge` binary; `cargo test --workspace` and `cargo clippy --workspace --all-targets -- -D warnings` cover every member.
 
 ## 4. Data
 
@@ -108,6 +108,6 @@ sequenceDiagram
 
 ## 9. Risks
 
-- The current code reaches this construction by steps: `src/mcp.rs` and `src/runtime.rs` hold most of today's logic and split across the crates during the core epic.
+- The current code reaches this construction by steps: `crates/osc-bridge/src/mcp.rs` and `crates/osc-bridge/src/runtime.rs` hold most of today's logic and split across the crates during the core epic.
 - MIDI 2 is carried by no device of the catalogue today; its transport opens when one needs it.
 - The Lua budgets are measured per frame; a device whose scripts exceed them in live play is not yet observed.
