@@ -54,5 +54,5 @@ fn one_run() {
 
     // Another client of the same run says nothing more.
     let unused = dir.path().join("cache2");
-    osc_bridge::online::Online::new(&server.base).fetch_driver("acme/synth", &unused).unwrap();
+    common::online_in(&server.base, dir.path()).fetch_driver("acme/synth", &unused).unwrap();
 }

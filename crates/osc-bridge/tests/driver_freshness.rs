@@ -8,8 +8,7 @@
 
 mod common;
 
-use common::{catalogue, mcp_session, temp, texts, tool_call, FakeSynthHub};
-use osc_bridge::online::Online;
+use common::{catalogue, mcp_session, online_in, temp, texts, tool_call, FakeSynthHub};
 use serde_json::json;
 use std::path::Path;
 
@@ -24,7 +23,7 @@ fn a_kept_driver_is_asked_again_with_its_etag_and_used_on_304() {
     catalogue(&root);
     let server = FakeSynthHub::start(&root, None);
 
-    let path = Online::new(&server.base).fetch_driver("acme/box", &cache).unwrap();
+    let path = online_in(&server.base, dir.path()).fetch_driver("acme/box", &cache).unwrap();
     assert_eq!(path, cache.join("acme/box.json"));
     let first = server.driver_requests();
     assert_eq!(first.iter().map(|s| s.url.as_str()).collect::<Vec<_>>(),
@@ -33,7 +32,7 @@ fn a_kept_driver_is_asked_again_with_its_etag_and_used_on_304() {
     server.forget_requests();
 
     // A later run (a new client): each kept file is asked for with its ETag.
-    let again = Online::new(&server.base).fetch_driver("acme/box", &cache).unwrap();
+    let again = online_in(&server.base, dir.path()).fetch_driver("acme/box", &cache).unwrap();
     assert_eq!(again, path);
     let second = server.driver_requests();
     assert_eq!(second.len(), 3, "{second:?}");
@@ -51,12 +50,12 @@ fn a_changed_driver_replaces_the_kept_one_and_its_etag() {
     let (root, cache) = (dir.path().join("server"), dir.path().join("cache"));
     catalogue(&root);
     let server = FakeSynthHub::start(&root, None);
-    Online::new(&server.base).fetch_driver("acme/synth", &cache).unwrap();
+    online_in(&server.base, dir.path()).fetch_driver("acme/synth", &cache).unwrap();
 
     let changed = r#"{"device":{"name":"Synth II","vendor":"Acme","osc_prefix":"/synth"}}"#;
     std::fs::write(root.join("acme/synth.json"), changed).unwrap();
     server.forget_requests();
-    Online::new(&server.base).fetch_driver("acme/synth", &cache).unwrap();
+    online_in(&server.base, dir.path()).fetch_driver("acme/synth", &cache).unwrap();
     let asked = server.driver_requests();
     assert_eq!((asked[0].url.as_str(), asked[0].status), ("/api/v1/devices/acme/synth.json", 200), "{asked:?}");
     assert!(asked[0].if_none_match.is_some(), "the old ETag was sent: {asked:?}");
@@ -64,7 +63,7 @@ fn a_changed_driver_replaces_the_kept_one_and_its_etag() {
 
     // The new ETag is the one kept: the next fetch is a 304.
     server.forget_requests();
-    Online::new(&server.base).fetch_driver("acme/synth", &cache).unwrap();
+    online_in(&server.base, dir.path()).fetch_driver("acme/synth", &cache).unwrap();
     let asked = server.driver_requests();
     assert_eq!(asked[0].if_none_match.as_deref(), Some(etag_of(&root.join("acme/synth.json")).as_str()));
     assert_eq!(asked[0].status, 304);
@@ -76,15 +75,15 @@ fn notes_the_server_no_longer_has_are_dropped_with_their_etag() {
     let (root, cache) = (dir.path().join("server"), dir.path().join("cache"));
     catalogue(&root);
     let server = FakeSynthHub::start(&root, None);
-    Online::new(&server.base).fetch_driver("acme/synth", &cache).unwrap();
+    online_in(&server.base, dir.path()).fetch_driver("acme/synth", &cache).unwrap();
     assert!(cache.join("acme/synth.md").is_file());
 
     std::fs::remove_file(root.join("acme/synth.md")).unwrap();
-    Online::new(&server.base).fetch_driver("acme/synth", &cache).unwrap();
+    online_in(&server.base, dir.path()).fetch_driver("acme/synth", &cache).unwrap();
     assert!(!cache.join("acme/synth.md").exists());
     std::fs::write(root.join("acme/synth.md"), "# Synth\n\nNew notes.\n").unwrap();
     server.forget_requests();
-    Online::new(&server.base).fetch_driver("acme/synth", &cache).unwrap();
+    online_in(&server.base, dir.path()).fetch_driver("acme/synth", &cache).unwrap();
     let notes = server.driver_requests().into_iter().find(|s| s.url.ends_with("synth.md")).unwrap();
     assert_eq!((notes.if_none_match, notes.status), (None, 200), "no ETag kept for notes that went away");
     assert_eq!(std::fs::read_to_string(cache.join("acme/synth.md")).unwrap(), "# Synth\n\nNew notes.\n");
@@ -96,10 +95,10 @@ fn an_unreachable_server_leaves_the_kept_driver_in_use() {
     let (root, cache) = (dir.path().join("server"), dir.path().join("cache"));
     catalogue(&root);
     let server = FakeSynthHub::start(&root, None);
-    Online::new(&server.base).fetch_driver("acme/box", &cache).unwrap();
+    online_in(&server.base, dir.path()).fetch_driver("acme/box", &cache).unwrap();
     let kept = std::fs::read(cache.join("acme/box.json")).unwrap();
 
-    let unreachable = Online::new("http://127.0.0.1:9");
+    let unreachable = online_in("http://127.0.0.1:9", dir.path());
     let path = osc_bridge::catalogue::from_cache_or_server("acme/box", &cache, Some(&unreachable)).unwrap();
     assert_eq!(path, cache.join("acme/box.json"));
     assert_eq!(std::fs::read(&path).unwrap(), kept);

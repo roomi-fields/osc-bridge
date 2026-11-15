@@ -120,9 +120,91 @@ pub fn catalogue(root: &Path) {
     std::fs::write(root.join("acme/synth.md"), "# Synth\n\nThe synth's notes.\n").unwrap();
 }
 
+/// A client of the server at `base` keeping its account in `dir/user`, a
+/// folder of the test's own, never the machine's.
+pub fn online_in(base: &str, dir: &Path) -> osc_bridge::online::Online {
+    osc_bridge::online::Online::keeping_account_in(base, Some(dir.join("user")))
+}
+
+static CONFIG_LOCK: Mutex<()> = Mutex::new(());
+
+/// A configuration folder of its own for the client of one session: while it
+/// lives, `XDG_CONFIG_HOME` and `APPDATA` name it (so the account, `user`, and
+/// the settings, `settings.toml`, go under `osc-bridge/` there, never to the
+/// machine's real ones), and a process-wide lock keeps any other guard out.
+/// Dropped, it gives both variables back and removes the folder, a failed
+/// test included.
+pub struct ConfigHome {
+    dir: tempfile::TempDir,
+    before: Vec<(&'static str, Option<std::ffi::OsString>)>,
+    _lock: std::sync::MutexGuard<'static, ()>,
+}
+
+impl ConfigHome {
+    pub fn new() -> Self {
+        let lock = CONFIG_LOCK.lock().unwrap_or_else(|e| e.into_inner());
+        let dir = temp("config");
+        let before = ["XDG_CONFIG_HOME", "APPDATA"].into_iter().map(|k| (k, std::env::var_os(k))).collect();
+        for k in ["XDG_CONFIG_HOME", "APPDATA"] {
+            std::env::set_var(k, dir.path());
+        }
+        Self { dir, before, _lock: lock }
+    }
+
+    /// The configuration folder.
+    pub fn path(&self) -> &Path {
+        self.dir.path()
+    }
+
+    /// Where the client keeps its account.
+    pub fn account(&self) -> std::path::PathBuf {
+        self.dir.path().join("osc-bridge").join("user")
+    }
+
+    /// Where the client keeps its settings.
+    pub fn settings(&self) -> std::path::PathBuf {
+        self.dir.path().join("osc-bridge").join("settings.toml")
+    }
+}
+
+impl ConfigHome {
+    fn give_back(&self) {
+        for (k, v) in &self.before {
+            match v {
+                Some(v) => std::env::set_var(k, v),
+                None => std::env::remove_var(k),
+            }
+        }
+    }
+
+    /// Ends the guard with the lock still held: the variables as the guard
+    /// recorded them at creation, and as they stand once given back.
+    #[allow(clippy::type_complexity)]
+    pub fn end(self) -> (Vec<(&'static str, Option<std::ffi::OsString>)>, Vec<(&'static str, Option<std::ffi::OsString>)>) {
+        self.give_back();
+        let after = self.before.iter().map(|(k, _)| (*k, std::env::var_os(k))).collect();
+        let before = self.before.clone();
+        (before, after)
+    }
+}
+
+impl Drop for ConfigHome {
+    fn drop(&mut self) {
+        self.give_back();
+    }
+}
+
 /// Run one MCP session over stdio-like buffers, linked to the server at
 /// `base`, its drivers kept in `cache`: one reply per request with an id.
+/// The client's account and settings live in a configuration folder of the
+/// session's own (`ConfigHome`), held for the whole session.
 pub fn mcp_session(base: &str, cache: &Path, requests: &[Value]) -> Vec<Value> {
+    mcp_session_in(&ConfigHome::new(), base, cache, requests)
+}
+
+/// `mcp_session` under a configuration folder the caller holds, to read what
+/// the session left there.
+pub fn mcp_session_in(_home: &ConfigHome, base: &str, cache: &Path, requests: &[Value]) -> Vec<Value> {
     let opts = osc_bridge::mcp::McpOptions {
         devices_dir: None,
         default_target: "127.0.0.1:9000".parse().unwrap(),
