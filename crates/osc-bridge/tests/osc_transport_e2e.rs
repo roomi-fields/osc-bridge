@@ -21,8 +21,6 @@ use std::time::{Duration, Instant};
 const DEADLINE: Duration = Duration::from_secs(10);
 /// One short read of a wait.
 const SHORT_READ: Duration = Duration::from_millis(100);
-/// Pause between two readiness probes.
-const PROBE_EVERY: Duration = Duration::from_millis(50);
 
 /// Waits on `sock` for a message at `addr`, by short repeated reads until
 /// `deadline`; other addresses are ignored. Panics naming `addr` on expiry.
@@ -42,29 +40,16 @@ fn recv_osc(sock: &UdpSocket, addr: &str, deadline: Duration) -> OscMessage {
     panic!("no OSC message at {addr} arrived within {deadline:?}");
 }
 
-/// The bridge is ready when it answers /bridge/status: probe every 50 ms from
-/// a dedicated socket until the first /bridge/status/device or the deadline.
-fn wait_bridge_ready(bridge_in_port: u16) {
-    let probe = UdpSocket::bind("127.0.0.1:0").unwrap();
-    probe.set_read_timeout(Some(PROBE_EVERY)).unwrap();
-    let q = rosc::encoder::encode(&OscPacket::Message(OscMessage {
-        addr: "/bridge/status".into(),
-        args: vec![],
-    }))
-    .unwrap();
-    let end = Instant::now() + DEADLINE;
-    let mut buf = [0u8; 65536];
-    while Instant::now() < end {
-        probe.send_to(&q, format!("127.0.0.1:{bridge_in_port}")).unwrap();
-        if let Ok((n, _)) = probe.recv_from(&mut buf) {
-            if let Ok((_, OscPacket::Message(m))) = rosc::decoder::decode_udp(&buf[..n]) {
-                if m.addr == "/bridge/status/device" {
-                    return;
-                }
-            }
-        }
-    }
-    panic!("bridge never answered /bridge/status within {DEADLINE:?}");
+/// Binds the bridge (its client-facing socket at `osc_bind`, port 0 allowed),
+/// then serves it in a thread. Returns the bound address: the bridge is ready
+/// when `Runtime::bind` returns, so no probe is needed.
+fn start_bridge(opts: RuntimeOptions) -> SocketAddr {
+    let bound = Runtime::bind(opts).unwrap_or_else(|e| panic!("bridge failed to bind: {e:#}"));
+    let addr = bound.osc_addr();
+    std::thread::spawn(move || {
+        let _ = bound.serve();
+    });
+    addr
 }
 
 #[test]
@@ -193,7 +178,6 @@ fn osc_passthrough_roundtrip() {
     let target_port = fake_target.local_addr().unwrap().port();
 
     let reply_port = pick_free_port();
-    let bridge_in_port = pick_free_port();
 
     let client_listener = UdpSocket::bind("127.0.0.1:0").unwrap();
     let client_addr = client_listener.local_addr().unwrap();
@@ -202,19 +186,17 @@ fn osc_passthrough_roundtrip() {
         device: passthrough_like(target_port, reply_port),
         midi_out_port_idx: 0,
         midi_in_port_idx: None,
-        osc_bind: format!("127.0.0.1:{bridge_in_port}"),
+        osc_bind: "127.0.0.1:0".to_string(),
         osc_clients: vec![client_addr],
         ws_bind: None,
         ws_allow_origins: vec![],
         oscquery_bind: None,
     };
 
-    std::thread::spawn(move || { let _ = Runtime::run(opts); });
-    wait_bridge_ready(bridge_in_port);
+    let bridge_addr = start_bridge(opts);
 
     // 1. /sonicpi/cue/foo "hello" 42 → /cue/foo "hello" 42 (verbatim args)
     let test_sock = UdpSocket::bind("127.0.0.1:0").unwrap();
-    let bridge_addr: SocketAddr = format!("127.0.0.1:{bridge_in_port}").parse().unwrap();
     let cmd = OscPacket::Message(OscMessage {
         addr: "/sonicpi/cue/foo".into(),
         args: vec![OscType::String("hello".into()), OscType::Int(42)],
@@ -249,7 +231,6 @@ fn osc_transport_full_roundtrip() {
 
     // The bridge's reply-listener port and client-facing bind port.
     let reply_port = pick_free_port();
-    let bridge_in_port = pick_free_port();
 
     // The osc-client listener (what receives reply re-emissions from the bridge).
     let client_listener = UdpSocket::bind("127.0.0.1:0").unwrap();
@@ -259,22 +240,20 @@ fn osc_transport_full_roundtrip() {
         device: ableton_like(target_port, reply_port),
         midi_out_port_idx: 0,
         midi_in_port_idx: None,
-        osc_bind: format!("127.0.0.1:{bridge_in_port}"),
+        osc_bind: "127.0.0.1:0".to_string(),
         osc_clients: vec![client_addr],
         ws_bind: None,
         ws_allow_origins: vec![],
         oscquery_bind: None,
     };
 
-    std::thread::spawn(move || { let _ = Runtime::run(opts); });
-    wait_bridge_ready(bridge_in_port);
+    let bridge_addr = start_bridge(opts);
 
     // 1. Startup subscription reaches the target.
     recv_osc(&fake_target, "/live/song/start_listen/tempo", DEADLINE);
 
     // 2. /ableton/transport/tempo 124.5 → bridge → /live/song/set/tempo 124.5
     let test_sock = UdpSocket::bind("127.0.0.1:0").unwrap();
-    let bridge_addr: SocketAddr = format!("127.0.0.1:{bridge_in_port}").parse().unwrap();
     let cmd = OscPacket::Message(OscMessage {
         addr: "/ableton/transport/tempo".into(),
         args: vec![OscType::Float(124.5)],
@@ -310,25 +289,106 @@ fn bridge_status_answers_a_caller_that_is_not_an_osc_client() {
     let fake_target = UdpSocket::bind("127.0.0.1:0").unwrap();
     let target_port = fake_target.local_addr().unwrap().port();
     let reply_port = pick_free_port();
-    let bridge_in_port = pick_free_port();
     let opts = RuntimeOptions {
         device: passthrough_like(target_port, reply_port),
         midi_out_port_idx: 0,
         midi_in_port_idx: None,
-        osc_bind: format!("127.0.0.1:{bridge_in_port}"),
+        osc_bind: "127.0.0.1:0".to_string(),
         osc_clients: vec![],
         ws_bind: None,
         ws_allow_origins: vec![],
         oscquery_bind: None,
     };
-    std::thread::spawn(move || { let _ = Runtime::run(opts); });
-    wait_bridge_ready(bridge_in_port);
+    let bridge_addr = start_bridge(opts);
 
     // The MCP get_status tool asks from an ephemeral port like this one.
     let caller = UdpSocket::bind("127.0.0.1:0").unwrap();
     let q = OscPacket::Message(OscMessage { addr: "/bridge/status".into(), args: vec![] });
-    caller.send_to(&rosc::encoder::encode(&q).unwrap(), format!("127.0.0.1:{bridge_in_port}")).unwrap();
+    caller.send_to(&rosc::encoder::encode(&q).unwrap(), bridge_addr).unwrap();
 
     let m = recv_osc(&caller, "/bridge/status/device", DEADLINE);
     assert!(matches!(&m.args[0], OscType::String(s) if s == "sonicpi"));
+}
+
+#[test]
+fn bind_returns_the_resolved_address_of_the_client_facing_socket_for_port_zero() {
+    let fake_target = UdpSocket::bind("127.0.0.1:0").unwrap();
+    let opts = RuntimeOptions {
+        device: passthrough_like(fake_target.local_addr().unwrap().port(), pick_free_port()),
+        midi_out_port_idx: 0,
+        midi_in_port_idx: None,
+        osc_bind: "127.0.0.1:0".to_string(),
+        osc_clients: vec![],
+        ws_bind: None,
+        ws_allow_origins: vec![],
+        oscquery_bind: None,
+    };
+    let bound = Runtime::bind(opts).expect("bind");
+    let addr = bound.osc_addr();
+    assert!(addr.ip().is_loopback());
+    assert_ne!(addr.port(), 0);
+}
+
+#[test]
+fn bridge_answers_status_the_moment_bind_returns_without_any_probe() {
+    let fake_target = UdpSocket::bind("127.0.0.1:0").unwrap();
+    let opts = RuntimeOptions {
+        device: passthrough_like(fake_target.local_addr().unwrap().port(), pick_free_port()),
+        midi_out_port_idx: 0,
+        midi_in_port_idx: None,
+        osc_bind: "127.0.0.1:0".to_string(),
+        osc_clients: vec![],
+        ws_bind: None,
+        ws_allow_origins: vec![],
+        oscquery_bind: None,
+    };
+    let bound = Runtime::bind(opts).expect("bind");
+    let addr = bound.osc_addr();
+    // The query is sent before `serve` starts: the bound socket queues it.
+    let caller = UdpSocket::bind("127.0.0.1:0").unwrap();
+    let q = OscPacket::Message(OscMessage { addr: "/bridge/status".into(), args: vec![] });
+    caller.send_to(&rosc::encoder::encode(&q).unwrap(), addr).unwrap();
+    std::thread::spawn(move || {
+        let _ = bound.serve();
+    });
+    let m = recv_osc(&caller, "/bridge/status/device", DEADLINE);
+    assert!(matches!(&m.args[0], OscType::String(s) if s == "sonicpi"));
+}
+
+#[test]
+fn bind_fails_with_the_address_in_its_error_when_the_client_facing_port_is_taken() {
+    let taken = UdpSocket::bind("127.0.0.1:0").unwrap();
+    let taken_addr = taken.local_addr().unwrap();
+    let fake_target = UdpSocket::bind("127.0.0.1:0").unwrap();
+    let opts = RuntimeOptions {
+        device: passthrough_like(fake_target.local_addr().unwrap().port(), pick_free_port()),
+        midi_out_port_idx: 0,
+        midi_in_port_idx: None,
+        osc_bind: taken_addr.to_string(),
+        osc_clients: vec![],
+        ws_bind: None,
+        ws_allow_origins: vec![],
+        oscquery_bind: None,
+    };
+    let err = Runtime::bind(opts).err().expect("bind must fail on a taken port");
+    assert!(format!("{err:#}").contains(&taken_addr.to_string()), "error was: {err:#}");
+}
+
+#[test]
+fn bind_fails_when_the_reply_port_is_taken() {
+    let taken = UdpSocket::bind("0.0.0.0:0").unwrap();
+    let reply_port = taken.local_addr().unwrap().port();
+    let fake_target = UdpSocket::bind("127.0.0.1:0").unwrap();
+    let opts = RuntimeOptions {
+        device: passthrough_like(fake_target.local_addr().unwrap().port(), reply_port),
+        midi_out_port_idx: 0,
+        midi_in_port_idx: None,
+        osc_bind: "127.0.0.1:0".to_string(),
+        osc_clients: vec![],
+        ws_bind: None,
+        ws_allow_origins: vec![],
+        oscquery_bind: None,
+    };
+    let err = Runtime::bind(opts).err().expect("bind must fail on a taken reply port");
+    assert!(format!("{err:#}").contains(&reply_port.to_string()), "error was: {err:#}");
 }

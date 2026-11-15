@@ -180,21 +180,23 @@ fn ws_client_end_to_end_on_osc_passthrough_runtime() {
     let target_port = fake_target.local_addr().unwrap().port();
 
     let reply_port = pick_free_udp_port();
-    let bridge_in_port = pick_free_udp_port();
     let ws_port = pick_free_tcp_port();
 
     let opts = RuntimeOptions {
         device: passthrough_like(target_port, reply_port),
         midi_out_port_idx: 0,
         midi_in_port_idx: None,
-        osc_bind: format!("127.0.0.1:{bridge_in_port}"),
+        osc_bind: "127.0.0.1:0".to_string(),
         osc_clients: vec![],
         ws_bind: Some(format!("127.0.0.1:{ws_port}")),
         ws_allow_origins: vec![],
         oscquery_bind: None,
     };
-    std::thread::spawn(move || { let _ = Runtime::run(opts); });
-    std::thread::sleep(Duration::from_millis(300));
+    // Bound once `bind` returns: the WebSocket listener is up, no sleep needed.
+    let bound = Runtime::bind(opts).unwrap_or_else(|e| panic!("bridge failed to bind: {e:#}"));
+    std::thread::spawn(move || {
+        let _ = bound.serve();
+    });
 
     let mut socket = connect(ws_port);
 

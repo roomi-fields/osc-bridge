@@ -1,0 +1,26 @@
+
+> test:unit
+> cd ../.. && grillhouse tests-du-paquet crates/osc-bridge
+
+   Compiling osc-bridge v0.19.1 (/home/romi/dev/mcp/osc-bridge/.claude/worktrees/OB-4gy/crates/osc-bridge)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.89s
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.09s
+────────────
+ Nextest run ID a3dad5bc-1bd1-4255-aecb-e04a9da5a7d9 with nextest profile: grillhouse
+    Starting 14 tests across 2 binaries
+        PASS [   0.010s] ( 1/14) osc-bridge::osc_transport_e2e bind_fails_with_the_address_in_its_error_when_the_client_facing_port_is_taken
+        PASS [   0.011s] ( 2/14) osc-bridge::osc_transport_e2e bind_fails_when_the_reply_port_is_taken
+        PASS [   0.011s] ( 3/14) osc-bridge::osc_transport_e2e bind_returns_the_resolved_address_of_the_client_facing_socket_for_port_zero
+        PASS [   0.012s] ( 4/14) osc-bridge::osc_transport_e2e bridge_status_answers_a_caller_that_is_not_an_osc_client
+        PASS [   0.013s] ( 5/14) osc-bridge::osc_transport_e2e osc_transport_full_roundtrip
+        PASS [   0.013s] ( 6/14) osc-bridge::ws_transport origin_rule_accepts_local_pages_and_listed_sites_only
+        PASS [   0.013s] ( 7/14) osc-bridge::osc_transport_e2e osc_passthrough_roundtrip
+        PASS [   0.014s] ( 8/14) osc-bridge::ws_transport foreign_origin_handshake_is_refused_with_403
+        PASS [   0.015s] ( 9/14) osc-bridge::osc_transport_e2e bridge_answers_status_the_moment_bind_returns_without_any_probe
+        PASS [   0.015s] (10/14) osc-bridge::osc_transport_e2e recv_osc_ignores_other_addresses_criteria_5_8
+        PASS [   0.010s] (11/14) osc-bridge::ws_transport ws_client_end_to_end_on_osc_passthrough_runtime
+        PASS [   0.013s] (12/14) osc-bridge::ws_transport ws_broadcast_fans_out_to_every_client_and_prunes_on_disconnect
+        PASS [   0.225s] (13/14) osc-bridge::ws_transport ws_binary_frames_reach_dispatch_and_broadcasts_reach_client
+        PASS [   0.326s] (14/14) osc-bridge::osc_transport_e2e recv_osc_fails_naming_the_expected_address_on_an_unfed_socket_criteria_5_6
+────────────
+     Summary [   0.327s] 14 tests run: 14 passed, 0 skipped

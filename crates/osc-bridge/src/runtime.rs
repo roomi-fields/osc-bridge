@@ -37,14 +37,41 @@ pub struct RuntimeOptions {
 
 pub struct Runtime;
 
+/// A bridge whose sockets are bound: the client-facing OSC socket (and the
+/// reply, WebSocket and OSCQuery listeners) are open, so a client may send as
+/// soon as `Runtime::bind` returns; datagrams queue until `serve` reads them.
+pub struct BoundRuntime {
+    osc_addr: SocketAddr,
+    serve: Box<dyn FnOnce() -> Result<()> + Send>,
+}
+
+impl BoundRuntime {
+    /// Resolved address of the client-facing OSC socket (the real port when
+    /// `osc_bind` asked for port 0).
+    pub fn osc_addr(&self) -> SocketAddr {
+        self.osc_addr
+    }
+
+    /// The receive loop: dispatches each incoming packet. Returns only on error.
+    pub fn serve(self) -> Result<()> {
+        (self.serve)()
+    }
+}
+
 impl Runtime {
+    /// Bind then serve: the blocking entry point of the application.
     pub fn run(opts: RuntimeOptions) -> Result<()> {
+        Self::bind(opts)?.serve()
+    }
+
+    /// Open every socket the bridge needs and return it ready to `serve`.
+    pub fn bind(opts: RuntimeOptions) -> Result<BoundRuntime> {
         // Software (OSC-out) drivers bypass midir entirely. Branch early so
         // the rest of run() stays unchanged for hardware (MIDI) drivers.
         if opts.device.device.transport.as_ref().map(|t| t.kind.as_str())
             == Some("osc")
         {
-            return run_osc(opts);
+            return bind_osc(opts);
         }
 
         let dev = Arc::new(opts.device);
@@ -153,23 +180,30 @@ impl Runtime {
 
         let sock = UdpSocket::bind(&opts.osc_bind)
             .with_context(|| format!("bind {}", opts.osc_bind))?;
+        let osc_addr = sock.local_addr()?;
         serve_oscquery(&opts.oscquery_bind, std::slice::from_ref(dev.as_ref()), &sock, ws_local)?;
-        eprintln!("Ready. Ctrl-C to stop.");
+        let osc_clients = opts.osc_clients;
 
-        let mut buf = [0u8; 65536];
-        loop {
-            let (n, from) = match sock.recv_from(&mut buf) {
-                Ok(p) => p,
-                Err(e) => { eprintln!("recv: {e}"); continue; }
-            };
-            match rosc::decoder::decode_udp(&buf[..n]) {
-                Ok((_, pkt)) => {
-                    answer_query(&sock, &pkt, from, std::slice::from_ref(dev.as_ref()), &opts.osc_clients);
-                    dispatch(pkt, &state, &send_osc, from)
+        let serve = move || -> Result<()> {
+            // Keep the MIDI input connection alive for the life of the loop.
+            let _in_conn = _in_conn;
+            eprintln!("Ready. Ctrl-C to stop.");
+            let mut buf = [0u8; 65536];
+            loop {
+                let (n, from) = match sock.recv_from(&mut buf) {
+                    Ok(p) => p,
+                    Err(e) => { eprintln!("recv: {e}"); continue; }
+                };
+                match rosc::decoder::decode_udp(&buf[..n]) {
+                    Ok((_, pkt)) => {
+                        answer_query(&sock, &pkt, from, std::slice::from_ref(dev.as_ref()), &osc_clients);
+                        dispatch(pkt, &state, &send_osc, from)
+                    }
+                    Err(e) => eprintln!("OSC decode err from {from}: {e}"),
                 }
-                Err(e) => eprintln!("OSC decode err from {from}: {e}"),
             }
-        }
+        };
+        Ok(BoundRuntime { osc_addr, serve: Box::new(serve) })
     }
 }
 
@@ -1315,7 +1349,7 @@ fn enqueue(tx: &Sender<Vec<u8>>, frm: Vec<u8>, addr: &str, from: SocketAddr) {
 /// entirely, opens UDP sockets toward the OSC target and (optionally) a reply
 /// listener, fires startup `subscriptions`, then loops on the client-facing
 /// OSC bind dispatching each incoming command through `Command.forward`.
-fn run_osc(opts: RuntimeOptions) -> Result<()> {
+fn bind_osc(opts: RuntimeOptions) -> Result<BoundRuntime> {
     let dev = Arc::new(opts.device);
     let transport = dev.device.transport.as_ref()
         .ok_or_else(|| anyhow!("OSC driver requires `device.transport` block"))?;
@@ -1392,23 +1426,28 @@ fn run_osc(opts: RuntimeOptions) -> Result<()> {
 
     let sock = UdpSocket::bind(&opts.osc_bind)
         .with_context(|| format!("bind {}", opts.osc_bind))?;
+    let osc_addr = sock.local_addr()?;
     serve_oscquery(&opts.oscquery_bind, std::slice::from_ref(dev.as_ref()), &sock, ws_local)?;
-    eprintln!("Ready. Ctrl-C to stop.");
+    let osc_clients = opts.osc_clients;
 
-    let mut buf = [0u8; 65536];
-    loop {
-        let (n, from) = match sock.recv_from(&mut buf) {
-            Ok(p) => p,
-            Err(e) => { eprintln!("recv: {e}"); continue; }
-        };
-        match rosc::decoder::decode_udp(&buf[..n]) {
-            Ok((_, pkt)) => {
-                answer_query(&sock, &pkt, from, std::slice::from_ref(dev.as_ref()), &opts.osc_clients);
-                dispatch_osc(pkt, &dev, &cmds, &target_sock, target_addr, &send_osc, from)
+    let serve = move || -> Result<()> {
+        eprintln!("Ready. Ctrl-C to stop.");
+        let mut buf = [0u8; 65536];
+        loop {
+            let (n, from) = match sock.recv_from(&mut buf) {
+                Ok(p) => p,
+                Err(e) => { eprintln!("recv: {e}"); continue; }
+            };
+            match rosc::decoder::decode_udp(&buf[..n]) {
+                Ok((_, pkt)) => {
+                    answer_query(&sock, &pkt, from, std::slice::from_ref(dev.as_ref()), &osc_clients);
+                    dispatch_osc(pkt, &dev, &cmds, &target_sock, target_addr, &send_osc, from)
+                }
+                Err(e) => eprintln!("OSC decode err from {from}: {e}"),
             }
-            Err(e) => eprintln!("OSC decode err from {from}: {e}"),
         }
-    }
+    };
+    Ok(BoundRuntime { osc_addr, serve: Box::new(serve) })
 }
 
 fn dispatch_osc(
