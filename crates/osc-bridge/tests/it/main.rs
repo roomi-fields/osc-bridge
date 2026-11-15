@@ -1,4 +1,29 @@
 #[path = "../common/mod.rs"]
 mod common;
 
+mod bridge_status_and_broadcast;
+mod checksum;
+mod checksum_after_script;
+mod checksum_lenient;
+mod custom_commands;
+mod driver_freshness;
+mod dynamic_routing;
+mod electra_lua_api;
+mod electra_lua_runtime;
+mod electra_one;
+mod electra_one_driver;
 mod isolated_config;
+mod launch_control_xl_3;
+mod midi_out;
+mod newer_version_notice;
+mod online_account;
+mod orchestrator_config;
+mod orchestrator_routing_e2e;
+mod osc_transport_e2e;
+mod privacy_policy;
+mod scripting;
+mod scripting_integration;
+mod single_executable;
+mod temp_folders;
+mod triggers;
+mod ws_transport;

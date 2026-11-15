@@ -2,7 +2,7 @@
 //! and when it fails: the system's temporary folder may be a memory disk
 //! that every program of the machine shares.
 
-mod common;
+use crate::common;
 
 use std::path::{Path, PathBuf};
 

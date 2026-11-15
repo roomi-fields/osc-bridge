@@ -18,7 +18,7 @@
 //!   AGPL-3.0); see `tests/fixtures/blofeld_sound_dump.NOTICE.md`. The maker's checksum is
 //!   the sum of bytes 7..389 & 0x7F (Blofeld SysEx documentation v1.04, "sum of SDATA").
 
-mod common;
+use crate::common;
 
 use osc_bridge::detect::probe_of;
 use osc_bridge::device::{Device, FrameToken};
@@ -85,7 +85,7 @@ fn criterion_1_5_twos7_is_zero_when_the_sum_is_a_multiple_of_128() {
 #[test]
 fn criterion_1_5_sum7_waldorf_masks_the_sum() {
     // A real Blofeld Sound Dump: the byte produced from offset 7 is the maker's 0x3E.
-    let hex = include_str!("fixtures/blofeld_sound_dump.hex").trim();
+    let hex = include_str!("../fixtures/blofeld_sound_dump.hex").trim();
     let msg: Vec<u8> = (0..hex.len() / 2).map(|i| u8::from_str_radix(&hex[2 * i..2 * i + 2], 16).unwrap()).collect();
     assert_eq!((msg.len(), msg[390], msg[391]), (392, 0x3E, 0xF7));
     let body: Vec<String> = msg[4..390].iter().map(|b| b.to_string()).collect();

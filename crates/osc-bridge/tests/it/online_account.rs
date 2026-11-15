@@ -16,7 +16,7 @@
 //!
 //! No network: the server is a fake one on a local port.
 
-mod common;
+use crate::common;
 
 use common::{catalogue, temp};
 use osc_bridge::online::Online;

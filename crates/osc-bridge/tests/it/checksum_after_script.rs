@@ -11,7 +11,7 @@
 //! address. Every test goes through `encode`, which runs `dispatch_command` and
 //! then `maybe_run_cmd_script`.
 
-mod common;
+use crate::common;
 
 use osc_bridge::device::Device;
 use osc_bridge::frame::{build_frame, Bindings};

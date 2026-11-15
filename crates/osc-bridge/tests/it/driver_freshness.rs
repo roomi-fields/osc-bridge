@@ -6,7 +6,7 @@
 //!
 //! No network: the server is a fake one on a local port (`common`).
 
-mod common;
+use crate::common;
 
 use common::{catalogue, mcp_session, online_in, temp, texts, tool_call, FakeSynthHub};
 use serde_json::json;

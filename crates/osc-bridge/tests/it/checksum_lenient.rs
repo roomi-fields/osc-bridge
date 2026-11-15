@@ -5,7 +5,7 @@
 //!
 //! Checksum definitions: see `tests/checksum.rs` (Electra One preset format).
 
-mod common;
+use crate::common;
 
 use osc_bridge::device::{Device, FrameToken};
 use osc_bridge::frame::checksum_problems;
@@ -112,13 +112,14 @@ fn build_error(header: &str, rest: &str, addr: &str) -> (String, usize) {
     let dir = common::temp("checksum-lenient-child");
     let path = write(&dir, header, rest);
     let run = std::process::Command::new(std::env::current_exe().unwrap())
-        .args(["--exact", "child_encode_one_message", "--nocapture", "--test-threads=1"])
+        .args(["--exact", "checksum_lenient::child_encode_one_message", "--nocapture", "--test-threads=1"])
         .env("CHK_FILE", &path)
         .env("CHK_ADDR", addr)
         .output()
         .unwrap();
     let (stdout, stderr) = (String::from_utf8_lossy(&run.stdout), String::from_utf8_lossy(&run.stderr).to_string());
     assert!(run.status.success(), "the child failed:\n{stdout}\n{stderr}");
+    assert!(stdout.contains("running 1 test\n"), "the child played one test and no other:\n{stdout}\n{stderr}");
     let sent = stdout.lines().find_map(|l| l.rsplit_once("SENT:").map(|(_, n)| n.trim())).unwrap_or_else(|| panic!("no SENT line:\n{stdout}\n{stderr}"));
     (stderr, sent.parse().unwrap())
 }

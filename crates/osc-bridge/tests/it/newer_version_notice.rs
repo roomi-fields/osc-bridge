@@ -7,7 +7,7 @@
 //! The notice is once per run, so the run is a child process: this test runs
 //! itself again with `NEWER_NOTICE_RUN` set, and reads its standard error.
 
-mod common;
+use crate::common;
 
 use common::{catalogue, mcp_session, temp, texts, tool_call, FakeSynthHub};
 use serde_json::json;
@@ -20,12 +20,13 @@ fn a_newer_osc_bridge_is_announced_once_per_run() {
         return one_run();
     }
     let run = std::process::Command::new(std::env::current_exe().unwrap())
-        .args(["--exact", "a_newer_osc_bridge_is_announced_once_per_run", "--nocapture", "--test-threads=1"])
+        .args(["--exact", "newer_version_notice::a_newer_osc_bridge_is_announced_once_per_run", "--nocapture", "--test-threads=1"])
         .env("NEWER_NOTICE_RUN", "1")
         .output()
         .unwrap();
     let (stdout, stderr) = (String::from_utf8_lossy(&run.stdout), String::from_utf8_lossy(&run.stderr));
     assert!(run.status.success(), "the run failed:\n{stdout}\n{stderr}");
+    assert!(stdout.contains("running 1 test\n"), "the child played one test and no other:\n{stdout}\n{stderr}");
     assert_eq!(stderr.matches("newer osc-bridge").count(), 1, "said once on standard error:\n{stderr}");
     assert!(stderr.contains(NEWER), "{stderr}");
     assert!(!stdout.contains(NEWER), "nothing on standard output:\n{stdout}");
