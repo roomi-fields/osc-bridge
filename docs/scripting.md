@@ -2,7 +2,9 @@
 
 > **Use this only when the declarative JSON schema cannot express what you need.**
 > 95% of devices don't require any Lua. CC, NRPN, SysEx templating, u7/u14
-> splits, reply matching — all declarative. Reach for scripting only for exotic
+> splits, reply matching — all declarative. The usual checksums are declarative
+> too: `{checksum:twos7@5}`, `{checksum:sum7@5}` and `{checksum:xor7@0}` in a
+> frame (`<algorithm>@<from>[+<length>]`). Reach for scripting only for other
 > checksums, non-standard encodings, or conditional transforms that the schema
 > can't describe.
 >
@@ -35,8 +37,9 @@ A twin field `transform_reverse` is reserved for the MIDI → OSC direction
 
 ### 2. `script` — block on a command or reply pattern
 
-For transforms the value engine can't do: inserting a computed checksum,
-conditional drops, payload rewriting.
+For transforms the value engine can't do: inserting a checksum other than
+`twos7`, `sum7` or `xor7` (those are declarative), conditional drops, payload
+rewriting.
 
 The script receives a `ctx` table and must `return ctx` (or `return nil` to
 drop the message entirely). The Lua call signature is:
@@ -58,7 +61,8 @@ Context fields:
 | `device`    | string         | device name                                            |
 | `command`   | string         | the OSC path that matched                              |
 
-Example — XOR checksum inserted before the F7:
+Example — a checksum computed in Lua (a plain XOR is `xor7` in the frame; this
+shows the mechanism for a checksum the frame cannot express), inserted before the F7:
 
 ```json
 {
@@ -84,9 +88,10 @@ Always available in both `transform` and `script`:
 ob.u7_clamp(v)       -- clamp v into [0, 127]
 ob.u14_lsb(v)        -- low 7 bits
 ob.u14_msb(v)        -- high 7 bits
-ob.checksum_xor(t)   -- XOR over a table of bytes, masked to 7 bits
-ob.checksum_sum(t)   -- sum % 128
+ob.checksum_xor(t)   -- XOR over a table of bytes, masked to 7 bits (`xor7`)
+ob.checksum_sum(t)   -- sum % 128 (`sum7`)
 ob.log(msg)          -- debug print (do not ship to prod)
+print(...)           -- goes to the log (standard error), never to standard output
 ```
 
 ## Sandbox & limits

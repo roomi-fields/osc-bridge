@@ -234,7 +234,9 @@ you'll need it:
 - **Software targets** — driving a DAW or live-coding environment instead of
   hardware: `device.transport.kind = "osc"`. See the schema doc's
   "Software drivers" section.
-- **The Lua escape hatch** — checksums, exotic encodings, conditional
+- **Checksums** — `twos7`, `sum7` and `xor7` are declarative: a frame token
+  `{checksum:<algorithm>@<from>[+<length>]}`, no Lua.
+- **The Lua escape hatch** — other checksums, exotic encodings, conditional
   transforms: `transform` / `script`. Use sparingly; `lint` warns on every use.
   See [`scripting.md`](scripting.md).
 

@@ -4,7 +4,7 @@
 //!    decode to OSC packets and reach the dispatch callback; broadcasts reach
 //!    every connected client; text frames are ignored; a disconnected client
 //!    is pruned from the registry.
-//! 2. End-to-end: a full `Runtime::run` on an OSC-passthrough device with
+//! 2. End-to-end: a full bridge (`Runtime::bind`, then `serve`) on an OSC-passthrough device with
 //!    `ws_bind` set — a WS client's frames flow to the UDP target and the
 //!    target's replies flow back to the WS client, proving "WS client ≡
 //!    --osc-client".

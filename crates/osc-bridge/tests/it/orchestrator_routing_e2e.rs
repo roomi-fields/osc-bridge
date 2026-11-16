@@ -26,6 +26,24 @@ fn unique_tmp_dir(tag: &str) -> tempfile::TempDir {
     tempfile::Builder::new().prefix(&format!("osc-bridge-test-{tag}-")).tempdir().unwrap()
 }
 
+/// Sends `msg` to the orchestrator until the forward reaches `target`: the
+/// orchestrator is ready when it answers, so no fixed pause guesses its start.
+/// The deadline weighs only on a failure.
+fn send_until_forwarded(target: &UdpSocket, orch: SocketAddr, msg: &OscPacket) -> Vec<u8> {
+    let client = UdpSocket::bind("127.0.0.1:0").unwrap();
+    let bytes = rosc::encoder::encode(msg).unwrap();
+    target.set_read_timeout(Some(Duration::from_millis(100))).unwrap();
+    let end = std::time::Instant::now() + Duration::from_secs(10);
+    let mut buf = [0u8; 65536];
+    while std::time::Instant::now() < end {
+        client.send_to(&bytes, orch).unwrap();
+        if let Ok((n, _)) = target.recv_from(&mut buf) {
+            return buf[..n].to_vec();
+        }
+    }
+    panic!("routed forward should arrive");
+}
+
 #[test]
 fn inter_device_route_remaps_and_forwards() {
     // Fake synth target — bind first so its port is reserved.
@@ -73,23 +91,19 @@ map.to = [0, 1]
     // Spawn the orchestrator.
     let toml_path = bridge_toml.clone();
     std::thread::spawn(move || { let _ = Orchestrator::run(&toml_path); });
-    std::thread::sleep(Duration::from_millis(400));
 
     // Send /ctrl/knob/1 80 to the orchestrator. There is no device owning
     // /ctrl — the message exists purely as a route source.
-    let client = UdpSocket::bind("127.0.0.1:0").unwrap();
     let orch_addr: SocketAddr = format!("127.0.0.1:{orch_bind_port}").parse().unwrap();
     let msg = OscPacket::Message(OscMessage {
         addr: "/ctrl/knob/1".into(),
         args: vec![OscType::Int(80)],
     });
-    client.send_to(&rosc::encoder::encode(&msg).unwrap(), orch_addr).unwrap();
 
     // The route should remap 80 (of 0..127) to ~0.63, dispatch into /synth,
     // whose /cutoff command forwards /fx/cutoff <v> to the fake target.
-    let mut buf = [0u8; 65536];
-    let (n, _) = fake_synth.recv_from(&mut buf).expect("routed forward should arrive");
-    let (_, pkt) = rosc::decoder::decode_udp(&buf[..n]).unwrap();
+    let bytes = send_until_forwarded(&fake_synth, orch_addr, &msg);
+    let (_, pkt) = rosc::decoder::decode_udp(&bytes).unwrap();
     match pkt {
         OscPacket::Message(m) => {
             assert_eq!(m.addr, "/fx/cutoff");
@@ -146,9 +160,7 @@ to = "/synth/gate"
 
     let toml_path = bridge_toml.clone();
     std::thread::spawn(move || { let _ = Orchestrator::run(&toml_path); });
-    std::thread::sleep(Duration::from_millis(400));
 
-    let client = UdpSocket::bind("127.0.0.1:0").unwrap();
     let orch_addr: SocketAddr = format!("127.0.0.1:{orch_bind_port}").parse().unwrap();
     // /pad/3/hit 1 — the {n} capture is consumed by the route pattern, the
     // arg (1) passes through unchanged since there is no `map`.
@@ -156,11 +168,8 @@ to = "/synth/gate"
         addr: "/pad/3/hit".into(),
         args: vec![OscType::Int(1)],
     });
-    client.send_to(&rosc::encoder::encode(&msg).unwrap(), orch_addr).unwrap();
-
-    let mut buf = [0u8; 65536];
-    let (n, _) = fake_synth.recv_from(&mut buf).expect("routed forward should arrive");
-    let (_, pkt) = rosc::decoder::decode_udp(&buf[..n]).unwrap();
+    let bytes = send_until_forwarded(&fake_synth, orch_addr, &msg);
+    let (_, pkt) = rosc::decoder::decode_udp(&bytes).unwrap();
     match pkt {
         OscPacket::Message(m) => {
             assert_eq!(m.addr, "/fx/gate");

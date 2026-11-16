@@ -152,6 +152,8 @@ impl ScriptEngine {
                 .map_err(|e| anyhow!("strip global {name}: {e}"))?;
         }
 
+        install_print(&lua)?;
+
         // Inject `ob.*` helpers.
         let ob = lua.create_table().map_err(|e| anyhow!("ob table: {e}"))?;
         ob.set("u14_lsb", lua.create_function(|_, v: i64| Ok(v & 0x7F))
@@ -164,15 +166,13 @@ impl ScriptEngine {
             .map_err(|e| anyhow!("u7_clamp: {e}"))?)
             .map_err(|e| anyhow!("set u7_clamp: {e}"))?;
         ob.set("checksum_xor", lua.create_function(|_, t: Vec<i64>| {
-            let mut acc: i64 = 0;
-            for b in t { acc ^= b & 0xFF; }
-            Ok(acc & 0x7F)
+            let bytes: Vec<u8> = t.iter().map(|b| (*b & 0xFF) as u8).collect();
+            Ok(i64::from(crate::frame::checksum_byte(osd::Algorithm::Xor7, &bytes)))
         }).map_err(|e| anyhow!("checksum_xor: {e}"))?)
             .map_err(|e| anyhow!("set checksum_xor: {e}"))?;
         ob.set("checksum_sum", lua.create_function(|_, t: Vec<i64>| {
-            let mut acc: i64 = 0;
-            for b in t { acc = acc.wrapping_add(b); }
-            Ok(acc & 0x7F)
+            let bytes: Vec<u8> = t.iter().map(|b| (*b & 0xFF) as u8).collect();
+            Ok(i64::from(crate::frame::checksum_byte(osd::Algorithm::Sum7, &bytes)))
         }).map_err(|e| anyhow!("checksum_sum: {e}"))?)
             .map_err(|e| anyhow!("set checksum_sum: {e}"))?;
         ob.set("log", lua.create_function(|_, s: String| {
@@ -486,7 +486,6 @@ fn install_emit_osc_fn(lua: &Lua, ob: &Table, queue: Arc<Mutex<Vec<EmitOsc>>>) -
 ///   numbered. The `PT_*` constants name the parameter types.
 /// - `devices.get(deviceId):getChannel()` gives the device's MIDI channel,
 ///   1..16: the channel the engine sends this driver on.
-/// - `print` goes to the log.
 ///
 /// One engine serves one driver, so `deviceId` is not looked up.
 fn install_electra_api(lua: &Lua, dev: &Device, values: Arc<Mutex<HashMap<String, i64>>>) -> Result<()> {
@@ -529,7 +528,14 @@ fn install_electra_api(lua: &Lua, dev: &Device, values: Arc<Mutex<HashMap<String
     }).map_err(e("devices.get"))?).map_err(e("set devices.get"))?;
     g.set("devices", devices).map_err(e("set devices"))?;
 
-    g.set("print", lua.create_function(|lua, args: mlua::Variadic<Value>| {
+    Ok(())
+}
+
+/// `print` of every engine goes to the log (standard error), never to
+/// standard output, where a local MCP session speaks.
+fn install_print(lua: &Lua) -> Result<()> {
+    let e = |what: &str| { let what = what.to_string(); move |er: mlua::Error| anyhow!("{what}: {er}") };
+    lua.globals().set("print", lua.create_function(|lua, args: mlua::Variadic<Value>| {
         let tostring: mlua::Function = lua.globals().get("tostring")?;
         let parts: Vec<String> = args.into_iter()
             .map(|v| tostring.call::<String>(v)).collect::<mlua::Result<_>>()?;

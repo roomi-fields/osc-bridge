@@ -899,8 +899,8 @@ pub fn build_cc_param_map(dev: &Device) -> HashMap<String, (CcEntry, u8)> {
 
 pub type SendOsc = Arc<dyn Fn(OscMessage) + Send + Sync>;
 
-/// Per-device dispatch state shared between Runtime::run (single-device) and
-/// Orchestrator::run (multi-device). Lets the orchestrator reuse the full
+/// Per-device dispatch state shared between the single-device runtime and
+/// the orchestrator (multi-device). Lets the orchestrator reuse the full
 /// dispatch pipeline (commands, params, cc_params, custom_commands) instead
 /// of the previous perf-MIDI-only subset.
 pub struct DeviceDispatch {
@@ -955,7 +955,7 @@ pub fn dispatch_to_device(
 }
 
 /// Per-device dispatch state for an OSC-transport (software) device — the
-/// orchestrator equivalent of what `run_osc` keeps on its stack. Lets the
+/// orchestrator equivalent of what the single-device OSC runtime keeps. Lets the
 /// orchestrator host hardware (MIDI) and software (OSC) devices side by side.
 pub struct OscDeviceHandle {
     pub device: Arc<Device>,

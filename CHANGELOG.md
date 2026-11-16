@@ -11,6 +11,11 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Fixed
+- `print` of a script engine built without a driver (identity detection,
+  programs) now writes to the log, not to standard output, where a local MCP
+  session speaks. Every script engine is built by the same constructor.
+
 ## [0.20.0] — 2026-11-16
 
 ### Changed — osc-bridge reads its drivers through `osd`
