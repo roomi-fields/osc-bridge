@@ -1,6 +1,7 @@
 #[path = "../common/mod.rs"]
 mod common;
 
+mod account_isolation_guard;
 mod bridge_status_and_broadcast;
 mod checksum;
 mod checksum_after_script;
