@@ -6,7 +6,8 @@
 //! The engine loads a device spec, exposes its OSC surface, and translates
 //! incoming OSC to outgoing MIDI (and vice-versa for replies / live MIDI in).
 //!
-//! See `docs/DEVICE_JSON_SCHEMA.md` for the schema reference.
+//! The format of a device spec is the Open Synth Descriptors (OSD), read
+//! through the `osd` crate.
 
 // The MCP tool schemas are one large `json!` literal.
 #![recursion_limit = "512"]
@@ -32,5 +33,5 @@ pub mod oscquery;
 pub mod midnam;
 pub mod programs;
 
-pub use device::Device;
+pub use osd::Device;
 pub use runtime::{Runtime, RuntimeOptions};

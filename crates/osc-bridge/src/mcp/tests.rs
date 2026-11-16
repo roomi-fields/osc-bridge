@@ -400,7 +400,7 @@ fn a_local_copy_fetches_the_drivers_it_needs_and_forwards_reports() {
     let fetched = crate::catalogue::fetch(&link.client, "microfreak_tools", &cache).unwrap();
     assert_eq!(fetched, cache.join("arturia/microfreak.vendor.fw-microfreak-tools-0.1.0.json"));
     assert!(fetched.with_extension("md").is_file() && cache.join("arturia/microfreak.json").is_file());
-    assert_eq!(Device::load(&fetched).unwrap().device.osc_prefix, "/microfreak_tools");
+    assert_eq!(crate::device::load(&fetched).unwrap().device.osc_prefix, "/microfreak_tools");
     assert_eq!(crate::catalogue::fetch(&link.client, "box", &cache).unwrap(), cache.join("acme/box.vendor.fw-2.json"));
     assert!(crate::catalogue::fetch(&link.client, "acme/none", &cache).unwrap_err().to_string().contains("no driver acme/none"));
     assert!(link.client.fetch_driver("../secret", &cache).is_err());

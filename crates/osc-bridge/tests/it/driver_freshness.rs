@@ -26,8 +26,9 @@ fn a_kept_driver_is_asked_again_with_its_etag_and_used_on_304() {
     let path = online_in(&server.base, dir.path()).fetch_driver("acme/box", &cache).unwrap();
     assert_eq!(path, cache.join("acme/box.json"));
     let first = server.driver_requests();
-    assert_eq!(first.iter().map(|s| s.url.as_str()).collect::<Vec<_>>(),
-        ["/api/v1/devices/acme/box.json", "/api/v1/devices/acme/box.md", "/api/v1/devices/acme/_profile.json"]);
+    let mut asked: Vec<&str> = first.iter().map(|s| s.url.as_str()).collect();
+    asked.sort();
+    assert_eq!(asked, ["/api/v1/devices/acme/_profile.json", "/api/v1/devices/acme/box.json", "/api/v1/devices/acme/box.md"]);
     assert!(first.iter().all(|s| s.if_none_match.is_none() && s.status == 200), "{first:?}");
     server.forget_requests();
 
@@ -36,7 +37,8 @@ fn a_kept_driver_is_asked_again_with_its_etag_and_used_on_304() {
     assert_eq!(again, path);
     let second = server.driver_requests();
     assert_eq!(second.len(), 3, "{second:?}");
-    for (seen, file) in second.iter().zip(["acme/box.json", "acme/box.md", "acme/_profile.json"]) {
+    for file in ["acme/box.json", "acme/box.md", "acme/_profile.json"] {
+        let seen = second.iter().find(|s| s.url == format!("/api/v1/devices/{file}")).unwrap_or_else(|| panic!("{file}: {second:?}"));
         assert_eq!(seen.if_none_match.as_deref(), Some(etag_of(&root.join(file)).as_str()), "{seen:?}");
         assert_eq!(seen.status, 304, "{seen:?}");
         assert_eq!(std::fs::read(cache.join(file)).unwrap(), std::fs::read(root.join(file)).unwrap(),
@@ -126,9 +128,9 @@ fn a_session_with_two_devices_asks_only_for_those_two_drivers() {
         assert_ne!(reply["result"]["isError"], true, "{reply}");
         assert!(texts(reply).iter().all(|t| !t.contains("newer osc-bridge")), "no notice without Deprecation: {reply}");
     }
-    let urls = |seen: &[common::Seen]| seen.iter().map(|s| s.url.clone()).collect::<Vec<_>>();
-    assert_eq!(urls(&server.driver_requests()), ["/api/v1/devices/acme/box.json", "/api/v1/devices/acme/box.md",
-        "/api/v1/devices/acme/_profile.json", "/api/v1/devices/acme/synth.json", "/api/v1/devices/acme/synth.md"],
+    let urls = |seen: &[common::Seen]| { let mut u = seen.iter().map(|s| s.url.clone()).collect::<Vec<_>>(); u.sort(); u };
+    assert_eq!(urls(&server.driver_requests()), ["/api/v1/devices/acme/_profile.json", "/api/v1/devices/acme/box.json",
+        "/api/v1/devices/acme/box.md", "/api/v1/devices/acme/synth.json", "/api/v1/devices/acme/synth.md"],
         "each driver once, with its notes and profile, and nothing else of the catalogue");
     let all = server.requests.lock().unwrap().clone();
     let others: Vec<&str> = all.iter().map(|s| s.url.as_str()).filter(|u| !u.starts_with("/api/v1/devices/acme/")).collect();

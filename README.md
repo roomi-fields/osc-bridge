@@ -120,7 +120,7 @@ working driver end to end. Otherwise — three common cases, pick yours:
 
 **Your synth isn't listed** → write its driver and send it to SynthHub.
   1. Find a source: vendor programmer's reference, MIDI implementation PDF, or a canonical CSV.
-  2. Follow [`docs/DEVICE_JSON_SCHEMA.md`](docs/DEVICE_JSON_SCHEMA.md); the driver of a similar device (`/api/v1/devices/<id>.json` on SynthHub, or the copy in your cache) is a good template.
+  2. Follow the [Open Synth Descriptors](https://github.com/roomi-fields/open-synth-descriptors) (OSD) format, which osc-bridge reads; the driver of a similar device (`/api/v1/devices/<id>.json` on SynthHub, or the copy in your cache) is a good template.
   3. Check it: `osc-bridge lint my-synth.json`, then `osc-bridge run --device my-synth.json` on the device.
   4. Contribute it: from an MCP client, the `submit_driver` tool (it is checked, then added to the catalogue); or open an issue here with the file.
 
@@ -350,7 +350,7 @@ Drivers with a drum map expose each voice: `/drm1_mkiv/drum/kick 110` fires
 the Vermona DRM1 MKIV kick at velocity 110 (note 36, channel 10). When a
 device documents several trigger modes, the address carries the mode, e.g.
 `/tr_8s/drum/default_note_map/bass_drum`. See
-[`DEVICE_JSON_SCHEMA.md`](docs/DEVICE_JSON_SCHEMA.md#triggers--named-drum-sounds-osc--midi-note).
+the `triggers` block of the [OSD format](https://github.com/roomi-fields/open-synth-descriptors).
 
 ### Explore a device spec without connecting anything
 ```

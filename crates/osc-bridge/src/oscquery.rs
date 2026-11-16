@@ -18,7 +18,8 @@ use std::io::{Read, Write};
 use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::time::Duration;
 
-use crate::device::{ArgSpec, CcParamEntry, Device, TriggerEntry};
+use crate::device::{address_text, full_osc_path};
+use osd::{Arg as ArgSpec, ArgType, CcEntry as CcParamEntry, Device, MidiType, Trigger as TriggerEntry};
 use crate::export::{credits, device_title, label, sources_json};
 use crate::runtime::{parse_osc_tpl, Part};
 
@@ -187,7 +188,7 @@ fn bridge_routes(root: &mut Node) {
 
 fn device_routes(root: &mut Node, d: &Device) {
     let mut unlisted: Vec<String> = Vec::new();
-    let osc = d.device.transport.as_ref().is_some_and(|t| t.kind == "osc");
+    let osc = d.device.transport.as_ref().is_some_and(|t| t.kind == osd::TransportKind::Osc);
     if osc {
         osc_device_routes(root, d, &mut unlisted);
     } else {
@@ -205,15 +206,16 @@ fn device_routes(root: &mut Node, d: &Device) {
 /// The routes of a hardware (MIDI/SysEx) driver, in the order the bridge
 /// tries them (`runtime::handle_message`), then what it sends back.
 fn midi_device_routes(root: &mut Node, d: &Device, unlisted: &mut Vec<String>) {
-    let p = |rel: &str| d.full_osc_path(rel);
-    for c in &d.custom_commands {
+    let p = |rel: &str| full_osc_path(d, rel);
+    let custom = d.custom_commands.as_deref().unwrap_or_default();
+    for c in custom {
         root.add(&p(&c.osc), Method { access: 2, description: vec!["Runs the driver's script, which reads the arguments.".into()], ..Default::default() });
     }
-    if !d.custom_commands.is_empty() {
+    if !custom.is_empty() {
         unlisted.push("the routes its scripts add at run time".into());
     }
     if let Some(mo) = &d.midi_out {
-        let ch = mo.default_channel + 1;
+        let ch = mo.default_channel.unwrap_or(0) + 1;
         let note = || Arg::int("note", 0, 127);
         let u7 = |n: &str| Arg::int(n, 0, 127);
         let perf = [
@@ -233,36 +235,40 @@ fn midi_device_routes(root: &mut Node, d: &Device, unlisted: &mut Vec<String>) {
         }
     }
     if let Some(t) = &d.triggers {
-        let default_ch = d.midi_out.as_ref().map(|m| m.default_channel).unwrap_or(0);
+        let default_ch = d.midi_out.as_ref().and_then(|m| m.default_channel).unwrap_or(0);
         for e in &t.entries {
             root.add(&p(&e.osc), trigger_method(e, default_ch));
         }
     }
     if let Some(t) = &d.cc_params {
         for e in &t.entries {
-            root.add(&p(&e.osc), cc_method(e, e.channel.unwrap_or(t.channel)));
+            root.add(&p(&e.osc), cc_method(e, e.channel.or(t.channel).unwrap_or(0)));
         }
     }
     if let Some(t) = &d.params {
         for e in &t.entries {
-            root.add(&p(&e.osc), Method::exact(2, vec![Arg::int("value", e.range[0], e.range[1])],
-                format!("{}: SysEx parameter {} {} {} {}.", label(&e.osc), e.pr, e.p, e.c, e.r)).tagged([e.expects.clone()]));
+            let [lo, hi] = e.range.unwrap_or([0, 127]);
+            root.add(&p(&e.osc), Method::exact(2, vec![Arg::int("value", lo, hi)],
+                format!("{}: SysEx parameter {} {} {} {}.", label(&e.osc), e.pr.unwrap_or(0), e.p.unwrap_or(0), e.c.unwrap_or(0), e.r.unwrap_or(0)))
+                .tagged([expects_of(e.expects.as_deref())]));
         }
     }
-    if let Some(pr) = d.programs.as_ref().filter(|pr| !pr.banks.is_empty()) {
-        let names: Vec<&str> = pr.banks.iter().map(|b| b.name.as_str()).collect();
-        let lo = pr.banks.iter().map(|b| b.first_number as i64).min().unwrap_or(0);
-        let hi = pr.banks.iter().map(|b| b.first_number as i64 + b.size as i64 - 1).max().unwrap_or(0);
-        let banks: Vec<String> = pr.banks.iter().map(|b| format!("{} {}-{}", b.name, b.first_number,
-            b.first_number as u32 + b.size as u32 - 1)).collect();
+    let banks_of = |pr: &osd::Programs| pr.banks.clone().unwrap_or_default();
+    if let Some(pr) = d.programs.as_ref().filter(|pr| !banks_of(pr).is_empty()) {
+        let all = banks_of(pr);
+        let first = |b: &osd::Bank| b.first_number.unwrap_or(1);
+        let names: Vec<&str> = all.iter().map(|b| b.name.as_str()).collect();
+        let lo = all.iter().map(first).min().unwrap_or(0);
+        let hi = all.iter().map(|b| first(b) + b.size - 1).max().unwrap_or(0);
+        let banks: Vec<String> = all.iter().map(|b| format!("{} {}-{}", b.name, first(b), first(b) + b.size - 1)).collect();
         let selects = pr.selects.as_deref().unwrap_or("program");
         root.add(&p(crate::programs::RECALL), Method::write(
             vec![Arg::new("s", "bank", json!({ "VALS": names })), Arg::int("number", lo, hi), Arg::channel()], 2, 2,
             format!("Recalls a stored {selects} by bank (its name, or its place from 0) and number: {}.", banks.join(", "))));
     }
     if let Some(dump) = d.programs.as_ref().and_then(|pr| pr.dump.as_ref()).filter(|x| x.request.is_some() || x.script.is_some()) {
-        let names: Vec<&str> = d.programs.iter().flat_map(|pr| &pr.banks).map(|b| b.name.as_str()).collect();
-        let (args, what) = if dump.kind == "edit_buffer" || names.is_empty() {
+        let names: Vec<&str> = d.programs.iter().flat_map(|pr| pr.banks.iter().flatten()).map(|b| b.name.as_str()).collect();
+        let (args, what) = if dump.kind == osd::DumpKind::EditBuffer || names.is_empty() {
             (vec![Arg::channel()], "Asks the device for the sound it plays (recall the stored one first).")
         } else {
             (vec![Arg::new("s", "bank", json!({ "VALS": names })), Arg::int("number", 0, 16383), Arg::channel()],
@@ -274,7 +280,7 @@ fn midi_device_routes(root: &mut Node, d: &Device, unlisted: &mut Vec<String>) {
     // Every MIDI device: who it is, the same address whatever its maker.
     root.add(&p(crate::programs::IDENTITY), Method::exact(2, vec![],
         "Sends the request the device answers with its identity (the Universal Identity Request unless its driver names another).".into()));
-    if d.identity.as_ref().is_some_and(|i| !i.reply.is_empty() || i.script.is_some()) {
+    if d.identity.as_ref().is_some_and(|i| i.reply.as_ref().is_some_and(|r| !r.is_empty()) || i.script.is_some()) {
         root.add(&p(crate::programs::IDENTITY_REPLY), Method::exact(1, vec![Arg::new("s", "firmware", Value::Null), Arg::new("s", "hex", Value::Null)],
             "Sent by the bridge: the device's identity reply, with the firmware version read from it.".into()));
     }
@@ -287,11 +293,12 @@ fn midi_device_routes(root: &mut Node, d: &Device, unlisted: &mut Vec<String>) {
     }
 
     // What the bridge sends to its OSC clients.
-    let m = &d.midi_in;
+    let m = d.midi_in.as_ref();
+    let tpl_of = |t: MidiType| crate::midi_codec::template(m, t);
     let midi_in = [
-        (&m.note_on, "Note On"), (&m.note_off, "Note Off"), (&m.cc, "Control Change"),
-        (&m.pitchbend, "Pitch bend"), (&m.aftertouch, "Channel aftertouch"),
-        (&m.poly_aftertouch, "Polyphonic aftertouch"), (&m.program_change, "Program change"),
+        (tpl_of(MidiType::NoteOn), "Note On"), (tpl_of(MidiType::NoteOff), "Note Off"), (tpl_of(MidiType::Cc), "Control Change"),
+        (tpl_of(MidiType::Pitchbend), "Pitch bend"), (tpl_of(MidiType::Aftertouch), "Channel aftertouch"),
+        (tpl_of(MidiType::PolyAftertouch), "Polyphonic aftertouch"), (tpl_of(MidiType::ProgramChange), "Program change"),
     ];
     let u7_values = |name: &str| -> Option<Vec<String>> {
         let hi = if name == "channel" { 15 } else { 127 };
@@ -299,11 +306,11 @@ fn midi_device_routes(root: &mut Node, d: &Device, unlisted: &mut Vec<String>) {
     };
     for (tpl, what) in midi_in {
         let Some(tpl) = tpl else { continue };
-        emitted(root, d, tpl, &format!("Sent by the bridge: {what} received from the device."), &u7_values, &|_| "i", unlisted);
+        emitted(root, d, &tpl, &format!("Sent by the bridge: {what} received from the device."), &u7_values, &|_| "i", unlisted);
     }
     let by_name = |name: &str| command_arg_values(d, name);
-    for r in &d.replies {
-        emitted(root, d, &r.emit_osc, "Sent by the bridge: a reply from the device.", &by_name, &|_| "i", unlisted);
+    for r in d.replies.iter().flatten() {
+        emitted(root, d, &crate::device::emit_text(r), "Sent by the bridge: a reply from the device.", &by_name, &|_| "i", unlisted);
     }
     root.add(&p("/sysex/raw"), Method::exact(1, vec![Arg::new("s", "hex", Value::Null)],
         "Sent by the bridge: SysEx from the device that no reply matched, in hex.".into()));
@@ -322,13 +329,18 @@ fn osc_device_routes(root: &mut Node, d: &Device, unlisted: &mut Vec<String>) {
     } else {
         command_routes(root, d, true, unlisted);
     }
-    for r in &d.replies {
+    for r in d.replies.iter().flatten() {
         let tag_of = |name: &str| -> &'static str {
-            r.match_args.iter().find(|a| a.name == name).map(|a| osc_tag(&a.ty)).unwrap_or("i")
+            r.match_args.iter().flatten().find(|a| a.name == name).map(|a| osc_tag(&a.ty)).unwrap_or("i")
         };
         let by_name = |name: &str| command_arg_values(d, name);
-        emitted(root, d, &r.emit_osc, &format!("Sent by the bridge: relayed from {target}."), &by_name, &tag_of, unlisted);
+        emitted(root, d, &crate::device::emit_text(r), &format!("Sent by the bridge: relayed from {target}."), &by_name, &tag_of, unlisted);
     }
+}
+
+/// What a control or a parameter expects; continuous when it says nothing.
+fn expects_of(e: Option<&str>) -> String {
+    e.unwrap_or("continuous").to_string()
 }
 
 fn osc_tag(ty: &str) -> &'static str {
@@ -342,21 +354,22 @@ fn osc_tag(ty: &str) -> &'static str {
 
 /// The declared commands, a path template expanded over its captures.
 fn command_routes(root: &mut Node, d: &Device, osc: bool, unlisted: &mut Vec<String>) {
-    for c in &d.commands {
-        let full = d.full_osc_path(&c.osc);
+    for c in d.commands.iter().flatten() {
+        let full = full_osc_path(d, &address_text(&c.osc));
         let captures = captures(&full);
-        let args: Vec<Arg> = c.args.iter().filter(|a| !captures.contains(&a.name)).map(arg_of).collect();
-        let declared: Vec<&ArgSpec> = c.args.iter().filter(|a| !captures.contains(&a.name)).collect();
+        let cargs = c.args.as_deref().unwrap_or_default();
+        let args: Vec<Arg> = cargs.iter().filter(|a| !captures.contains(&a.name)).map(arg_of).collect();
+        let declared: Vec<&ArgSpec> = cargs.iter().filter(|a| !captures.contains(&a.name)).collect();
         let required = declared.iter().rposition(|a| a.default.is_none()).map_or(0, |i| i + 1);
         let what = |addr: &str| {
             let name = label(addr.strip_prefix(d.device.osc_prefix.as_str()).unwrap_or(addr));
             match (&c.forward, osc) {
-                (Some(f), true) => format!("{name}: sent to the target as {}.", f.path),
+                (Some(f), true) => format!("{name}: sent to the target as {}.", address_text(&f.path)),
                 (_, true) => format!("{name}: declared without a forward, ignored."),
                 _ => format!("{name}: SysEx/MIDI command."),
             }
         };
-        let values = |name: &str| c.args.iter().find(|a| a.name == name).and_then(spec_values);
+        let values = |name: &str| cargs.iter().find(|a| a.name == name).and_then(spec_values);
         match expand(&full, &values) {
             Some(addrs) => for a in addrs {
                 root.add(&a, Method::write(args.clone(), required, args.len(), what(&a)));
@@ -372,7 +385,7 @@ fn command_routes(root: &mut Node, d: &Device, osc: bool, unlisted: &mut Vec<Str
 fn emitted(root: &mut Node, d: &Device, tpl: &str, what: &str, values: &dyn Fn(&str) -> Option<Vec<String>>,
            tag_of: &dyn Fn(&str) -> &'static str, unlisted: &mut Vec<String>) {
     let mut parts = tpl.splitn(2, ' ');
-    let addr = d.full_osc_path(parts.next().unwrap_or(""));
+    let addr = full_osc_path(d, parts.next().unwrap_or(""));
     let args: Vec<Arg> = parts.next().unwrap_or("").split_whitespace().map(|tok| {
         let name = tok.trim_matches(|c| c == '{' || c == '}');
         Arg::new(tag_of(name), name, Value::Null)
@@ -410,9 +423,9 @@ fn expand(tpl: &str, values: &dyn Fn(&str) -> Option<Vec<String>>) -> Option<Vec
 /// numbers of its named values; none for text.
 fn spec_values(a: &ArgSpec) -> Option<Vec<String>> {
     if let Some(v) = &a.values {
-        return Some(v.values().filter_map(Value::as_i64).map(|n| n.to_string()).collect());
+        return Some(v.values().map(|n| n.to_string()).collect());
     }
-    let [lo, hi] = a.range.or(match a.ty.as_str() { "u7" => Some([0, 127]), "bool" => Some([0, 1]), _ => None })?;
+    let [lo, hi] = a.range.or(match a.ty { ArgType::U7 => Some([0, 127]), ArgType::Bool => Some([0, 1]), _ => None })?;
     if hi < lo || (hi - lo) as usize >= MAX_EXPANDED { return None; }
     Some((lo..=hi).map(|n| n.to_string()).collect())
 }
@@ -420,18 +433,18 @@ fn spec_values(a: &ArgSpec) -> Option<Vec<String>> {
 /// A capture of an emitted address, valued as the command arguments of the
 /// same name (`/track/{n}/volume` replies, `n` in 1..8).
 fn command_arg_values(d: &Device, name: &str) -> Option<Vec<String>> {
-    d.commands.iter().flat_map(|c| c.args.iter()).find(|a| a.name == name).and_then(spec_values)
+    d.commands.iter().flatten().flat_map(|c| c.args.iter().flatten()).find(|a| a.name == name).and_then(spec_values)
 }
 
 fn arg_of(a: &ArgSpec) -> Arg {
     let bounded = |lo: i64, hi: i64| json!({ "MIN": lo, "MAX": hi });
-    let (tag, range) = match a.ty.as_str() {
-        "float" => ("f", a.range.map(|[l, h]| bounded(l, h)).unwrap_or(Value::Null)),
-        "string" => ("s", Value::Null),
-        "bool" => ("T", Value::Null),
-        "enum" => ("s", a.values.as_ref().map(|v| json!({ "VALS": v.keys().collect::<Vec<_>>() })).unwrap_or(Value::Null)),
-        "u7" => ("i", { let [l, h] = a.range.unwrap_or([0, 127]); bounded(l, h) }),
-        "u14" => ("i", { let [l, h] = a.range.unwrap_or([0, 16383]); bounded(l, h) }),
+    let (tag, range) = match a.ty {
+        ArgType::Float => ("f", a.range.map(|[l, h]| bounded(l, h)).unwrap_or(Value::Null)),
+        ArgType::String => ("s", Value::Null),
+        ArgType::Bool => ("T", Value::Null),
+        ArgType::Enum => ("s", a.values.as_ref().map(|v| json!({ "VALS": v.keys().collect::<Vec<_>>() })).unwrap_or(Value::Null)),
+        ArgType::U7 => ("i", { let [l, h] = a.range.unwrap_or([0, 127]); bounded(l, h) }),
+        ArgType::U14 => ("i", { let [l, h] = a.range.unwrap_or([0, 16383]); bounded(l, h) }),
         _ => ("i", a.range.map(|[l, h]| bounded(l, h)).unwrap_or(Value::Null)),
     };
     Arg::new(tag, &a.name, range)
@@ -439,27 +452,28 @@ fn arg_of(a: &ArgSpec) -> Arg {
 
 fn cc_method(e: &CcParamEntry, ch: u8) -> Method {
     let lsb_from_call = e.nrpn_lsb_range.filter(|_| e.nrpn_msb.is_some() && e.nrpn_lsb.is_none());
+    let range = e.range.unwrap_or([0, 127]);
     let address = match (e.nrpn_msb, e.nrpn_lsb, lsb_from_call, e.rpn_msb, e.rpn_lsb, e.cc) {
         (Some(m), Some(l), ..) => format!("NRPN {m}:{l}"),
         (Some(m), None, Some([lo, hi]), ..) => format!("NRPN {m}, LSB {lo}-{hi} given after the value"),
         (_, _, _, Some(m), Some(l), _) => format!("RPN {m}:{l}"),
-        (.., Some(cc)) => match (e.cc_lsb, e.range[1] > 127) {
+        (.., Some(cc)) => match (e.cc_lsb, range[1] > 127) {
             (Some(lsb), true) => format!("CC {cc} + LSB CC {lsb} (14-bit)"),
             _ => format!("CC {cc}"),
         },
         _ => "no MIDI address".into(),
     };
-    let mut args = vec![Arg::int("value", e.range[0], e.range[1])];
+    let mut args = vec![Arg::int("value", range[0], range[1])];
     if let Some([lo, hi]) = lsb_from_call {
-        args.push(Arg::int("nrpn_lsb", lo as i64, hi as i64));
+        args.push(Arg::int("nrpn_lsb", lo, hi));
     }
     let required = args.len();
     args.push(Arg::channel());
     let mut what = format!("{}: {address}, on MIDI channel {} unless given.", label(&e.osc), ch + 1);
-    if let Some(u) = &e.usage {
+    if let Some(u) = e.remarks.get("_usage").and_then(Value::as_str) {
         what.push_str(&format!(" Values: {u}."));
     }
-    Method::write(args, required, required, what).tagged([e.section.clone(), e.expects.clone()])
+    Method::write(args, required, required, what).tagged([e.section.clone().unwrap_or_default(), expects_of(e.expects.as_deref())])
 }
 
 fn trigger_method(e: &TriggerEntry, default_ch: u8) -> Method {
@@ -469,7 +483,8 @@ fn trigger_method(e: &TriggerEntry, default_ch: u8) -> Method {
         Some(n) => format!("note {n} (plays {lo}-{hi})"),
         None => format!("notes {lo}-{hi}, the note given"),
     };
-    let channel = match (e.channel, e.channel_mode.as_str()) {
+    let mode = crate::device::channel_mode_name(e.channel_mode);
+    let channel = match (e.channel, mode) {
         (Some(c), _) => format!("MIDI channel {}", c + 1),
         (None, mode) => format!("the device's {mode} channel (MIDI channel {} unless given)", default_ch + 1),
     };
@@ -477,7 +492,7 @@ fn trigger_method(e: &TriggerEntry, default_ch: u8) -> Method {
     for extra in [&e.velocity_usage, &e.comments].into_iter().flatten() {
         what.push_str(&format!(" {extra}"));
     }
-    let args = vec![Arg::int("velocity", 1, 127), Arg::int("note", lo as i64, hi as i64), Arg::channel()];
+    let args = vec![Arg::int("velocity", 1, 127), Arg::int("note", lo, hi), Arg::channel()];
     let (required, primary) = if e.note.is_some() { (0, 1) } else { (2, 2) };
     Method::write(args, required, primary, what).tagged(e.section.clone())
 }
@@ -602,128 +617,4 @@ fn handle(mut stream: TcpStream, namespace: &Value, host_info: &Value) -> Result
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn load(id: &str) -> Device {
-        Device::load(format!("tests/fixtures/devices/{id}.json")).unwrap_or_else(|e| panic!("{id}: {e}"))
-    }
-
-    fn node<'a>(ns: &'a Value, path: &str) -> &'a Value {
-        path.split('/').filter(|s| !s.is_empty()).fold(ns, |n, seg| &n["CONTENTS"][seg])
-    }
-
-    #[test]
-    fn a_driver_with_banks_lists_the_program_recall() {
-        let dev = load("acme/box.vendor.fw-2");
-        let ns = namespace(std::slice::from_ref(&dev));
-        let n = node(&ns, "/box/program/recall");
-        assert_eq!((n["TYPE"].as_str(), n["ACCESS"].as_i64()), (Some("si"), Some(2)));
-        assert_eq!(n["RANGE"], json!([{ "VALS": ["User", "Factory"] }, { "MIN": 1, "MAX": 64 }]));
-        assert_eq!(n["OVERLOADS"][0]["TYPE"], "sii", "a channel may follow");
-        assert!(n["DESCRIPTION"].as_str().unwrap().contains("stored sound by bank"), "{n}");
-        let plain = namespace(&[load("korg/minilogue")]);
-        assert!(node(&plain, "/minilogue/program/recall").is_null(), "no banks, no recall");
-        assert_eq!(node(&plain, "/minilogue/identity")["ACCESS"], 2, "every MIDI device answers /identity");
-        let dump = node(&ns, "/box/program/dump");
-        assert_eq!((dump["TYPE"].as_str(), dump["OVERLOADS"][0]["TYPE"].as_str()), (Some("si"), Some("sii")));
-        assert_eq!(node(&ns, "/box/identity/reply")["TYPE"], "ss");
-    }
-
-    #[test]
-    fn a_cc_and_nrpn_synth_lists_its_controls_with_types_ranges_and_access() {
-        let dev = load("novation/bass_station_ii");
-        let ns = namespace(std::slice::from_ref(&dev));
-        assert_eq!(ns["FULL_PATH"], "/");
-        assert!(ns["DESCRIPTION"].as_str().unwrap().contains("CC-BY-SA-4.0"), "credit and licence at the root");
-        assert_eq!(ns["SOURCES"]["sources"][0]["license"], "CC-BY-SA-4.0");
-        let cc = dev.cc_params.as_ref().unwrap();
-        for e in &cc.entries {
-            let n = node(&ns, &dev.full_osc_path(&e.osc));
-            assert_eq!(n["FULL_PATH"], dev.full_osc_path(&e.osc));
-            assert_eq!(n["ACCESS"], 2, "{}: the bridge only sends it", e.osc);
-            assert_eq!(n["TYPE"], "i");
-            assert_eq!(n["RANGE"][0], json!({ "MIN": e.range[0], "MAX": e.range[1] }));
-            assert_eq!(n["OVERLOADS"][0]["TYPE"], "ii", "a channel may follow");
-        }
-        let nrpn = cc.entries.iter().find(|e| e.nrpn_msb.is_some() && e.nrpn_lsb.is_some()).unwrap();
-        let text = node(&ns, &dev.full_osc_path(&nrpn.osc))["DESCRIPTION"].as_str().unwrap().to_string();
-        assert!(text.contains(&format!("NRPN {}:{}", nrpn.nrpn_msb.unwrap(), nrpn.nrpn_lsb.unwrap())), "{text}");
-        let on = node(&ns, &dev.full_osc_path("/note/on"));
-        assert_eq!((on["TYPE"].as_str(), on["ACCESS"].as_i64()), (Some("ii"), Some(3)), "sent to, and its MIDI in sent back");
-        assert_eq!(node(&ns, &dev.full_osc_path("/cc/74"))["TYPE"], "i");
-        assert_eq!(node(&ns, "/bridge/status")["TYPE"], "");
-    }
-
-    #[test]
-    fn a_drum_machine_lists_its_triggers_and_a_firmware_credits_the_midi_it_shares() {
-        let dev = load("elektron/model_samples");
-        let ns = namespace(std::slice::from_ref(&dev));
-        let t = &dev.triggers.as_ref().unwrap().entries[0];
-        let n = node(&ns, &dev.full_osc_path(&t.osc));
-        assert_eq!((n["TYPE"].as_str(), n["ACCESS"].as_i64()), (Some("i"), Some(2)));
-        assert_eq!(n["RANGE"][0], json!({ "MIN": 1, "MAX": 127 }), "velocity");
-        assert!(n["DESCRIPTION"].as_str().unwrap().starts_with(&t.sound));
-
-        let fw = load("arturia/microfreak.vendor.fw-microfreak-tools-0.1.0");
-        let ns = namespace(std::slice::from_ref(&fw));
-        let text = ns["DESCRIPTION"].as_str().unwrap();
-        assert!(text.contains("Apache-2.0") && text.contains("MIDI shared from arturia/microfreak") && text.contains("CC-BY-SA-4.0"), "{text}");
-        assert_eq!(ns["SOURCES"]["midi_of"], "arturia/microfreak");
-        let e = &fw.cc_params.as_ref().unwrap().entries[0];
-        assert_eq!(node(&ns, &fw.full_osc_path(&e.osc))["ACCESS"], 2, "the shared routes under its own prefix");
-    }
-
-    #[test]
-    fn templates_are_expanded_and_what_the_bridge_sends_is_read_only() {
-        let dev = load("bitwig/bitwig-studio.third-party-osc.fw-5");
-        let ns = namespace(std::slice::from_ref(&dev));
-        for n in 1..=8 {
-            let vol = node(&ns, &dev.full_osc_path(&format!("/track/{n}/volume")));
-            assert_eq!(vol["ACCESS"], 3, "sent to, and relayed back: {vol}");
-        }
-        assert!(node(&ns, &dev.full_osc_path("/track/9/volume")).is_null());
-        let synth = load("novation/bass_station_ii");
-        let ns = namespace(std::slice::from_ref(&synth));
-        if synth.midi_in.cc.is_some() {
-            assert_eq!(node(&ns, &synth.full_osc_path("/cc/74"))["ACCESS"], 3);
-        }
-        assert_eq!(node(&ns, &synth.full_osc_path("/sysex/raw"))["ACCESS"], 1);
-    }
-
-    #[test]
-    fn requests_get_a_node_an_attribute_or_the_host() {
-        let dev = load("novation/bass_station_ii");
-        let ns = namespace(std::slice::from_ref(&dev));
-        let host = host_info(std::slice::from_ref(&dev), "127.0.0.1:7777".parse().unwrap(), None);
-        let on = dev.full_osc_path("/note/on");
-        assert_eq!(answer(&ns, &host, "/").1.unwrap()["FULL_PATH"], "/");
-        assert_eq!(answer(&ns, &host, &on).1.unwrap()["FULL_PATH"], on);
-        assert_eq!(answer(&ns, &host, &format!("{on}?TYPE#x")).1.unwrap(), json!({ "TYPE": "ii" }));
-        assert_eq!(answer(&ns, &host, &format!("{on}?CONTENTS")).0, 204);
-        assert_eq!(answer(&ns, &host, &format!("{on}?VALUE")).0, 400);
-        assert_eq!(answer(&ns, &host, "/nothing/here").0, 404);
-        let h = answer(&ns, &host, "/anything?HOST_INFO").1.unwrap();
-        assert_eq!((h["OSC_PORT"].as_u64(), h["OSC_IP"].as_str(), h["OSC_TRANSPORT"].as_str()),
-                   (Some(7777), Some("127.0.0.1"), Some("UDP")));
-    }
-
-    #[test]
-    fn the_listener_answers_over_http() {
-        let dev = load("novation/bass_station_ii");
-        let local = serve("127.0.0.1:0", std::slice::from_ref(&dev), "127.0.0.1:7777".parse().unwrap(), None).unwrap();
-        let get = |target: &str| -> String {
-            let mut s = TcpStream::connect(local).unwrap();
-            write!(s, "GET {target} HTTP/1.1\r\nHost: x\r\n\r\n").unwrap();
-            let mut out = String::new();
-            s.read_to_string(&mut out).unwrap();
-            out
-        };
-        let root = get("/");
-        assert!(root.starts_with("HTTP/1.1 200") && root.contains("application/json"), "{root}");
-        let body: Value = serde_json::from_str(root.split("\r\n\r\n").nth(1).unwrap()).unwrap();
-        assert_eq!(body["FULL_PATH"], "/");
-        assert!(get("/?HOST_INFO").contains("\"OSC_PORT\":7777"));
-        assert!(get("/no/such/node").starts_with("HTTP/1.1 404"));
-    }
-}
+mod tests;

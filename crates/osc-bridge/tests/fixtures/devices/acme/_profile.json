@@ -1,14 +1,66 @@
 {
-  "_about": "What Acme's models share: the Universal Identity Reply with Acme's id and each model's bytes, the firmware in its last four bytes, and the dump request of a stored sound.",
-  "_sources": [{ "type": "test-fixture", "license": "CC0-1.0", "attribution": "osc-bridge test fixture" }],
+  "$schema": "https://w3id.org/osd/0.5/profile.schema.json",
   "identity": {
-    "device_id": { "default": 127 },
-    "reply": [240, 126, "{dev}", 6, 2, 0, 33, 9, "{family}", "{member}"],
-    "firmware": { "decode": "raw_bytes", "at": [12, 13, 14, 15] }
+    "reply": [
+      240,
+      126,
+      {
+        "device_id": true
+      },
+      6,
+      2,
+      0,
+      33,
+      9,
+      {
+        "identity": "family"
+      },
+      {
+        "identity": "member"
+      }
+    ],
+    "device_id": {
+      "default": 127
+    },
+    "firmware": {
+      "decode": "raw_bytes",
+      "at": [
+        12,
+        13,
+        14,
+        15
+      ]
+    }
   },
   "programs": {
     "selects": "sound",
-    "requires": ["Program Change receive on"],
-    "dump": { "kind": "request", "request": [240, 0, 33, 9, 16, "{bank}", "{program}", 247] }
-  }
+    "requires": [
+      "Program Change receive on"
+    ],
+    "dump": {
+      "kind": "request",
+      "request": [
+        240,
+        0,
+        33,
+        9,
+        16,
+        {
+          "arg": "bank"
+        },
+        {
+          "arg": "program"
+        },
+        247
+      ]
+    }
+  },
+  "_about": "What Acme's models share: the Universal Identity Reply with Acme's id and each model's bytes, the firmware in its last four bytes, and the dump request of a stored sound.",
+  "_sources": [
+    {
+      "type": "test-fixture",
+      "license": "CC0-1.0",
+      "attribution": "osc-bridge test fixture"
+    }
+  ]
 }

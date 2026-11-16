@@ -1,23 +1,5 @@
 {
-  "_sources": [
-    {
-      "type": "pencilresearch",
-      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Vermona/DRM1 MKIV.csv",
-      "imported_at": "2026-10-22",
-      "firmware": "unknown",
-      "license": "CC-BY-SA-4.0",
-      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
-      "commit": "91299d6"
-    }
-  ],
-  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
-  "_coverage": {
-    "entries_total": 0,
-    "cc_entries": 0,
-    "nrpn_entries": 0,
-    "fourteen_bit_cc_pairs": 0,
-    "triggers": 10
-  },
+  "$schema": "https://w3id.org/osd/0.5/device.schema.json",
   "device": {
     "name": "DRM1 MKIV",
     "vendor": "Vermona",
@@ -31,23 +13,11 @@
     "header": [],
     "footer": []
   },
-  "commands": [],
   "cc_params": {
     "channel": 0,
     "entries": []
   },
-  "midi_out": {
-    "default_channel": 0,
-    "note_offset": 0
-  },
-  "midi_in": {
-    "note_on": "/note/on {note} {velocity} {channel}",
-    "note_off": "/note/off {note} {velocity} {channel}",
-    "cc": "/cc/{num} {value} {channel}",
-    "pitchbend": "/pitchbend {value_u14} {channel}",
-    "aftertouch": "/aftertouch {value} {channel}"
-  },
-  "replies": [],
+  "commands": [],
   "triggers": {
     "entries": [
       {
@@ -171,5 +141,36 @@
         "velocity_usage": "1~127: Accent level"
       }
     ]
-  }
+  },
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": [
+    "note_on",
+    "note_off",
+    "cc",
+    "pitchbend",
+    "aftertouch"
+  ],
+  "replies": [],
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Vermona/DRM1 MKIV.csv",
+      "firmware": "unknown",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "license": "CC-BY-SA-4.0",
+      "commit": "91299d6",
+      "imported_at": "2026-10-22"
+    }
+  ],
+  "_coverage": {
+    "cc_entries": 0,
+    "entries_total": 0,
+    "fourteen_bit_cc_pairs": 0,
+    "nrpn_entries": 0,
+    "triggers": 10
+  },
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template."
 }

@@ -1,16 +1,49 @@
 //! Incoming MIDI → OSC translation using the device's `midi_in` map.
 
-use crate::device::MidiInMap;
+use osd::{MidiIn, MidiType};
 use rosc::{OscMessage, OscType};
+
+/// The address each MIDI message is reported at, under the device's prefix,
+/// with its OSC arguments after the space: fixed by the OSD specification
+/// (`osd` does not export the table).
+const TEMPLATES: [(MidiType, &str); 7] = [
+    (MidiType::NoteOn, "/note/on {note} {velocity} {channel}"),
+    (MidiType::NoteOff, "/note/off {note} {velocity} {channel}"),
+    (MidiType::Cc, "/cc/{num} {value} {channel}"),
+    (MidiType::Pitchbend, "/pitchbend {value_u14} {channel}"),
+    (MidiType::Aftertouch, "/aftertouch {value} {channel}"),
+    (MidiType::PolyAftertouch, "/poly_aftertouch {note} {value} {channel}"),
+    (MidiType::ProgramChange, "/program_change {program} {channel}"),
+];
+
+/// The template a device reports `t` with: none when its `midi_in` does not list it.
+pub fn template(map: Option<&MidiIn>, t: MidiType) -> Option<String> {
+    match map? {
+        MidiIn::Types(l) => {
+            if !l.contains(&t) { return None; }
+            TEMPLATES.iter().find(|(x, _)| *x == t).map(|(_, c)| (*c).to_string())
+        }
+        MidiIn::Templates(m) => match t {
+            MidiType::NoteOn => m.note_on.clone(),
+            MidiType::NoteOff => m.note_off.clone(),
+            MidiType::Cc => m.cc.clone(),
+            MidiType::Pitchbend => m.pitchbend.clone(),
+            MidiType::Aftertouch => m.aftertouch.clone(),
+            MidiType::PolyAftertouch => m.poly_aftertouch.clone(),
+            MidiType::ProgramChange => m.program_change.clone(),
+        },
+    }
+}
 
 /// Parse a channel MIDI message and produce an OSC message using the device's template.
 /// Returns None if the message isn't handled or the map has no entry.
-pub fn midi_to_osc(msg: &[u8], map: &MidiInMap, osc_prefix: &str) -> Option<OscMessage> {
+pub fn midi_to_osc(msg: &[u8], map: Option<&MidiIn>, osc_prefix: &str) -> Option<OscMessage> {
     if msg.is_empty() { return None; }
     let status = msg[0] & 0xF0;
     let ch = (msg[0] & 0x0F) as i32;
+    let tpl = |t: MidiType| template(map, t);
     match status {
-        0x80 => map.note_off.as_ref().map(|t| fill_template(t, osc_prefix, &[
+        0x80 => tpl(MidiType::NoteOff).map(|t| fill_template(&t, osc_prefix, &[
             ("note", OscType::Int(msg.get(1).copied().unwrap_or(0) as i32)),
             ("velocity", OscType::Int(msg.get(2).copied().unwrap_or(0) as i32)),
             ("channel", OscType::Int(ch)),
@@ -18,41 +51,41 @@ pub fn midi_to_osc(msg: &[u8], map: &MidiInMap, osc_prefix: &str) -> Option<OscM
         0x90 => {
             let vel = msg.get(2).copied().unwrap_or(0);
             if vel > 0 {
-                map.note_on.as_ref().map(|t| fill_template(t, osc_prefix, &[
+                tpl(MidiType::NoteOn).map(|t| fill_template(&t, osc_prefix, &[
                     ("note", OscType::Int(msg.get(1).copied().unwrap_or(0) as i32)),
                     ("velocity", OscType::Int(vel as i32)),
                     ("channel", OscType::Int(ch)),
                 ]))
             } else {
-                map.note_off.as_ref().map(|t| fill_template(t, osc_prefix, &[
+                tpl(MidiType::NoteOff).map(|t| fill_template(&t, osc_prefix, &[
                     ("note", OscType::Int(msg.get(1).copied().unwrap_or(0) as i32)),
                     ("velocity", OscType::Int(0)),
                     ("channel", OscType::Int(ch)),
                 ]))
             }
         }
-        0xA0 => map.poly_aftertouch.as_ref().map(|t| fill_template(t, osc_prefix, &[
+        0xA0 => tpl(MidiType::PolyAftertouch).map(|t| fill_template(&t, osc_prefix, &[
             ("note", OscType::Int(msg.get(1).copied().unwrap_or(0) as i32)),
             ("value", OscType::Int(msg.get(2).copied().unwrap_or(0) as i32)),
             ("channel", OscType::Int(ch)),
         ])),
-        0xB0 => map.cc.as_ref().map(|t| fill_template(t, osc_prefix, &[
+        0xB0 => tpl(MidiType::Cc).map(|t| fill_template(&t, osc_prefix, &[
             ("num", OscType::Int(msg.get(1).copied().unwrap_or(0) as i32)),
             ("value", OscType::Int(msg.get(2).copied().unwrap_or(0) as i32)),
             ("channel", OscType::Int(ch)),
         ])),
-        0xC0 => map.program_change.as_ref().map(|t| fill_template(t, osc_prefix, &[
+        0xC0 => tpl(MidiType::ProgramChange).map(|t| fill_template(&t, osc_prefix, &[
             ("program", OscType::Int(msg.get(1).copied().unwrap_or(0) as i32)),
             ("channel", OscType::Int(ch)),
         ])),
-        0xD0 => map.aftertouch.as_ref().map(|t| fill_template(t, osc_prefix, &[
+        0xD0 => tpl(MidiType::Aftertouch).map(|t| fill_template(&t, osc_prefix, &[
             ("value", OscType::Int(msg.get(1).copied().unwrap_or(0) as i32)),
             ("channel", OscType::Int(ch)),
         ])),
-        0xE0 => map.pitchbend.as_ref().map(|t| {
+        0xE0 => tpl(MidiType::Pitchbend).map(|t| {
             let v14 = ((msg.get(2).copied().unwrap_or(0) as i32) << 7)
                       | (msg.get(1).copied().unwrap_or(0) as i32);
-            fill_template(t, osc_prefix, &[
+            fill_template(&t, osc_prefix, &[
                 ("value_u14", OscType::Int(v14)),
                 ("channel", OscType::Int(ch)),
             ])

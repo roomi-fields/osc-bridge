@@ -91,5 +91,5 @@ then detect your devices, set parameters by name and hear what you play
 ## Next
 
 - [Add your own device](TUTORIAL_FIRST_DEVICE.md) in about 30 minutes.
-- [Device JSON schema](DEVICE_JSON_SCHEMA.md) for everything a driver can say.
+- [Open Synth Descriptors](https://github.com/roomi-fields/open-synth-descriptors) (OSD) for everything a driver can say.
 - [Blog](https://synthhub.roomi-fields.com/blog/) for worked examples.

@@ -1,24 +1,26 @@
 //! Electra One frame assembly tests — verify bytes match the published SysEx
 //! implementation reference verbatim.
 
-use osc_bridge::device::Device;
+use crate::common::address_text;
+use osc_bridge::device::load as load_driver;
 use osc_bridge::frame::{build_frame, Bindings};
 
-fn load() -> Device {
-    Device::load("tests/fixtures/devices/electra-one/electra-one.json").expect("load electra-one.json")
+fn load() -> osd::Device {
+    load_driver("tests/fixtures/devices/electra-one/electra-one.json").expect("load electra-one.json")
 }
 
-fn find_frame<'a>(dev: &'a Device, osc: &str) -> &'a [osc_bridge::device::FrameToken] {
-    &dev.commands.iter().find(|c| c.osc == osc)
+fn find_frame<'a>(dev: &'a osd::Device, osc: &str) -> &'a [osd::FrameToken] {
+    dev.commands.iter().flatten().find(|c| address_text(&c.osc) == osc)
         .unwrap_or_else(|| panic!("no command {osc}"))
-        .frame
+        .frame.as_deref().unwrap_or_default()
 }
 
 #[test]
 fn header_and_footer() {
     let d = load();
-    assert_eq!(d.sysex.header, vec![0xF0, 0x00, 0x21, 0x45]);
-    assert_eq!(d.sysex.footer, vec![0xF7]);
+    let sysex = d.sysex.as_ref().unwrap();
+    assert_eq!(sysex.header, Some(vec![0xF0, 0x00, 0x21, 0x45]));
+    assert_eq!(sysex.footer, Some(vec![0xF7]));
 }
 
 #[test]
@@ -88,20 +90,21 @@ fn preset_remove() {
 #[test]
 fn all_commands_build_with_filled_bindings() {
     let d = load();
-    for cmd in &d.commands {
+    for cmd in d.commands.iter().flatten() {
+        let osc = address_text(&cmd.osc);
         let mut b = Bindings::new();
-        for spec in &cmd.args {
-            match spec.ty.as_str() {
-                "u7" | "bool" | "enum" => b.set_u7(&spec.name, 1),
-                "u14" => b.set_u14(&spec.name, 1),
-                "string" => b.set_bytes(&spec.name, b"x".to_vec()),
-                _ => panic!("unknown arg type {} in {}", spec.ty, cmd.osc),
+        for spec in cmd.args.iter().flatten() {
+            match spec.ty {
+                osd::ArgType::U7 | osd::ArgType::Bool | osd::ArgType::Enum => b.set_u7(&spec.name, 1),
+                osd::ArgType::U14 => b.set_u14(&spec.name, 1),
+                osd::ArgType::String => b.set_bytes(&spec.name, b"x".to_vec()),
+                other => panic!("unknown arg type {other:?} in {osc}"),
             }
         }
-        let f = build_frame(&d, &cmd.frame, &b)
-            .unwrap_or_else(|e| panic!("build_frame failed for {}: {e}", cmd.osc));
-        assert_eq!(f.first(), Some(&0xF0), "cmd {} missing SOX", cmd.osc);
-        assert_eq!(f.last(),  Some(&0xF7), "cmd {} missing EOX", cmd.osc);
-        assert_eq!(&f[1..4], &[0x00, 0x21, 0x45], "cmd {} wrong MID", cmd.osc);
+        let f = build_frame(&d, cmd.frame.as_deref().unwrap_or_default(), &b)
+            .unwrap_or_else(|e| panic!("build_frame failed for {osc}: {e}"));
+        assert_eq!(f.first(), Some(&0xF0), "cmd {osc} missing SOX");
+        assert_eq!(f.last(),  Some(&0xF7), "cmd {osc} missing EOX");
+        assert_eq!(&f[1..4], &[0x00, 0x21, 0x45], "cmd {osc} wrong MID");
     }
 }

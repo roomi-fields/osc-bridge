@@ -3,7 +3,8 @@
 //! preset, and the resulting dynamic routes are verified. The /page/switched
 //! reply script is also exercised.
 
-use osc_bridge::device::Device;
+use crate::common::address_text;
+use osc_bridge::device::{docs_of, load};
 use osc_bridge::routing::DynamicRoutes;
 use osc_bridge::scripting::{Profile, ScriptContext, ScriptEngine};
 
@@ -34,16 +35,22 @@ const PRESET: &str = r#"
 }
 "#;
 
-fn electra() -> Device {
-    Device::load("tests/fixtures/devices/electra-one/electra-one.json").expect("load electra-one.json")
+const ELECTRA: &str = "tests/fixtures/devices/electra-one/electra-one.json";
+
+fn electra() -> osd::Device {
+    load(ELECTRA).expect("load electra-one.json")
+}
+
+fn custom<'a>(d: &'a osd::Device, osc: &str) -> Option<&'a osd::CustomCommand> {
+    d.custom_commands.iter().flatten().find(|c| c.osc == osc)
 }
 
 #[test]
 fn electra_one_json_declares_upload_command() {
     let d = electra();
-    let upload = d.custom_commands.iter().find(|c| c.osc == "/preset/upload");
+    let upload = custom(&d, "/preset/upload");
     let cmd = upload.expect("/preset/upload custom_command must exist");
-    assert_eq!(cmd.profile.as_deref(), Some("preset_ingest"));
+    assert_eq!(cmd.profile, Some(osd::ScriptProfile::PresetIngest));
     assert!(cmd.script.contains("ob.json_decode"));
     assert!(cmd.script.contains("register_cc_route"));
 }
@@ -51,7 +58,7 @@ fn electra_one_json_declares_upload_command() {
 #[test]
 fn upload_script_registers_one_route_per_cc7_control() {
     let d = electra();
-    let cmd = d.custom_commands.iter().find(|c| c.osc == "/preset/upload").unwrap();
+    let cmd = custom(&d, "/preset/upload").unwrap();
 
     let routes = DynamicRoutes::handle();
     let e = ScriptEngine::new_with_routes(routes.clone()).unwrap();
@@ -80,7 +87,7 @@ fn upload_script_registers_one_route_per_cc7_control() {
 #[test]
 fn upload_script_is_idempotent() {
     let d = electra();
-    let cmd = d.custom_commands.iter().find(|c| c.osc == "/preset/upload").unwrap();
+    let cmd = custom(&d, "/preset/upload").unwrap();
 
     let routes = DynamicRoutes::handle();
     let e = ScriptEngine::new_with_routes(routes.clone()).unwrap();
@@ -94,7 +101,7 @@ fn upload_script_is_idempotent() {
 #[test]
 fn page_switched_reply_updates_current_page_via_script() {
     let d = electra();
-    let page_reply = d.replies.iter().find(|r| r.emit_osc.starts_with("/page/switched")).unwrap();
+    let page_reply = d.replies.iter().flatten().find(|r| address_text(&r.emit_osc).starts_with("/page/switched")).unwrap();
     assert!(page_reply.script.is_some(), "page/switched must have a reply script");
 
     let routes = DynamicRoutes::handle();
@@ -106,7 +113,7 @@ fn page_switched_reply_updates_current_page_via_script() {
     let ctx = ScriptContext {
         bindings,
         direction: "midi_to_osc".into(),
-        command: page_reply.emit_osc.clone(),
+        command: address_text(&page_reply.emit_osc),
         ..Default::default()
     };
     let _ = e.run_script(page_reply.script.as_ref().unwrap(), ctx).unwrap();
@@ -116,7 +123,7 @@ fn page_switched_reply_updates_current_page_via_script() {
 #[test]
 fn upload_script_emits_sysex_blocks_for_hardware_push() {
     let d = electra();
-    let cmd = d.custom_commands.iter().find(|c| c.osc == "/preset/upload").unwrap();
+    let cmd = custom(&d, "/preset/upload").unwrap();
 
     let routes = DynamicRoutes::handle();
     let e = ScriptEngine::new_with_routes(routes).unwrap();
@@ -139,8 +146,8 @@ fn upload_script_emits_sysex_blocks_for_hardware_push() {
 #[test]
 fn routes_list_introspection_returns_entry_per_route() {
     let d = electra();
-    let upload = d.custom_commands.iter().find(|c| c.osc == "/preset/upload").unwrap();
-    let list = d.custom_commands.iter().find(|c| c.osc == "/routes/list")
+    let upload = custom(&d, "/preset/upload").unwrap();
+    let list = custom(&d, "/routes/list")
         .expect("/routes/list introspection endpoint must exist");
 
     let routes = DynamicRoutes::handle();
@@ -174,8 +181,8 @@ fn routes_list_introspection_returns_entry_per_route() {
 #[test]
 fn preset_current_reports_last_uploaded_name() {
     let d = electra();
-    let upload = d.custom_commands.iter().find(|c| c.osc == "/preset/upload").unwrap();
-    let current = d.custom_commands.iter().find(|c| c.osc == "/preset/current").unwrap();
+    let upload = custom(&d, "/preset/upload").unwrap();
+    let current = custom(&d, "/preset/current").unwrap();
 
     let routes = DynamicRoutes::handle();
     let e = ScriptEngine::new_with_routes(routes).unwrap();
@@ -201,7 +208,7 @@ fn preset_current_reports_last_uploaded_name() {
 #[test]
 fn page_current_reports_active_page() {
     let d = electra();
-    let pc = d.custom_commands.iter().find(|c| c.osc == "/page/current").unwrap();
+    let pc = custom(&d, "/page/current").unwrap();
 
     let routes = DynamicRoutes::handle();
     routes.lock().unwrap().current_page = Some(4);
@@ -219,8 +226,7 @@ fn page_current_reports_active_page() {
 
 #[test]
 fn companion_markdown_is_autoloaded_into_device_docs() {
-    let d = electra();
-    let docs = d.docs.as_ref().expect("electra-one.md must be auto-loaded");
+    let docs = docs_of(ELECTRA).expect("electra-one.md must be auto-loaded");
     assert!(docs.contains("Electra One MK2"));
     assert!(docs.contains("/electra1/preset/upload"));
     assert!(docs.contains("routes/list"));
@@ -230,7 +236,7 @@ fn companion_markdown_is_autoloaded_into_device_docs() {
 fn bridge_docs_emits_markdown_reply_for_documented_devices() {
     use osc_bridge::runtime::bridge_docs_replies;
     let d = electra();
-    let replies = bridge_docs_replies(std::slice::from_ref(&d));
+    let replies = bridge_docs_replies(&[(d, docs_of(ELECTRA))]);
     assert_eq!(replies.len(), 1);
     assert_eq!(replies[0].addr, "/bridge/docs/device");
     // First arg: slug. Second arg: markdown content.
@@ -248,9 +254,11 @@ fn bridge_docs_skips_devices_without_companion_markdown() {
     use osc_bridge::runtime::bridge_docs_replies;
     // Load any device that has NO .md next to it. The scripted-example has
     // no companion file.
-    let d = osc_bridge::device::Device::load("tests/fixtures/devices/examples/scripted-example.json").unwrap();
-    assert!(d.docs.is_none(), "scripted-example.json must not have a .md");
-    let replies = bridge_docs_replies(std::slice::from_ref(&d));
+    let path = "tests/fixtures/devices/examples/scripted-example.json";
+    let d = load(path).unwrap();
+    let docs = docs_of(path);
+    assert!(docs.is_none(), "scripted-example.json must not have a .md");
+    let replies = bridge_docs_replies(&[(d, docs)]);
     assert!(replies.is_empty(), "undocumented devices produce no reply");
 }
 
@@ -259,8 +267,8 @@ fn upload_then_page_switch_resolves_correct_cc_route() {
     // Integration: upload a preset, then simulate a page switch, verify a
     // CC coming in on that page resolves to the right semantic address.
     let d = electra();
-    let upload = d.custom_commands.iter().find(|c| c.osc == "/preset/upload").unwrap();
-    let page_reply = d.replies.iter().find(|r| r.emit_osc.starts_with("/page/switched")).unwrap();
+    let upload = custom(&d, "/preset/upload").unwrap();
+    let page_reply = d.replies.iter().flatten().find(|r| address_text(&r.emit_osc).starts_with("/page/switched")).unwrap();
 
     let routes = DynamicRoutes::handle();
     let e = ScriptEngine::new_with_routes(routes.clone()).unwrap();

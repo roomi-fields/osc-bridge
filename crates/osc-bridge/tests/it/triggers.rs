@@ -1,11 +1,12 @@
 //! Named note triggers (`triggers` block): drum machines and samplers.
 
-use osc_bridge::device::Device;
+use crate::common::device_of;
+use osc_bridge::device::load;
 use osc_bridge::runtime::trigger_note_on;
 use rosc::{OscMessage, OscType};
 
-fn drum_machine() -> Device {
-    serde_json::from_str(r#"{
+fn drum_machine() -> osd::Device {
+    device_of(r#"{
         "device": { "name": "Kit", "osc_prefix": "/kit" },
         "midi_out": { "default_channel": 3 },
         "triggers": { "entries": [
@@ -16,7 +17,7 @@ fn drum_machine() -> Device {
             { "osc": "/drum/chromatic", "sound": "Chromatic", "channel": 0,
               "note_range": [12, 59] }
         ]}
-    }"#).unwrap()
+    }"#)
 }
 
 fn msg(addr: &str, args: Vec<OscType>) -> OscMessage {
@@ -69,7 +70,7 @@ fn non_trigger_address_is_not_claimed() {
 
 #[test]
 fn imported_midi_guide_drum_map_fires_the_documented_note() {
-    let d = Device::load("tests/fixtures/devices/vermona/drm1_mkiv.pencilresearch.fw-unknown.json").unwrap();
+    let d = load("tests/fixtures/devices/vermona/drm1_mkiv.pencilresearch.fw-unknown.json").unwrap();
     let bytes = trigger_note_on(&d, &msg("/drm1_mkiv/drum/kick", vec![OscType::Int(110)])).unwrap().unwrap();
     assert_eq!(bytes, vec![0x99, 36, 110], "DRM1 MKIV kick: note 36 on channel 10");
 }

@@ -12,11 +12,11 @@
 //! The Lua functions below are taken unchanged from the Electra presets
 //! (kawai/k1 MuteS1, roland/jv_1080 patch editor, korg/03r_w, roland/d_550).
 
-use osc_bridge::device::Device;
+use crate::common::device_of;
 use osc_bridge::scripting::{ScriptContext, ScriptEngine};
 
 /// A driver whose commands carry `_electra.parameter`.
-fn driver(midi_out_channel: u8) -> Device {
+fn driver(midi_out_channel: u8) -> osd::Device {
     let json = format!(
         r#"{{
   "device": {{ "name": "Acme", "vendor": "Acme", "revision": "A1", "osc_prefix": "/acme" }},
@@ -40,7 +40,7 @@ fn driver(midi_out_channel: u8) -> Device {
   ]
 }}"#
     );
-    serde_json::from_str(&json).expect("driver parses")
+    device_of(&json)
 }
 
 /// Run `body` (Lua) in the engine; `body` fills `ctx.payload` with bytes.
@@ -224,7 +224,7 @@ fn c2_get_channel_gives_the_channel_the_engine_sends_on_from_one_to_sixteen() {
 fn c2_a_cc_params_driver_gives_its_table_channel() {
     let json = r#"{ "device": { "name": "Acme", "vendor": "Acme", "revision": "A1", "osc_prefix": "/acme" },
                     "cc_params": { "channel": 2, "entries": [] } }"#;
-    let d: Device = serde_json::from_str(json).unwrap();
+    let d = device_of(json);
     let e = ScriptEngine::new_for_device(&d).unwrap();
     assert_eq!(run(&e, "ctx.payload = { devices.get(1):getChannel() }"), vec![3]);
 }

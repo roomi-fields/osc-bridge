@@ -2,7 +2,7 @@
 
 A driver file should let a person, a program or an agent know every way a
 device speaks MIDI or OSC, and share it in the formats other tools read.
-This is the list of those aspects, what the schema (`DEVICE_JSON_SCHEMA.md`)
+This is the list of those aspects, what the schema (the OSD format, github.com/roomi-fields/open-synth-descriptors)
 describes of each today, and the formats that carry it.
 
 Status: **yes** described; **part** described in some ways only; **no** not

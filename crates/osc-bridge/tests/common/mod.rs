@@ -111,13 +111,68 @@ pub fn temp(tag: &str) -> tempfile::TempDir {
 /// Acme profile in its identity block) and `acme/synth` (with its notes).
 pub fn catalogue(root: &Path) {
     std::fs::create_dir_all(root.join("acme")).unwrap();
-    std::fs::write(root.join("acme/box.json"), r#"{"device":{"name":"Box","vendor":"Acme","osc_prefix":"/box"},
-        "identity":{"profile":"acme","family":[1,0],"member":[1,0]}}"#).unwrap();
+    std::fs::write(root.join("acme/box.json"), format!(r#"{{"$schema":"{D05}","device":{{"name":"Box","vendor":"Acme","osc_prefix":"/box"}},
+        "identity":{{"profile":"acme","family":[1,0],"member":[1,0]}}}}"#)).unwrap();
     std::fs::write(root.join("acme/box.md"), "# Box\n\nThe box's notes.\n").unwrap();
-    std::fs::write(root.join("acme/_profile.json"), r#"{"identity":{"device_id":{"default":127},
-        "reply":[240,126,"{dev}",6,2,0,33,9,"{family}","{member}"]}}"#).unwrap();
-    std::fs::write(root.join("acme/synth.json"), r#"{"device":{"name":"Synth","vendor":"Acme","osc_prefix":"/synth"}}"#).unwrap();
+    std::fs::write(root.join("acme/_profile.json"), format!(r#"{{"$schema":"{P05}","identity":{{"device_id":{{"default":127}},
+        "reply":[240,126,{{"device_id":true}},6,2,0,33,9,{{"identity":"family"}},{{"identity":"member"}}]}}}}"#)).unwrap();
+    std::fs::write(root.join("acme/synth.json"), format!(r#"{{"$schema":"{D05}","device":{{"name":"Synth","vendor":"Acme","osc_prefix":"/synth"}}}}"#)).unwrap();
     std::fs::write(root.join("acme/synth.md"), "# Synth\n\nThe synth's notes.\n").unwrap();
+}
+
+/// The `$schema` of an OSD 0.5 device and of a 0.5 maker profile.
+pub const D05: &str = "https://w3id.org/osd/0.5/device.schema.json";
+pub const P05: &str = "https://w3id.org/osd/0.5/profile.schema.json";
+
+/// Write each `(path under root, text)` file, folders made.
+pub fn files(root: &Path, files: &[(&str, &str)]) {
+    for (rel, text) in files {
+        let p = root.join(rel);
+        std::fs::create_dir_all(p.parent().unwrap()).unwrap();
+        std::fs::write(p, text).unwrap();
+    }
+}
+
+/// The OSD 0.5 text of a 0.4 driver, as `osd::convert` writes it. A checksum
+/// is written `{checksum:twos7@5}` in the tests; 0.4 names its algorithms
+/// `twos`, `sum` and `xor`, and the converter turns them into `twos7`, `sum7`
+/// and `xor7`.
+pub fn to05(text: &str) -> String {
+    let text = text.replace("{checksum:twos7@", "{checksum:twos@").replace("{checksum:sum7@", "{checksum:sum@")
+        .replace("{checksum:xor7@", "{checksum:xor@");
+    osd::convert(&text, osd::Kind::Device).unwrap_or_else(|e| panic!("convert: {e}\n{text}"))
+}
+
+/// The device a text holds, read by `osd` (no file, no resolution).
+pub fn read_device(text: &str) -> osd::Device {
+    match osd::read(text, osd::Kind::Device).unwrap_or_else(|e| panic!("read: {e}\n{text}")) {
+        osd::Descriptor::Device(d) => *d,
+        other => panic!("not a device: {:?}", other.kind()),
+    }
+}
+
+/// A device from the text of a 0.4 or 0.5 driver, in its 0.5 form.
+pub fn device_of(text: &str) -> osd::Device {
+    read_device(&to05(text))
+}
+
+/// The frame a JSON list of 0.4 elements stands for, in its 0.5 form.
+pub fn frame(json: &str) -> Vec<osd::FrameToken> {
+    let d = device_of(&format!(r#"{{"device":{{"name":"F","osc_prefix":"/f"}},"commands":[{{"osc":"/x","frame":{json}}}]}}"#));
+    d.commands.unwrap().remove(0).frame.unwrap()
+}
+
+/// The text of an address without capture.
+pub fn address_text(a: &osd::Address) -> String {
+    match a {
+        osd::Address::Text(t) => t.clone(),
+        osd::Address::Segments(s) => s.iter().map(|p| match p { osd::Segment::Text(t) => t.clone(), osd::Segment::Capture(n) => format!("{{{n}}}") }).collect(),
+    }
+}
+
+/// An OSD 0.5 device text: `body` is the keys after `device` (a leading comma included).
+pub fn device05(name: &str, prefix: &str, body: &str) -> String {
+    format!(r#"{{"$schema":"{D05}","device":{{"name":"{name}","vendor":"Acme","osc_prefix":"{prefix}"}}{body}}}"#)
 }
 
 /// A client of the server at `base` keeping its account in `dir/user`, a

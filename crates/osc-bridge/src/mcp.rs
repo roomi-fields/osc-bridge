@@ -35,7 +35,7 @@ use std::net::{SocketAddr, UdpSocket};
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-use crate::device::Device;
+use osd::Device;
 
 pub const PROTOCOL_VERSION: &str = "2025-06-18";
 pub const SERVER_NAME: &str = "osc-bridge";
@@ -124,7 +124,7 @@ pub struct DeviceIndexEntry {
     pub manufacturer_id: Vec<u8>,
     /// How the device is recognised (its own block, else the one of the
     /// file it shares its MIDI with).
-    pub identity: Option<crate::device::DeviceIdentity>,
+    pub identity: Option<osd::Identity>,
     /// Slugs of the devices whose sounds this one loads as they are.
     pub loads_sounds_of: Vec<String>,
     /// The driver this one shares its MIDI with (`midi_of`), by id.
@@ -147,20 +147,19 @@ impl DeviceIndex {
     pub fn build(dir: &Path) -> Self {
         let mut entries: Vec<DeviceIndexEntry> = Vec::new();
         let mut by_slug: HashMap<String, usize> = HashMap::new();
-        let _ = walk_json(dir, &mut |path, doc| {
-            // Which sounds it loads comes with the MIDI it shares (midi_of).
+        let _ = walk_json(dir, &mut |path| {
             // A maker's profile is not a driver.
             if path.file_name().and_then(|f| f.to_str()).is_some_and(|f| f.starts_with('_')) { return; }
-            let shared = crate::device::resolve(path, doc.clone()).ok();
-            let body = shared.as_ref().unwrap_or(doc);
-            let device = doc.get("device");
-            let get = |k: &str| device.and_then(|d| d.get(k)).and_then(Value::as_str);
-            let slug = get("osc_prefix").unwrap_or("").trim_start_matches('/').to_string();
-            let source = doc.get("_sources").and_then(Value::as_array).and_then(|a| a.first());
-            let tier = source.and_then(|s| s.get("type").and_then(Value::as_str))
-                .unwrap_or("unknown").to_string();
-            let firmware = source.and_then(|s| s.get("firmware").and_then(Value::as_str))
-                .filter(|f| *f != "unknown").map(str::to_string);
+            // The file as written (what it says of itself), and the driver
+            // as its firmware runs it: the MIDI it shares, and so the sounds
+            // it loads, come from `osd`'s resolution.
+            let Some(own) = crate::device::read_own(path) else { return };
+            let shared = crate::device::load(path).ok();
+            let body = shared.as_ref().unwrap_or(&own);
+            let slug = own.device.osc_prefix.trim_start_matches('/').to_string();
+            let source = own.sources.iter().flatten().next();
+            let tier = source.map(|s| s.kind.clone()).unwrap_or_else(|| "unknown".into());
+            let firmware = source.and_then(|s| s.firmware.clone()).filter(|f| f != "unknown");
             let idx = entries.len();
             if !slug.is_empty() {
                 let better = match by_slug.get(&slug) {
@@ -177,21 +176,16 @@ impl DeviceIndex {
                 id: path.strip_prefix(dir).unwrap_or(path).with_extension("")
                     .to_string_lossy().replace('\\', "/"),
                 slug,
-                name: get("name").unwrap_or("?").to_string(),
-                vendor: get("vendor").unwrap_or("?").to_string(),
-                kind: get("kind").unwrap_or("hardware").to_string(),
-                revision: get("revision").unwrap_or("").to_string(),
+                name: own.device.name.clone(),
+                vendor: own.device.vendor.clone().unwrap_or_else(|| "?".into()),
+                kind: crate::device::kind_name(own.device.kind).to_string(),
+                revision: own.device.revision.clone().unwrap_or_default(),
                 tier,
                 firmware,
-                manufacturer_id: body.get("device").and_then(|d| d.get("manufacturer_id"))
-                    .and_then(Value::as_array)
-                    .map(|a| a.iter().filter_map(Value::as_u64).map(|b| b as u8).collect())
-                    .unwrap_or_default(),
-                identity: body.get("identity").and_then(|v| serde_json::from_value(v.clone()).ok()),
-                loads_sounds_of: body.get("loads_sounds_of").and_then(Value::as_array)
-                    .map(|a| a.iter().filter_map(Value::as_str).map(str::to_string).collect())
-                    .unwrap_or_default(),
-                midi_of: doc.get("midi_of").and_then(Value::as_str).map(str::to_string),
+                manufacturer_id: body.device.manufacturer_id.clone().unwrap_or_default(),
+                identity: body.identity.clone(),
+                loads_sounds_of: body.loads_sounds_of.clone().unwrap_or_default(),
+                midi_of: own.midi_of.clone(),
             });
         });
         Self { entries, by_slug }
@@ -1608,7 +1602,7 @@ pub fn surface_addresses(dev: &Device) -> Vec<String> {
     let cc = dev.cc_params.iter().flat_map(|t| t.entries.iter().map(|e| e.osc.clone()));
     let params = dev.params.iter().flat_map(|t| t.entries.iter().map(|e| e.osc.clone()));
     let triggers = dev.triggers.iter().flat_map(|t| t.entries.iter().map(|e| e.osc.clone()));
-    dev.commands.iter().map(|c| c.osc.clone()).chain(cc).chain(params).chain(triggers)
+    dev.commands.iter().flatten().map(|c| crate::device::address_text(&c.osc)).chain(cc).chain(params).chain(triggers)
         .map(|a| format!("{prefix}{a}")).collect()
 }
 
@@ -1633,7 +1627,7 @@ pub fn vendor_dir(index: &DeviceIndex, vendor: &str) -> String {
 fn load_device_by_slug(index: &DeviceIndex, slug: &str) -> Result<Device, String> {
     let path = index.find_path(slug)
         .ok_or_else(|| format!("no device with slug '{slug}'"))?;
-    Device::load(path).map_err(|e| format!("load {}: {e}", path.display()))
+    crate::device::load_with_docs(path).map_err(|e| format!("load {}: {e}", path.display()))
 }
 
 fn export_device(index: &DeviceIndex, args: &Value) -> Result<Value, String> {
@@ -1641,7 +1635,7 @@ fn export_device(index: &DeviceIndex, args: &Value) -> Result<Value, String> {
     let format: crate::export::Format = args.get("format").and_then(Value::as_str).ok_or("missing format")?
         .parse().map_err(|e: anyhow::Error| e.to_string())?;
     let entry = index.find(wanted).ok_or_else(|| format!("no driver '{wanted}' (see list_devices)"))?;
-    let dev = Device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.path.display()))?;
+    let dev = crate::device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.path.display()))?;
     let document = crate::export::export(&dev, format).map_err(|e| e.to_string())?;
     let file_name = format!("{}.{}", entry.id.replace('/', "_"), format.extension());
     let structured = json!({ "device": entry.id, "format": args["format"], "media_type": format.media_type(),
@@ -1651,26 +1645,45 @@ fn export_device(index: &DeviceIndex, args: &Value) -> Result<Value, String> {
 
 fn get_device_docs(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
     let dev = load_device_by_slug(index, slug)?;
-    let (has_docs, markdown) = match dev.docs.as_deref() {
-        Some(md) => (true, md.to_string()),
+    let (has_docs, markdown) = match crate::device::attached_docs(&dev) {
+        Some(md) => (true, md),
         None => (false, format!("No companion .md found for device '{slug}'.")),
     };
     let structured = json!({ "slug": slug, "has_docs": has_docs, "markdown": markdown });
     Ok(content_structured(&markdown, structured))
 }
 
+/// A bank as `list_routes` states it: its numbering always, the rest when the driver gives it.
+fn bank_json(b: &osd::Bank) -> Value {
+    let mut o = json!({
+        "name": b.name,
+        "first_pc": b.first_pc.unwrap_or(0),
+        "size": b.size,
+        "first_number": b.first_number.unwrap_or(1),
+    });
+    for (k, v) in [("msb", b.msb), ("lsb", b.lsb), ("channel", b.channel)] {
+        if let Some(v) = v { o[k] = json!(v); }
+    }
+    for (k, v) in [("display", &b.display), ("selects", &b.selects)] {
+        if let Some(v) = v { o[k] = json!(v); }
+    }
+    o
+}
+
 fn list_routes(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
     let dev = load_device_by_slug(index, slug)?;
     let prefix = dev.device.osc_prefix.clone();
     let mut cmds: Vec<Value> = Vec::new();
-    for c in &dev.commands {
+    for c in dev.commands.iter().flatten() {
         let mode = if c.forward.is_some() { "forward (OSC)" } else { "frame (MIDI/SysEx)" };
         cmds.push(json!({
-            "address": format!("{prefix}{}", c.osc),
-            "args": c.args.iter().map(|a| json!({"name": a.name, "type": a.ty})).collect::<Vec<_>>(),
+            "address": format!("{prefix}{}", crate::device::address_text(&c.osc)),
+            "args": c.args.iter().flatten().map(|a| json!({"name": a.name, "type": crate::device::arg_type_name(a.ty)})).collect::<Vec<_>>(),
             "mode": mode,
         }));
     }
+    let expects = |e: &Option<String>| e.clone().unwrap_or_else(|| "continuous".into());
+    let range = |r: Option<[i64; 2]>| r.unwrap_or([0, 127]);
     let cc_params: Vec<Value> = dev.cc_params.as_ref().map(|t| t.entries.iter().map(|e| json!({
         "address": format!("{prefix}{}", e.osc),
         "cc": e.cc,
@@ -1680,49 +1693,49 @@ fn list_routes(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
         "nrpn_lsb_range": e.nrpn_lsb_range,
         "rpn_msb": e.rpn_msb,
         "rpn_lsb": e.rpn_lsb,
-        "range": e.range,
-        "expects": e.expects,
-        "usage": e.usage,
+        "range": range(e.range),
+        "expects": expects(&e.expects),
+        "usage": e.remarks.get("_usage").and_then(Value::as_str),
     })).collect()).unwrap_or_default();
     let params: Vec<Value> = dev.params.as_ref().map(|t| t.entries.iter().map(|e| json!({
         "address": format!("{prefix}{}", e.osc),
-        "range": e.range,
-        "expects": e.expects,
+        "range": range(e.range),
+        "expects": expects(&e.expects),
     })).collect()).unwrap_or_default();
     let triggers: Vec<Value> = dev.triggers.as_ref().map(|t| t.entries.iter().map(|e| json!({
         "address": format!("{prefix}{}", e.osc),
         "sound": e.sound,
         "section": e.section,
         "channel": e.channel,
-        "channel_mode": e.channel_mode,
+        "channel_mode": crate::device::channel_mode_name(e.channel_mode),
         "note_range": e.note_range,
         "note": e.note,
         "velocity_usage": e.velocity_usage,
     })).collect()).unwrap_or_default();
-    let replies: Vec<Value> = dev.replies.iter().map(|r| json!({
-        "match_osc": r.match_osc,
-        "match_frame_len": r.match_frame.len(),
-        "emit_osc": r.emit_osc,
+    let replies: Vec<Value> = dev.replies.iter().flatten().map(|r| json!({
+        "match_osc": r.match_osc.as_ref().map(crate::device::address_text),
+        "match_frame_len": r.match_frame.as_ref().map_or(0, Vec::len),
+        "emit_osc": crate::device::emit_text(r),
     })).collect();
-    let identity = (dev.device.transport.as_ref().is_none_or(|t| t.kind != "osc")).then(|| json!({
+    let identity = (dev.device.transport.as_ref().is_none_or(|t| t.kind != osd::TransportKind::Osc)).then(|| json!({
         "address": format!("{prefix}{}", crate::programs::IDENTITY),
         "reply_address": format!("{prefix}{} <firmware> <hex>", crate::programs::IDENTITY_REPLY),
         "profile": dev.identity.as_ref().and_then(|i| i.profile.clone()),
     }));
     let programs = dev.programs.as_ref().map(|p| json!({
-        "address": (!p.banks.is_empty()).then(|| format!("{prefix}{} <bank> <number> [channel]", crate::programs::RECALL)),
+        "address": p.banks.as_ref().is_some_and(|b| !b.is_empty()).then(|| format!("{prefix}{} <bank> <number> [channel]", crate::programs::RECALL)),
         "dump_address": p.dump.as_ref().filter(|d| d.request.is_some() || d.script.is_some())
             .map(|_| format!("{prefix}{} [<bank> <number>] [channel]", crate::programs::DUMP)),
         "selects": p.selects,
-        "banks": p.banks,
-        "requires": p.requires,
-        "dump": p.dump.as_ref().map(|d| d.kind.clone()),
+        "banks": p.banks.iter().flatten().map(bank_json).collect::<Vec<_>>(),
+        "requires": p.requires.clone().unwrap_or_default(),
+        "dump": p.dump.as_ref().map(|d| crate::device::dump_kind_name(d.kind)),
     }));
     let payload = json!({
         "device": dev.device.name,
-        "vendor": dev.device.vendor,
+        "vendor": dev.device.vendor.clone().unwrap_or_default(),
         "osc_prefix": prefix,
-        "kind": dev.device.kind,
+        "kind": dev.device.kind.map(|k| crate::device::kind_name(Some(k))),
         "identity": identity,
         "programs": programs,
         "commands": cmds,
@@ -1832,14 +1845,11 @@ pub fn content_structured(text: &str, structured: Value) -> Value {
     })
 }
 
-fn walk_json<F: FnMut(&Path, &Value)>(dir: &Path, f: &mut F) -> std::io::Result<()> {
+/// Every `.json` file under `dir` (or `dir` itself when it is one).
+fn walk_json<F: FnMut(&Path)>(dir: &Path, f: &mut F) -> std::io::Result<()> {
     if dir.is_file() {
         if dir.extension().and_then(|s| s.to_str()) == Some("json") {
-            if let Ok(txt) = std::fs::read_to_string(dir) {
-                if let Ok(v) = serde_json::from_str::<Value>(&txt) {
-                    f(dir, &v);
-                }
-            }
+            f(dir);
         }
         return Ok(());
     }
@@ -1849,11 +1859,7 @@ fn walk_json<F: FnMut(&Path, &Value)>(dir: &Path, f: &mut F) -> std::io::Result<
         if path.is_dir() {
             walk_json(&path, f)?;
         } else if path.extension().and_then(|s| s.to_str()) == Some("json") {
-            if let Ok(txt) = std::fs::read_to_string(&path) {
-                if let Ok(v) = serde_json::from_str::<Value>(&txt) {
-                    f(&path, &v);
-                }
-            }
+            f(&path);
         }
     }
     Ok(())

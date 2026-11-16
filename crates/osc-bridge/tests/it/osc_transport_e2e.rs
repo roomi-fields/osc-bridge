@@ -8,10 +8,7 @@
 //!
 //! No hardware required.
 
-use osc_bridge::device::{
-    ArgSpec, Command, Device, DeviceMeta, ForwardArg, ForwardSpec, OscArgPattern,
-    ReplyPattern, Subscription, Sysex, Transport,
-};
+use crate::common::device_of;
 use osc_bridge::{Runtime, RuntimeOptions};
 use rosc::{OscMessage, OscPacket, OscType};
 use std::net::{SocketAddr, UdpSocket};
@@ -75,101 +72,26 @@ fn pick_free_port() -> u16 {
     s.local_addr().unwrap().port()
 }
 
-fn ableton_like(target_port: u16, reply_port: u16) -> Device {
-    Device {
-        device: DeviceMeta {
-            name: "Ableton Live (fake)".into(),
-            vendor: "Ableton".into(),
-            revision: "Live 12.1 + AbletonOSC 0.4".into(),
-            osc_prefix: "/ableton".into(),
-            manufacturer_id: vec![],
-            device_id: vec![],
-            rate_limit_hz: None,
-            kind: Some("software".into()),
-            transport: Some(Transport {
-                kind: "osc".into(),
-                host: Some("127.0.0.1".into()),
-                port: Some(target_port),
-                reply_port: Some(reply_port),
-                rate_limit_hz: None,
-                passthrough_prefix: None,
-            }),
-        },
-        sysex: Sysex::default(),
-        commands: vec![
-            Command {
-                osc: "/transport/tempo".into(),
-                args: vec![ArgSpec {
-                    name: "bpm".into(),
-                    ty: "float".into(),
-                    range: None, values: None, default: None,
-                }],
-                pre: vec![],
-                frame: vec![],
-                forward: Some(ForwardSpec {
-                    path: "/live/song/set/tempo".into(),
-                    args: vec![ForwardArg::Str("{bpm}".into())],
-                }),
-                script: None,
-                electra: None,
-            },
-        ],
-        params: None,
-        cc_params: None,
-        midi_out: None,
-        midi_in: Default::default(),
-        replies: vec![ReplyPattern {
-            match_frame: vec![],
-            match_osc: Some("/live/song/get/tempo".into()),
-            match_args: vec![OscArgPattern { name: "bpm".into(), ty: "float".into() }],
-            emit_osc: "/transport/tempo {bpm}".into(),
-            script: None,
-        }],
-        subscriptions: vec![Subscription {
-            on: "startup".into(),
-            forward: ForwardSpec {
-                path: "/live/song/start_listen/tempo".into(),
-                args: vec![],
-            },
-        }],
-        docs: None,
-        custom_commands: vec![],
-        triggers: None, identity: None, programs: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
-    }
+fn ableton_like(target_port: u16, reply_port: u16) -> osd::Device {
+    device_of(&format!(r#"{{
+        "device": {{ "name": "Ableton Live (fake)", "vendor": "Ableton", "revision": "Live 12.1 + AbletonOSC 0.4",
+            "osc_prefix": "/ableton", "kind": "software",
+            "transport": {{ "kind": "osc", "host": "127.0.0.1", "port": {target_port}, "reply_port": {reply_port} }} }},
+        "commands": [ {{ "osc": "/transport/tempo", "args": [ {{ "name": "bpm", "type": "float" }} ],
+            "forward": {{ "path": "/live/song/set/tempo", "args": ["{{bpm}}"] }} }} ],
+        "replies": [ {{ "match_osc": "/live/song/get/tempo", "match_args": [ {{ "name": "bpm", "type": "float" }} ],
+            "emit_osc": "/transport/tempo {{bpm}}" }} ],
+        "subscriptions": [ {{ "on": "startup", "forward": {{ "path": "/live/song/start_listen/tempo", "args": [] }} }} ]
+    }}"#))
 }
 
-fn passthrough_like(target_port: u16, reply_port: u16) -> Device {
-    Device {
-        device: DeviceMeta {
-            name: "Passthrough (fake)".into(),
-            vendor: "Test".into(),
-            revision: "1".into(),
-            osc_prefix: "/sonicpi".into(),
-            manufacturer_id: vec![],
-            device_id: vec![],
-            rate_limit_hz: None,
-            kind: Some("software".into()),
-            transport: Some(Transport {
-                kind: "osc".into(),
-                host: Some("127.0.0.1".into()),
-                port: Some(target_port),
-                reply_port: Some(reply_port),
-                rate_limit_hz: None,
-                passthrough_prefix: Some(String::new()), // strip /sonicpi entirely
-            }),
-        },
-        sysex: Sysex::default(),
-        commands: vec![],
-        params: None,
-        cc_params: None,
-        midi_out: None,
-        midi_in: Default::default(),
-        replies: vec![],
-        subscriptions: vec![],
-        docs: None,
-        custom_commands: vec![],
-        triggers: None, identity: None, programs: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
-    }
+fn passthrough_like(target_port: u16, reply_port: u16) -> osd::Device {
+    // passthrough_prefix "" strips /sonicpi entirely
+    device_of(&format!(r#"{{
+        "device": {{ "name": "Passthrough (fake)", "vendor": "Test", "revision": "1", "osc_prefix": "/sonicpi", "kind": "software",
+            "transport": {{ "kind": "osc", "host": "127.0.0.1", "port": {target_port}, "reply_port": {reply_port},
+                "passthrough_prefix": "" }} }}
+    }}"#))
 }
 
 #[test]

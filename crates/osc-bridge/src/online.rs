@@ -227,6 +227,55 @@ pub fn is_driver_id(s: &str) -> bool {
         && c.bytes().all(|b| b.is_ascii_alphanumeric() || b"-_.+".contains(&b)))
 }
 
+/// A file the server gave: its text, the ETag it came with, and whether it is
+/// the server's new copy (`fresh`) rather than the one already kept.
+struct Got {
+    text: String,
+    etag: Option<String>,
+    fresh: bool,
+}
+
+/// Write a kept file and its ETag (the old ETag goes first, so that it never
+/// stands for the new file).
+fn keep(file: &Path, text: &str, etag: Option<&str>) -> Result<()> {
+    let etag_file = etag_path(file);
+    let _ = std::fs::remove_file(&etag_file);
+    std::fs::create_dir_all(file.parent().expect("a maker folder"))?;
+    std::fs::write(file, text).with_context(|| format!("write {}", file.display()))?;
+    if let Some(etag) = etag {
+        std::fs::write(&etag_file, etag).with_context(|| format!("write {}", etag_file.display()))?;
+    }
+    Ok(())
+}
+
+/// The files of the catalogue as `osd::resolve` reclaims them, asked of the
+/// server one at a time and held in memory (`got`: the text, or none when the
+/// server does not have it). A failure other than "not there" is kept in
+/// `failed`, to be told instead of the fault it causes.
+struct Fetching<'a> {
+    online: &'a Online,
+    cache: &'a Path,
+    got: std::cell::RefCell<std::collections::HashMap<String, Option<Got>>>,
+    failed: std::cell::Cell<Option<anyhow::Error>>,
+}
+
+impl osd::Files for Fetching<'_> {
+    fn get(&self, id: &str) -> Option<String> {
+        if let Some(held) = self.got.borrow().get(id) { return held.as_ref().map(|g| g.text.clone()); }
+        if !is_driver_id(id) { return None; }
+        let fetched = self.online.fetch_text(&format!("/api/v1/devices/{id}.json"), &driver_path(self.cache, id));
+        let got = match fetched {
+            Ok((200 | 304, got)) => got,
+            Ok((404, _)) => None,
+            Ok((status, _)) => { self.failed.set(Some(anyhow!("driver {id}: HTTP {status}"))); None }
+            Err(e) => { self.failed.set(Some(e)); None }
+        };
+        let text = got.as_ref().map(|g| g.text.clone());
+        self.got.borrow_mut().insert(id.to_string(), got);
+        text
+    }
+}
+
 /// Where driver `id` is kept under `root`.
 pub fn driver_path(root: &Path, id: &str) -> PathBuf {
     let (maker, name) = id.split_once('/').unwrap_or(("", id));
@@ -370,6 +419,21 @@ impl Online {
     /// accepts it, replaces the kept file and its ETag. The status, and the
     /// file's text on 200 or 304.
     fn fetch_kept(&self, path: &str, file: &Path, check: impl Fn(&str) -> Result<()>) -> Result<(u16, Option<String>)> {
+        let (status, got) = self.fetch_text(path, file)?;
+        match got {
+            Some(got) if status == 200 => {
+                check(&got.text)?;
+                keep(file, &got.text, got.etag.as_deref())?;
+                Ok((200, Some(got.text)))
+            }
+            got => Ok((status, got.map(|g| g.text))),
+        }
+    }
+
+    /// `GET path` as `fetch_kept` asks for it, but nothing is written: the
+    /// status, and the text on 200 (`fresh`, with the server's ETag) or on
+    /// 304 (the kept file's).
+    fn fetch_text(&self, path: &str, file: &Path) -> Result<(u16, Option<Got>)> {
         let etag_file = etag_path(file);
         let kept = std::fs::read_to_string(&etag_file).ok().filter(|e| !e.trim().is_empty() && file.is_file());
         let mut headers = Vec::new();
@@ -380,20 +444,12 @@ impl Online {
         match resp.status().as_u16() {
             304 if kept.is_some() => {
                 let text = std::fs::read_to_string(file).with_context(|| format!("read {}", file.display()))?;
-                Ok((304, Some(text)))
+                Ok((304, Some(Got { text, etag: None, fresh: false })))
             }
             200 => {
                 let text = resp.body_mut().with_config().limit(16 << 20).read_to_string()?;
-                check(&text)?;
                 let etag = resp.headers().get("etag").and_then(|v| v.to_str().ok()).map(str::to_string);
-                // The old ETag goes first, so that it never stands for the new file.
-                let _ = std::fs::remove_file(&etag_file);
-                std::fs::create_dir_all(file.parent().expect("a maker folder"))?;
-                std::fs::write(file, &text).with_context(|| format!("write {}", file.display()))?;
-                if let Some(etag) = etag {
-                    std::fs::write(&etag_file, etag).with_context(|| format!("write {}", etag_file.display()))?;
-                }
-                Ok((200, Some(text)))
+                Ok((200, Some(Got { text, etag, fresh: true })))
             }
             status => Ok((status, None)),
         }
@@ -519,44 +575,45 @@ impl Online {
         Ok(v)
     }
 
-    /// Fetch driver `id` into `cache` (`driver_path`), with its notes, the
-    /// drivers it takes its MIDI from (`midi_of`) and the maker profiles its
-    /// blocks name (`device::resolve_profiles`, kept as
+    /// Fetch driver `id` into `cache` (`driver_path`), with its notes and the
+    /// files `osd::resolve` says it is built from (the drivers it takes its
+    /// MIDI from, the maker profiles its blocks name, kept as
     /// `<maker>/_profile….json` beside the drivers), so that it loads there.
-    /// Each file already kept is downloaded again only when the server's copy
-    /// changed (`fetch_kept`). A driver the server no longer has is an error;
-    /// the cached copy stays.
+    /// The files are asked of the server as `osd` reclaims them (`Fetching`)
+    /// and held in memory; they are written to the cache only once the
+    /// resolution has succeeded. Each file already kept is downloaded again
+    /// only when the server's copy changed (`fetch_text`). A driver `osd`
+    /// refuses, or the server no longer has, is an error, and the cache stays
+    /// as it was.
     pub fn fetch_driver(&self, id: &str, cache: &Path) -> Result<PathBuf> {
-        let mut queue = vec![id.to_string()];
-        let mut seen = Vec::new();
-        let limit = 1 + crate::device::MIDI_OF_DEPTH * (1 + 2 * crate::device::PROFILE_DEPTH);
-        while let Some(id) = queue.pop() {
-            if !is_driver_id(&id) { bail!("{id:?} is not a driver id (<maker>/<name>)"); }
-            if seen.contains(&id) { continue; }
-            if seen.len() > limit { break; }
-            let profile = id.split_once('/').is_some_and(|(_, f)| f.starts_with("_profile"));
-            let path = driver_path(cache, &id);
-            let json = |text: &str| serde_json::from_str::<Value>(text).map(drop).with_context(|| format!("driver {id} from the server"));
-            let text = match self.fetch_kept(&format!("/api/v1/devices/{id}.json"), &path, json)? {
-                (200 | 304, Some(text)) => text,
-                (404, _) => bail!("the SynthHub catalogue has no driver {id}"),
-                (s, _) => bail!("driver {id}: HTTP {s}"),
-            };
-            let doc: Value = serde_json::from_str(&text).with_context(|| format!("driver {id} kept in {}", path.display()))?;
-            if !profile {
+        if !is_driver_id(id) { bail!("{id:?} is not a driver id (<maker>/<name>)"); }
+        let files = Fetching { online: self, cache, got: Default::default(), failed: Default::default() };
+        let resolved = match osd::resolve(id, &files) {
+            Ok(r) => r,
+            Err(fault) => {
+                if let Some(e) = files.failed.take() { return Err(e); }
+                if files.got.borrow().get(id).is_some_and(Option::is_none) {
+                    bail!("the SynthHub catalogue has no driver {id}");
+                }
+                return Err(anyhow::Error::from(fault).context(format!("driver {id} from the server")));
+            }
+        };
+        for file in &resolved.files {
+            let path = driver_path(cache, file);
+            if let Some(Some(got)) = files.got.borrow().get(file) {
+                if got.fresh { keep(&path, &got.text, got.etag.as_deref())?; }
+            }
+            if !file.split_once('/').is_some_and(|(_, f)| f.starts_with("_profile")) {
                 let notes = path.with_extension("md");
-                match self.fetch_kept(&format!("/api/v1/devices/{id}.md"), &notes, |_| Ok(()))? {
+                match self.fetch_kept(&format!("/api/v1/devices/{file}.md"), &notes, |_| Ok(()))? {
                     (200 | 304, Some(_)) => {}
                     (404, _) => {
                         let _ = std::fs::remove_file(&notes);
                         let _ = std::fs::remove_file(etag_path(&notes));
                     }
-                    (s, _) => bail!("notes of {id}: HTTP {s}"),
+                    (s, _) => bail!("notes of {file}: HTTP {s}"),
                 }
-                queue.extend(doc["midi_of"].as_str().map(str::to_string));
             }
-            queue.extend(crate::device::profiles_named(&doc).iter().filter_map(|p| crate::device::profile_file(p)));
-            seen.push(id);
         }
         Ok(driver_path(cache, id))
     }

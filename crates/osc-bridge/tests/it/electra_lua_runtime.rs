@@ -9,11 +9,11 @@ use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
 
 use crossbeam_channel::{bounded, Receiver, Sender};
-use osc_bridge::device::Device;
+use crate::common::device_of;
 use osc_bridge::runtime::{dispatch_to_device, handle_midi_in, DeviceDispatch, SendOsc};
 use rosc::{OscMessage, OscType};
 
-fn driver() -> Device {
+fn driver() -> osd::Device {
     let json = r#"{
   "device": { "name": "Acme", "vendor": "Acme", "revision": "A1", "osc_prefix": "/acme" },
   "commands": [
@@ -26,7 +26,7 @@ fn driver() -> Device {
     { "match_frame": [240, 66, "{v}", 247], "emit_osc": "/acme/level_s1 {v}" }
   ]
 }"#;
-    serde_json::from_str(json).expect("driver parses")
+    device_of(json)
 }
 
 fn from() -> SocketAddr { SocketAddr::from(([0, 0, 0, 0], 0)) }

@@ -197,7 +197,7 @@ ou regroupage si deux phases arrivent vite. À voir au fur et à mesure.
 - Tous les devices JSON actuels se chargent et fonctionnent sans
   modification (zéro régression).
 - `cargo test --release` passe sur chaque phase.
-- README + `docs/DEVICE_JSON_SCHEMA.md` + `CHANGELOG.md` à jour à
+- README + le format OSD (open-synth-descriptors) + `CHANGELOG.md` à jour à
   chaque phase.
 - Un device peut, au choix, activer ou non `midi_out` — l'absence de
   la section ne change rien au comportement actuel.

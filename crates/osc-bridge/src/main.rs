@@ -232,7 +232,7 @@ fn main() -> Result<()> {
         Cmd::Inspect { device } => cmd_inspect(device),
         Cmd::Run(args) => cmd_run(args),
         Cmd::Export { device, format } => {
-            let dev = Device::load(osc_bridge::catalogue::locate(&device)?)?;
+            let dev = osc_bridge::device::load(osc_bridge::catalogue::locate(&device)?)?;
             print!("{}", osc_bridge::export::export(&dev, format.parse()?)?);
             Ok(())
         }
@@ -277,7 +277,7 @@ fn cmd_backup(in_port: String, out: PathBuf, request: Option<String>, out_port: 
 }
 
 fn cmd_lint(path: PathBuf) -> Result<()> {
-    let dev = Device::load(&path)?;
+    let dev = osc_bridge::device::load(&path)?;
     let mut warnings = 0usize;
     let errors = 0usize;
     let warn = |what: &str, where_: &str, w: &mut usize| {
@@ -285,11 +285,11 @@ fn cmd_lint(path: PathBuf) -> Result<()> {
         *w += 1;
     };
     for line in checksum_warnings(&dev) { eprintln!("{line}"); warnings += 1; }
-    for c in &dev.commands {
-        if c.script.is_some() { warn("command.script", &format!("/{}", c.osc), &mut warnings); }
+    for c in dev.commands.iter().flatten() {
+        if c.script.is_some() { warn("command.script", &format!("/{}", osc_bridge::device::address_text(&c.osc)), &mut warnings); }
     }
-    for r in &dev.replies {
-        if r.script.is_some() { warn("reply.script", &r.emit_osc, &mut warnings); }
+    for r in dev.replies.iter().flatten() {
+        if r.script.is_some() { warn("reply.script", &osc_bridge::device::emit_text(r), &mut warnings); }
     }
     if let Some(pt) = &dev.params {
         for e in &pt.entries {
@@ -305,8 +305,8 @@ fn cmd_lint(path: PathBuf) -> Result<()> {
     }
     println!("{}: parsed OK — {} commands, {} replies, {} params, {} cc_params",
         path.display(),
-        dev.commands.len(),
-        dev.replies.len(),
+        dev.commands.as_ref().map_or(0, Vec::len),
+        dev.replies.as_ref().map_or(0, Vec::len),
         dev.params.as_ref().map(|p| p.entries.len()).unwrap_or(0),
         dev.cc_params.as_ref().map(|p| p.entries.len()).unwrap_or(0),
     );
@@ -319,7 +319,7 @@ fn cmd_lint(path: PathBuf) -> Result<()> {
 
 /// One `WARN` line per checksum the engine cannot compute; the build of that frame fails.
 fn checksum_warnings(dev: &Device) -> Vec<String> {
-    dev.checksum_problems().into_iter()
+    osc_bridge::device::checksum_problems(dev).into_iter()
         .map(|(place, problem)| format!("  WARN: checksum at {place}: {problem} — building this frame fails."))
         .collect()
 }
@@ -339,27 +339,30 @@ fn cmd_list() -> Result<()> {
 }
 
 fn cmd_inspect(path: PathBuf) -> Result<()> {
-    let dev = Device::load(osc_bridge::catalogue::locate(&path)?)?;
+    let dev = osc_bridge::device::load(osc_bridge::catalogue::locate(&path)?)?;
     for line in checksum_warnings(&dev) { eprintln!("{line}"); }
-    println!("Device:   {} ({})", dev.device.name, dev.device.revision);
-    println!("Vendor:   {}", dev.device.vendor);
-    println!("OSC prefix: {}", dev.device.osc_prefix);
-    println!("MID:      {}", hex_vec(&dev.device.manufacturer_id));
-    println!("Dev id:   {}", hex_vec(&dev.device.device_id));
-    println!("Rate limit: {:?} Hz", dev.device.rate_limit_hz);
-    println!("Commands: {} entries", dev.commands.len());
-    for c in &dev.commands {
-        println!("  {}  args={}", c.osc, c.args.len());
+    let d = &dev.device;
+    println!("Device:   {} ({})", d.name, d.revision.as_deref().unwrap_or_default());
+    println!("Vendor:   {}", d.vendor.as_deref().unwrap_or_default());
+    println!("OSC prefix: {}", d.osc_prefix);
+    println!("MID:      {}", hex_vec(d.manufacturer_id.as_deref().unwrap_or_default()));
+    println!("Dev id:   {}", hex_vec(d.device_id.as_deref().unwrap_or_default()));
+    println!("Rate limit: {:?} Hz", d.rate_limit_hz);
+    let commands = dev.commands.as_deref().unwrap_or_default();
+    println!("Commands: {} entries", commands.len());
+    for c in commands {
+        println!("  {}  args={}", osc_bridge::device::address_text(&c.osc), c.args.as_ref().map_or(0, Vec::len));
     }
     if let Some(pt) = &dev.params {
         println!("Params:   {} entries", pt.entries.len());
         for e in pt.entries.iter().take(5) {
+            let [lo, hi] = e.range.unwrap_or([0, 127]);
             println!("  {}  ({:#04x},{:#04x},{:#04x},{:#04x})  range=[{},{}]",
-                e.osc, e.pr, e.p, e.c, e.r, e.range[0], e.range[1]);
+                e.osc, e.pr.unwrap_or(0), e.p.unwrap_or(0), e.c.unwrap_or(0), e.r.unwrap_or(0), lo, hi);
         }
         if pt.entries.len() > 5 { println!("  ... +{} more", pt.entries.len() - 5); }
     }
-    println!("Replies:  {} patterns", dev.replies.len());
+    println!("Replies:  {} patterns", dev.replies.as_ref().map_or(0, Vec::len));
     Ok(())
 }
 
@@ -369,8 +372,8 @@ fn hex_vec(v: &[u8]) -> String {
 
 fn cmd_run(args: RunArgs) -> Result<()> {
     let RunArgs { device: path, out_port, in_port, bind, osc_clients: clients, ws_bind, ws_allow_origins, oscquery_bind } = args;
-    let dev = Device::load(osc_bridge::catalogue::locate(&path)?)?;
-    let is_osc = dev.device.transport.as_ref().map(|t| t.kind.as_str()) == Some("osc");
+    let dev = osc_bridge::device::load_with_docs(osc_bridge::catalogue::locate(&path)?)?;
+    let is_osc = dev.device.transport.as_ref().map(|t| t.kind) == Some(osd::TransportKind::Osc);
     let out_port = match (out_port, is_osc) {
         (Some(p), _) => p,
         (None, true) => 0, // runtime branches early; value is unused.

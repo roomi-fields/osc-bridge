@@ -27,7 +27,7 @@ Code changes follow the usual workflow: fork → branch → commit → PR.
 
 New to this? Start with [`docs/TUTORIAL_FIRST_DEVICE.md`](docs/TUTORIAL_FIRST_DEVICE.md)
 — a 30-minute hands-on walkthrough that builds a working CC driver end to end.
-The reference is [`docs/DEVICE_JSON_SCHEMA.md`](docs/DEVICE_JSON_SCHEMA.md).
+The reference is the [Open Synth Descriptors](https://github.com/roomi-fields/open-synth-descriptors) (OSD) format, which osc-bridge reads through the `osd` crate.
 
 - **Cite a source.** In decreasing order of preference: the vendor's programmer's reference / MIDI implementation; a canonical community table (e.g. [pencilresearch/midi](https://github.com/pencilresearch/midi)); your own reverse-engineering, with the captures. It goes in `_sources[]`.
 - **One source, one file — no silent fusion.** A MIDI implementation changes between firmware versions, and community sources are often tied to a firmware they don't record. Fusing two sources into one JSON hides contradictions: two sources make two files. Pin the firmware in `_sources[].firmware` (`"unknown"` explicitly rather than omitting it).
@@ -58,7 +58,7 @@ Once aligned, the PR should add:
 - The new Rust fields in `crates/osc-bridge/src/device.rs` (Option-wrapped, `#[serde(default)]`).
 - Handling in `crates/osc-bridge/src/frame.rs` and / or `crates/osc-bridge/src/runtime.rs`.
 - A test driver exercising the new capability under `crates/osc-bridge/tests/fixtures/devices/` (prefer a minimal synthetic one, e.g. under `acme/`), and its test.
-- Updated docs in `docs/DEVICE_JSON_SCHEMA.md` and `CHANGELOG.md` under the next minor version.
+- Updated docs and `CHANGELOG.md` under the next minor version (a change to the driver format itself goes to the OSD repository).
 
 ## Local-only files — the `.local/` zone
 

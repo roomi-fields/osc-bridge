@@ -1,7 +1,7 @@
 //! SysEx frame assembly and matching.
 
-use crate::device::{ArgSpec, Device, FrameToken, ParamEntry, ParamTable};
 use anyhow::{anyhow, bail, Result};
+use osd::{Algorithm, Device, Encoding, FramePart, FrameToken, IdentityPart};
 use std::collections::HashMap;
 
 /// A set of named values (int or bytes) bound during a command build.
@@ -29,6 +29,50 @@ impl Bindings {
     pub fn get(&self, k: &str) -> Option<&Value> { self.0.get(k) }
 }
 
+/// A checksum element of a frame: its algorithm, the offset it starts at
+/// (F0 = 0) and, optionally, how many bytes it covers.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Checksum {
+    pub algorithm: Algorithm,
+    pub from: usize,
+    pub length: Option<usize>,
+}
+
+impl Checksum {
+    /// The checksum a frame element stands for, if it is one.
+    pub fn of_token(tok: &FrameToken) -> Option<Checksum> {
+        match tok {
+            FrameToken::Part(FramePart::Checksum { algorithm, from, length }) => {
+                Some(Checksum { algorithm: *algorithm, from: *from as usize, length: length.map(|l| l as usize) })
+            }
+            _ => None,
+        }
+    }
+
+    /// How the checksum reads in a message: `checksum twos7 from 5 length 3`.
+    pub fn describe(&self) -> String {
+        let name = algorithm_name(self.algorithm);
+        match self.length {
+            Some(l) => format!("checksum {name} from {} length {l}", self.from),
+            None => format!("checksum {name} from {}", self.from),
+        }
+    }
+
+    /// The checksum byte of `written`, the message so far (nothing after the
+    /// checksum, never the footer).
+    pub fn compute(&self, written: &[u8]) -> Result<u8> {
+        let end = match self.length {
+            Some(l) => self.from.checked_add(l).filter(|e| *e <= written.len())
+                .ok_or_else(|| anyhow!("{}: {} bytes from offset {} run past the {} bytes written", self.describe(), l, self.from, written.len()))?,
+            None => written.len(),
+        };
+        let covered = written.get(self.from..end)
+            .filter(|c| !c.is_empty())
+            .ok_or_else(|| anyhow!("{}: offset {} is past the {} bytes written", self.describe(), self.from, written.len()))?;
+        Ok(checksum_byte(self.algorithm, covered))
+    }
+}
+
 /// Assemble a full SysEx frame from `header + body + footer` where body is
 /// produced by substituting bindings into `tokens`.
 pub fn build_frame(device: &Device, tokens: &[FrameToken], bindings: &Bindings) -> Result<Vec<u8>> {
@@ -37,11 +81,22 @@ pub fn build_frame(device: &Device, tokens: &[FrameToken], bindings: &Bindings) 
     Ok(out)
 }
 
+/// `body` between the device's SysEx header and footer.
+pub fn wrap_sysex(device: &Device, body: &[u8]) -> Vec<u8> {
+    let header = device.sysex.as_ref().and_then(|s| s.header.as_deref()).unwrap_or_default();
+    let footer = device.sysex.as_ref().and_then(|s| s.footer.as_deref()).unwrap_or_default();
+    let mut buf = Vec::with_capacity(header.len() + body.len() + footer.len());
+    buf.extend_from_slice(header);
+    buf.extend_from_slice(body);
+    buf.extend_from_slice(footer);
+    buf
+}
+
 /// Where a command's frame holds a checksum, left for after the command's script.
 #[derive(Debug, Clone)]
 pub struct ChecksumSlot {
     pub pos: usize,
-    pub token: String,
+    pub checksum: Checksum,
 }
 
 /// Like `build_frame`, but each checksum is checked as computable then written
@@ -50,19 +105,22 @@ pub struct ChecksumSlot {
 pub fn build_frame_deferred(device: &Device, tokens: &[FrameToken], bindings: &Bindings) -> Result<(Vec<u8>, Vec<ChecksumSlot>)> {
     let mut out = Vec::with_capacity(32);
     let mut slots = Vec::new();
-    out.extend_from_slice(&device.sysex.header);
+    if let Some(h) = device.sysex.as_ref().and_then(|s| s.header.as_ref()) {
+        out.extend_from_slice(h);
+    }
     for tok in tokens {
-        match tok {
-            FrameToken::Literal(b) => out.push(*b),
-            FrameToken::Placeholder(s) if is_checksum(s) => {
-                Checksum::parse(s)?.of(s, &out)?;
-                slots.push(ChecksumSlot { pos: out.len(), token: s.clone() });
+        match Checksum::of_token(tok) {
+            Some(c) => {
+                c.compute(&out)?;
+                slots.push(ChecksumSlot { pos: out.len(), checksum: c });
                 out.push(0);
             }
-            FrameToken::Placeholder(s) => emit_placeholder(s, bindings, &mut out)?,
+            None => emit_token(tok, bindings, &mut out)?,
         }
     }
-    out.extend_from_slice(&device.sysex.footer);
+    if let Some(f) = device.sysex.as_ref().and_then(|s| s.footer.as_ref()) {
+        out.extend_from_slice(f);
+    }
     Ok((out, slots))
 }
 
@@ -70,91 +128,46 @@ pub fn build_frame_deferred(device: &Device, tokens: &[FrameToken], bindings: &B
 /// (a checksum covering an earlier slot sees its final value).
 pub fn finish_checksums(frame: &mut [u8], slots: &[ChecksumSlot]) -> Result<()> {
     for s in slots {
-        let b = Checksum::parse(&s.token)?.of(&s.token, &frame[..s.pos])?;
+        let b = s.checksum.compute(&frame[..s.pos])?;
         frame[s.pos] = b;
     }
     Ok(())
 }
 
 /// A whole message from `tokens` (F0 to F7 written in them, no header or
-/// footer added); its `{checksum:...}` are computed by `Checksum`.
+/// footer added); its checksums are computed by `Checksum`.
 pub fn build_message(tokens: &[FrameToken], bindings: &Bindings) -> Result<Vec<u8>> {
     let mut out = Vec::with_capacity(tokens.len());
     for tok in tokens {
-        match tok {
-            FrameToken::Literal(b) => out.push(*b),
-            FrameToken::Placeholder(s) if is_checksum(s) => push_checksum(s, &mut out)?,
-            FrameToken::Placeholder(s) => emit_placeholder(s, bindings, &mut out)?,
+        match Checksum::of_token(tok) {
+            Some(c) => {
+                let b = c.compute(&out)?;
+                out.push(b);
+            }
+            None => emit_token(tok, bindings, &mut out)?,
         }
     }
     Ok(out)
 }
 
-/// The three checksum algorithms of the Electra One preset format
-/// (https://docs.electra.one/developers/presetformat.html, "SysEx template",
-/// checksum): `twos7` is roland, `sum7` waldorf, `xor7` fractal.
-pub const CHECKSUM_ALGORITHMS: [&str; 3] = ["twos7", "sum7", "xor7"];
-
-/// A parsed `{checksum:<algorithm>@<from>}` or `{checksum:<algorithm>@<from>+<length>}`.
-/// `from` counts from the first byte of the message (F0 = 0).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Checksum {
-    pub algorithm: &'static str,
-    pub from: usize,
-    pub length: Option<usize>,
-}
-
-/// Whether a placeholder token is a `{checksum:...}`.
-pub fn is_checksum(token: &str) -> bool {
-    token.trim_matches(|c| c == '{' || c == '}').split(':').next().map(str::trim) == Some("checksum")
-}
-
-impl Checksum {
-    /// Read the token; an unknown algorithm or a malformed form names the token.
-    pub fn parse(token: &str) -> Result<Self> {
-        let form = || anyhow!("'{token}': a checksum is {{checksum:<algorithm>@<from>}} or {{checksum:<algorithm>@<from>+<length>}}, the algorithm one of {CHECKSUM_ALGORITHMS:?}");
-        let inner = token.trim_matches(|c| c == '{' || c == '}');
-        let rest = inner.strip_prefix("checksum:").ok_or_else(form)?;
-        let (name, at) = rest.split_once('@').ok_or_else(form)?;
-        let algorithm = CHECKSUM_ALGORITHMS.iter().copied().find(|a| *a == name).ok_or_else(form)?;
-        let (from, length) = match at.split_once('+') {
-            Some((f, l)) => (f, Some(l.parse::<usize>().map_err(|_| form())?)),
-            None => (at, None),
-        };
-        Ok(Checksum { algorithm, from: from.parse().map_err(|_| form())?, length })
-    }
-
-    /// The checksum byte of `written`, the message so far (nothing after the
-    /// checksum, never the footer). `token` names the error.
-    pub fn of(&self, token: &str, written: &[u8]) -> Result<u8> {
-        let end = match self.length {
-            Some(l) => self.from.checked_add(l).filter(|e| *e <= written.len())
-                .ok_or_else(|| anyhow!("'{token}': {} bytes from offset {} run past the {} bytes written", l, self.from, written.len()))?,
-            None => written.len(),
-        };
-        let covered = written.get(self.from..end)
-            .filter(|c| !c.is_empty())
-            .ok_or_else(|| anyhow!("'{token}': offset {} is past the {} bytes written", self.from, written.len()))?;
-        Ok(checksum_byte(self.algorithm, covered))
+/// The word that names an algorithm in a driver.
+fn algorithm_name(a: Algorithm) -> &'static str {
+    match a {
+        Algorithm::Twos7 => "twos7",
+        Algorithm::Sum7 => "sum7",
+        Algorithm::Xor7 => "xor7",
     }
 }
 
 /// The one computation of a checksum byte, 7 bits (Electra One definitions):
 /// `twos7` `(128 - (sum mod 128)) & 0x7F`, `sum7` `sum & 0x7F`, `xor7` the XOR of the bytes `& 0x7F`.
-pub fn checksum_byte(algorithm: &str, bytes: &[u8]) -> u8 {
+pub fn checksum_byte(algorithm: Algorithm, bytes: &[u8]) -> u8 {
     let sum = bytes.iter().map(|b| *b as u32).sum::<u32>();
     match algorithm {
-        "twos7" => ((128 - sum % 128) & 0x7F) as u8,
-        "sum7" => (sum & 0x7F) as u8,
-        _ => bytes.iter().fold(0u8, |a, b| a ^ b) & 0x7F,
+        Algorithm::Twos7 => ((128 - sum % 128) & 0x7F) as u8,
+        Algorithm::Sum7 => (sum & 0x7F) as u8,
+        Algorithm::Xor7 => bytes.iter().fold(0u8, |a, b| a ^ b) & 0x7F,
     }
-}
-
-/// Write the checksum byte `token` asks for after `out`.
-fn push_checksum(token: &str, out: &mut Vec<u8>) -> Result<()> {
-    let b = Checksum::parse(token)?.of(token, out)?;
-    out.push(b);
-    Ok(())
 }
 
 /// The checksums no frame could compute, one line each (nothing refuses a
@@ -166,71 +179,92 @@ pub fn checksum_problems(tokens: &[FrameToken], base: usize) -> Vec<String> {
     let mut problems = Vec::new();
     let (mut min, mut fixed) = (base, true);
     for tok in tokens {
-        let FrameToken::Placeholder(s) = tok else { min += 1; continue };
-        if is_checksum(s) {
-            match Checksum::parse(s) {
-                Err(e) => problems.push(e.to_string()),
-                Ok(c) if c.from >= min => problems.push(format!("'{s}': offset {} is not before the checksum, written at offset {min}", c.from)),
-                Ok(c) => if let Some(l) = c.length.filter(|l| fixed && c.from.saturating_add(*l) > min) {
-                    problems.push(format!("'{s}': {l} bytes from offset {} run past the {min} bytes written", c.from));
-                },
+        if let Some(c) = Checksum::of_token(tok) {
+            let what = c.describe();
+            if c.from >= min {
+                problems.push(format!("{what}: offset {} is not before the checksum, written at offset {min}", c.from));
+            } else if let Some(l) = c.length.filter(|l| fixed && c.from.saturating_add(*l) > min) {
+                problems.push(format!("{what}: {l} bytes from offset {} run past the {min} bytes written", c.from));
             }
             min += 1;
             continue;
         }
-        let inner = s.trim_matches(|c| c == '{' || c == '}');
-        let (name, kind) = inner.split_once(':').map(|(n, k)| (n.trim(), k.trim())).unwrap_or((inner.trim(), ""));
-        match (name, kind) {
-            ("family" | "member", k) if k.parse::<usize>().is_err() => {
+        match tok {
+            FrameToken::Part(FramePart::Identity { part, index: None }) => {
                 fixed = false;
-                if name == "family" { min += 1; }
+                if *part == IdentityPart::Family { min += 1; }
             }
-            (_, "ascii" | "bytes") => fixed = false,
-            (_, "s32") => min += 5,
+            FrameToken::Part(FramePart::Arg { encoding: Some(Encoding::Ascii | Encoding::Bytes), .. }) => fixed = false,
+            FrameToken::Part(FramePart::Arg { encoding: Some(Encoding::S32), .. }) => min += 5,
             _ => min += 1,
         }
     }
     problems
 }
 
-fn emit_placeholder(ph: &str, b: &Bindings, out: &mut Vec<u8>) -> Result<()> {
-    // Strip the surrounding `{}` — placeholders come in as `"{name}"` literal strings.
-    let inner = ph.trim_matches(|c| c == '{' || c == '}');
-    // Parse `name[:kind]`
-    let mut parts = inner.splitn(2, ':');
-    let name = parts.next().unwrap_or("").trim();
-    let kind = parts.next().map(|s| s.trim()).unwrap_or("u7");
+/// `tokens` with the identity elements (`{"identity": "family"}`, `member`,
+/// with their `index`) written out as the model's bytes.
+pub fn expand_identity(identity: &osd::Identity, tokens: &[FrameToken]) -> Vec<FrameToken> {
+    let mut out = Vec::with_capacity(tokens.len());
+    for t in tokens {
+        let FrameToken::Part(FramePart::Identity { part, index }) = t else { out.push(t.clone()); continue };
+        let bytes = match part {
+            IdentityPart::Family => identity.family.as_deref(),
+            IdentityPart::Member => identity.member.as_deref(),
+        }
+        .unwrap_or_default();
+        match index {
+            Some(i) => out.extend(bytes.get(*i as usize).map(|b| FrameToken::Byte(*b))),
+            None => out.extend(bytes.iter().map(|b| FrameToken::Byte(*b))),
+        }
+    }
+    out
+}
 
+/// Write the bytes of one frame element other than a checksum.
+fn emit_token(tok: &FrameToken, b: &Bindings, out: &mut Vec<u8>) -> Result<()> {
+    match tok {
+        FrameToken::Byte(v) => out.push(*v),
+        FrameToken::Placeholder(s) => bail!("'{s}' is an OSD 0.4 placeholder: convert the driver to 0.5 (osd convert)"),
+        FrameToken::Part(FramePart::DeviceId) => emit_arg("dev", None, None, b, out)?,
+        FrameToken::Part(FramePart::Arg { name, encoding, add }) => emit_arg(name, *encoding, *add, b, out)?,
+        FrameToken::Part(FramePart::Identity { part, .. }) => {
+            bail!("the {part:?} bytes of the model are not expanded in this frame")
+        }
+        FrameToken::Part(FramePart::Capture(n)) => bail!("a capture ({n}) is for a message recognised, not one sent"),
+        FrameToken::Part(FramePart::Any) => bail!("`any` is for a message recognised, not one sent"),
+        FrameToken::Part(FramePart::Checksum { .. }) => unreachable!("checksums are written by the callers"),
+    }
+    Ok(())
+}
+
+fn emit_arg(name: &str, encoding: Option<Encoding>, add: Option<u8>, b: &Bindings, out: &mut Vec<u8>) -> Result<()> {
     let val = b.get(name).ok_or_else(|| anyhow!("unbound placeholder '{name}'"))?;
-
-    // `u7+N`: the value plus N (decimal or 0x hex), a channel in a status
-    // nibble (Korg `3g`: `{channel:u7+0x30}`).
-    if let Some(n) = kind.strip_prefix("u7+") {
-        let n = match n.strip_prefix("0x") { Some(h) => u8::from_str_radix(h, 16), None => n.parse() }
-            .map_err(|_| anyhow!("bad offset in '{ph}'"))?;
+    // `add`: the value plus N on seven bits, a channel in a status nibble (Korg `3g`).
+    if let Some(n) = add {
         return match val {
             Value::U7(v) => { out.push(v.wrapping_add(n) & 0x7F); Ok(()) }
             _ => bail!("expected u7 for '{name}'"),
         };
     }
-    match kind {
-        "u7" => match val {
+    match encoding {
+        None => match val {
             Value::U7(v) => out.push(*v & 0x7F),
             Value::U14(v) => out.push((*v as u8) & 0x7F), // truncate LSB
             Value::S32(_) | Value::Bytes(_) => bail!("expected u7 for '{name}'"),
         },
-        "u14_msb" => match val {
+        Some(Encoding::U14Msb) => match val {
             Value::U14(v) => out.push(((*v >> 7) & 0x7F) as u8),
             Value::U7(v)  => out.push((*v >> 7) & 0x7F), // almost always 0 but handle
             Value::S32(_) | Value::Bytes(_) => bail!("expected u14_msb for '{name}'"),
         },
-        "u14_lsb" => match val {
+        Some(Encoding::U14Lsb) => match val {
             Value::U14(v) => out.push((*v & 0x7F) as u8),
             Value::U7(v)  => out.push(*v & 0x7F),
             Value::S32(_) | Value::Bytes(_) => bail!("expected u14_lsb for '{name}'"),
         },
         // Two's complement, bits 28-31 then 21-27, 14-20, 7-13, 0-6.
-        "s32" => match val {
+        Some(Encoding::S32) => match val {
             Value::S32(v) => {
                 let u = *v as u32;
                 out.extend([28, 21, 14, 7, 0].map(|sh| ((u >> sh) & 0x7F) as u8));
@@ -239,7 +273,7 @@ fn emit_placeholder(ph: &str, b: &Bindings, out: &mut Vec<u8>) -> Result<()> {
             Value::U14(v) => out.extend([0, 0, 0, ((*v >> 7) & 0x7F) as u8, (*v & 0x7F) as u8]),
             Value::Bytes(_) => bail!("expected s32 for '{name}', got bytes"),
         },
-        "ascii" => match val {
+        Some(Encoding::Ascii) => match val {
             Value::Bytes(bs) => {
                 for byte in bs {
                     if *byte > 0 && *byte < 0x80 { out.push(*byte); }
@@ -247,17 +281,17 @@ fn emit_placeholder(ph: &str, b: &Bindings, out: &mut Vec<u8>) -> Result<()> {
             }
             _ => bail!("expected ascii bytes for '{name}'"),
         },
-        "bytes" => match val {
+        Some(Encoding::Bytes) => match val {
             Value::Bytes(bs) => out.extend_from_slice(bs),
             _ => bail!("expected bytes for '{name}'"),
         },
-        other => bail!("unknown placeholder kind '{other}' for '{name}'"),
     }
     Ok(())
 }
 
-/// Convert an incoming JSON-value OSC argument into a `Value` clamped per its spec.
-pub fn coerce_arg(spec: &ArgSpec, osc_arg: &rosc::OscType) -> Result<Value> {
+/// Convert an incoming OSC argument into a `Value` clamped per its spec.
+pub fn coerce_arg(spec: &osd::Arg, osc_arg: &rosc::OscType) -> Result<Value> {
+    use osd::ArgType;
     use rosc::OscType::*;
     let to_i64 = || -> Option<i64> {
         match osc_arg {
@@ -269,27 +303,27 @@ pub fn coerce_arg(spec: &ArgSpec, osc_arg: &rosc::OscType) -> Result<Value> {
             _ => None,
         }
     };
-    match spec.ty.as_str() {
-        "u7" => {
+    match spec.ty {
+        ArgType::U7 => {
             let v = to_i64().ok_or_else(|| anyhow!("arg '{}' expects int/float", spec.name))?;
             let v = v.clamp(0, 127) as u8;
             Ok(Value::U7(v))
         }
-        "u14" => {
+        ArgType::U14 => {
             let v = to_i64().ok_or_else(|| anyhow!("arg '{}' expects int/float", spec.name))?;
             let v = v.clamp(0, 16383) as u16;
             Ok(Value::U14(v))
         }
-        "s32" => {
+        ArgType::S32 => {
             let v = to_i64().ok_or_else(|| anyhow!("arg '{}' expects int/float", spec.name))?;
             let [lo, hi] = spec.range.unwrap_or([i32::MIN as i64, i32::MAX as i64]);
             Ok(Value::S32(v.clamp(lo, hi) as i32))
         }
-        "bool" => {
+        ArgType::Bool => {
             let v = to_i64().unwrap_or(0).clamp(0, 1) as u8;
             Ok(Value::U7(v))
         }
-        "enum" => {
+        ArgType::Enum => {
             let values = spec.values.as_ref()
                 .ok_or_else(|| anyhow!("enum arg '{}' missing values map", spec.name))?;
             let key = match osc_arg {
@@ -297,7 +331,7 @@ pub fn coerce_arg(spec: &ArgSpec, osc_arg: &rosc::OscType) -> Result<Value> {
                 Int(i) => i.to_string(),
                 _ => bail!("enum arg '{}' expects string or int", spec.name),
             };
-            if let Some(v) = values.get(&key).and_then(|v| v.as_i64()) {
+            if let Some(v) = values.get(&key) {
                 Ok(Value::U7((v & 0x7F) as u8))
             } else if let Ok(n) = key.parse::<i64>() {
                 Ok(Value::U7((n.clamp(0, 127)) as u8))
@@ -305,21 +339,17 @@ pub fn coerce_arg(spec: &ArgSpec, osc_arg: &rosc::OscType) -> Result<Value> {
                 bail!("enum arg '{}' has no value for '{}'", spec.name, key)
             }
         }
-        "string" => match osc_arg {
+        ArgType::String => match osc_arg {
             String(s) => Ok(Value::Bytes(s.as_bytes().to_vec())),
             _ => bail!("arg '{}' expects string", spec.name),
         },
-        other => bail!("unsupported arg type '{}' for '{}'", other, spec.name),
+        other => bail!("unsupported arg type '{other:?}' for '{}'", spec.name),
     }
 }
 
 /// Produce bindings for a parameter SET from a ParamEntry + value.
-pub fn bindings_for_param_set(pt: &ParamTable, entry: &ParamEntry, val: &rosc::OscType) -> Result<Bindings> {
-    let mut b = Bindings::new();
-    b.set_u7("pr", entry.pr);
-    b.set_u7("p",  entry.p);
-    b.set_u7("c",  entry.c);
-    b.set_u7("r",  entry.r);
+pub fn bindings_for_param_set(pt: &osd::Params, entry: &osd::ParamEntry, val: &rosc::OscType) -> Result<Bindings> {
+    let mut b = bindings_for_param_get(entry);
     let val_int = match val {
         rosc::OscType::Int(i) => *i as i64,
         rosc::OscType::Long(i) => *i,
@@ -328,102 +358,24 @@ pub fn bindings_for_param_set(pt: &ParamTable, entry: &ParamEntry, val: &rosc::O
         rosc::OscType::Bool(x) => if *x { 1 } else { 0 },
         _ => bail!("param value must be numeric"),
     };
-    let clamped = val_int.clamp(entry.range[0], entry.range[1]);
-    match pt.value_type.as_str() {
-        "u7" => b.set_u7("val", clamped as u8),
-        "u14" => b.set_u14("val", clamped as u16),
-        "s32" => b.set_s32("val", clamped as i32),
-        other => bail!("unsupported value_type '{}'", other),
+    let [lo, hi] = entry.range.unwrap_or([0, 127]);
+    let clamped = val_int.clamp(lo, hi);
+    match pt.value_type {
+        osd::ValueType::U7 => b.set_u7("val", clamped as u8),
+        osd::ValueType::U14 => b.set_u14("val", clamped as u16),
+        osd::ValueType::S32 => b.set_s32("val", clamped as i32),
     }
     Ok(b)
 }
 
-pub fn bindings_for_param_get(entry: &ParamEntry) -> Bindings {
+pub fn bindings_for_param_get(entry: &osd::ParamEntry) -> Bindings {
     let mut b = Bindings::new();
-    b.set_u7("pr", entry.pr);
-    b.set_u7("p",  entry.p);
-    b.set_u7("c",  entry.c);
-    b.set_u7("r",  entry.r);
+    b.set_u7("pr", entry.pr.unwrap_or(0));
+    b.set_u7("p",  entry.p.unwrap_or(0));
+    b.set_u7("c",  entry.c.unwrap_or(0));
+    b.set_u7("r",  entry.r.unwrap_or(0));
     b
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::device::{Device, DeviceMeta, FrameToken, Sysex};
-
-    fn test_device() -> Device {
-        Device {
-            device: DeviceMeta {
-                name: "test".into(), vendor: "t".into(), revision: "1".into(),
-                osc_prefix: "/t".into(),
-                manufacturer_id: vec![0x00, 0x20, 0x6B],
-                device_id: vec![0x7F, 0x42],
-                rate_limit_hz: None,
-                kind: None,
-                transport: None,
-            },
-            sysex: Sysex {
-                header: vec![0xF0, 0x00, 0x20, 0x6B, 0x7F, 0x42],
-                footer: vec![0xF7],
-            },
-            commands: vec![], params: None, cc_params: None,
-            midi_out: None,
-            midi_in: Default::default(), replies: vec![],
-            subscriptions: vec![],
-            custom_commands: vec![], docs: None, triggers: None, identity: None, programs: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
-        }
-    }
-
-    #[test]
-    fn frame_with_literals_only() {
-        let d = test_device();
-        let tokens = vec![FrameToken::Literal(0x02), FrameToken::Literal(0x40)];
-        let f = build_frame(&d, &tokens, &Bindings::new()).unwrap();
-        assert_eq!(f, vec![0xF0, 0x00, 0x20, 0x6B, 0x7F, 0x42, 0x02, 0x40, 0xF7]);
-    }
-
-    #[test]
-    fn frame_with_u7_placeholder() {
-        let d = test_device();
-        let tokens = vec![FrameToken::Literal(0x21), FrameToken::Placeholder("{val}".into())];
-        let mut b = Bindings::new(); b.set_u7("val", 100);
-        let f = build_frame(&d, &tokens, &b).unwrap();
-        assert_eq!(&f[6..=7], &[0x21, 100]);
-    }
-
-    #[test]
-    fn frame_with_u14_split() {
-        let d = test_device();
-        let tokens = vec![
-            FrameToken::Placeholder("{val:u14_msb}".into()),
-            FrameToken::Placeholder("{val:u14_lsb}".into()),
-        ];
-        let mut b = Bindings::new(); b.set_u14("val", 12345);  // 0x3039
-        let f = build_frame(&d, &tokens, &b).unwrap();
-        // 12345 = 0b01100000 0111001 -> msb = 0x60, lsb = 0x39
-        assert_eq!(&f[6..=7], &[0x60, 0x39]);
-    }
-
-    #[test]
-    fn s32_sends_five_7bit_groups_twos_complement() {
-        let d = test_device();
-        let tokens = vec![FrameToken::Placeholder("{val:s32}".into())];
-        let mut b = Bindings::new(); b.set_s32("val", -1);
-        assert_eq!(&build_frame(&d, &tokens, &b).unwrap()[6..11], &[0x0F, 0x7F, 0x7F, 0x7F, 0x7F]);
-        b.set_s32("val", -36);
-        assert_eq!(&build_frame(&d, &tokens, &b).unwrap()[6..11], &[0x0F, 0x7F, 0x7F, 0x7F, 0x5C]);
-        b.set_s32("val", 300);
-        assert_eq!(&build_frame(&d, &tokens, &b).unwrap()[6..11], &[0x00, 0x00, 0x00, 0x02, 0x2C]);
-    }
-
-    #[test]
-    fn ascii_placeholder_filters_nonprintable() {
-        let d = test_device();
-        let tokens = vec![FrameToken::Placeholder("{text:ascii}".into())];
-        let mut b = Bindings::new();
-        b.set_bytes("text", b"Hi\x00\x80!".to_vec());
-        let f = build_frame(&d, &tokens, &b).unwrap();
-        assert_eq!(&f[6..=8], b"Hi!");
-    }
-}
+mod tests;

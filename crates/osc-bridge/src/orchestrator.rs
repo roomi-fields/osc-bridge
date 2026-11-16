@@ -52,9 +52,9 @@ use std::time::{Duration, Instant};
 
 use std::sync::OnceLock;
 
-use crate::device::Device;
+use osd::Device;
 use crate::runtime::{
-    answer_query, bridge_docs_replies, bridge_status_replies, build_forward_msg, dispatch_osc_to_device,
+    answer_query, bridge_query_replies, bridge_status_replies, build_forward_msg, dispatch_osc_to_device,
     dispatch_to_device, handle_midi_in, match_osc_path, parse_osc_tpl, run_osc_reply_loop,
     send_osc_to_target, DeviceDispatch, OscDeviceHandle, Part, SendOsc,
 };
@@ -328,7 +328,7 @@ impl Orchestrator {
         let mut pending_osc_reply: Vec<PendingOscReply> = Vec::new();
 
         for dc in &cfg.devices {
-            let mut dev = Device::load(crate::catalogue::locate(&dc.spec)?)?;
+            let mut dev = crate::device::load_with_docs(crate::catalogue::locate(&dc.spec)?)?;
             if let Some(pfx) = &dc.osc_prefix {
                 if !pfx.starts_with('/') {
                     bail!("osc_prefix override must start with '/': {pfx}");
@@ -336,18 +336,19 @@ impl Orchestrator {
                 dev.device.osc_prefix = pfx.clone();
             }
             let is_osc = dev.device.transport.as_ref()
-                .map(|t| t.kind.as_str()) == Some("osc");
+                .map(|t| t.kind) == Some(osd::TransportKind::Osc);
 
             if is_osc {
                 // Software (OSC-transport) device. Apply optional host /
                 // port / reply_port overrides from bridge.toml before build.
                 if let Some(t) = dev.device.transport.as_mut() {
                     if let Some(h) = &dc.host { t.host = Some(h.clone()); }
-                    if let Some(p) = dc.port { t.port = Some(p); }
-                    if let Some(rp) = dc.reply_port { t.reply_port = Some(rp); }
+                    if let Some(p) = dc.port { t.port = Some(i64::from(p)); }
+                    if let Some(rp) = dc.reply_port { t.reply_port = Some(i64::from(rp)); }
                 }
                 let transport_reply_port = dev.device.transport.as_ref()
-                    .and_then(|t| t.reply_port);
+                    .and_then(|t| t.reply_port)
+                    .and_then(|p| u16::try_from(p).ok());
                 let handle = OscDeviceHandle::build(dev)
                     .with_context(|| format!("loading OSC device {}", dc.spec.display()))?;
                 eprintln!("  + {} → OSC {}", handle.device.device.osc_prefix, handle.target_addr);
@@ -370,7 +371,7 @@ impl Orchestrator {
                 let out_conn = output.connect(&port, "osc-bridge-out-conn")
                     .map_err(|e| anyhow!("midi out for {}: {e}", dev.device.name))?;
                 let (tx, rx) = bounded::<Vec<u8>>(1024);
-                let rate = dev.device.rate_limit_hz.unwrap_or(0);
+                let rate = u32::try_from(dev.device.rate_limit_hz.unwrap_or(0)).unwrap_or(0);
                 std::thread::spawn(move || drain_midi_out(out_conn, rx, rate));
 
                 eprintln!("  + {} → out[{midi_out_port}] {name}", dev.device.osc_prefix);
@@ -500,8 +501,8 @@ impl Orchestrator {
         let empty: HashMap<String, rosc::OscType> = HashMap::new();
         for d in devices.iter() {
             if let LoadedDevice::Osc(h) = d {
-                for sub in &h.device.subscriptions {
-                    if sub.on != "startup" { continue; }
+                for sub in h.device.subscriptions.iter().flatten() {
+                    if sub.on.is_some_and(|on| on != osd::SubscriptionOn::Startup) { continue; }
                     if let Some(out_msg) = build_forward_msg(&sub.forward, &empty) {
                         send_osc_to_target(&h.target_sock, h.target_addr, &out_msg);
                         eprintln!("  OSC SUB  {} -> {}", out_msg.addr, h.target_addr);
@@ -573,7 +574,7 @@ fn orch_handle(
     // loaded. Mirrors the single-device `run` behaviour.
     if msg.addr == "/bridge/docs" {
         let devs: Vec<Device> = devices.iter().map(|d| d.device().clone()).collect();
-        for reply in bridge_docs_replies(&devs) {
+        for reply in bridge_query_replies("/bridge/docs", &devs).unwrap_or_default() {
             send_osc(reply);
         }
         return;

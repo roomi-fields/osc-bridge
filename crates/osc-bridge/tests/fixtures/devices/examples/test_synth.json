@@ -1,12 +1,5 @@
 {
-  "_sources": [
-    {
-      "type": "test-fixture",
-      "url": "https://synthhub.roomi-fields.com/connect/",
-      "firmware": "1.0",
-      "note": "Not a real device: the virtual synth of osc-bridge connect --test-synth and of the connect page, for testing the relay, detection, reports, learned mappings and contributions without hardware."
-    }
-  ],
+  "$schema": "https://w3id.org/osd/0.5/device.schema.json",
   "device": {
     "name": "Test Synth",
     "vendor": "osc-bridge",
@@ -20,18 +13,6 @@
   "sysex": {
     "header": [],
     "footer": []
-  },
-  "commands": [],
-  "midi_out": {
-    "default_channel": 0,
-    "note_offset": 0
-  },
-  "midi_in": {
-    "note_on": "/note/on {note} {velocity} {channel}",
-    "note_off": "/note/off {note} {velocity} {channel}",
-    "cc": "/cc/{num} {value} {channel}",
-    "pitchbend": "/pitchbend {value_u14} {channel}",
-    "aftertouch": "/aftertouch {value} {channel}"
   },
   "cc_params": {
     "channel": 0,
@@ -88,6 +69,7 @@
       }
     ]
   },
+  "commands": [],
   "triggers": {
     "entries": [
       {
@@ -125,5 +107,24 @@
       }
     ]
   },
-  "replies": []
+  "midi_out": {
+    "default_channel": 0,
+    "note_offset": 0
+  },
+  "midi_in": [
+    "note_on",
+    "note_off",
+    "cc",
+    "pitchbend",
+    "aftertouch"
+  ],
+  "replies": [],
+  "_sources": [
+    {
+      "type": "test-fixture",
+      "url": "https://synthhub.roomi-fields.com/connect/",
+      "firmware": "1.0",
+      "note": "Not a real device: the virtual synth of osc-bridge connect --test-synth and of the connect page, for testing the relay, detection, reports, learned mappings and contributions without hardware."
+    }
+  ]
 }

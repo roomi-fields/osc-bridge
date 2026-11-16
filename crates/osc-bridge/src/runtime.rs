@@ -9,8 +9,9 @@ use std::net::{SocketAddr, UdpSocket};
 use std::sync::{Arc, Mutex, OnceLock};
 use std::time::{Duration, Instant};
 
-use crate::device::{CcParamEntry, Command, CustomCommand, Device, ParamEntry};
+use crate::device::{address_text, attached_docs, full_osc_path};
 use crate::frame::{self, Bindings, Value};
+use osd::{Address, CcEntry, Command, CustomCommand, Device, ParamEntry, Scalar};
 use crate::midi_codec;
 use crate::routing::{self, DynamicRoutes};
 use crate::scripting::{EmitBlock, EmitOsc, EmitOscArg, ScriptContext, ScriptEngine};
@@ -68,8 +69,8 @@ impl Runtime {
     pub fn bind(opts: RuntimeOptions) -> Result<BoundRuntime> {
         // Software (OSC-out) drivers bypass midir entirely. Branch early so
         // the rest of run() stays unchanged for hardware (MIDI) drivers.
-        if opts.device.device.transport.as_ref().map(|t| t.kind.as_str())
-            == Some("osc")
+        if opts.device.device.transport.as_ref().map(|t| t.kind)
+            == Some(osd::TransportKind::Osc)
         {
             return bind_osc(opts);
         }
@@ -87,7 +88,7 @@ impl Runtime {
             .map_err(|e| anyhow!("midi out: {e}"))?;
 
         let (tx, rx): (Sender<Vec<u8>>, Receiver<Vec<u8>>) = bounded(1024);
-        let rate = dev.device.rate_limit_hz.unwrap_or(0);
+        let rate = dev.device.rate_limit_hz.unwrap_or(0).max(0) as u32;
         std::thread::spawn(move || drain_midi_out(out_conn, rx, rate));
 
         // Outbound OSC — broadcast to every configured client (UDP and WS).
@@ -148,7 +149,7 @@ impl Runtime {
             Some(conn)
         } else { None };
 
-        eprintln!("Device:  {} ({})", dev.device.name, dev.device.revision);
+        eprintln!("Device:  {} ({})", dev.device.name, dev.device.revision.as_deref().unwrap_or_default());
         eprintln!("MIDI OUT [{}] {out_name}", opts.midi_out_port_idx);
         eprintln!("OSC IN   {}", opts.osc_bind);
         for c in &opts.osc_clients { eprintln!("OSC OUT  {c}"); }
@@ -236,20 +237,26 @@ pub fn bridge_status_replies(devices: &[Device]) -> Vec<OscMessage> {
 }
 
 /// Build `/bridge/docs/device <slug> <markdown>` replies for every device
-/// that has a companion `.md` loaded. Devices without docs are silently
-/// skipped — the client can fall back to introspection endpoints.
-pub fn bridge_docs_replies(devices: &[Device]) -> Vec<OscMessage> {
-    devices.iter().filter_map(|d| {
-        let docs = d.docs.as_ref()?;
-        let slug = d.device.osc_prefix.trim_start_matches('/').to_string();
-        Some(OscMessage {
-            addr: "/bridge/docs/device".into(),
-            args: vec![
-                OscType::String(slug),
-                OscType::String(docs.clone()),
-            ],
-        })
-    }).collect()
+/// that has a companion `.md` (each device with its note). Devices without
+/// docs are silently skipped — the client can fall back to introspection
+/// endpoints.
+pub fn bridge_docs_replies(devices: &[(Device, Option<String>)]) -> Vec<OscMessage> {
+    devices.iter().filter_map(|(d, docs)| docs_reply(d, docs.as_deref())).collect()
+}
+
+/// The `/bridge/docs/device` reply of one device and its note.
+fn docs_reply(d: &Device, docs: Option<&str>) -> Option<OscMessage> {
+    let docs = docs?;
+    let slug = d.device.osc_prefix.trim_start_matches('/').to_string();
+    Some(OscMessage {
+        addr: "/bridge/docs/device".into(),
+        args: vec![OscType::String(slug), OscType::String(docs.to_string())],
+    })
+}
+
+/// The `/bridge/docs` replies for devices loaded with their notes.
+fn loaded_docs_replies(devices: &[Device]) -> Vec<OscMessage> {
+    devices.iter().filter_map(|d| docs_reply(d, attached_docs(d).as_deref())).collect()
 }
 
 /// Replies to a `/bridge/status` or `/bridge/docs` query, None for any other
@@ -257,7 +264,7 @@ pub fn bridge_docs_replies(devices: &[Device]) -> Vec<OscMessage> {
 pub fn bridge_query_replies(addr: &str, devices: &[Device]) -> Option<Vec<OscMessage>> {
     match addr {
         "/bridge/status" => Some(bridge_status_replies(devices)),
-        "/bridge/docs" => Some(bridge_docs_replies(devices)),
+        "/bridge/docs" => Some(loaded_docs_replies(devices)),
         _ => None,
     }
 }
@@ -291,7 +298,7 @@ pub fn midi_out_for_msg(dev: &Device, msg: &OscMessage) -> Option<Vec<u8>> {
 /// fixed channel, else `midi_out.default_channel`.
 pub fn trigger_note_on(dev: &Device, msg: &OscMessage) -> Option<Result<Vec<u8>, String>> {
     let table = dev.triggers.as_ref()?;
-    let t = table.entries.iter().find(|t| dev.full_osc_path(&t.osc) == msg.addr)?;
+    let t = table.entries.iter().find(|t| full_osc_path(dev, &t.osc) == msg.addr)?;
     let int_at = |i: usize| -> Option<i64> {
         match msg.args.get(i)? {
             OscType::Int(v) => Some(*v as i64),
@@ -304,11 +311,11 @@ pub fn trigger_note_on(dev: &Device, msg: &OscMessage) -> Option<Result<Vec<u8>,
     let velocity = int_at(0).unwrap_or(100).clamp(1, 127) as u8;
     let [lo, hi] = t.note_range;
     let note = match int_at(1).or(t.note.map(i64::from)) {
-        Some(n) if (lo as i64..=hi as i64).contains(&n) => n as u8,
+        Some(n) if (lo..=hi).contains(&n) => n as u8,
         Some(n) => return Some(Err(format!("note {n} outside {lo}..={hi} for {}", t.sound))),
         None => return Some(Err(format!("{} plays notes {lo}..={hi}: pass the note as 2nd arg", t.sound))),
     };
-    let default_ch = dev.midi_out.as_ref().map(|m| m.default_channel).unwrap_or(0);
+    let default_ch = dev.midi_out.as_ref().and_then(|m| m.default_channel).unwrap_or(0);
     let channel = int_at(2).map(|c| c as u8).or(t.channel).unwrap_or(default_ch) & 0x0F;
     Some(Ok(vec![0x90 | channel, note & 0x7F, velocity]))
 }
@@ -353,7 +360,7 @@ pub fn try_dynamic_osc_out(routes: &Arc<Mutex<DynamicRoutes>>, msg: &OscMessage)
 /// Handle the standard performance-MIDI OSC routes enabled by `midi_out`.
 /// Returns the assembled MIDI bytes, or None if `msg.addr` is not a
 /// performance route for this device.
-fn try_midi_out(msg: &OscMessage, mo: &crate::device::MidiOut, prefix: &str) -> Option<Vec<u8>> {
+fn try_midi_out(msg: &OscMessage, mo: &osd::MidiOut, prefix: &str) -> Option<Vec<u8>> {
     let rel = msg.addr.strip_prefix(prefix)?;
     let args = &msg.args;
 
@@ -368,11 +375,13 @@ fn try_midi_out(msg: &OscMessage, mo: &crate::device::MidiOut, prefix: &str) -> 
             _ => None,
         }
     };
+    let default_channel = mo.default_channel.unwrap_or(0);
+    let note_offset = mo.note_offset.unwrap_or(0);
     let channel = |idx: usize| -> u8 {
-        int_at(idx).map(|v| (v & 0x0F) as u8).unwrap_or(mo.default_channel & 0x0F)
+        int_at(idx).map(|v| (v & 0x0F) as u8).unwrap_or(default_channel & 0x0F)
     };
     let apply_note = |n: i64| -> u8 {
-        ((n + mo.note_offset as i64).clamp(0, 127)) as u8
+        ((n + note_offset).clamp(0, 127)) as u8
     };
     let u7 = |v: i64| -> u8 { v.clamp(0, 127) as u8 };
 
@@ -422,20 +431,19 @@ fn try_midi_out(msg: &OscMessage, mo: &crate::device::MidiOut, prefix: &str) -> 
 }
 
 
+/// Whether the driver holds Lua: what `osd` says the reader needs.
 fn device_uses_scripting(dev: &Device) -> bool {
-    dev.commands.iter().any(|c| c.script.is_some())
-        || !dev.custom_commands.is_empty()
-        || dev.replies.iter().any(|r| r.script.is_some())
-        || dev.params.as_ref().map(|pt| pt.entries.iter().any(|e|
-            e.transform.is_some() || e.transform_reverse.is_some())).unwrap_or(false)
-        || dev.cc_params.as_ref().map(|pt| pt.entries.iter().any(|e|
-            e.transform.is_some() || e.transform_reverse.is_some())).unwrap_or(false)
+    !dev.derived_capabilities().is_empty()
 }
+
+/// Electra One's own annotation of a command (a free `_` key of the command):
+/// the parameter a preset's Lua reads through `parameterMap.get`.
+const ELECTRA_KEY: &str = "_electra";
 
 /// Hand the engine the value a command just sent (its last numeric OSC
 /// argument), for `parameterMap.get`.
 fn record_sent_value(cell: &ScriptCell, cmd: &Command, args: &[OscType]) {
-    if cmd.electra.is_none() { return; }
+    if !cmd.remarks.contains_key(ELECTRA_KEY) { return; }
     let Some(m) = cell.get() else { return };
     let v = args.iter().rev().find_map(|a| match a {
         OscType::Int(i) => Some(*i as i64),
@@ -444,7 +452,7 @@ fn record_sent_value(cell: &ScriptCell, cmd: &Command, args: &[OscType]) {
         OscType::Double(f) => Some(*f as i64),
         _ => None,
     });
-    if let (Some(v), Ok(e)) = (v, m.lock()) { e.record_value(&cmd.osc, v); }
+    if let (Some(v), Ok(e)) = (v, m.lock()) { e.record_value(&address_text(&cmd.osc), v); }
 }
 
 /// Hand the engine the value a device reply carries (its last numeric OSC
@@ -452,7 +460,7 @@ fn record_sent_value(cell: &ScriptCell, cmd: &Command, args: &[OscType]) {
 /// `_electra`, for `parameterMap.get`.
 fn record_received_value(cell: &ScriptCell, dev: &Device, m: &OscMessage) {
     let Some(rel) = m.addr.strip_prefix(&dev.device.osc_prefix) else { return };
-    let Some(cmd) = dev.commands.iter().find(|c| c.electra.is_some() && c.osc == rel) else { return };
+    let Some(cmd) = dev.commands.iter().flatten().find(|c| c.remarks.contains_key(ELECTRA_KEY) && address_text(&c.osc) == rel) else { return };
     record_sent_value(cell, cmd, &m.args);
 }
 
@@ -460,26 +468,27 @@ fn record_received_value(cell: &ScriptCell, dev: &Device, m: &OscMessage) {
 /// Returns the (possibly mutated) frame, or None to drop the message.
 fn maybe_run_cmd_script(cell: &ScriptCell, cmd: &Command, frame: Vec<u8>, device: &str) -> Option<Vec<u8>> {
     let Some(code) = &cmd.script else { return Some(frame); };
+    let osc = address_text(&cmd.osc);
     let Some(m) = cell.get() else {
-        eprintln!("  command {} script ignored (engine unavailable)", cmd.osc);
+        eprintln!("  command {osc} script ignored (engine unavailable)");
         return Some(frame);
     };
     let ctx = ScriptContext {
         payload: frame,
         direction: "osc_to_midi".into(),
         device: device.into(),
-        command: cmd.osc.clone(),
+        command: osc.clone(),
         ..Default::default()
     };
     match m.lock() {
         Ok(g) => match g.run_script(code, ctx) {
             Ok(Some(out)) => Some(out.payload),
             Ok(None) => {
-                eprintln!("  command {} script dropped message", cmd.osc);
+                eprintln!("  command {osc} script dropped message");
                 None
             }
             Err(e) => {
-                eprintln!("  command {} script err: {e} — passing through raw frame", cmd.osc);
+                eprintln!("  command {osc} script err: {e} — passing through raw frame");
                 None
             }
         },
@@ -519,8 +528,8 @@ fn run_custom_command(
         }
     }
 
-    let profile = match cc.profile.as_deref() {
-        Some("preset_ingest") => crate::scripting::Profile::PresetIngest,
+    let profile = match cc.profile {
+        Some(osd::ScriptProfile::PresetIngest) => crate::scripting::Profile::PresetIngest,
         _ => crate::scripting::Profile::Default,
     };
 
@@ -550,14 +559,8 @@ fn run_custom_command(
 
     match result {
         Ok(Some(out)) if !out.payload.is_empty() => {
-            let bytes = if cc.wrap_sysex {
-                let mut buf = Vec::with_capacity(
-                    dev.sysex.header.len() + out.payload.len() + dev.sysex.footer.len(),
-                );
-                buf.extend_from_slice(&dev.sysex.header);
-                buf.extend_from_slice(&out.payload);
-                buf.extend_from_slice(&dev.sysex.footer);
-                buf
+            let bytes = if cc.wrap_sysex.unwrap_or(true) {
+                frame::wrap_sysex(dev, &out.payload)
             } else {
                 out.payload
             };
@@ -574,14 +577,15 @@ fn run_custom_command(
 /// Run a reply.script with the matched bindings exposed as `ctx.bindings`.
 /// Returns true if the OSC emission should proceed, false to drop it.
 fn run_reply_script(
-    rp: &crate::device::ReplyPattern,
+    rp: &osd::Reply,
     bindings: &Bindings,
     dev: &Arc<Device>,
     cell: &ScriptCell,
 ) -> bool {
     let Some(code) = &rp.script else { return true; };
+    let emit = address_text(&rp.emit_osc);
     let Some(m) = cell.get() else {
-        eprintln!("  reply.script {} skipped (engine unavailable)", rp.emit_osc);
+        eprintln!("  reply.script {emit} skipped (engine unavailable)");
         return true;
     };
     let mut binds: std::collections::HashMap<String, i64> = Default::default();
@@ -598,7 +602,7 @@ fn run_reply_script(
         bindings: binds,
         direction: "midi_to_osc".into(),
         device: dev.device.name.clone(),
-        command: rp.emit_osc.clone(),
+        command: emit.clone(),
         ..Default::default()
     };
     let (outcome, emits) = match m.lock() {
@@ -616,16 +620,16 @@ fn run_reply_script(
     // dropping with a warning is acceptable (reply scripts in practice only
     // update state via ob.set_current_page / ob.state).
     if !emits.is_empty() {
-        eprintln!("  reply.script {} emitted {} SysEx block(s) but emits \
+        eprintln!("  reply.script {emit} emitted {} SysEx block(s) but emits \
                    from reply scripts are not yet plumbed to MIDI out",
-                  rp.emit_osc, emits.len());
+                  emits.len());
     }
 
     match outcome {
         Ok(None) => false, // script dropped the event
         Ok(Some(_)) => true,
         Err(e) => {
-            eprintln!("  reply.script {} err: {e} — emitting OSC anyway", rp.emit_osc);
+            eprintln!("  reply.script {emit} err: {e} — emitting OSC anyway");
             true
         }
     }
@@ -654,13 +658,7 @@ fn enqueue_emits(
 ) {
     for block in emits {
         let bytes = if block.wrap {
-            let mut buf = Vec::with_capacity(
-                dev.sysex.header.len() + block.bytes.len() + dev.sysex.footer.len(),
-            );
-            buf.extend_from_slice(&dev.sysex.header);
-            buf.extend_from_slice(&block.bytes);
-            buf.extend_from_slice(&dev.sysex.footer);
-            buf
+            frame::wrap_sysex(dev, &block.bytes)
         } else {
             block.bytes.clone()
         };
@@ -668,7 +666,7 @@ fn enqueue_emits(
     }
 }
 
-fn apply_transform(cell: &ScriptCell, expr: &Option<String>, value: i64, addr: &str) -> i64 {
+fn apply_transform(cell: &ScriptCell, expr: Option<&String>, value: i64, addr: &str) -> i64 {
     let Some(code) = expr else { return value; };
     let Some(m) = cell.get() else {
         eprintln!("  [{addr}] transform ignored (engine unavailable)");
@@ -722,15 +720,15 @@ pub fn handle_midi_in(
             return;
         }
         // Attempt to match one of the reply patterns
-        for rp in &dev.replies {
-            if let Some(bindings) = match_reply(msg, dev, &rp.match_frame) {
+        for rp in dev.replies.iter().flatten() {
+            if let Some(bindings) = match_reply(msg, dev, rp.match_frame.as_deref().unwrap_or_default()) {
                 // Optional reply.script: lets drivers update state (e.g.
                 // ob.set_current_page) in response to device-initiated events.
                 // Returning nil from the script drops the OSC emission.
                 if rp.script.is_some() && !run_reply_script(rp, &bindings, dev, scripts) {
                     return;
                 }
-                let m = emit_reply_osc(&rp.emit_osc, &dev.device.osc_prefix, &bindings);
+                let m = emit_reply_osc(&rp.emit_osc, rp.emit_args.as_deref(), &dev.device.osc_prefix, &bindings);
                 record_received_value(scripts, dev, &m);
                 send(m);
                 return;
@@ -744,16 +742,17 @@ pub fn handle_midi_in(
         });
         return;
     }
-    if let Some(m) = midi_codec::midi_to_osc(msg, &dev.midi_in, &dev.device.osc_prefix) {
+    if let Some(m) = midi_codec::midi_to_osc(msg, dev.midi_in.as_ref(), &dev.device.osc_prefix) {
         send(m);
     }
 }
 
 /// Try to match `msg` against `pattern = header + pattern_body + footer`.
 /// Returns captured bindings if matched.
-fn match_reply(msg: &[u8], dev: &Device, pattern: &[crate::device::FrameToken]) -> Option<Bindings> {
-    let h = &dev.sysex.header;
-    let f = &dev.sysex.footer;
+fn match_reply(msg: &[u8], dev: &Device, pattern: &[osd::FrameToken]) -> Option<Bindings> {
+    let sysex = dev.sysex.as_ref();
+    let h = sysex.and_then(|s| s.header.as_deref()).unwrap_or_default();
+    let f = sysex.and_then(|s| s.footer.as_deref()).unwrap_or_default();
     if msg.len() < h.len() + f.len() || !msg.starts_with(h) || !msg.ends_with(f) {
         return None;
     }
@@ -762,32 +761,37 @@ fn match_reply(msg: &[u8], dev: &Device, pattern: &[crate::device::FrameToken]) 
     let mut b = Bindings::new();
     for (pat, byte) in pattern.iter().zip(body.iter()) {
         match pat {
-            crate::device::FrameToken::Literal(l) => {
+            osd::FrameToken::Byte(l) => {
                 if l != byte { return None; }
             }
-            crate::device::FrameToken::Placeholder(ph) => {
+            osd::FrameToken::Part(osd::FramePart::Capture(name)) => b.set_u7(name, *byte),
+            osd::FrameToken::Part(osd::FramePart::Any) => {}
+            // A checksum is not verified on what the device sends: any byte stands for it.
+            osd::FrameToken::Part(osd::FramePart::Checksum { .. }) => {}
+            // 0.4 names the byte in a `{name}` string.
+            osd::FrameToken::Placeholder(ph) => {
                 let inner = ph.trim_matches(|c| c == '{' || c == '}');
-                let name = inner.split(':').next().unwrap_or("").trim();
-                b.set_u7(name, *byte);
+                b.set_u7(inner.split(':').next().unwrap_or("").trim(), *byte);
             }
+            // Any other element names no byte to match.
+            _ => return None,
         }
     }
     Some(b)
 }
 
-fn emit_reply_osc(tpl: &str, prefix: &str, bindings: &Bindings) -> OscMessage {
-    let mut parts = tpl.splitn(2, ' ');
-    let addr_tpl = parts.next().unwrap_or("");
-    let args_tpl = parts.next().unwrap_or("");
+fn emit_reply_osc(tpl: &Address, emit_args: Option<&[Scalar]>, prefix: &str, bindings: &Bindings) -> OscMessage {
+    let (tpl, emit_args) = reply_parts(tpl, emit_args);
+    let addr_tpl = address_text(&tpl);
     let addr = if addr_tpl.starts_with(prefix) || addr_tpl.starts_with('/') {
-        addr_tpl.to_string()
+        addr_tpl
     } else {
         format!("{prefix}/{addr_tpl}")
     };
     let addr = if addr.starts_with(prefix) { addr } else { format!("{prefix}{addr}") };
     let mut args = Vec::new();
-    for tok in args_tpl.split_whitespace() {
-        let key = tok.trim_matches(|c| c == '{' || c == '}');
+    for a in &emit_args {
+        let (Scalar::Capture(key) | Scalar::Arg(key)) = a else { continue };
         if let Some(Value::U7(v)) = bindings.get(key) {
             args.push(OscType::Int(*v as i32));
         } else if let Some(Value::U14(v)) = bindings.get(key) {
@@ -862,8 +866,8 @@ pub fn match_osc_path(parts: &[Part], addr: &str) -> Option<HashMap<String, Stri
 /// captures come first: a script's `/param/cutoff` before the norns'
 /// `/param/{id}`. Ties keep the driver's order.
 pub fn build_command_map(dev: &Device) -> Vec<CommandHandler> {
-    let mut cmds: Vec<CommandHandler> = dev.commands.iter().map(|c| {
-        let full = dev.full_osc_path(&c.osc);
+    let mut cmds: Vec<CommandHandler> = dev.commands.iter().flatten().map(|c| {
+        let full = full_osc_path(dev, &address_text(&c.osc));
         let pattern_parts = parse_osc_tpl(&full);
         CommandHandler { cmd: c.clone(), pattern_parts }
     }).collect();
@@ -875,19 +879,19 @@ pub fn build_param_map(dev: &Device) -> HashMap<String, ParamEntry> {
     let mut m = HashMap::new();
     if let Some(pt) = &dev.params {
         for e in &pt.entries {
-            m.insert(dev.full_osc_path(&e.osc), e.clone());
+            m.insert(full_osc_path(dev, &e.osc), e.clone());
         }
     }
     m
 }
 
-pub fn build_cc_param_map(dev: &Device) -> HashMap<String, (CcParamEntry, u8)> {
+pub fn build_cc_param_map(dev: &Device) -> HashMap<String, (CcEntry, u8)> {
     let mut m = HashMap::new();
     if let Some(cct) = &dev.cc_params {
-        let default_ch = cct.channel;
+        let default_ch = cct.channel.unwrap_or(0);
         for e in &cct.entries {
             let ch = e.channel.unwrap_or(default_ch);
-            m.insert(dev.full_osc_path(&e.osc), (e.clone(), ch));
+            m.insert(full_osc_path(dev, &e.osc), (e.clone(), ch));
         }
     }
     m
@@ -903,7 +907,7 @@ pub struct DeviceDispatch {
     pub device: Arc<Device>,
     pub cmds: Vec<CommandHandler>,
     pub params: HashMap<String, ParamEntry>,
-    pub cc_params: HashMap<String, (CcParamEntry, u8)>,
+    pub cc_params: HashMap<String, (CcEntry, u8)>,
     pub routes: Arc<Mutex<DynamicRoutes>>,
     pub scripts: ScriptCell,
     pub tx: Sender<Vec<u8>>,
@@ -1014,7 +1018,7 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
     // that has a companion .md loaded. The full markdown text is carried
     // in a single string arg — clients (Kanopi, LLM agents) can parse it.
     if msg.addr == "/bridge/docs" {
-        for reply in bridge_docs_replies(std::slice::from_ref(dev.as_ref())) {
+        for reply in loaded_docs_replies(std::slice::from_ref(dev.as_ref())) {
             send_osc(reply);
         }
         return;
@@ -1022,8 +1026,8 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
 
     // Scripted custom_commands (preset upload, dynamic-route init,
     // introspection). Matched on exact full OSC path.
-    for cc in &dev.custom_commands {
-        let full = dev.full_osc_path(&cc.osc);
+    for cc in dev.custom_commands.iter().flatten() {
+        let full = full_osc_path(dev, &cc.osc);
         if msg.addr == full {
             run_custom_command(cc, &msg, dev, scripts, tx, send_osc, from);
             return;
@@ -1069,8 +1073,9 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
                 OscType::Bool(x) => if *x { 1 } else { 0 },
                 _ => { eprintln!("  cc arg not numeric"); return; }
             };
-            let val_i = apply_transform(scripts, &entry.transform, val_i, &msg.addr);
-            let clamped = val_i.clamp(entry.range[0], entry.range[1]);
+            let val_i = apply_transform(scripts, entry.transform.as_ref(), val_i, &msg.addr);
+            let [lo, hi] = entry.range.unwrap_or([0, 127]);
+            let clamped = val_i.clamp(lo, hi);
             match cc_messages(entry, *default_ch, clamped, &msg.args) {
                 Ok(frames) => for f in frames { enqueue(tx, f, &msg.addr, from); },
                 Err(e) => eprintln!("  {}: {e}", msg.addr),
@@ -1093,7 +1098,7 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
                         OscType::Bool(x) => if *x { 1 } else { 0 },
                         _ => { eprintln!("  param arg not numeric"); return; }
                     };
-                    let t = apply_transform(scripts, &entry.transform, as_i, &msg.addr);
+                    let t = apply_transform(scripts, entry.transform.as_ref(), as_i, &msg.addr);
                     OscType::Long(t)
                 } else {
                     v.clone()
@@ -1122,18 +1127,18 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
                     if let Some(post) = maybe_run_cmd_script(scripts, &h.cmd, frm, &dev.device.name) {
                         match finish_cmd_checksums(dev, &h.cmd, built_len, post, &slots) {
                             Ok(post) => enqueue(tx, post, &msg.addr, from),
-                            Err(e) => eprintln!("command '{}' err: {e}", h.cmd.osc),
+                            Err(e) => eprintln!("command '{}' err: {e}", address_text(&h.cmd.osc)),
                         }
                     }
                 }
-                Err(e) => eprintln!("command '{}' err: {e}", h.cmd.osc),
+                Err(e) => eprintln!("command '{}' err: {e}", address_text(&h.cmd.osc)),
             }
             return;
         }
     }
 
     // Special: raw sysex passthrough
-    let raw = dev.full_osc_path("/raw/syx");
+    let raw = full_osc_path(dev, "/raw/syx");
     if msg.addr == raw {
         if let Some(OscType::String(s)) = msg.args.first() {
             let bytes: Vec<u8> = s.split_ascii_whitespace()
@@ -1147,7 +1152,7 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
     }
 
     // Param-value GET convenience: `/xxx/param/get` with 4 u7 args
-    let get_addr = dev.full_osc_path("/param/get");
+    let get_addr = full_osc_path(dev, "/param/get");
     if msg.addr == get_addr && msg.args.len() >= 4 {
         if let Some(pt) = &dev.params {
             let as_u7 = |t: &OscType| match t {
@@ -1184,7 +1189,7 @@ fn dispatch_command(cmd: &Command, caps: &HashMap<String, String>, args: &[OscTy
     // Bind declared args — maintain a separate counter for OSC args because
     // some arg names are pre-bound from URL path captures.
     let mut osc_idx = 0usize;
-    for spec in &cmd.args {
+    for spec in cmd.args.iter().flatten() {
         if b.get(&spec.name).is_some() { continue; } // already bound by URL capture
         match args.get(osc_idx) {
             Some(a) => {
@@ -1204,35 +1209,65 @@ fn dispatch_command(cmd: &Command, caps: &HashMap<String, String>, args: &[OscTy
                     let v = frame::coerce_arg(spec, &default_osc)?;
                     b.0.insert(spec.name.clone(), v);
                 } else {
-                    anyhow::bail!("missing arg {} for {}", spec.name, cmd.osc);
+                    anyhow::bail!("missing arg {} for {}", spec.name, address_text(&cmd.osc));
                 }
             }
         }
     }
 
     // Evaluate pre-bindings (simple expression engine)
-    for pb in &cmd.pre {
-        let v = eval_expr(&pb.expr, &b)?;
+    for pb in cmd.pre.iter().flatten() {
+        let v = eval_pre(&pb.expr, &b)?;
         b.set_u7(&pb.bind, v);
     }
 
-    let origin = |e: anyhow::Error| anyhow::anyhow!("{}: {}: {e}", dev.device.name, dev.full_osc_path(&cmd.osc));
+    let origin = |e: anyhow::Error| anyhow::anyhow!("{}: {}: {e}", dev.device.name, full_osc_path(dev, &address_text(&cmd.osc)));
+    let frame_tokens = cmd.frame.as_deref().unwrap_or_default();
     if cmd.script.is_some() {
-        return frame::build_frame_deferred(dev, &cmd.frame, &b).map_err(origin);
+        return frame::build_frame_deferred(dev, frame_tokens, &b).map_err(origin);
     }
-    frame::build_frame(dev, &cmd.frame, &b).map(|f| (f, Vec::new())).map_err(origin)
+    frame::build_frame(dev, frame_tokens, &b).map(|f| (f, Vec::new())).map_err(origin)
 }
 
 /// Compute the checksums a command's frame left for after its script, over the
 /// script's final bytes; a script that changed the frame's length is refused.
 fn finish_cmd_checksums(dev: &Device, cmd: &Command, built_len: usize, mut frame: Vec<u8>, slots: &[frame::ChecksumSlot]) -> Result<Vec<u8>> {
     if slots.is_empty() { return Ok(frame); }
-    let origin = || format!("{}: {}", dev.device.name, dev.full_osc_path(&cmd.osc));
+    let origin = || format!("{}: {}", dev.device.name, full_osc_path(dev, &address_text(&cmd.osc)));
     if frame.len() != built_len {
         anyhow::bail!("{}: script changed the frame from {built_len} to {} bytes; a command with a checksum keeps its length", origin(), frame.len());
     }
     frame::finish_checksums(&mut frame, slots).map_err(|e| anyhow::anyhow!("{}: {e}", origin()))?;
     Ok(frame)
+}
+
+/// The value of a `pre` expression: a tree of OSD 0.5 (`add`, `sub` and
+/// `mul` bounded to 0..127, comparisons 0 or 1, `if` on a condition not 0), or
+/// a 0.4 expression string.
+fn eval_pre(expr: &osd::Expr, b: &Bindings) -> Result<u8> {
+    use osd::{BinOp, Expr};
+    Ok(match expr {
+        Expr::Text(s) => eval_expr(s, b)?,
+        Expr::Literal(n) => *n,
+        Expr::Arg(name) => match b.get(name) {
+            Some(Value::U7(v)) => *v,
+            Some(Value::U14(v)) => (*v & 0x7F) as u8,
+            _ => anyhow::bail!("unknown identifier in expr: '{name}'"),
+        },
+        Expr::Binary(op, l, r) => {
+            let (l, r) = (eval_pre(l, b)? as i64, eval_pre(r, b)? as i64);
+            match op {
+                BinOp::Add => (l + r).clamp(0, 127) as u8,
+                BinOp::Sub => (l - r).clamp(0, 127) as u8,
+                BinOp::Mul => (l * r).clamp(0, 127) as u8,
+                BinOp::Gt => (l > r) as u8,
+                BinOp::Lt => (l < r) as u8,
+                BinOp::Eq => (l == r) as u8,
+                BinOp::Ne => (l != r) as u8,
+            }
+        }
+        Expr::If(c, t, e) => if eval_pre(c, b)? != 0 { eval_pre(t, b)? } else { eval_pre(e, b)? },
+    })
 }
 
 /// Extremely limited expression evaluator supporting `name + N`, `name - N`,
@@ -1298,7 +1333,7 @@ fn eval_expr(expr: &str, b: &Bindings) -> Result<u8> {
 /// parameter number (NRPN 99/98 or RPN 101/100) then data entry 6 (+38 for
 /// 14-bit). `args` is the OSC call: value, then the NRPN LSB for an entry
 /// with `nrpn_lsb_range`, then an optional channel.
-fn cc_messages(entry: &CcParamEntry, default_ch: u8, value: i64, args: &[OscType]) -> Result<Vec<Vec<u8>>, String> {
+fn cc_messages(entry: &CcEntry, default_ch: u8, value: i64, args: &[OscType]) -> Result<Vec<Vec<u8>>, String> {
     let int_arg = |i: usize| args.get(i).and_then(|a| match a {
         OscType::Int(i) => Some(*i as i64),
         OscType::Long(i) => Some(*i),
@@ -1307,14 +1342,14 @@ fn cc_messages(entry: &CcParamEntry, default_ch: u8, value: i64, args: &[OscType
     let lsb_from_call = entry.nrpn_lsb_range.filter(|_| entry.nrpn_msb.is_some() && entry.nrpn_lsb.is_none());
     let ch = int_arg(if lsb_from_call.is_some() { 2 } else { 1 }).map(|i| (i & 0x0F) as u8).unwrap_or(default_ch);
     let status = 0xB0 | (ch & 0x0F);
-    let is_14bit = entry.range[1] > 127;
+    let is_14bit = entry.range.unwrap_or([0, 127])[1] > 127;
     let msb = if is_14bit { ((value >> 7) & 0x7F) as u8 } else { (value as u8) & 0x7F };
     let lsb = (value as u8) & 0x7F;
     let number = match (entry.nrpn_msb, entry.nrpn_lsb, lsb_from_call, entry.rpn_msb, entry.rpn_lsb) {
         (Some(m), Some(l), _, _, _) => Some((99, m, 98, l)),
         (Some(m), None, Some([lo, hi]), _, _) => {
             let l = int_arg(1).ok_or(format!("needs its NRPN LSB ({lo}-{hi}) after the value"))?;
-            Some((99, m, 98, l.clamp(lo as i64, hi as i64) as u8))
+            Some((99, m, 98, l.clamp(lo, hi) as u8))
         }
         (_, _, _, Some(m), Some(l)) => Some((101, m, 100, l)),
         _ => None,
@@ -1386,21 +1421,21 @@ fn bind_osc(opts: RuntimeOptions) -> Result<BoundRuntime> {
         let send_osc_cb = send_osc.clone();
         eprintln!("OSC REPLY {bind}");
         std::thread::spawn(move || run_osc_reply_loop(reply_sock, dev_cb, send_osc_cb));
-    } else if dev.replies.iter().any(|r| r.match_osc.is_some()) {
+    } else if dev.replies.iter().flatten().any(|r| r.match_osc.is_some()) {
         eprintln!("WARN: device declares OSC replies but no transport.reply_port — they will never fire");
     }
 
     // One-shot startup subscriptions (e.g. /live/song/start_listen/tempo).
     let empty_bindings: HashMap<String, OscType> = HashMap::new();
-    for sub in &dev.subscriptions {
-        if sub.on != "startup" { continue; }
+    for sub in dev.subscriptions.iter().flatten() {
+        if sub.on.is_some_and(|on| on != osd::SubscriptionOn::Startup) { continue; }
         if let Some(out_msg) = build_forward_msg(&sub.forward, &empty_bindings) {
             send_osc_to_target(&target_sock, target_addr, &out_msg);
             eprintln!("OSC SUB  {} -> {target_addr}", out_msg.addr);
         }
     }
 
-    eprintln!("Device:  {} ({})", dev.device.name, dev.device.revision);
+    eprintln!("Device:  {} ({})", dev.device.name, dev.device.revision.as_deref().unwrap_or_default());
     eprintln!("OSC TGT  {target_addr}");
     eprintln!("OSC IN   {}", opts.osc_bind);
     for c in &opts.osc_clients { eprintln!("OSC CLI  {c}"); }
@@ -1484,7 +1519,7 @@ pub fn handle_osc_message(
         return;
     }
     if msg.addr == "/bridge/docs" {
-        for r in bridge_docs_replies(std::slice::from_ref(dev.as_ref())) { send_osc(r); }
+        for r in loaded_docs_replies(std::slice::from_ref(dev.as_ref())) { send_osc(r); }
         return;
     }
 
@@ -1537,20 +1572,20 @@ fn build_forward_bindings(
     incoming_args: &[OscType],
 ) -> HashMap<String, OscType> {
     let mut out: HashMap<String, OscType> = HashMap::new();
-    let arg_ty: HashMap<&str, &str> = cmd.args.iter()
-        .map(|a| (a.name.as_str(), a.ty.as_str()))
+    let arg_ty: HashMap<&str, osd::ArgType> = cmd.args.iter().flatten()
+        .map(|a| (a.name.as_str(), a.ty))
         .collect();
     for (k, v) in path_caps {
-        let ty = arg_ty.get(k.as_str()).copied().unwrap_or("string");
+        let ty = arg_ty.get(k.as_str()).copied().unwrap_or(osd::ArgType::String);
         if let Some(osc) = coerce_str_to_osc(v, ty) {
             out.insert(k.clone(), osc);
         }
     }
     let mut osc_iter = incoming_args.iter();
-    for spec in &cmd.args {
+    for spec in cmd.args.iter().flatten() {
         if path_caps.contains_key(&spec.name) { continue; }
         match osc_iter.next() {
-            Some(v) => { out.insert(spec.name.clone(), coerce_osc_to_type(v, &spec.ty)); }
+            Some(v) => { out.insert(spec.name.clone(), coerce_osc_to_type(v, spec.ty)); }
             None => break,
         }
     }
@@ -1561,35 +1596,36 @@ fn build_forward_bindings(
 /// float / bool args carry through; string args either literal-out, or strip
 /// the surrounding `{}` and substitute from bindings.
 pub fn build_forward_msg(
-    forward: &crate::device::ForwardSpec,
+    forward: &osd::Forward,
     bindings: &HashMap<String, OscType>,
 ) -> Option<OscMessage> {
-    let addr = interp_placeholders(&forward.path, bindings)?;
-    let mut args: Vec<OscType> = Vec::with_capacity(forward.args.len());
-    for fa in &forward.args {
+    let addr = interp_address(&forward.path, bindings)?;
+    let mut args: Vec<OscType> = Vec::new();
+    for fa in forward.args.iter().flatten() {
         match fa {
-            crate::device::ForwardArg::Int(i) => args.push(OscType::Int(*i as i32)),
-            crate::device::ForwardArg::Float(f) => args.push(OscType::Float(*f as f32)),
-            crate::device::ForwardArg::Bool(b) => args.push(OscType::Bool(*b)),
-            crate::device::ForwardArg::Str(s) => {
-                if let Some(name) = strip_placeholder(s) {
-                    args.push(bindings.get(name)?.clone());
-                } else {
-                    args.push(OscType::String(s.clone()));
-                }
-            }
+            Scalar::Number(n) => match n.as_i64() {
+                Some(i) => args.push(OscType::Int(i as i32)),
+                None => args.push(OscType::Float(n.as_f64().unwrap_or(0.0) as f32)),
+            },
+            Scalar::Bool(b) => args.push(OscType::Bool(*b)),
+            // 0.4 writes an argument taken from the message as `{name}`; in 0.5 a string is a literal.
+            Scalar::String(s) => match strip_placeholder(s) {
+                Some(name) => args.push(bindings.get(name)?.clone()),
+                None => args.push(OscType::String(s.clone())),
+            },
+            Scalar::Arg(name) | Scalar::Capture(name) => args.push(bindings.get(name)?.clone()),
         }
     }
     Some(OscMessage { addr, args })
 }
 
+/// `name` of a text written `{name}`: how 0.4 takes an argument.
 fn strip_placeholder(s: &str) -> Option<&str> {
-    let b = s.as_bytes();
-    if b.len() >= 2 && b[0] == b'{' && b[b.len() - 1] == b'}' {
-        Some(&s[1..s.len() - 1])
-    } else { None }
+    s.strip_prefix('{').and_then(|r| r.strip_suffix('}'))
 }
 
+/// A 0.4 address template with each `{name}` replaced by its binding; None
+/// when one is not bound.
 fn interp_placeholders(tpl: &str, bindings: &HashMap<String, OscType>) -> Option<String> {
     let mut out = String::with_capacity(tpl.len());
     let mut rest = tpl;
@@ -1597,12 +1633,49 @@ fn interp_placeholders(tpl: &str, bindings: &HashMap<String, OscType>) -> Option
         out.push_str(&rest[..open]);
         let close = rest[open..].find('}')?;
         let name = &rest[open + 1..open + close];
-        let v = bindings.get(name)?;
-        out.push_str(&osc_to_string(v));
+        out.push_str(&osc_to_string(bindings.get(name)?));
         rest = &rest[open + close + 1..];
     }
     out.push_str(rest);
     Some(out)
+}
+
+/// What a reply is reported at and with. In 0.4 the address and its arguments
+/// are one text (`/cc/{num} {value}`); in 0.5 the address is its own value and
+/// the arguments are `emit_args`.
+fn reply_parts(tpl: &Address, emit_args: Option<&[Scalar]>) -> (Address, Vec<Scalar>) {
+    match tpl {
+        Address::Text(t) if t.contains(' ') => {
+            let (addr, rest) = t.split_once(' ').unwrap_or((t, ""));
+            let args = rest.split_whitespace().map(|tok| match strip_placeholder(tok) {
+                Some(name) => Scalar::Arg(name.to_string()),
+                None => match tok.parse::<serde_json::Number>() {
+                    Ok(n) => Scalar::Number(n),
+                    Err(_) => Scalar::String(tok.to_string()),
+                },
+            }).collect();
+            (Address::Text(addr.to_string()), args)
+        }
+        _ => (tpl.clone(), emit_args.unwrap_or_default().to_vec()),
+    }
+}
+
+/// The address with each capture replaced by its binding; None when one is
+/// not bound.
+fn interp_address(a: &Address, bindings: &HashMap<String, OscType>) -> Option<String> {
+    match a {
+        Address::Text(t) => interp_placeholders(t, bindings),
+        Address::Segments(segments) => {
+            let mut out = String::new();
+            for s in segments {
+                match s {
+                    osd::Segment::Text(t) => out.push_str(t),
+                    osd::Segment::Capture(name) => out.push_str(&osc_to_string(bindings.get(name)?)),
+                }
+            }
+            Some(out)
+        }
+    }
 }
 
 fn osc_to_string(v: &OscType) -> String {
@@ -1617,11 +1690,12 @@ fn osc_to_string(v: &OscType) -> String {
     }
 }
 
-fn coerce_str_to_osc(s: &str, ty: &str) -> Option<OscType> {
+fn coerce_str_to_osc(s: &str, ty: osd::ArgType) -> Option<OscType> {
+    use osd::ArgType;
     match ty {
-        "int" | "u7" | "u8" | "u14" => s.parse::<i32>().ok().map(OscType::Int),
-        "float" => s.parse::<f32>().ok().map(OscType::Float),
-        "bool" => match s {
+        ArgType::Int | ArgType::U7 | ArgType::U14 => s.parse::<i32>().ok().map(OscType::Int),
+        ArgType::Float => s.parse::<f32>().ok().map(OscType::Float),
+        ArgType::Bool => match s {
             "0" | "false" => Some(OscType::Bool(false)),
             "1" | "true" => Some(OscType::Bool(true)),
             _ => None,
@@ -1633,17 +1707,30 @@ fn coerce_str_to_osc(s: &str, ty: &str) -> Option<OscType> {
 /// Coerce an incoming OscType to the type declared in `cmd.args[i].ty`.
 /// Best-effort: types that don't cross map straight (e.g. Int → "float")
 /// are converted; mismatches that make no sense pass through.
-fn coerce_osc_to_type(v: &OscType, ty: &str) -> OscType {
+fn coerce_osc_to_type(v: &OscType, ty: osd::ArgType) -> OscType {
+    use osd::ArgType;
     match (v, ty) {
-        (OscType::Int(_), "int") | (OscType::Float(_), "float")
-        | (OscType::Bool(_), "bool") | (OscType::String(_), "string") => v.clone(),
-        (OscType::Int(i), "float") => OscType::Float(*i as f32),
-        (OscType::Long(i), "float") => OscType::Float(*i as f32),
-        (OscType::Float(f), "int") => OscType::Int(*f as i32),
-        (OscType::Double(f), "int") => OscType::Int(*f as i32),
-        (OscType::Long(i), "int") => OscType::Int(*i as i32),
-        (OscType::Double(f), "float") => OscType::Float(*f as f32),
+        (OscType::Int(_), ArgType::Int) | (OscType::Float(_), ArgType::Float)
+        | (OscType::Bool(_), ArgType::Bool) | (OscType::String(_), ArgType::String) => v.clone(),
+        (OscType::Int(i), ArgType::Float) => OscType::Float(*i as f32),
+        (OscType::Long(i), ArgType::Float) => OscType::Float(*i as f32),
+        (OscType::Float(f), ArgType::Int) => OscType::Int(*f as i32),
+        (OscType::Double(f), ArgType::Int) => OscType::Int(*f as i32),
+        (OscType::Long(i), ArgType::Int) => OscType::Int(*i as i32),
+        (OscType::Double(f), ArgType::Float) => OscType::Float(*f as f32),
         _ => v.clone(),
+    }
+}
+
+/// The type a reply's `match_args` entry names (`int`, `float`, `string`,
+/// `bool`); none for any other word.
+fn match_arg_type(word: &str) -> Option<osd::ArgType> {
+    match word {
+        "int" => Some(osd::ArgType::Int),
+        "float" => Some(osd::ArgType::Float),
+        "string" => Some(osd::ArgType::String),
+        "bool" => Some(osd::ArgType::Bool),
+        _ => None,
     }
 }
 
@@ -1684,25 +1771,27 @@ fn handle_osc_reply_packet(pkt: OscPacket, dev: &Device, send_osc: &SendOsc) {
                 send_osc(OscMessage { addr, args: m.args });
                 return;
             }
-            for r in &dev.replies {
-                let Some(match_addr) = r.match_osc.as_deref() else { continue };
-                let parts = parse_osc_tpl(match_addr);
+            for r in dev.replies.iter().flatten() {
+                let Some(match_addr) = r.match_osc.as_ref().map(address_text) else { continue };
+                let parts = parse_osc_tpl(&match_addr);
                 let Some(mut caps) = match_osc_path(&parts, &m.addr) else { continue };
-                if m.args.len() < r.match_args.len() { continue }
+                let match_args = r.match_args.as_deref().unwrap_or_default();
+                if m.args.len() < match_args.len() { continue }
                 let mut typed: HashMap<String, OscType> = HashMap::new();
                 let mut ok = true;
-                for (i, ap) in r.match_args.iter().enumerate() {
-                    let v = coerce_osc_to_type(&m.args[i], &ap.ty);
+                for (i, ap) in match_args.iter().enumerate() {
+                    let Some(ty) = match_arg_type(&ap.ty) else { ok = false; break };
+                    let v = coerce_osc_to_type(&m.args[i], ty);
                     caps.insert(ap.name.clone(), osc_to_string(&v));
                     typed.insert(ap.name.clone(), v);
-                    if !osc_type_matches(&m.args[i], &ap.ty) { ok = false; break; }
+                    if !osc_type_matches(&m.args[i], ty) { ok = false; break; }
                 }
                 if !ok { continue }
                 // Also expose path captures as typed bindings (best-effort: as strings).
                 for (k, v) in &caps {
                     typed.entry(k.clone()).or_insert_with(|| OscType::String(v.clone()));
                 }
-                let out_msg = emit_osc_reply_typed(&r.emit_osc, &dev.device.osc_prefix, &typed);
+                let out_msg = emit_osc_reply_typed(&r.emit_osc, r.emit_args.as_deref(), &dev.device.osc_prefix, &typed);
                 send_osc(out_msg);
                 return;
             }
@@ -1713,272 +1802,50 @@ fn handle_osc_reply_packet(pkt: OscPacket, dev: &Device, send_osc: &SendOsc) {
     }
 }
 
-fn osc_type_matches(v: &OscType, ty: &str) -> bool {
+fn osc_type_matches(v: &OscType, ty: osd::ArgType) -> bool {
+    use osd::ArgType;
     matches!(
         (v, ty),
-        (OscType::Int(_), "int") | (OscType::Long(_), "int")
-        | (OscType::Float(_), "float") | (OscType::Double(_), "float")
-        | (OscType::Bool(_), "bool")
-        | (OscType::String(_), "string")
+        (OscType::Int(_), ArgType::Int) | (OscType::Long(_), ArgType::Int)
+        | (OscType::Float(_), ArgType::Float) | (OscType::Double(_), ArgType::Float)
+        | (OscType::Bool(_), ArgType::Bool)
+        | (OscType::String(_), ArgType::String)
     )
 }
 
 /// Twin of `emit_reply_osc` for OSC-mode replies: bindings carry typed
-/// `OscType` values rather than u7/u14 bytes. Template syntax identical:
-/// `"/some/path {x} {y}"` — first space splits addr from positional args.
+/// `OscType` values rather than u7/u14 bytes. The address's captures and the
+/// `emit_args` capture from the bindings; literal arguments pass as written.
 fn emit_osc_reply_typed(
-    tpl: &str,
+    tpl: &Address,
+    emit_args: Option<&[Scalar]>,
     prefix: &str,
     bindings: &HashMap<String, OscType>,
 ) -> OscMessage {
-    let mut parts = tpl.splitn(2, ' ');
-    let addr_tpl = parts.next().unwrap_or("");
-    let args_tpl = parts.next().unwrap_or("");
-    // Interpolate the addr (may itself contain {placeholders}).
-    let addr_interp = interp_placeholders(addr_tpl, bindings)
-        .unwrap_or_else(|| addr_tpl.to_string());
+    let (tpl, emit_args) = reply_parts(tpl, emit_args);
+    // Interpolate the addr (may itself hold captures).
+    let addr_interp = interp_address(&tpl, bindings).unwrap_or_else(|| address_text(&tpl));
     let addr = if addr_interp.starts_with(prefix) || !addr_interp.starts_with('/') {
         if addr_interp.starts_with('/') { addr_interp.clone() } else { format!("{prefix}/{addr_interp}") }
     } else {
         format!("{prefix}{addr_interp}")
     };
     let mut args = Vec::new();
-    for tok in args_tpl.split_whitespace() {
-        if let Some(name) = strip_placeholder(tok) {
-            if let Some(v) = bindings.get(name) { args.push(v.clone()); }
-        } else {
-            // Literal token in args template — accept int / float / fallthrough as string.
-            if let Ok(i) = tok.parse::<i32>() { args.push(OscType::Int(i)); }
-            else if let Ok(f) = tok.parse::<f32>() { args.push(OscType::Float(f)); }
-            else { args.push(OscType::String(tok.to_string())); }
+    for a in &emit_args {
+        match a {
+            Scalar::Capture(name) | Scalar::Arg(name) => {
+                if let Some(v) = bindings.get(name) { args.push(v.clone()); }
+            }
+            Scalar::Number(n) => match n.as_i64() {
+                Some(i) => args.push(OscType::Int(i as i32)),
+                None => args.push(OscType::Float(n.as_f64().unwrap_or(0.0) as f32)),
+            },
+            Scalar::Bool(b) => args.push(OscType::Bool(*b)),
+            Scalar::String(s) => args.push(OscType::String(s.clone())),
         }
     }
     OscMessage { addr, args }
 }
 
 #[cfg(test)]
-mod cc_message_tests {
-    use super::*;
-
-    fn entry(json: &str) -> CcParamEntry { serde_json::from_str(json).unwrap() }
-
-    #[test]
-    fn rpn_sends_101_100_then_data_entry() {
-        let e = entry(r#"{"osc":"/pb_sens","rpn_msb":0,"rpn_lsb":0,"range":[0,24]}"#);
-        assert_eq!(cc_messages(&e, 2, 12, &[OscType::Int(12)]).unwrap(),
-            vec![vec![0xB2, 101, 0], vec![0xB2, 100, 0], vec![0xB2, 6, 12]]);
-    }
-
-    #[test]
-    fn nrpn_lsb_comes_from_the_call_then_the_channel() {
-        let e = entry(r#"{"osc":"/drum/cutoff","nrpn_msb":20,"nrpn_lsb_range":[12,108],"range":[0,127]}"#);
-        assert_eq!(cc_messages(&e, 0, 90, &[OscType::Int(90), OscType::Int(36), OscType::Int(9)]).unwrap(),
-            vec![vec![0xB9, 99, 20], vec![0xB9, 98, 36], vec![0xB9, 6, 90]]);
-        assert_eq!(cc_messages(&e, 0, 90, &[OscType::Int(90), OscType::Int(5)]).unwrap()[1], vec![0xB0, 98, 12]);
-        assert!(cc_messages(&e, 0, 90, &[OscType::Int(90)]).is_err());
-    }
-
-    #[test]
-    fn fourteen_bit_nrpn_and_cc_pairs_split_the_value() {
-        let n = entry(r#"{"osc":"/x","nrpn_msb":3,"nrpn_lsb":75,"range":[0,16383]}"#);
-        assert_eq!(cc_messages(&n, 0, 300, &[]).unwrap().last().unwrap(), &vec![0xB0, 38, 44]);
-        let c = entry(r#"{"osc":"/y","cc":9,"cc_lsb":41,"range":[0,16383]}"#);
-        assert_eq!(cc_messages(&c, 0, 300, &[]).unwrap(), vec![vec![0xB0, 9, 2], vec![0xB0, 41, 44]]);
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn eval_simple_add() {
-        let mut b = Bindings::new(); b.set_u7("pad", 10);
-        assert_eq!(eval_expr("pad + 4", &b).unwrap(), 14);
-    }
-    #[test]
-    fn eval_ternary() {
-        let mut b = Bindings::new(); b.set_u7("pad", 10);
-        assert_eq!(eval_expr("pad > 7 ? 12 : 0", &b).unwrap(), 12);
-        b.set_u7("pad", 3);
-        assert_eq!(eval_expr("pad > 7 ? 12 : 0", &b).unwrap(), 0);
-    }
-    #[test]
-    fn path_match_with_capture() {
-        let parts = parse_osc_tpl("/minilab3/pad/{pad}/color");
-        let caps = match_osc_path(&parts, "/minilab3/pad/3/color").unwrap();
-        assert_eq!(caps.get("pad").unwrap(), "3");
-    }
-
-    #[test]
-    fn an_exact_address_is_matched_before_a_capture() {
-        let dev: Device = serde_json::from_value(serde_json::json!({
-            "device": {"name": "n", "vendor": "v", "osc_prefix": "/n"},
-            "commands": [{"osc": "/param/{id}"}, {"osc": "/param/cutoff"}]
-        })).unwrap();
-        let cmds = build_command_map(&dev);
-        let first = cmds.iter().find(|h| match_osc_path(&h.pattern_parts, "/n/param/cutoff").is_some()).unwrap();
-        assert_eq!(first.cmd.osc, "/param/cutoff");
-        assert!(cmds.iter().any(|h| match_osc_path(&h.pattern_parts, "/n/param/level").is_some()));
-    }
-
-    // ---- OSC transport (software drivers) ----
-
-    use crate::device::{ForwardArg, ForwardSpec};
-
-    #[test]
-    fn forward_msg_literal_int_arg() {
-        let f = ForwardSpec {
-            path: "/live/song/start_playing".into(),
-            args: vec![ForwardArg::Int(120)],
-        };
-        let m = build_forward_msg(&f, &HashMap::new()).unwrap();
-        assert_eq!(m.addr, "/live/song/start_playing");
-        assert!(matches!(m.args[0], OscType::Int(120)));
-    }
-
-    #[test]
-    fn forward_msg_placeholder_args_resolved_from_bindings() {
-        let f = ForwardSpec {
-            path: "/live/track/set/volume".into(),
-            args: vec![ForwardArg::Str("{n}".into()), ForwardArg::Str("{v}".into())],
-        };
-        let mut b = HashMap::new();
-        b.insert("n".into(), OscType::Int(3));
-        b.insert("v".into(), OscType::Float(0.75));
-        let m = build_forward_msg(&f, &b).unwrap();
-        assert!(matches!(m.args[0], OscType::Int(3)));
-        assert!(matches!(m.args[1], OscType::Float(_)));
-    }
-
-    #[test]
-    fn forward_msg_path_with_placeholder() {
-        let f = ForwardSpec { path: "/track/{n}/state".into(), args: vec![] };
-        let mut b = HashMap::new();
-        b.insert("n".into(), OscType::Int(5));
-        let m = build_forward_msg(&f, &b).unwrap();
-        assert_eq!(m.addr, "/track/5/state");
-    }
-
-    #[test]
-    fn forward_msg_literal_string_pass_through() {
-        let f = ForwardSpec {
-            path: "/x".into(),
-            args: vec![ForwardArg::Str("literal".into())],
-        };
-        let m = build_forward_msg(&f, &HashMap::new()).unwrap();
-        assert!(matches!(&m.args[0], OscType::String(s) if s == "literal"));
-    }
-
-    #[test]
-    fn coerce_str_to_int_and_bool() {
-        assert!(matches!(coerce_str_to_osc("42", "int"), Some(OscType::Int(42))));
-        assert!(matches!(coerce_str_to_osc("true", "bool"), Some(OscType::Bool(true))));
-        assert!(matches!(coerce_str_to_osc("0", "bool"), Some(OscType::Bool(false))));
-    }
-
-    #[test]
-    fn osc_type_match_accepts_long_for_int_and_double_for_float() {
-        assert!(osc_type_matches(&OscType::Int(1), "int"));
-        assert!(osc_type_matches(&OscType::Long(1), "int"));
-        assert!(osc_type_matches(&OscType::Float(0.5), "float"));
-        assert!(osc_type_matches(&OscType::Double(0.5), "float"));
-        assert!(!osc_type_matches(&OscType::Int(1), "string"));
-    }
-
-    #[test]
-    fn full_osc_driver_json_parses() {
-        let json = r#"{
-            "device": {
-                "name": "Ableton Live", "vendor": "Ableton",
-                "osc_prefix": "/ableton", "kind": "software",
-                "transport": { "kind": "osc", "host": "127.0.0.1",
-                               "port": 11000, "reply_port": 11001 }
-            },
-            "commands": [
-                { "osc": "/transport/play",
-                  "forward": { "path": "/live/song/start_playing", "args": [] } },
-                { "osc": "/transport/tempo",
-                  "args": [{"name":"bpm","type":"float"}],
-                  "forward": { "path": "/live/song/set/tempo",
-                               "args": ["{bpm}"] } }
-            ],
-            "subscriptions": [
-                { "on": "startup",
-                  "forward": { "path": "/live/song/start_listen/tempo",
-                               "args": [] } }
-            ],
-            "replies": [
-                { "match_osc": "/live/song/get/tempo",
-                  "match_args": [{"name":"bpm","type":"float"}],
-                  "emit_osc": "/transport/tempo {bpm}" }
-            ]
-        }"#;
-        let dev: crate::device::Device = serde_json::from_str(json).expect("parses");
-        assert_eq!(dev.device.kind.as_deref(), Some("software"));
-        let t = dev.device.transport.as_ref().unwrap();
-        assert_eq!(t.kind, "osc");
-        assert_eq!(t.port, Some(11000));
-        assert_eq!(t.reply_port, Some(11001));
-        assert_eq!(dev.commands.len(), 2);
-        assert!(dev.commands[0].forward.is_some());
-        assert!(dev.commands[0].frame.is_empty());
-        assert_eq!(dev.subscriptions.len(), 1);
-        assert_eq!(dev.replies[0].match_args.len(), 1);
-    }
-
-    #[test]
-    fn emit_osc_reply_substitutes_bindings_and_prefixes() {
-        let mut b = HashMap::new();
-        b.insert("bpm".into(), OscType::Float(124.5));
-        let m = emit_osc_reply_typed("/transport/tempo {bpm}", "/ableton", &b);
-        assert_eq!(m.addr, "/ableton/transport/tempo");
-        assert_eq!(m.args.len(), 1);
-        match &m.args[0] {
-            OscType::Float(f) => assert!((*f - 124.5).abs() < 0.01),
-            other => panic!("wrong arg type: {other:?}"),
-        }
-    }
-
-    #[test]
-    fn passthrough_strips_prefix_when_empty_target() {
-        // device.osc_prefix = "/sonicpi", passthrough_prefix = ""
-        // /sonicpi/cue/foo → /cue/foo
-        let addr = "/sonicpi/cue/foo";
-        let osc_prefix = "/sonicpi";
-        let pt = "";
-        let rest = addr.strip_prefix(osc_prefix).unwrap();
-        let new_addr = if pt.is_empty() { rest.to_string() } else { format!("{pt}{rest}") };
-        assert_eq!(new_addr, "/cue/foo");
-    }
-
-    #[test]
-    fn passthrough_replaces_prefix_when_set() {
-        // device.osc_prefix = "/sc", passthrough_prefix = "/notify"
-        // /sc/sync → /notify/sync
-        let addr = "/sc/sync";
-        let osc_prefix = "/sc";
-        let pt = "/notify";
-        let rest = addr.strip_prefix(osc_prefix).unwrap();
-        let new_addr = if pt.is_empty() { rest.to_string() } else { format!("{pt}{rest}") };
-        assert_eq!(new_addr, "/notify/sync");
-    }
-
-    #[test]
-    fn build_bindings_combines_path_caps_and_positional_args() {
-        use crate::device::{ArgSpec, Command};
-        let cmd = Command {
-            osc: "/track/{n}/volume".into(),
-            args: vec![
-                ArgSpec { name: "n".into(), ty: "int".into(), range: None, values: None, default: None },
-                ArgSpec { name: "v".into(), ty: "float".into(), range: None, values: None, default: None },
-            ],
-            pre: vec![], frame: vec![], forward: None, script: None, electra: None,
-        };
-        let mut caps = HashMap::new();
-        caps.insert("n".into(), "7".to_string());
-        let b = build_forward_bindings(&cmd, &caps, &[OscType::Float(0.5)]);
-        assert!(matches!(b.get("n").unwrap(), OscType::Int(7)));
-        assert!(matches!(b.get("v").unwrap(), OscType::Float(_)));
-    }
-}
+mod tests;

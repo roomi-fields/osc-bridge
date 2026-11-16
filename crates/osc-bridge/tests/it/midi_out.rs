@@ -1,6 +1,6 @@
 //! Performance MIDI OSC routes (note on/off, pitchbend, CC, program change).
 
-use osc_bridge::device::{Device, DeviceMeta, MidiOut, Sysex};
+use crate::common::device_of;
 use rosc::{OscMessage, OscType};
 
 // `try_midi_out` is private; we drive it through a local copy of the routing
@@ -13,29 +13,17 @@ use rosc::{OscMessage, OscType};
 // Strategy: parse a minimal device JSON with midi_out, then call the exposed
 // helper via a public shim added in runtime.rs for testing.
 
-fn bare_device(mo: Option<MidiOut>) -> Device {
-    Device {
-        device: DeviceMeta {
-            name: "t".into(), vendor: "t".into(), revision: "1".into(),
-            osc_prefix: "/t".into(),
-            manufacturer_id: vec![0x7F],
-            device_id: vec![],
-            rate_limit_hz: None,
-            kind: None,
-            transport: None,
-        },
-        sysex: Sysex::default(),
-        commands: vec![], params: None, cc_params: None,
-        midi_out: mo,
-        midi_in: Default::default(),
-        replies: vec![],
-        subscriptions: vec![],
-        custom_commands: vec![], docs: None, triggers: None, identity: None, programs: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
-    }
+/// The `midi_out` block: default channel and note offset.
+#[derive(Default)]
+struct MidiOut { default_channel: u8, note_offset: i64 }
+
+fn bare_device(mo: Option<MidiOut>) -> osd::Device {
+    let midi_out = mo.map(|m| format!(r#","midi_out":{{"default_channel":{},"note_offset":{}}}"#, m.default_channel, m.note_offset)).unwrap_or_default();
+    device_of(&format!(r#"{{"device":{{"name":"t","vendor":"t","revision":"1","osc_prefix":"/t","manufacturer_id":[127]}}{midi_out}}}"#))
 }
 
 /// Public test shim — see `runtime::midi_out_for_msg`.
-fn build(dev: &Device, addr: &str, args: Vec<OscType>) -> Option<Vec<u8>> {
+fn build(dev: &osd::Device, addr: &str, args: Vec<OscType>) -> Option<Vec<u8>> {
     osc_bridge::runtime::midi_out_for_msg(
         dev,
         &OscMessage { addr: addr.into(), args },

@@ -23,7 +23,7 @@ use std::time::{Duration, Instant};
 
 use std::collections::HashMap;
 
-use crate::device::Device;
+use osd::Device;
 use crate::routing::{CcRoute, DynamicRoutes};
 
 const DEFAULT_MEMORY_LIMIT_BYTES: usize = 1_024 * 1_024; // 1 MiB
@@ -492,15 +492,17 @@ fn install_emit_osc_fn(lua: &Lua, ob: &Table, queue: Arc<Mutex<Vec<EmitOsc>>>) -
 fn install_electra_api(lua: &Lua, dev: &Device, values: Arc<Mutex<HashMap<String, i64>>>) -> Result<()> {
     let e = |what: &str| { let what = what.to_string(); move |er: mlua::Error| anyhow!("{what}: {er}") };
     let mut table: HashMap<(String, i64), ParamEntry> = HashMap::new();
-    for cmd in &dev.commands {
-        let Some(p) = cmd.electra.as_ref().and_then(|a| a.parameter.as_ref()) else { continue };
-        let arg = cmd.args.first();
+    for cmd in dev.commands.iter().flatten() {
+        // The Electra annotation is a note `osd` keeps in the command's remarks.
+        let Some(p) = cmd.remarks.get("_electra").and_then(|a| a.get("parameter")) else { continue };
+        let (Some(ty), Some(number)) = (p.get("type").and_then(|t| t.as_str()), p.get("number").and_then(|n| n.as_i64())) else { continue };
+        let arg = cmd.args.iter().flatten().next();
         let fallback = arg
             .and_then(|a| a.default.as_ref().and_then(|d| d.as_i64().or_else(|| d.as_f64().map(|f| f as i64))))
             .or_else(|| arg.and_then(|a| a.range.map(|r| r[0])))
             .unwrap_or(0);
-        table.entry((p.ty.to_ascii_lowercase(), p.number))
-            .or_insert(ParamEntry { osc: cmd.osc.clone(), fallback });
+        table.entry((ty.to_ascii_lowercase(), number))
+            .or_insert(ParamEntry { osc: crate::device::address_text(&cmd.osc), fallback });
     }
     let g = lua.globals();
     for t in ELECTRA_PARAM_TYPES {
@@ -515,8 +517,8 @@ fn install_electra_api(lua: &Lua, dev: &Device, values: Arc<Mutex<HashMap<String
     g.set("parameterMap", pm).map_err(e("set parameterMap"))?;
 
     let channel = i64::from(
-        dev.midi_out.as_ref().map(|m| m.default_channel)
-            .or(dev.cc_params.as_ref().map(|c| c.channel))
+        dev.midi_out.as_ref().and_then(|m| m.default_channel)
+            .or(dev.cc_params.as_ref().and_then(|c| c.channel))
             .unwrap_or(0) & 0x0F,
     ) + 1;
     let devices = lua.create_table().map_err(e("devices"))?;

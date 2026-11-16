@@ -1,22 +1,5 @@
 {
-  "_sources": [
-    {
-      "type": "pencilresearch",
-      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Novation/Bass Station II.csv",
-      "imported_at": "2026-10-22",
-      "firmware": "unknown",
-      "license": "CC-BY-SA-4.0",
-      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
-      "commit": "91299d6"
-    }
-  ],
-  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
-  "_coverage": {
-    "entries_total": 92,
-    "cc_entries": 61,
-    "nrpn_entries": 31,
-    "fourteen_bit_cc_pairs": 16
-  },
+  "$schema": "https://w3id.org/osd/0.5/device.schema.json",
   "device": {
     "name": "Bass Station II",
     "vendor": "Novation",
@@ -30,7 +13,6 @@
     "header": [],
     "footer": []
   },
-  "commands": [],
   "cc_params": {
     "channel": 0,
     "entries": [
@@ -65,8 +47,8 @@
         ],
         "orientation": "0-based",
         "section": "Master",
-        "_usage": "0: No overlays; 1~8: Use overlay bank",
-        "expects": "discrete"
+        "expects": "discrete",
+        "_usage": "0: No overlays; 1~8: Use overlay bank"
       },
       {
         "osc": "/master/overlay_write_protection",
@@ -78,8 +60,8 @@
         ],
         "orientation": "0-based",
         "section": "Master",
-        "_usage": "0: Disabled; 1: Enabled",
-        "expects": "switch"
+        "expects": "switch",
+        "_usage": "0: Disabled; 1: Enabled"
       },
       {
         "osc": "/oscillator/osc_1_fine",
@@ -319,8 +301,8 @@
         ],
         "orientation": "0-based",
         "section": "Oscillator",
-        "_usage": "0: Off; 1: On",
-        "expects": "switch"
+        "expects": "switch",
+        "_usage": "0: Off; 1: On"
       },
       {
         "osc": "/oscillator/paraphonic_mode",
@@ -489,8 +471,8 @@
         ],
         "orientation": "0-based",
         "section": "Filter",
-        "_usage": "0: Classic; 1: Acid",
-        "expects": "switch"
+        "expects": "switch",
+        "_usage": "0: Classic; 1: Acid"
       },
       {
         "osc": "/filter/shape",
@@ -532,8 +514,8 @@
         ],
         "orientation": "0-based",
         "section": "Filter",
-        "_usage": "0: 12dB; 1: 24dB",
-        "expects": "switch"
+        "expects": "switch",
+        "_usage": "0: 12dB; 1: 24dB"
       },
       {
         "osc": "/filter/overdrive",
@@ -899,8 +881,8 @@
         ],
         "orientation": "0-based",
         "section": "Arpeggiator",
-        "_usage": "0: Disabled; 1: Enabled",
-        "expects": "switch"
+        "expects": "switch",
+        "_usage": "0: Disabled; 1: Enabled"
       },
       {
         "osc": "/arpeggiator/latch",
@@ -911,8 +893,8 @@
         ],
         "orientation": "0-based",
         "section": "Arpeggiator",
-        "_usage": "0: Disabled; 1: Enabled",
-        "expects": "switch"
+        "expects": "switch",
+        "_usage": "0: Disabled; 1: Enabled"
       },
       {
         "osc": "/arpeggiator/octaves",
@@ -1062,16 +1044,35 @@
       }
     ]
   },
+  "commands": [],
   "midi_out": {
     "default_channel": 0,
     "note_offset": 0
   },
-  "midi_in": {
-    "note_on": "/note/on {note} {velocity} {channel}",
-    "note_off": "/note/off {note} {velocity} {channel}",
-    "cc": "/cc/{num} {value} {channel}",
-    "pitchbend": "/pitchbend {value_u14} {channel}",
-    "aftertouch": "/aftertouch {value} {channel}"
+  "midi_in": [
+    "note_on",
+    "note_off",
+    "cc",
+    "pitchbend",
+    "aftertouch"
+  ],
+  "replies": [],
+  "_sources": [
+    {
+      "type": "pencilresearch",
+      "url": "https://github.com/pencilresearch/midi/blob/91299d6/Novation/Bass Station II.csv",
+      "firmware": "unknown",
+      "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
+      "license": "CC-BY-SA-4.0",
+      "commit": "91299d6",
+      "imported_at": "2026-10-22"
+    }
+  ],
+  "_coverage": {
+    "cc_entries": 61,
+    "entries_total": 92,
+    "fourteen_bit_cc_pairs": 16,
+    "nrpn_entries": 31
   },
-  "replies": []
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template."
 }

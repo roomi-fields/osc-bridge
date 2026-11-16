@@ -114,4 +114,4 @@ Unit tests: `cargo test --test scripting`. Integration (real device JSON):
 ## See also
 
 - `docs/CR-lua-scripting.md` — the design rationale and delivery order.
-- `docs/DEVICE_JSON_SCHEMA.md` — everything you can express without touching Lua.
+- [Open Synth Descriptors](https://github.com/roomi-fields/open-synth-descriptors) — everything you can express without touching Lua.

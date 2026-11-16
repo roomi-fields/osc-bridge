@@ -11,7 +11,7 @@
 //!
 //! No hardware required.
 
-use osc_bridge::device::{Device, DeviceMeta, Sysex, Transport};
+use crate::common::device_of;
 use osc_bridge::ws::{self, WsClients, WsDispatch};
 use osc_bridge::{Runtime, RuntimeOptions};
 use rosc::{OscMessage, OscPacket, OscType};
@@ -131,38 +131,12 @@ fn ws_broadcast_fans_out_to_every_client_and_prunes_on_disconnect() {
 
 // ---- End-to-end: WS client ≡ --osc-client on a passthrough OSC device ----
 
-fn passthrough_like(target_port: u16, reply_port: u16) -> Device {
-    Device {
-        device: DeviceMeta {
-            name: "Passthrough (fake)".into(),
-            vendor: "Test".into(),
-            revision: "1".into(),
-            osc_prefix: "/sonicpi".into(),
-            manufacturer_id: vec![],
-            device_id: vec![],
-            rate_limit_hz: None,
-            kind: Some("software".into()),
-            transport: Some(Transport {
-                kind: "osc".into(),
-                host: Some("127.0.0.1".into()),
-                port: Some(target_port),
-                reply_port: Some(reply_port),
-                rate_limit_hz: None,
-                passthrough_prefix: Some(String::new()),
-            }),
-        },
-        sysex: Sysex::default(),
-        commands: vec![],
-        params: None,
-        cc_params: None,
-        midi_out: None,
-        midi_in: Default::default(),
-        replies: vec![],
-        subscriptions: vec![],
-        docs: None,
-        custom_commands: vec![],
-        triggers: None, identity: None, programs: None, midi_of: None, sources: vec![], midi_of_sources: vec![],
-    }
+fn passthrough_like(target_port: u16, reply_port: u16) -> osd::Device {
+    device_of(&format!(r#"{{
+        "device": {{ "name": "Passthrough (fake)", "vendor": "Test", "revision": "1", "osc_prefix": "/sonicpi", "kind": "software",
+            "transport": {{ "kind": "osc", "host": "127.0.0.1", "port": {target_port}, "reply_port": {reply_port},
+                "passthrough_prefix": "" }} }}
+    }}"#))
 }
 
 fn pick_free_udp_port() -> u16 {

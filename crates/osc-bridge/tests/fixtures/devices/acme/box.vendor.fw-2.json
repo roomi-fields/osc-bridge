@@ -1,14 +1,68 @@
 {
-  "_sources": [{ "type": "vendor-doc", "firmware": "2", "license": "CC0-1.0", "attribution": "osc-bridge test fixture" }],
-  "device": { "name": "Box", "vendor": "Acme", "osc_prefix": "/box", "manufacturer_id": [0, 33, 9] },
-  "cc_params": { "channel": 0, "entries": [ { "osc": "/filter/cutoff", "cc": 74 }, { "osc": "/filter/resonance", "cc": 71 } ] },
-  "identity": { "profile": "acme", "family": [1, 0], "member": [1, 0], "ports": ["Acme Box"] },
+  "$schema": "https://w3id.org/osd/0.5/device.schema.json",
+  "device": {
+    "name": "Box",
+    "vendor": "Acme",
+    "osc_prefix": "/box",
+    "manufacturer_id": [
+      0,
+      33,
+      9
+    ]
+  },
+  "identity": {
+    "profile": "acme",
+    "family": [
+      1,
+      0
+    ],
+    "member": [
+      1,
+      0
+    ],
+    "ports": [
+      "Acme Box"
+    ]
+  },
   "programs": {
     "profile": "acme",
     "banks": [
-      { "name": "User", "msb": 0, "lsb": 0, "size": 64, "display": "U01-U64" },
-      { "name": "Factory", "msb": 0, "lsb": 1, "size": 64, "display": "F01-F64" }
+      {
+        "name": "User",
+        "msb": 0,
+        "lsb": 0,
+        "size": 64,
+        "display": "U01-U64"
+      },
+      {
+        "name": "Factory",
+        "msb": 0,
+        "lsb": 1,
+        "size": 64,
+        "display": "F01-F64"
+      }
     ],
     "delay_ms": 10
-  }
+  },
+  "cc_params": {
+    "channel": 0,
+    "entries": [
+      {
+        "osc": "/filter/cutoff",
+        "cc": 74
+      },
+      {
+        "osc": "/filter/resonance",
+        "cc": 71
+      }
+    ]
+  },
+  "_sources": [
+    {
+      "type": "vendor-doc",
+      "firmware": "2",
+      "attribution": "osc-bridge test fixture",
+      "license": "CC0-1.0"
+    }
+  ]
 }

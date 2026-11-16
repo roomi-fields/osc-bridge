@@ -13,26 +13,35 @@
 
 use crate::common;
 
-use osc_bridge::device::Device;
+use osc_bridge::device::{full_osc_path, load as load_driver};
 use osc_bridge::frame::{build_frame, Bindings};
 use osc_bridge::runtime::encode;
 use rosc::OscMessage;
 
-fn load(frame: &str, script: Option<&str>) -> (tempfile::TempDir, Device) {
-    let dir = common::temp("checksum_after_script");
+/// A driver of one command `/fn`, written in 0.4 with the tests' checksum
+/// names and converted to 0.5 as the converter writes it (`to05`).
+fn text(frame: &str, script: Option<&str>) -> String {
     let script = script.map(|s| format!(r#","script":{}"#, serde_json::to_string(s).unwrap())).unwrap_or_default();
-    let json = format!(
+    format!(
         r#"{{"device":{{"name":"Acme JV","osc_prefix":"/jv"}},"sysex":{{"header":[240,65,16,106,18],"footer":[247]}},
 "commands":[{{"osc":"/fn","frame":{frame}{script}}}]}}"#
-    );
+    )
+}
+
+fn load(frame: &str, script: Option<&str>) -> (tempfile::TempDir, osd::Device) {
+    let dir = common::temp("checksum_after_script");
     let path = dir.path().join("jv.json");
-    std::fs::write(&path, json).unwrap();
-    let dev = Device::load(&path).unwrap_or_else(|e| panic!("driver refused: {e}"));
+    std::fs::write(&path, common::to05(&text(frame, script))).unwrap();
+    let dev = load_driver(&path).unwrap_or_else(|e| panic!("driver refused: {e}"));
     (dir, dev)
 }
 
-fn send(dev: &Device) -> Vec<Vec<u8>> {
-    encode(dev.clone(), OscMessage { addr: dev.full_osc_path("/fn"), args: vec![] })
+fn first_frame(dev: &osd::Device) -> &[osd::FrameToken] {
+    dev.commands.as_ref().unwrap()[0].frame.as_deref().unwrap()
+}
+
+fn send(dev: &osd::Device) -> Vec<Vec<u8>> {
+    encode(dev.clone(), OscMessage { addr: full_osc_path(dev, "/fn"), args: vec![] })
 }
 
 /// Roland checksum, written here apart from the engine.
@@ -87,7 +96,7 @@ fn criterion_1_sum7_and_xor7_follow_the_script_as_well() {
 #[test]
 fn criterion_2_a_command_without_script_builds_as_build_frame_does() {
     let (_d, dev) = load(JV_FRAME, None);
-    let direct = build_frame(&dev, &dev.commands[0].frame, &Bindings::new()).unwrap();
+    let direct = build_frame(&dev, first_frame(&dev), &Bindings::new()).unwrap();
     assert_eq!(send(&dev), vec![direct]);
     assert_eq!(send(&dev), vec![expected(0x00)]);
 }
@@ -95,7 +104,7 @@ fn criterion_2_a_command_without_script_builds_as_build_frame_does() {
 #[test]
 fn criterion_8_build_frame_alone_still_computes_the_checksum_while_it_builds() {
     let (_d, dev) = load(JV_FRAME, Some(WRITE_FUNCTION_BYTE));
-    let direct = build_frame(&dev, &dev.commands[0].frame, &Bindings::new()).unwrap();
+    let direct = build_frame(&dev, first_frame(&dev), &Bindings::new()).unwrap();
     assert_eq!(direct, expected(0x00));
 }
 
@@ -142,13 +151,33 @@ fn criterion_6_a_script_may_change_the_length_of_a_frame_without_checksum() {
 }
 
 #[test]
-fn criterion_9_an_unreadable_checksum_is_refused_with_or_without_script() {
-    for frame in [r#"[1,"{checksum:crc9@5}"]"#, r#"[1,"{checksum:twos7@50}"]"#, r#"[1,"{checksum}"]"#] {
-        let (_d, dev) = load(frame, Some(WRITE_FUNCTION_BYTE));
-        assert!(send(&dev).is_empty(), "{frame} with script");
-        let (_d, dev) = load(frame, None);
-        assert!(send(&dev).is_empty(), "{frame} without script");
+fn a_checksum_osd_cannot_read_refuses_the_driver_with_or_without_script() {
+    // 0.5 writes a checksum as {"checksum": algorithm, "from": offset}.
+    for frame in [r#"[1,{"checksum":"crc9","from":5}]"#, r#"[1,{"checksum":"twos7"}]"#] {
+        for script in [Some(WRITE_FUNCTION_BYTE), None] {
+            let (lua, caps) = match script {
+                Some(s) => (format!(r#","script":{}"#, serde_json::to_string(s).unwrap()), r#","capabilities":["lua"]"#),
+                None => (String::new(), ""),
+            };
+            let json = format!(
+                r#"{{"$schema":"{}","device":{{"name":"Acme JV","osc_prefix":"/jv"}},"sysex":{{"header":[240,65,16,106,18],"footer":[247]}},
+"commands":[{{"osc":"/fn","frame":{frame}{lua}}}]{caps}}}"#, common::D05);
+            let dir = common::temp("checksum_after_script_refused");
+            let path = dir.path().join("jv.json");
+            std::fs::write(&path, json).unwrap();
+            let err = load_driver(&path).expect_err(frame);
+            assert!(err.downcast_ref::<osd::Fault>().is_some(), "{frame}: {err:#}");
+        }
     }
+}
+
+#[test]
+fn a_checksum_offset_past_the_bytes_written_loads_and_sends_nothing_with_or_without_script() {
+    let frame = r#"[1,"{checksum:twos7@50}"]"#;
+    let (_d, dev) = load(frame, Some(WRITE_FUNCTION_BYTE));
+    assert!(send(&dev).is_empty(), "with script");
+    let (_d, dev) = load(frame, None);
+    assert!(send(&dev).is_empty(), "without script");
 }
 
 #[test]

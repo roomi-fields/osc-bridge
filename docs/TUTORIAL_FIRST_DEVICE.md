@@ -11,7 +11,7 @@ When you follow along with a real device, swap in the values from *its* MIDI
 implementation chart.
 
 If you just want the reference (every field, every type), read
-[`DEVICE_JSON_SCHEMA.md`](DEVICE_JSON_SCHEMA.md). This tutorial is the worked
+[Open Synth Descriptors](https://github.com/roomi-fields/open-synth-descriptors). This tutorial is the worked
 example; that's the dictionary.
 
 ---
@@ -238,6 +238,6 @@ you'll need it:
   transforms: `transform` / `script`. Use sparingly; `lint` warns on every use.
   See [`scripting.md`](scripting.md).
 
-All of it is in [`DEVICE_JSON_SCHEMA.md`](DEVICE_JSON_SCHEMA.md). And the
+All of it is in [Open Synth Descriptors](https://github.com/roomi-fields/open-synth-descriptors). And the
 contributor checklist — folder conventions, the no-silent-fusion rule, how to
 promote a driver to ✅ — is in [`../CONTRIBUTING.md`](../CONTRIBUTING.md).

@@ -12,9 +12,13 @@
 //! - `/<prefix>/identity` sends the request the device answers; its reply
 //!   comes back as `/<prefix>/identity/reply <firmware> <hex>`.
 
-use crate::device::{Bank, Device, FrameToken, Programs};
-use crate::frame::{build_message, Bindings};
+use crate::device::full_osc_path;
+use crate::frame::{build_message, expand_identity, Bindings};
+use osd::{Bank, Device, FrameToken, Programs};
 use rosc::{OscMessage, OscType};
+
+/// The arguments a `programs` frame may name (`{"arg": name}`).
+pub const PLACEHOLDERS: [&str; 7] = ["channel", "msb", "lsb", "bank", "program", "index", "number"];
 
 /// The routes, after the device's prefix.
 pub const RECALL: &str = "/program/recall";
@@ -24,8 +28,9 @@ pub const IDENTITY_REPLY: &str = "/identity/reply";
 
 /// A bank of `p` by its name (any case) or its place in the list.
 pub fn find_bank<'a>(p: &'a Programs, bank: &str) -> Option<(usize, &'a Bank)> {
-    p.banks.iter().enumerate().find(|(_, b)| b.name.eq_ignore_ascii_case(bank))
-        .or_else(|| bank.parse::<usize>().ok().and_then(|i| p.banks.get(i).map(|b| (i, b))))
+    let banks = p.banks.as_deref().unwrap_or_default();
+    banks.iter().enumerate().find(|(_, b)| b.name.eq_ignore_ascii_case(bank))
+        .or_else(|| bank.parse::<usize>().ok().and_then(|i| banks.get(i).map(|b| (i, b))))
 }
 
 /// One program of a bank, as its frames and scripts see it.
@@ -38,26 +43,27 @@ struct Target<'a> {
 }
 
 fn target<'a>(p: &'a Programs, bank: &str, number: i64) -> Result<Target<'a>, String> {
-    if p.banks.is_empty() {
+    let banks = p.banks.as_deref().unwrap_or_default();
+    if banks.is_empty() {
         return Err("this driver lists no banks".into());
     }
     let (bank_index, b) = find_bank(p, bank).ok_or_else(|| {
-        let names: Vec<&str> = p.banks.iter().map(|b| b.name.as_str()).collect();
+        let names: Vec<&str> = banks.iter().map(|b| b.name.as_str()).collect();
         format!("no bank {bank:?}: {}", names.join(", "))
     })?;
-    let first = b.first_number as i64;
-    let last = first + b.size as i64 - 1;
+    let first = b.first_number.unwrap_or(1);
+    let last = first + b.size - 1;
     if !(first..=last).contains(&number) {
         return Err(format!("bank {} holds programs {first}..={last}", b.name));
     }
     let offset = (number - first) as u16;
-    let pc = (b.first_pc as u16 + offset).min(127) as u8;
-    let index = p.banks[..bank_index].iter().map(|b| b.size).sum::<u16>() + offset;
+    let pc = (b.first_pc.unwrap_or(0) as u16 + offset).min(127) as u8;
+    let index = banks[..bank_index].iter().map(|b| b.size as u16).sum::<u16>() + offset;
     Ok(Target { bank_index, bank: b, number, pc, index })
 }
 
 fn channel_of(dev: &Device, t: Option<&Target>, channel: Option<u8>) -> u8 {
-    channel.or(t.and_then(|t| t.bank.channel)).or(dev.midi_out.as_ref().map(|m| m.default_channel)).unwrap_or(0) & 0x0F
+    channel.or(t.and_then(|t| t.bank.channel)).or(dev.midi_out.as_ref().and_then(|m| m.default_channel)).unwrap_or(0) & 0x0F
 }
 
 fn bindings(dev: &Device, t: Option<&Target>, ch: u8) -> Bindings {
@@ -71,8 +77,8 @@ fn bindings(dev: &Device, t: Option<&Target>, ch: u8) -> Bindings {
         bind.set_u14("index", t.index);
         bind.set_u14("number", t.number as u16);
     }
-    if let Some(d) = dev.identity.as_ref().and_then(|i| i.device_id.as_ref()) {
-        bind.set_u7("dev", d.default);
+    if let Some(d) = dev.identity.as_ref().and_then(|i| i.device_id.as_ref()).and_then(|d| d.default) {
+        bind.set_u7("dev", d as u8);
     }
     bind
 }
@@ -82,9 +88,9 @@ fn script_ctx(dev: &Device, t: Option<&Target>, ch: u8) -> serde_json::Value {
     let id = dev.identity.as_ref();
     serde_json::json!({
         "channel": ch,
-        "dev": id.and_then(|i| i.device_id.as_ref()).map(|d| d.default),
-        "family": id.map(|i| i.family.clone()).unwrap_or_default(),
-        "member": id.map(|i| i.member.clone()).unwrap_or_default(),
+        "dev": id.and_then(|i| i.device_id.as_ref()).and_then(|d| d.default),
+        "family": id.and_then(|i| i.family.clone()).unwrap_or_default(),
+        "member": id.and_then(|i| i.member.clone()).unwrap_or_default(),
         "bank": t.map(|t| t.bank_index), "bank_name": t.map(|t| t.bank.name.clone()),
         "msb": t.and_then(|t| t.bank.msb), "lsb": t.and_then(|t| t.bank.lsb),
         "program": t.map(|t| t.pc), "index": t.map(|t| t.index), "number": t.map(|t| t.number),
@@ -108,7 +114,7 @@ fn run_script(code: &str, ctx: &serde_json::Value) -> Result<Vec<Vec<u8>>, Strin
 /// `frames` with the model's bytes written in, then filled in.
 fn build(dev: &Device, frames: &[Vec<FrameToken>], bind: &Bindings) -> Result<Vec<Vec<u8>>, String> {
     frames.iter().map(|f| {
-        let f = match &dev.identity { Some(id) => id.expand(f), None => f.clone() };
+        let f = match &dev.identity { Some(id) => expand_identity(id, f), None => f.clone() };
         build_message(&f, bind).map_err(|e| format!("{}: programs: {e}", dev.device.name))
     }).collect()
 }
@@ -123,13 +129,13 @@ pub fn recall(dev: &Device, bank: &str, number: i64, channel: Option<u8>) -> Res
         return run_script(code, &script_ctx(dev, Some(&t), ch));
     }
     let bind = bindings(dev, Some(&t), ch);
-    let mut out = build(dev, &p.before, &bind)?;
-    if p.program_change {
+    let mut out = build(dev, p.before.as_deref().unwrap_or_default(), &bind)?;
+    if p.program_change.unwrap_or(true) {
         if let Some(msb) = t.bank.msb { out.push(vec![0xB0 | ch, 0, msb & 0x7F]); }
         if let Some(lsb) = t.bank.lsb { out.push(vec![0xB0 | ch, 32, lsb & 0x7F]); }
         out.push(vec![0xC0 | ch, t.pc & 0x7F]);
     }
-    out.extend(build(dev, &p.after, &bind)?);
+    out.extend(build(dev, p.after.as_deref().unwrap_or_default(), &bind)?);
     Ok(out)
 }
 
@@ -143,7 +149,13 @@ pub fn dump(dev: &Device, program: Option<(&str, i64)>, channel: Option<u8>) -> 
     if let Some(code) = &d.script {
         return run_script(code, &script_ctx(dev, t.as_ref(), ch));
     }
-    let frame = d.request.as_ref().ok_or_else(|| format!("the {} request's bytes are not in this driver", d.kind))?;
+    let kind = match d.kind {
+        osd::DumpKind::None => "none",
+        osd::DumpKind::Request => "request",
+        osd::DumpKind::EditBuffer => "edit_buffer",
+        osd::DumpKind::Manual => "manual",
+    };
+    let frame = d.request.as_ref().ok_or_else(|| format!("the {kind} request's bytes are not in this driver"))?;
     build(dev, std::slice::from_ref(frame), &bindings(dev, t.as_ref(), ch))
 }
 
@@ -160,7 +172,7 @@ pub fn identity_request(dev: &Device) -> Vec<u8> {
 pub fn identity_reply(dev: &Device, msg: &[u8]) -> Option<OscMessage> {
     let r = crate::detect::recognise(dev.identity.as_ref()?, "", &[msg.to_vec()]).filter(|r| r.by_reply)?;
     let hex = msg.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ");
-    Some(OscMessage { addr: dev.full_osc_path(IDENTITY_REPLY),
+    Some(OscMessage { addr: full_osc_path(dev, IDENTITY_REPLY),
                       args: vec![OscType::String(r.firmware.unwrap_or_default()), OscType::String(hex)] })
 }
 
@@ -178,16 +190,16 @@ pub fn uniform_osc(dev: &Device, addr: &str, args: &[OscType]) -> Option<Result<
         match v? { OscType::String(s) => Some(s.clone()), v => int(v).map(|i| i.to_string()) }
     };
     let channel = |i: usize| args.get(i).and_then(int).map(|c| c.clamp(0, 15) as u8);
-    if addr == dev.full_osc_path(IDENTITY) && dev.device.transport.as_ref().is_none_or(|t| t.kind != "osc") {
+    if addr == full_osc_path(dev, IDENTITY) && dev.device.transport.as_ref().is_none_or(|t| t.kind != osd::TransportKind::Osc) {
         return Some(Ok(vec![identity_request(dev)]));
     }
     dev.programs.as_ref()?;
-    if addr == dev.full_osc_path(RECALL) {
+    if addr == full_osc_path(dev, RECALL) {
         let Some(bank) = bank_arg(args.first()) else { return Some(Err(format!("{RECALL} <bank> <number> [channel]"))) };
         let Some(number) = args.get(1).and_then(int) else { return Some(Err("number: the program's number".into())) };
         return Some(recall(dev, &bank, number, channel(2)));
     }
-    if addr == dev.full_osc_path(DUMP) {
+    if addr == full_osc_path(dev, DUMP) {
         return Some(match (args.first(), args.get(1).and_then(int)) {
             (Some(OscType::String(bank)), Some(n)) => dump(dev, Some((bank, n)), channel(2)),
             (Some(b), Some(n)) if args.len() >= 2 => match bank_arg(Some(b)) {
@@ -201,69 +213,4 @@ pub fn uniform_osc(dev: &Device, addr: &str, args: &[OscType]) -> Option<Result<
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn dev(programs: &str) -> Device {
-        serde_json::from_str(&format!(r#"{{"device":{{"name":"Box","vendor":"Acme","osc_prefix":"/box"}},
-            "midi_out":{{"default_channel":2}},"identity":{{"device_id":{{"default":16}},"family":[81,1],"reply":[240,126]}},
-            "programs":{programs}}}"#)).unwrap()
-    }
-
-    #[test]
-    fn a_bank_and_a_number_become_the_bank_select_and_the_program_change() {
-        let d = dev(r#"{"banks":[{"name":"User","msb":81,"lsb":0,"size":128},
-            {"name":"Preset A","msb":81,"lsb":64,"size":128,"display":"001-128"},
-            {"name":"B","lsb":1,"first_pc":1,"size":72,"first_number":129}]}"#);
-        assert_eq!(recall(&d, "preset a", 1, None).unwrap(), vec![vec![0xB2, 0, 81], vec![0xB2, 32, 64], vec![0xC2, 0]]);
-        assert_eq!(recall(&d, "1", 128, Some(0)).unwrap(), vec![vec![0xB0, 0, 81], vec![0xB0, 32, 64], vec![0xC0, 127]]);
-        assert_eq!(recall(&d, "B", 130, None).unwrap(), vec![vec![0xB2, 32, 1], vec![0xC2, 2]], "CC 32 only, PC from 1");
-        assert!(recall(&d, "B", 128, None).unwrap_err().contains("129..=200"));
-        assert!(recall(&d, "Card", 1, None).unwrap_err().contains("User, Preset A, B"));
-    }
-
-    #[test]
-    fn a_recall_sequence_wraps_the_program_change_or_replaces_it() {
-        let d = dev(r#"{"before":[[240,66,"{channel:u7+0x30}",117,78,2,247]],"after":[[240,65,"{dev}","{index:u14_lsb}","{index:u14_msb}",247]],
-            "banks":[{"name":"A","size":100},{"name":"B","size":100}]}"#);
-        let m = recall(&d, "B", 100, None).unwrap();
-        assert_eq!(m, vec![vec![0xF0, 0x42, 0x32, 0x75, 0x4E, 2, 0xF7], vec![0xC2, 99], vec![0xF0, 0x41, 16, 199 & 0x7F, 1, 0xF7]]);
-        let song = dev(r#"{"program_change":false,"before":[[243,"{program}"]],"banks":[{"name":"Songs","size":100,"first_number":0}]}"#);
-        assert_eq!(recall(&song, "Songs", 42, None).unwrap(), vec![vec![0xF3, 42]], "Song Select, no program change");
-    }
-
-    #[test]
-    fn a_dump_request_takes_the_models_bytes_and_a_checksum() {
-        let d = dev(r#"{"banks":[{"name":"A","size":64}],
-            "dump":{"kind":"request","request":[240,66,"{channel:u7+0x30}","{family:0}",28,"{index}","{checksum:twos7@3}",247]}}"#);
-        // 51 + 1C + 05 = 0x72; 128 - 0x72 = 0x0E.
-        assert_eq!(dump(&d, Some(("A", 6)), None).unwrap(), vec![vec![0xF0, 0x42, 0x32, 81, 0x1C, 5, 0x0E, 0xF7]]);
-        let edit = dev(r#"{"dump":{"kind":"edit_buffer","request":[240,66,"{channel:u7+0x30}","{family:0}",16,247]}}"#);
-        assert_eq!(dump(&edit, None, Some(0)).unwrap(), vec![vec![0xF0, 0x42, 0x30, 81, 0x10, 0xF7]]);
-        assert!(dump(&dev(r#"{"dump":{"kind":"request"}}"#), None, None).unwrap_err().contains("not in this driver"));
-    }
-
-    #[test]
-    fn lua_writes_a_recall_no_frame_can() {
-        // A file named by its bank letter and number, as text (Behringer UB-Xa style).
-        let d = dev(r#"{"banks":[{"name":"A","msb":0,"lsb":0,"size":128}],
-            "recall_script":"local name = string.format('%s%03d', bank_name, number)\nlocal m = {0xF0, 0x7D}\nfor i = 1, #name do m[#m + 1] = name:byte(i) end\nm[#m + 1] = 0xF7\nreturn {m}"}"#);
-        assert_eq!(recall(&d, "A", 1, None).unwrap(), vec![[&[0xF0, 0x7D][..], b"A001", &[0xF7]].concat()]);
-    }
-
-    #[test]
-    fn the_same_addresses_on_every_device() {
-        let d = dev(r#"{"banks":[{"name":"A","size":16},{"name":"B","first_pc":16,"size":16}],"dump":{"kind":"edit_buffer","request":[240,1,"{channel}",247]}}"#);
-        let call = |addr: &str, args: Vec<OscType>| uniform_osc(&d, addr, &args);
-        assert_eq!(call("/box/program/recall", vec![OscType::String("B".into()), OscType::Int(3)]).unwrap().unwrap(), vec![vec![0xC2, 18]]);
-        assert_eq!(call("/box/program/recall", vec![OscType::Int(1), OscType::Int(3), OscType::Int(9)]).unwrap().unwrap(), vec![vec![0xC9, 18]]);
-        assert!(call("/box/program/recall", vec![OscType::String("B".into())]).unwrap().is_err());
-        assert_eq!(call("/box/program/dump", vec![]).unwrap().unwrap(), vec![vec![0xF0, 1, 2, 0xF7]]);
-        assert_eq!(call("/box/identity", vec![]).unwrap().unwrap(), vec![crate::detect::IDENTITY_REQUEST.to_vec()]);
-        assert!(call("/box/program_change", vec![]).is_none());
-        let reply = [0xF0, 0x7E, 0x00, 0x06, 0x02, 0x41];
-        let m = identity_reply(&d, &reply).unwrap();
-        assert_eq!((m.addr.as_str(), &m.args[1]), ("/box/identity/reply", &OscType::String("F0 7E 00 06 02 41".into())));
-        assert!(identity_reply(&d, &[0xF0, 0x41, 0xF7]).is_none());
-    }
-}
+mod tests;

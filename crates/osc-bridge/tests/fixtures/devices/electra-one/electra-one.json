@@ -1,17 +1,5 @@
 {
-  "_sources": [
-    {
-      "type": "vendor-doc",
-      "url": "https://docs.electra.one/developers/midiimplementation.html",
-      "notes": "Electra One SysEx Implementation Reference, firmware 4.x",
-      "imported_at": "2026-04-13"
-    },
-    {
-      "type": "hardware-verified",
-      "url": "local-test-2026-04-19",
-      "notes": "End-to-end validation on Electra One MK2 firmware 4.1.4. Scope: preset upload (/preset/upload), live mutation (/control/update), Lua scripting (/lua + /lua_script/upload), dynamic CC routes, preset arm/upload/switch flow, real-time CC push with smooth 100 Hz sweeps. Validated the full scripting.rs subsystem (ob.json_decode/encode, ob.send_sysex, ob.register_route, ob.set_current_page) against physical hardware."
-    }
-  ],
+  "$schema": "https://w3id.org/osd/0.5/device.schema.json",
   "device": {
     "name": "Electra One MK2",
     "vendor": "Electra One",
@@ -25,6 +13,9 @@
     "device_id": [],
     "rate_limit_hz": 0
   },
+  "capabilities": [
+    "lua"
+  ],
   "sysex": {
     "header": [
       240,
@@ -92,8 +83,12 @@
       "frame": [
         2,
         1,
-        "{bank}",
-        "{slot}"
+        {
+          "arg": "bank"
+        },
+        {
+          "arg": "slot"
+        }
       ]
     },
     {
@@ -111,8 +106,12 @@
       "frame": [
         2,
         8,
-        "{bank}",
-        "{slot}"
+        {
+          "arg": "bank"
+        },
+        {
+          "arg": "slot"
+        }
       ]
     },
     {
@@ -130,8 +129,12 @@
       "frame": [
         2,
         12,
-        "{bank}",
-        "{slot}"
+        {
+          "arg": "bank"
+        },
+        {
+          "arg": "slot"
+        }
       ]
     },
     {
@@ -149,8 +152,12 @@
       "frame": [
         2,
         15,
-        "{bank}",
-        "{slot}"
+        {
+          "arg": "bank"
+        },
+        {
+          "arg": "slot"
+        }
       ]
     },
     {
@@ -168,8 +175,12 @@
       "frame": [
         2,
         18,
-        "{bank}",
-        "{slot}"
+        {
+          "arg": "bank"
+        },
+        {
+          "arg": "slot"
+        }
       ]
     },
     {
@@ -187,8 +198,12 @@
       "frame": [
         2,
         17,
-        "{bank}",
-        "{slot}"
+        {
+          "arg": "bank"
+        },
+        {
+          "arg": "slot"
+        }
       ]
     },
     {
@@ -206,8 +221,12 @@
       "frame": [
         9,
         8,
-        "{bank}",
-        "{slot}"
+        {
+          "arg": "bank"
+        },
+        {
+          "arg": "slot"
+        }
       ]
     },
     {
@@ -225,8 +244,12 @@
       "frame": [
         20,
         8,
-        "{bank}",
-        "{slot}"
+        {
+          "arg": "bank"
+        },
+        {
+          "arg": "slot"
+        }
       ]
     },
     {
@@ -248,7 +271,9 @@
       "frame": [
         9,
         10,
-        "{page}"
+        {
+          "arg": "page"
+        }
       ]
     },
     {
@@ -262,7 +287,9 @@
       "frame": [
         9,
         11,
-        "{set}"
+        {
+          "arg": "set"
+        }
       ]
     },
     {
@@ -276,7 +303,10 @@
       "frame": [
         20,
         119,
-        "{text:ascii}"
+        {
+          "arg": "text",
+          "encoding": "ascii"
+        }
       ]
     },
     {
@@ -298,15 +328,25 @@
       "frame": [
         20,
         14,
-        "{control_id:u14_lsb}",
-        "{control_id:u14_msb}",
-        "{value_id}",
-        "{text:ascii}"
+        {
+          "arg": "control_id",
+          "encoding": "u14_lsb"
+        },
+        {
+          "arg": "control_id",
+          "encoding": "u14_msb"
+        },
+        {
+          "arg": "value_id"
+        },
+        {
+          "arg": "text",
+          "encoding": "ascii"
+        }
       ]
     },
     {
       "osc": "/control/update",
-      "_notes": "Mutate an existing control in place (name/color/visible/bounds/value.defaultValue) without reupload. Opcode 0x14 0x07, reverse-engineered from jorisroling/bitwig-electra-one (Electra One.control.js). JSON body is the subset of fields to change.",
       "args": [
         {
           "name": "control_id",
@@ -320,10 +360,20 @@
       "frame": [
         20,
         7,
-        "{control_id:u14_lsb}",
-        "{control_id:u14_msb}",
-        "{json:ascii}"
-      ]
+        {
+          "arg": "control_id",
+          "encoding": "u14_lsb"
+        },
+        {
+          "arg": "control_id",
+          "encoding": "u14_msb"
+        },
+        {
+          "arg": "json",
+          "encoding": "ascii"
+        }
+      ],
+      "_notes": "Mutate an existing control in place (name/color/visible/bounds/value.defaultValue) without reupload. Opcode 0x14 0x07, reverse-engineered from jorisroling/bitwig-electra-one (Electra One.control.js). JSON body is the subset of fields to change."
     },
     {
       "osc": "/events/port",
@@ -336,7 +386,9 @@
       "frame": [
         20,
         123,
-        "{port}"
+        {
+          "arg": "port"
+        }
       ]
     },
     {
@@ -350,7 +402,9 @@
       "frame": [
         20,
         121,
-        "{flags}"
+        {
+          "arg": "flags"
+        }
       ]
     },
     {
@@ -364,7 +418,9 @@
       "frame": [
         127,
         125,
-        "{status}",
+        {
+          "arg": "status"
+        },
         0
       ]
     },
@@ -379,7 +435,9 @@
       "frame": [
         20,
         125,
-        "{port}",
+        {
+          "arg": "port"
+        },
         0
       ]
     },
@@ -394,7 +452,9 @@
       "frame": [
         127,
         122,
-        "{cmd}",
+        {
+          "arg": "cmd"
+        },
         0
       ]
     },
@@ -408,7 +468,9 @@
       ],
       "frame": [
         124,
-        "{status}"
+        {
+          "arg": "status"
+        }
       ]
     },
     {
@@ -421,7 +483,9 @@
       ],
       "frame": [
         3,
-        "{status}"
+        {
+          "arg": "status"
+        }
       ]
     },
     {
@@ -443,20 +507,29 @@
       "frame": [
         8,
         13,
-        "{text:ascii}"
+        {
+          "arg": "text",
+          "encoding": "ascii"
+        }
       ]
     },
     {
       "osc": "/lua_script/upload",
-      "_notes": "Upload a Lua script attached to the currently selected preset slot. Opcode 0x01 0x0C (1=upload, 12=Lua-script resource; mirrors /lua_script/get 0x02 0x0C and /lua_script/remove 0x05 0x0C). Target slot = last /preset/arm_upload. Without an attached Lua script, /lua (0x08 0x0D) has no runtime and controls/info/window/parameterMap are nil.",
       "args": [
-        { "name": "text", "type": "string" }
+        {
+          "name": "text",
+          "type": "string"
+        }
       ],
       "frame": [
         1,
         12,
-        "{text:ascii}"
-      ]
+        {
+          "arg": "text",
+          "encoding": "ascii"
+        }
+      ],
+      "_notes": "Upload a Lua script attached to the currently selected preset slot. Opcode 0x01 0x0C (1=upload, 12=Lua-script resource; mirrors /lua_script/get 0x02 0x0C and /lua_script/remove 0x05 0x0C). Target slot = last /preset/arm_upload. Without an attached Lua script, /lua (0x08 0x0D) has no runtime and controls/info/window/parameterMap are nil."
     },
     {
       "osc": "/preset/remove",
@@ -473,8 +546,12 @@
       "frame": [
         5,
         1,
-        "{bank}",
-        "{slot}"
+        {
+          "arg": "bank"
+        },
+        {
+          "arg": "slot"
+        }
       ]
     },
     {
@@ -492,8 +569,12 @@
       "frame": [
         5,
         8,
-        "{bank}",
-        "{slot}"
+        {
+          "arg": "bank"
+        },
+        {
+          "arg": "slot"
+        }
       ]
     },
     {
@@ -511,8 +592,12 @@
       "frame": [
         5,
         12,
-        "{bank}",
-        "{slot}"
+        {
+          "arg": "bank"
+        },
+        {
+          "arg": "slot"
+        }
       ]
     },
     {
@@ -524,84 +609,170 @@
       ]
     }
   ],
-  "midi_in": {
-    "note_on": "/note/on {note} {velocity} {channel}",
-    "note_off": "/note/off {note} {velocity} {channel}",
-    "cc": "/cc/{num} {value} {channel}",
-    "pitchbend": "/pitchbend {value_u14} {channel}",
-    "aftertouch": "/aftertouch {value} {channel}"
-  },
+  "midi_in": [
+    "note_on",
+    "note_off",
+    "cc",
+    "pitchbend",
+    "aftertouch"
+  ],
   "replies": [
     {
       "match_frame": [
         126,
         1,
-        "{tx_lsb}",
-        "{tx_msb}"
+        {
+          "capture": "tx_lsb"
+        },
+        {
+          "capture": "tx_msb"
+        }
       ],
-      "emit_osc": "/ack {tx_lsb} {tx_msb}"
+      "emit_osc": "/ack",
+      "emit_args": [
+        {
+          "capture": "tx_lsb"
+        },
+        {
+          "capture": "tx_msb"
+        }
+      ]
     },
     {
       "match_frame": [
         126,
         0,
-        "{tx_lsb}",
-        "{tx_msb}"
+        {
+          "capture": "tx_lsb"
+        },
+        {
+          "capture": "tx_msb"
+        }
       ],
-      "emit_osc": "/nack {tx_lsb} {tx_msb}"
+      "emit_osc": "/nack",
+      "emit_args": [
+        {
+          "capture": "tx_lsb"
+        },
+        {
+          "capture": "tx_msb"
+        }
+      ]
     },
     {
       "match_frame": [
         126,
         2,
-        "{bank}",
-        "{slot}"
+        {
+          "capture": "bank"
+        },
+        {
+          "capture": "slot"
+        }
       ],
-      "emit_osc": "/preset/switched {bank} {slot}"
+      "emit_osc": "/preset/switched",
+      "emit_args": [
+        {
+          "capture": "bank"
+        },
+        {
+          "capture": "slot"
+        }
+      ]
     },
     {
       "match_frame": [
         126,
         6,
-        "{page}"
+        {
+          "capture": "page"
+        }
       ],
-      "emit_osc": "/page/switched {page}",
+      "emit_osc": "/page/switched",
+      "emit_args": [
+        {
+          "capture": "page"
+        }
+      ],
       "script": "ctx = ...\nob.set_current_page(ctx.bindings.page)\nreturn ctx"
     },
     {
       "match_frame": [
         126,
         7,
-        "{set}"
+        {
+          "capture": "set"
+        }
       ],
-      "emit_osc": "/control_set/switched {set}"
+      "emit_osc": "/control_set/switched",
+      "emit_args": [
+        {
+          "capture": "set"
+        }
+      ]
     },
     {
       "match_frame": [
         126,
         8,
-        "{bank}"
+        {
+          "capture": "bank"
+        }
       ],
-      "emit_osc": "/preset_bank/switched {bank}"
+      "emit_osc": "/preset_bank/switched",
+      "emit_args": [
+        {
+          "capture": "bank"
+        }
+      ]
     },
     {
       "match_frame": [
         126,
         4,
-        "{bank}"
+        {
+          "capture": "bank"
+        }
       ],
-      "emit_osc": "/snapshot_bank/switched {bank}"
+      "emit_osc": "/snapshot_bank/switched",
+      "emit_args": [
+        {
+          "capture": "bank"
+        }
+      ]
     },
     {
       "match_frame": [
         126,
         10,
-        "{pot_id}",
-        "{control_id_lsb}",
-        "{control_id_msb}",
-        "{touched}"
+        {
+          "capture": "pot_id"
+        },
+        {
+          "capture": "control_id_lsb"
+        },
+        {
+          "capture": "control_id_msb"
+        },
+        {
+          "capture": "touched"
+        }
       ],
-      "emit_osc": "/pot/touch {pot_id} {control_id_lsb} {control_id_msb} {touched}"
+      "emit_osc": "/pot/touch",
+      "emit_args": [
+        {
+          "capture": "pot_id"
+        },
+        {
+          "capture": "control_id_lsb"
+        },
+        {
+          "capture": "control_id_msb"
+        },
+        {
+          "capture": "touched"
+        }
+      ]
     },
     {
       "match_frame": [
@@ -647,9 +818,22 @@
     },
     {
       "osc": "/preset/upload",
+      "script": "ctx = ...\nlocal json_str = ctx.args_str[1]\nlocal p = ob.json_decode(json_str)\nif not p then ob.log_error('preset upload: json decode failed'); return nil end\nob.clear_routes()\nlocal page_idx = {}\nif p.pages then\n  for i, pg in ipairs(p.pages) do page_idx[pg.id] = i end\nend\nlocal dev_ch = {}\nif p.devices then\n  for _, d in ipairs(p.devices) do dev_ch[d.id] = (d.channel or 1) - 1 end\nend\nif p.controls then\n  for _, c in ipairs(p.controls) do\n    local vals = c.values\n    if vals and vals[1] and vals[1].message then\n      local m = vals[1].message\n      local page = page_idx[c.pageId]\n      if m.type == 'cc7' and m.parameterNumber then\n        local ch = dev_ch[m.deviceId] or 0\n        local name = (c.name or ('ctrl_' .. tostring(c.id))):lower():gsub('[^%w]+', '_'):gsub('^_+',''):gsub('_+$','')\n        local addr = string.format('/electra1/page%d/%s', page or 0, name)\n        ob.register_cc_route(page, ch, m.parameterNumber, addr, m.min or 0, m.max or 127)\n      end\n    end\n  end\nend\nob.state.preset_name = p.name\n-- Default current_page to the first page in the preset. Without this, a\n-- preset that is uploaded but whose /page/switched reply has not yet fired\n-- would have current_page=nil, and routes registered with page=N would not\n-- resolve until the user manually changes page on the device.\nif p.pages and p.pages[1] then ob.set_current_page(1) end\n-- Electra MK2 firmware 4.x: preset upload is a single SysEx (no arm step).\n-- Opcode 0x01 = upload, resource 0x01 = Preset. Target slot is whatever was\n-- previously selected via /preset/arm_upload (mis-named in this spec — it's\n-- really 'Set Preset Slot', 0x14 0x08 bank slot). Device replies ACK or NACK.\nlocal data = {0x01, 0x01}\nfor i = 1, #json_str do data[#data + 1] = string.byte(json_str, i) end\nob.emit_sysex(data, true)\nreturn ctx",
       "profile": "preset_ingest",
-      "wrap_sysex": false,
-      "script": "ctx = ...\nlocal json_str = ctx.args_str[1]\nlocal p = ob.json_decode(json_str)\nif not p then ob.log_error('preset upload: json decode failed'); return nil end\nob.clear_routes()\nlocal page_idx = {}\nif p.pages then\n  for i, pg in ipairs(p.pages) do page_idx[pg.id] = i end\nend\nlocal dev_ch = {}\nif p.devices then\n  for _, d in ipairs(p.devices) do dev_ch[d.id] = (d.channel or 1) - 1 end\nend\nif p.controls then\n  for _, c in ipairs(p.controls) do\n    local vals = c.values\n    if vals and vals[1] and vals[1].message then\n      local m = vals[1].message\n      local page = page_idx[c.pageId]\n      if m.type == 'cc7' and m.parameterNumber then\n        local ch = dev_ch[m.deviceId] or 0\n        local name = (c.name or ('ctrl_' .. tostring(c.id))):lower():gsub('[^%w]+', '_'):gsub('^_+',''):gsub('_+$','')\n        local addr = string.format('/electra1/page%d/%s', page or 0, name)\n        ob.register_cc_route(page, ch, m.parameterNumber, addr, m.min or 0, m.max or 127)\n      end\n    end\n  end\nend\nob.state.preset_name = p.name\n-- Default current_page to the first page in the preset. Without this, a\n-- preset that is uploaded but whose /page/switched reply has not yet fired\n-- would have current_page=nil, and routes registered with page=N would not\n-- resolve until the user manually changes page on the device.\nif p.pages and p.pages[1] then ob.set_current_page(1) end\n-- Electra MK2 firmware 4.x: preset upload is a single SysEx (no arm step).\n-- Opcode 0x01 = upload, resource 0x01 = Preset. Target slot is whatever was\n-- previously selected via /preset/arm_upload (mis-named in this spec — it's\n-- really 'Set Preset Slot', 0x14 0x08 bank slot). Device replies ACK or NACK.\nlocal data = {0x01, 0x01}\nfor i = 1, #json_str do data[#data + 1] = string.byte(json_str, i) end\nob.emit_sysex(data, true)\nreturn ctx"
+      "wrap_sysex": false
+    }
+  ],
+  "_sources": [
+    {
+      "type": "vendor-doc",
+      "url": "https://docs.electra.one/developers/midiimplementation.html",
+      "imported_at": "2026-04-13",
+      "notes": "Electra One SysEx Implementation Reference, firmware 4.x"
+    },
+    {
+      "type": "hardware-verified",
+      "url": "local-test-2026-04-19",
+      "notes": "End-to-end validation on Electra One MK2 firmware 4.1.4. Scope: preset upload (/preset/upload), live mutation (/control/update), Lua scripting (/lua + /lua_script/upload), dynamic CC routes, preset arm/upload/switch flow, real-time CC push with smooth 100 Hz sweeps. Validated the full scripting.rs subsystem (ob.json_decode/encode, ob.send_sysex, ob.register_route, ob.set_current_page) against physical hardware."
     }
   ]
 }

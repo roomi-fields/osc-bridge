@@ -1,13 +1,5 @@
 {
-  "_sources": [
-    {
-      "type": "vendor-doc",
-      "url": "https://userguides.novationmusic.com/hc/en-gb/sections/27840433446546-Launch-Control-XL-3-programmer-s-reference-guide",
-      "notes": "Novation Launch Control XL 3 Programmer's Reference Guide, firmware 1.x",
-      "imported_at": "2026-04-13",
-      "title": "Novation Launch Control XL 3"
-    }
-  ],
+  "$schema": "https://w3id.org/osd/0.5/device.schema.json",
   "device": {
     "name": "Launch Control XL 3",
     "vendor": "Novation",
@@ -37,115 +29,7 @@
       247
     ]
   },
-  "commands": [
-    {
-      "osc": "/daw_mode/enable",
-      "args": [],
-      "frame": [
-        2,
-        127
-      ]
-    },
-    {
-      "osc": "/daw_mode/disable",
-      "args": [],
-      "frame": [
-        2,
-        0
-      ]
-    },
-    {
-      "osc": "/led/rgb",
-      "args": [
-        {
-          "name": "control",
-          "type": "u7"
-        },
-        {
-          "name": "r",
-          "type": "u7"
-        },
-        {
-          "name": "g",
-          "type": "u7"
-        },
-        {
-          "name": "b",
-          "type": "u7"
-        }
-      ],
-      "frame": [
-        1,
-        83,
-        "{control}",
-        "{r}",
-        "{g}",
-        "{b}"
-      ]
-    },
-    {
-      "osc": "/display/configure",
-      "args": [
-        {
-          "name": "target",
-          "type": "u7"
-        },
-        {
-          "name": "config",
-          "type": "u7"
-        }
-      ],
-      "frame": [
-        4,
-        "{target}",
-        "{config}"
-      ]
-    },
-    {
-      "osc": "/display/text",
-      "args": [
-        {
-          "name": "target",
-          "type": "u7"
-        },
-        {
-          "name": "field",
-          "type": "u7"
-        },
-        {
-          "name": "text",
-          "type": "string"
-        }
-      ],
-      "frame": [
-        6,
-        "{target}",
-        "{field}",
-        "{text:ascii}"
-      ]
-    },
-    {
-      "osc": "/display/bitmap",
-      "_note": "bitmap_data must be exactly 1216 bytes (19 per row × 64 rows) supplied via {data:bytes}. Target 32 = stationary, 33 = global temporary.",
-      "args": [
-        {
-          "name": "target",
-          "type": "u7"
-        },
-        {
-          "name": "data",
-          "type": "string"
-        }
-      ],
-      "frame": [
-        9,
-        "{target}",
-        "{data:bytes}"
-      ]
-    }
-  ],
   "cc_params": {
-    "_note": "Feature controls (sent to DAW-in port on channel 7 = channel index 6). Query a current value by sending the same CC on channel 8 (pass 7 as second OSC arg for a one-shot query). All entries marked _nonvolatile persist across power cycles.",
     "channel": 6,
     "entries": [
       {
@@ -767,15 +651,147 @@
         ],
         "channel": 0
       }
-    ]
+    ],
+    "_note": "Feature controls (sent to DAW-in port on channel 7 = channel index 6). Query a current value by sending the same CC on channel 8 (pass 7 as second OSC arg for a one-shot query). All entries marked _nonvolatile persist across power cycles."
   },
-  "midi_in": {
-    "note_on": "/note/on {note} {velocity} {channel}",
-    "note_off": "/note/off {note} {velocity} {channel}",
-    "cc": "/cc/{num} {value} {channel}",
-    "pitchbend": "/pitchbend {value_u14} {channel}",
-    "aftertouch": "/aftertouch {value} {channel}"
-  },
+  "commands": [
+    {
+      "osc": "/daw_mode/enable",
+      "args": [],
+      "frame": [
+        2,
+        127
+      ]
+    },
+    {
+      "osc": "/daw_mode/disable",
+      "args": [],
+      "frame": [
+        2,
+        0
+      ]
+    },
+    {
+      "osc": "/led/rgb",
+      "args": [
+        {
+          "name": "control",
+          "type": "u7"
+        },
+        {
+          "name": "r",
+          "type": "u7"
+        },
+        {
+          "name": "g",
+          "type": "u7"
+        },
+        {
+          "name": "b",
+          "type": "u7"
+        }
+      ],
+      "frame": [
+        1,
+        83,
+        {
+          "arg": "control"
+        },
+        {
+          "arg": "r"
+        },
+        {
+          "arg": "g"
+        },
+        {
+          "arg": "b"
+        }
+      ]
+    },
+    {
+      "osc": "/display/configure",
+      "args": [
+        {
+          "name": "target",
+          "type": "u7"
+        },
+        {
+          "name": "config",
+          "type": "u7"
+        }
+      ],
+      "frame": [
+        4,
+        {
+          "arg": "target"
+        },
+        {
+          "arg": "config"
+        }
+      ]
+    },
+    {
+      "osc": "/display/text",
+      "args": [
+        {
+          "name": "target",
+          "type": "u7"
+        },
+        {
+          "name": "field",
+          "type": "u7"
+        },
+        {
+          "name": "text",
+          "type": "string"
+        }
+      ],
+      "frame": [
+        6,
+        {
+          "arg": "target"
+        },
+        {
+          "arg": "field"
+        },
+        {
+          "arg": "text",
+          "encoding": "ascii"
+        }
+      ]
+    },
+    {
+      "osc": "/display/bitmap",
+      "args": [
+        {
+          "name": "target",
+          "type": "u7"
+        },
+        {
+          "name": "data",
+          "type": "string"
+        }
+      ],
+      "frame": [
+        9,
+        {
+          "arg": "target"
+        },
+        {
+          "arg": "data",
+          "encoding": "bytes"
+        }
+      ],
+      "_note": "bitmap_data must be exactly 1216 bytes (19 per row × 64 rows) supplied via {data:bytes}. Target 32 = stationary, 33 = global temporary."
+    }
+  ],
+  "midi_in": [
+    "note_on",
+    "note_off",
+    "cc",
+    "pitchbend",
+    "aftertouch"
+  ],
   "replies": [
     {
       "match_frame": [
@@ -783,6 +799,15 @@
         127
       ],
       "emit_osc": "/display/bitmap/ack"
+    }
+  ],
+  "_sources": [
+    {
+      "type": "vendor-doc",
+      "url": "https://userguides.novationmusic.com/hc/en-gb/sections/27840433446546-Launch-Control-XL-3-programmer-s-reference-guide",
+      "imported_at": "2026-04-13",
+      "notes": "Novation Launch Control XL 3 Programmer's Reference Guide, firmware 1.x",
+      "title": "Novation Launch Control XL 3"
     }
   ]
 }

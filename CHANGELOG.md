@@ -11,6 +11,26 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed — osc-bridge reads its drivers through `osd`
+- The engine reads every driver with the `osd` crate (Open Synth Descriptors),
+  git dependency pinned to a commit: its own driver structures and the
+  resolution of shared MIDI (`midi_of`) and maker profiles are removed, the
+  callers read the types of `osd`. A driver `osd` refuses (a field it does
+  not know, a missing profile or shared file, a cycle) fails to load with
+  `osd`'s fault. Rules that belong to the engine (`identity.request`,
+  `identity.firmware`, `programs` frames) are still refused by the engine,
+  naming the defect.
+- `docs/DEVICE_JSON_SCHEMA.md` is removed: the format is the OSD's
+  (<https://github.com/roomi-fields/open-synth-descriptors>); the documents
+  that cited it point there. The test drivers are the converter's 0.5 output.
+- A driver's `identity.sends` and `identity.usb` are read and kept as written;
+  they are signs of recognition, never messages the engine sends, and
+  recognition itself does not change.
+- The client downloads a driver with the files `osd` says it is built from
+  (shared MIDI, profiles), asking the server as `osd` reclaims them; nothing
+  reaches the cache until the resolution succeeded, and a driver `osd` refuses
+  fails the download with `osd`'s fault, the cached copy left as it is.
+
 ## [0.19.1] — 2026-10-31
 
 ### Fixed — a command's checksums are computed after its script
@@ -76,7 +96,7 @@ is tracked explicitly under each release.
   block (what a program change selects, the banks with their bank select and
   numbering, settings to switch on, messages around the program change, how
   a stored sound is read back). A firmware file sharing another's MIDI may
-  hold its own. `DEVICE_JSON_SCHEMA.md` describes both.
+  hold its own. The OSD format describes both (`docs/DEVICE_JSON_SCHEMA.md`, since removed, is replaced by it).
 - Detection sends, after the Universal Identity Request, the makers' requests
   the identity blocks name, keeps every SysEx answer per port, and puts first
   the driver whose identity recognises it, the variant for the firmware read
@@ -439,7 +459,7 @@ each control *expects* without guessing from the range alone.
   and adds no runtime behaviour. The signal realization (CV / Gate / Trig /
   Clock) is the caller's concern — osc-bridge stays universal and only states the
   device-side expectation. The field is open (any string is accepted) and the
-  recommended vocabulary is documented in `DEVICE_JSON_SCHEMA.md`.
+  recommended vocabulary is documented in the OSD format (`DEVICE_JSON_SCHEMA.md`, since removed).
 - `list_routes` (MCP) now returns `expects` on every cc/sysex entry; the live
   `devices.json` index carries per-nature counts.
 - Catalogue-wide structural pass: 1363 entries across 96 drivers annotated from
