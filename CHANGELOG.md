@@ -16,6 +16,11 @@ is tracked explicitly under each release.
   programs) now writes to the log, not to standard output, where a local MCP
   session speaks. Every script engine is built by the same constructor.
 
+### Fixed
+- The MCP tool `submit_driver` describes the driver format as Open Synth
+  Descriptors and points to its page (<https://synthhub.roomi-fields.com/osd/>);
+  the SynthHub page `DEVICE_JSON_SCHEMA` it cited no longer exists.
+
 ## [0.20.0] — 2026-11-16
 
 ### Changed — osc-bridge reads its drivers through `osd`
