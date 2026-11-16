@@ -11,6 +11,8 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+## [0.20.0] — 2026-11-16
+
 ### Changed — osc-bridge reads its drivers through `osd`
 - The engine reads every driver with the `osd` crate (Open Synth Descriptors),
   git dependency pinned to a commit: its own driver structures and the
@@ -30,6 +32,13 @@ is tracked explicitly under each release.
   (shared MIDI, profiles), asking the server as `osd` reclaims them; nothing
   reaches the cache until the resolution succeeded, and a driver `osd` refuses
   fails the download with `osd`'s fault, the cached copy left as it is.
+
+### Changed — every request to SynthHub presents this machine's anonymous account
+- The server issues the anonymous account before a copy's first request to it,
+  no longer at the first report or contribution; it is kept in
+  `<config>/osc-bridge/user` as before. Detection, driver downloads and the
+  catalogue tools present it on each request. `PRIVACY.md` says so. Offline,
+  nothing is sent.
 
 ## [0.19.1] — 2026-10-31
 
