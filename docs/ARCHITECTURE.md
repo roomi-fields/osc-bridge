@@ -20,7 +20,7 @@ What crosses the workspace's edges:
 - **driver files** in the OSD format, read through `osd`, from the service or a local folder;
 - **messages** from agents and software (MCP calls, OSC) and **MIDI or OSC** to and from devices;
 - **the service API and the relay protocol**, typed by `synthhub-protocol`, shared with the service and the browser;
-- **the crates** `synth-core`, `synth-io`, `formats` and `synthhub-protocol`, used by the service and the site.
+- **the crates** `synth-core`, `synth-io` and `synthhub-protocol`, used by the service and the site. Translating between OSD and other formats (MIDNAM, OSCQuery, Electra One, the pencilresearch/midi CSV) is `osd-formats`, in the OSD repository, which the application calls.
 
 Each crate's role and refusals live in its `CADRE.md`, what crosses its edges in its `INTERFACE.md`.
 
@@ -35,19 +35,18 @@ Each crate's role and refusals live in its `CADRE.md`, what crosses its edges in
 
 ```mermaid
 flowchart TB
-  app[osc-bridge app] --> core[synth-core] & io[synth-io] & fmt[formats] & proto[synthhub-protocol]
+  app[osc-bridge app] --> core[synth-core] & io[synth-io] & proto[synthhub-protocol]
   io --> core
   core --> osd[osd]
-  fmt --> osd
+  app --> fmt[osd-formats, in the OSD repository]
 ```
 
 | Crate | Responsibility | Owns | Calls | Language |
 |---|---|---|---|---|
 | `synth-core` | the session of a device: messages ↔ MIDI or OSC messages, replies, recognition, programs, the Lua capability, a virtual device that answers | the compiled device, the session state | `osd` | |
 | `synth-io` | carry core messages: MIDI 1 ports, MIDI 2, OSC over UDP, WebSocket, OSCQuery, output pacing | ports, sockets | `synth-core` (types) | |
-| `formats` | export to and import from other formats: MIDNAM, OSCQuery, Electra One, Ctrlr | the converters | `osd` | |
 | `synthhub-protocol` | the types exchanged with the service: versioned API, relay frames, identity | the contract | nothing | |
-| `crates/osc-bridge` | the application: CLI, MCP server (stdio, HTTP with a token), orchestrator of several devices with routes between them, relay door, driver cache, privacy settings | the installation's configuration | all four | cargo |
+| `crates/osc-bridge` | the application: CLI, MCP server (stdio, HTTP with a token), orchestrator of several devices with routes between them, relay door, driver cache, privacy settings | the installation's configuration | all three, and `osd-formats` for writing a driver in other formats | cargo |
 
 The single-device mode is the orchestrator with one device: one dispatch path.
 
@@ -57,7 +56,7 @@ The workspace is the root `Cargo.toml`, a virtual workspace, as in rust-analyzer
 
 | Data | Shape | Made by | Read by | Lifetime |
 |---|---|---|---|---|
-| resolved device | `osd` types | `osd::resolve` | `synth-core`, `formats` | one load |
+| resolved device | `osd` types | `osd::resolve` | `synth-core` | one load |
 | compiled device | encodings, checksums and templates parsed | `synth-core` | the session | the session |
 | session | script state, dynamic routes, pending replies | `synth-core` | the application, the service, the browser | while the device is connected |
 | core message | address and typed arguments, or a MIDI message | callers, `synth-io` | `synth-core` | one message |

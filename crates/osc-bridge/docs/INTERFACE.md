@@ -40,7 +40,7 @@ A command `script` sees, besides `ctx` and `ob`, Electra One's two APIs under El
 - `NoDriver` — no driver matches the name, in the cache or the service.
 - `Unauthorized` — an MCP request over HTTP without the right token.
 - `ConsentRefused` — the person refused a message at the door.
-- the faults of `synth-core`, `synth-io`, `formats` and `synthhub-protocol`, passed on with their code.
+- the faults of `synth-core`, `synth-io` and `synthhub-protocol`, passed on with their code.
 
 ## The guard
 
