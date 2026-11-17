@@ -11,6 +11,8 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+## [0.21.0] — 2026-11-17
+
 ### Added
 - Links between two devices can be made while the bridge runs, by an agent:
   the MCP tools `add_link`, `remove_link` and `list_links` reach the running
@@ -26,8 +28,6 @@ is tracked explicitly under each release.
 - `print` of a script engine built without a driver (identity detection,
   programs) now writes to the log, not to standard output, where a local MCP
   session speaks. Every script engine is built by the same constructor.
-
-### Fixed
 - The MCP tool `submit_driver` describes the driver format as Open Synth
   Descriptors and points to its page (<https://synthhub.roomi-fields.com/osd/>);
   the SynthHub page `DEVICE_JSON_SCHEMA` it cited no longer exists.
