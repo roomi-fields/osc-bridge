@@ -55,16 +55,13 @@ use std::sync::OnceLock;
 use osd::Device;
 use crate::runtime::{
     answer_query, bridge_query_replies, bridge_status_replies, build_forward_msg, dispatch_osc_to_device,
-    dispatch_to_device, handle_midi_in, match_osc_path, parse_osc_tpl, run_osc_reply_loop,
-    send_osc_to_target, DeviceDispatch, OscDeviceHandle, Part, SendOsc,
+    dispatch_to_device, handle_midi_in, match_osc_path, run_osc_reply_loop,
+    send_osc_to_target, DeviceDispatch, OscDeviceHandle, SendOsc,
 };
 
-/// Compiled form of a RouteRule, pattern parsed once at startup.
-struct CompiledRoute {
-    from_parts: Vec<Part>,
-    to_template: String,
-    map: Option<MapRule>,
-}
+mod links;
+pub use links::LinkTable;
+use links::{CompiledRoute, Links};
 
 thread_local! {
     static ROUTE_DEPTH: std::cell::Cell<u32> = const { std::cell::Cell::new(0) };
@@ -140,7 +137,7 @@ fn dispatch_into_owner(
 
 fn apply_routes(
     msg: &OscMessage,
-    routes: &[CompiledRoute],
+    routes: &[Arc<CompiledRoute>],
     devices: &[LoadedDevice],
     prefix_map: &HashMap<String, usize>,
     send_osc: &SendOsc,
@@ -396,14 +393,10 @@ impl Orchestrator {
             }
         }
 
-        // Compile inter-device routes
-        let compiled_routes: Vec<CompiledRoute> = cfg.routes.iter().map(|r| CompiledRoute {
-            from_parts: parse_osc_tpl(&r.from),
-            to_template: r.to.clone(),
-            map: r.map.clone(),
-        }).collect();
-        if !compiled_routes.is_empty() {
-            eprintln!("Routes: {} declared", compiled_routes.len());
+        // The table of links: the file's links, changed afterwards by the control addresses.
+        let links = Arc::new(Links::new(&cfg.routes, &devices));
+        if !cfg.routes.is_empty() {
+            eprintln!("Routes: {} declared", cfg.routes.len());
             for r in &cfg.routes {
                 eprintln!("  {} -> {}{}", r.from, r.to,
                     r.map.as_ref().map(|m| format!(" [map {:?} -> {:?}]", m.from, m.to)).unwrap_or_default());
@@ -414,7 +407,6 @@ impl Orchestrator {
         // MIDI-IN callbacks, and the OSC reply listeners.
         let devices = Arc::new(devices);
         let prefix_map = Arc::new(prefix_map);
-        let routes = Arc::new(compiled_routes);
 
         // Route-aware send_osc: broadcasts to clients, then re-injects matching
         // messages through the routing layer. Self-referential (replies from a
@@ -424,12 +416,12 @@ impl Orchestrator {
             let raw = raw_send.clone();
             let devices = devices.clone();
             let prefix_map = prefix_map.clone();
-            let routes = routes.clone();
+            let links = links.clone();
             let holder = routed_holder.clone();
             Arc::new(move |msg: OscMessage| {
                 raw(msg.clone());
                 if let Some(self_send) = holder.get() {
-                    apply_routes(&msg, &routes, &devices, &prefix_map, self_send);
+                    apply_routes(&msg, &links.table.snapshot(), &devices, &prefix_map, self_send);
                 }
             })
         };
@@ -442,10 +434,10 @@ impl Orchestrator {
             let dispatch_cb: crate::ws::WsDispatch = {
                 let devices = devices.clone();
                 let prefix_map = prefix_map.clone();
-                let routes = routes.clone();
+                let links = links.clone();
                 let send = routed_send.clone();
                 Arc::new(move |pkt, from| {
-                    orch_dispatch(pkt, &devices, &prefix_map, &routes, &send, from);
+                    orch_dispatch(pkt, &devices, &prefix_map, &links, &send, from);
                 })
             };
             let local = crate::ws::serve(bind, wsc.clone(), dispatch_cb, cfg.osc.ws_allow_origins.clone())?;
@@ -527,11 +519,27 @@ impl Orchestrator {
             };
             match rosc::decoder::decode_udp(&buf[..n]) {
                 Ok((_, pkt)) => {
+                    // The link control addresses answer whoever asks, as /bridge/status does:
+                    // straight back to a caller that is not a configured client, and to every
+                    // client and WebSocket peer through the broadcast.
+                    if let OscPacket::Message(m) = &pkt {
+                        if let Some(replies) = links.control(m) {
+                            for r in replies {
+                                if !client_addrs.contains(&from) {
+                                    if let Ok(bytes) = rosc::encoder::encode(&OscPacket::Message(r.clone())) {
+                                        let _ = sock.send_to(&bytes, from);
+                                    }
+                                }
+                                raw_send(r);
+                            }
+                            continue;
+                        }
+                    }
                     if matches!(&pkt, OscPacket::Message(m) if m.addr.starts_with("/bridge/")) {
                         let devs: Vec<Device> = devices.iter().map(|d| d.device().clone()).collect();
                         answer_query(&sock, &pkt, from, &devs, &client_addrs);
                     }
-                    orch_dispatch(pkt, &devices, &prefix_map, &routes, &routed_send, from)
+                    orch_dispatch(pkt, &devices, &prefix_map, &links, &routed_send, from)
                 }
                 Err(e) => eprintln!("OSC decode err: {e}"),
             }
@@ -543,13 +551,13 @@ fn orch_dispatch(
     pkt: OscPacket,
     devices: &[LoadedDevice],
     prefix_map: &HashMap<String, usize>,
-    routes: &[CompiledRoute],
+    links: &Links,
     send_osc: &SendOsc,
     from: SocketAddr,
 ) {
     match pkt {
-        OscPacket::Message(m) => orch_handle(m, devices, prefix_map, routes, send_osc, from),
-        OscPacket::Bundle(b) => for p in b.content { orch_dispatch(p, devices, prefix_map, routes, send_osc, from); }
+        OscPacket::Message(m) => orch_handle(m, devices, prefix_map, links, send_osc, from),
+        OscPacket::Bundle(b) => for p in b.content { orch_dispatch(p, devices, prefix_map, links, send_osc, from); }
     }
 }
 
@@ -557,10 +565,18 @@ fn orch_handle(
     msg: OscMessage,
     devices: &[LoadedDevice],
     prefix_map: &HashMap<String, usize>,
-    routes: &[CompiledRoute],
+    links: &Links,
     send_osc: &SendOsc,
     from: SocketAddr,
 ) {
+    // Global: /bridge/link/* → change or list the links, answer through the clients.
+    if let Some(replies) = links.control(&msg) {
+        for reply in replies {
+            send_osc(reply);
+        }
+        return;
+    }
+
     // Global: /bridge/status → reply with every device
     if msg.addr == "/bridge/status" {
         let devs: Vec<Device> = devices.iter().map(|d| d.device().clone()).collect();
@@ -587,7 +603,7 @@ fn orch_handle(
 
     // Inter-device routing: always apply, regardless of whether a device owns
     // the source address (lets you route from any client-emitted path too).
-    apply_routes(&msg, routes, devices, prefix_map, send_osc);
+    apply_routes(&msg, &links.table.snapshot(), devices, prefix_map, send_osc);
 }
 
 fn drain_midi_out(mut conn: MidiOutputConnection, rx: Receiver<Vec<u8>>, rate_hz: u32) {
@@ -606,86 +622,4 @@ fn drain_midi_out(mut conn: MidiOutputConnection, rx: Receiver<Vec<u8>>, rate_hz
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-    use rosc::OscType;
-
-    #[test]
-    fn interp_substitutes_captures() {
-        let mut caps = HashMap::new();
-        caps.insert("n".to_string(), "3".to_string());
-        assert_eq!(
-            interp_to_template("/ableton/track/{n}/volume", &caps),
-            "/ableton/track/3/volume"
-        );
-    }
-
-    #[test]
-    fn interp_unknown_placeholder_becomes_empty() {
-        let caps = HashMap::new();
-        assert_eq!(interp_to_template("/x/{missing}/y", &caps), "/x//y");
-    }
-
-    #[test]
-    fn interp_no_placeholder_passes_through() {
-        let caps = HashMap::new();
-        assert_eq!(interp_to_template("/static/path", &caps), "/static/path");
-    }
-
-    #[test]
-    fn apply_map_linear_endpoints_and_midpoint() {
-        let m = MapRule { from: [0.0, 127.0], to: [0.0, 1.0] };
-        match apply_map(Some(&OscType::Int(127)), &m).unwrap() {
-            OscType::Float(f) => assert!((f - 1.0).abs() < 0.001),
-            o => panic!("expected float, got {o:?}"),
-        }
-        match apply_map(Some(&OscType::Int(0)), &m).unwrap() {
-            OscType::Float(f) => assert!(f.abs() < 0.001),
-            o => panic!("expected float, got {o:?}"),
-        }
-        match apply_map(Some(&OscType::Int(64)), &m).unwrap() {
-            OscType::Float(f) => assert!((f - 0.504).abs() < 0.01),
-            o => panic!("expected float, got {o:?}"),
-        }
-    }
-
-    #[test]
-    fn apply_map_clamps_out_of_range_input() {
-        let m = MapRule { from: [0.0, 100.0], to: [0.0, 1.0] };
-        match apply_map(Some(&OscType::Int(250)), &m).unwrap() {
-            OscType::Float(f) => assert!((f - 1.0).abs() < 0.001),
-            o => panic!("expected float, got {o:?}"),
-        }
-        match apply_map(Some(&OscType::Int(-50)), &m).unwrap() {
-            OscType::Float(f) => assert!(f.abs() < 0.001),
-            o => panic!("expected float, got {o:?}"),
-        }
-    }
-
-    #[test]
-    fn apply_map_inverted_output_range() {
-        // map.to can be descending — e.g. CC → an inverted parameter.
-        let m = MapRule { from: [0.0, 127.0], to: [1.0, 0.0] };
-        match apply_map(Some(&OscType::Int(0)), &m).unwrap() {
-            OscType::Float(f) => assert!((f - 1.0).abs() < 0.001),
-            o => panic!("expected float, got {o:?}"),
-        }
-        match apply_map(Some(&OscType::Int(127)), &m).unwrap() {
-            OscType::Float(f) => assert!(f.abs() < 0.001),
-            o => panic!("expected float, got {o:?}"),
-        }
-    }
-
-    #[test]
-    fn apply_map_rejects_non_numeric_and_missing() {
-        let m = MapRule { from: [0.0, 1.0], to: [0.0, 1.0] };
-        assert!(apply_map(Some(&OscType::String("x".into())), &m).is_none());
-        assert!(apply_map(None, &m).is_none());
-    }
-
-    #[test]
-    fn apply_map_zero_input_range_is_rejected() {
-        let m = MapRule { from: [5.0, 5.0], to: [0.0, 1.0] };
-        assert!(apply_map(Some(&OscType::Int(5)), &m).is_none());
-    }
-}
+mod tests;

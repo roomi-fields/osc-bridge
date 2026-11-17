@@ -11,6 +11,17 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Added
+- Links between two devices can be made while the bridge runs, by an agent:
+  the MCP tools `add_link`, `remove_link` and `list_links` reach the running
+  bridge through the control addresses `/bridge/link/add`, `/bridge/link/remove`
+  and `/bridge/link/list` (answered to every client, UDP and WebSocket). A link
+  is effective at the next message, with no restart. One table holds the links
+  of the configuration file and the live ones; the list gives each link's
+  origin, source, target and scaling. A link naming an address its driver does
+  not have, a loop, or more than four hops is refused with an error that names
+  it, and the table does not change.
+
 ### Fixed
 - `print` of a script engine built without a driver (identity detection,
   programs) now writes to the log, not to standard output, where a local MCP

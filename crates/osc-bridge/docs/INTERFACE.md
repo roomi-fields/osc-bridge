@@ -24,9 +24,17 @@ The application offers three published surfaces: its command line, its MCP tools
 
 The tools are described once, from Rust types; the list the server offers is generated from them and compared, at each change, with the published list. Local tools work offline; the others are the service's, forwarded through `synthhub-protocol`.
 
+Three tools link devices of a running orchestrator, reached by its UDP address (`target`, else `--default-target`) through its control addresses, and answering with the orchestrator's replies, or saying that none answered:
+
+| Tool | Does | Orchestrator address |
+|---|---|---|
+| `add_link` | links `from` to `to`, optionally scaling the first argument (`map`: input range, output range); effective at the next message; refused, naming the address or the chain, for an unknown device, an address its driver does not have, a loop or more than four hops | `/bridge/link/add` |
+| `remove_link` | removes the link from `from` to `to`; refused, naming it, when it does not exist | `/bridge/link/remove` |
+| `list_links` | lists the links of the configuration file and those added live, each with source, target, origin (`file` or `live`) and scaling | `/bridge/link/list` |
+
 ## The OSC addresses
 
-Each device's addresses come from its driver, under its prefix; the uniform addresses (`/identity`, `/program/recall`, `/program/dump`) are the same on every device; `/bridge/status` and `/bridge/docs` describe the bridge itself. OSCQuery publishes the whole namespace.
+Each device's addresses come from its driver, under its prefix; the uniform addresses (`/identity`, `/program/recall`, `/program/dump`) are the same on every device; `/bridge/status` and `/bridge/docs` describe the bridge itself. An orchestrator also answers, to any client (UDP or WebSocket), `/bridge/link/add <from> <to> [in_lo in_hi out_lo out_hi]` (`/bridge/link/added`, or `/bridge/link/error <text>`), `/bridge/link/remove <from> <to>` (`/bridge/link/removed`, or `/bridge/link/error <text>`) and `/bridge/link/list` (one `/bridge/link/list/item <from> <to> <origin> [scaling]` per link, then `/bridge/link/list/end <count>`). OSCQuery publishes the whole namespace.
 
 ## The Lua a driver declares
 

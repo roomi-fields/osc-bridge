@@ -494,8 +494,9 @@ page, [synthhub.roomi-fields.com/connect](https://synthhub.roomi-fields.com/conn
 }
 ```
 
-Nine local tools — `list_devices`, `get_device_docs`, `list_routes`, `export_device`,
-`send`, `get_status`, `detect_hardware`, `backup_presets`, `restore_presets` — plus
+Twelve local tools — `list_devices`, `get_device_docs`, `list_routes`, `export_device`,
+`send`, `get_status`, `detect_hardware`, `backup_presets`, `restore_presets`, and the
+three that change a running bridge's links, `add_link`, `remove_link`, `list_links` — plus
 the server's: reports, trust, contributions and shared presets (find, load, take from the synth,
 share). Then in conversation:
 *"What can the MatrixBrute do? Sweep its filter cutoff."* — the model calls

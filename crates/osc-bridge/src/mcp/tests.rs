@@ -144,13 +144,14 @@ fn device_index_builds_from_a_folder_of_drivers() {
 }
 
 #[test]
-fn tools_list_has_nine_tools() {
+fn tools_list_has_the_local_tools_including_the_three_link_tools() {
     let t = tools_list(&test_opts());
     let arr = t.get("tools").unwrap().as_array().unwrap();
-    assert_eq!(arr.len(), 9);
+    assert_eq!(arr.len(), 12);
     let names: Vec<&str> = arr.iter().map(|t| t.get("name").unwrap().as_str().unwrap()).collect();
     for expected in ["list_devices", "get_device_docs", "list_routes", "export_device", "send", "get_status",
-                     "detect_hardware", "backup_presets", "restore_presets"] {
+                     "detect_hardware", "backup_presets", "restore_presets",
+                     "add_link", "remove_link", "list_links"] {
         assert!(names.contains(&expected), "tool {expected} missing");
     }
 }
@@ -432,4 +433,123 @@ fn a_local_copy_fetches_the_drivers_it_needs_and_forwards_reports() {
     assert_eq!(trust["content"][0]["text"], "get_trust", "an account the server forgot is replaced: {trust}");
     assert_ne!(std::fs::read_to_string(tmp.join("user")).unwrap(), "0".repeat(32));
     assert_eq!(*calls.lock().unwrap(), ["report_result", "get_trust"]);
+}
+
+/// A stand-in orchestrator on a free UDP port: it answers the first message
+/// it receives with `replies` (sent back to the asker) and hands that message
+/// to the test.
+fn fake_orchestrator(replies: Vec<rosc::OscMessage>) -> (SocketAddr, std::sync::mpsc::Receiver<rosc::OscMessage>) {
+    let sock = UdpSocket::bind("127.0.0.1:0").unwrap();
+    let addr = sock.local_addr().unwrap();
+    let (tx, rx) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        let mut buf = [0u8; 65536];
+        let Ok((n, from)) = sock.recv_from(&mut buf) else { return };
+        if let Ok((_, rosc::OscPacket::Message(m))) = rosc::decoder::decode_udp(&buf[..n]) { let _ = tx.send(m); }
+        for r in replies {
+            let _ = sock.send_to(&rosc::encoder::encode(&rosc::OscPacket::Message(r)).unwrap(), from);
+        }
+    });
+    (addr, rx)
+}
+
+fn osc(addr: &str, args: Vec<rosc::OscType>) -> rosc::OscMessage {
+    rosc::OscMessage { addr: addr.into(), args }
+}
+
+fn ostr(s: &str) -> rosc::OscType { rosc::OscType::String(s.into()) }
+
+#[test]
+fn add_link_sends_the_source_the_target_and_the_scaling_to_the_orchestrator_and_gives_its_reply() {
+    let (addr, got) = fake_orchestrator(vec![osc("/bridge/link/added", vec![ostr("/ctl/knob"), ostr("/synth/cutoff")])]);
+    let args = json!({"from": "/ctl/knob", "to": "/synth/cutoff", "map": {"from": [0, 127], "to": [0, 1]},
+        "target": addr.to_string()});
+    let res = call_tool("add_link", &args, &test_opts(), &empty_index(), None).unwrap();
+    let sent = got.recv_timeout(Duration::from_secs(5)).unwrap();
+    use rosc::OscType::Float;
+    assert_eq!(sent.addr, "/bridge/link/add");
+    assert_eq!(sent.args, vec![ostr("/ctl/knob"), ostr("/synth/cutoff"), Float(0.0), Float(127.0), Float(0.0), Float(1.0)]);
+    let sc = &res["structuredContent"];
+    assert_eq!(sc["replied"], json!(true));
+    assert_eq!(sc["target"], json!(addr.to_string()));
+    assert_eq!(sc["replies"][0]["addr"], json!("/bridge/link/added"));
+    assert_eq!(sc["replies"][0]["args"], json!(["/ctl/knob", "/synth/cutoff"]));
+}
+
+#[test]
+fn add_link_without_scaling_sends_only_the_two_addresses() {
+    let (addr, got) = fake_orchestrator(vec![osc("/bridge/link/added", vec![])]);
+    let args = json!({"from": "/a", "to": "/b", "target": addr.to_string()});
+    call_tool("add_link", &args, &test_opts(), &empty_index(), None).unwrap();
+    let sent = got.recv_timeout(Duration::from_secs(5)).unwrap();
+    assert_eq!(sent.args, vec![ostr("/a"), ostr("/b")]);
+}
+
+#[test]
+fn add_link_gives_the_orchestrators_refusal_as_it_is() {
+    let (addr, _got) = fake_orchestrator(vec![osc("/bridge/link/error", vec![ostr("no device owns /ghost/x")])]);
+    let args = json!({"from": "/ghost/x", "to": "/b", "target": addr.to_string()});
+    let res = call_tool("add_link", &args, &test_opts(), &empty_index(), None).unwrap();
+    let sc = &res["structuredContent"];
+    assert_eq!(sc["replied"], json!(true));
+    assert_eq!(sc["replies"][0]["addr"], json!("/bridge/link/error"));
+    assert_eq!(sc["replies"][0]["args"][0], json!("no device owns /ghost/x"));
+}
+
+#[test]
+fn add_link_without_a_source_or_a_target_is_a_tool_error() {
+    let opts = test_opts();
+    assert!(call_tool("add_link", &json!({"to": "/b"}), &opts, &empty_index(), None).unwrap_err().contains("from"));
+    assert!(call_tool("add_link", &json!({"from": "/a"}), &opts, &empty_index(), None).unwrap_err().contains("to"));
+}
+
+#[test]
+fn remove_link_sends_the_source_and_the_target_and_gives_the_reply() {
+    let (addr, got) = fake_orchestrator(vec![osc("/bridge/link/removed", vec![ostr("/a"), ostr("/b")])]);
+    let args = json!({"from": "/a", "to": "/b", "target": addr.to_string()});
+    let res = call_tool("remove_link", &args, &test_opts(), &empty_index(), None).unwrap();
+    let sent = got.recv_timeout(Duration::from_secs(5)).unwrap();
+    assert_eq!((sent.addr.as_str(), sent.args), ("/bridge/link/remove", vec![ostr("/a"), ostr("/b")]));
+    assert_eq!(res["structuredContent"]["replies"][0]["addr"], json!("/bridge/link/removed"));
+}
+
+#[test]
+fn list_links_gives_every_reply_of_the_orchestrator() {
+    use rosc::OscType::{Float, Int};
+    let (addr, got) = fake_orchestrator(vec![
+        osc("/bridge/link/list/item", vec![ostr("/a"), ostr("/b"), ostr("file")]),
+        osc("/bridge/link/list/item", vec![ostr("/c"), ostr("/d"), ostr("live"), Float(0.0), Float(127.0), Float(0.0), Float(1.0)]),
+        osc("/bridge/link/list/end", vec![Int(2)]),
+    ]);
+    let res = call_tool("list_links", &json!({"target": addr.to_string()}), &test_opts(), &empty_index(), None).unwrap();
+    assert_eq!(got.recv_timeout(Duration::from_secs(5)).unwrap().addr, "/bridge/link/list");
+    let replies = res["structuredContent"]["replies"].as_array().unwrap();
+    assert_eq!(replies.len(), 3);
+    assert_eq!(replies[1]["args"][2], json!("live"));
+    assert_eq!(replies[2]["addr"], json!("/bridge/link/list/end"));
+}
+
+#[test]
+fn the_link_tools_say_no_orchestrator_answers_without_changing_anything() {
+    // A bound port nobody reads: the tool times out and says so.
+    let silent = UdpSocket::bind("127.0.0.1:0").unwrap();
+    let target = silent.local_addr().unwrap().to_string();
+    let opts = test_opts();
+    for (tool, args) in [("add_link", json!({"from": "/a", "to": "/b", "target": target})),
+                         ("remove_link", json!({"from": "/a", "to": "/b", "target": target})),
+                         ("list_links", json!({"target": target}))] {
+        let res = call_tool(tool, &args, &opts, &empty_index(), None).unwrap();
+        let sc = &res["structuredContent"];
+        assert_eq!(sc["replied"], json!(false), "{tool}");
+        assert_eq!(sc["replies"], json!([]), "{tool}");
+        assert!(res["content"][0]["text"].as_str().unwrap().contains("No reply"), "{tool}: {res}");
+    }
+}
+
+#[test]
+fn the_link_tools_default_to_the_default_target() {
+    let (addr, got) = fake_orchestrator(vec![osc("/bridge/link/list/end", vec![rosc::OscType::Int(0)])]);
+    let opts = McpOptions { default_target: addr, ..test_opts() };
+    call_tool("list_links", &json!({}), &opts, &empty_index(), None).unwrap();
+    assert_eq!(got.recv_timeout(Duration::from_secs(5)).unwrap().addr, "/bridge/link/list");
 }

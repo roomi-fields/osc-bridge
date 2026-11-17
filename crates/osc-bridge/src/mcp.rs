@@ -11,6 +11,8 @@
 //!  - `export_device`  — one driver written as OSCQuery or MIDNAM (`crate::export`)
 //!  - `send`           — emit an OSC message to a running osc-bridge bind port
 //!  - `get_status`     — round-trip `/bridge/status` to a running bridge
+//!  - `add_link`, `remove_link`, `list_links` — change or list the links of a
+//!    running orchestrator, through its `/bridge/link/*` control addresses
 //!
 //!  - `detect_hardware`, `backup_presets`, `restore_presets` — the MIDI
 //!    ports of the machine the server runs on
@@ -625,6 +627,74 @@ pub fn tool_schemas() -> Value {
                 }
             },
             {
+                "name": "add_link",
+                "description": "Link two addresses of a running orchestrator, live: the next message at `from` also goes to `to`, with no restart. Optionally scale the first argument from an input range to an output range. Refused, with an error that names the address or the chain, when a device or an address is unknown to its driver, or when the chain of links would loop or pass four hops; nothing changes then.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "from": { "type": "string", "description": "Source address, e.g. /keyboard/cc/1" },
+                        "to": { "type": "string", "description": "Target address, e.g. /synth/filter/cutoff" },
+                        "map": {
+                            "type": "object",
+                            "description": "Scaling of the first argument.",
+                            "properties": {
+                                "from": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2, "description": "Input range [lo, hi]." },
+                                "to": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2, "description": "Output range [lo, hi]." }
+                            },
+                            "required": ["from", "to"]
+                        },
+                        "target": { "type": "string", "description": "host:port of the orchestrator, defaults to --default-target" }
+                    },
+                    "required": ["from", "to"]
+                },
+                "outputSchema": link_tool_output(),
+                "annotations": {
+                    "title": "Add a link",
+                    "readOnlyHint": false,
+                    "destructiveHint": false,
+                    "idempotentHint": false,
+                    "openWorldHint": true
+                }
+            },
+            {
+                "name": "remove_link",
+                "description": "Remove a link of a running orchestrator, live: the next message no longer follows it. Refused, naming the link, when it does not exist.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "from": { "type": "string", "description": "Source address of the link." },
+                        "to": { "type": "string", "description": "Target address of the link." },
+                        "target": { "type": "string", "description": "host:port of the orchestrator, defaults to --default-target" }
+                    },
+                    "required": ["from", "to"]
+                },
+                "outputSchema": link_tool_output(),
+                "annotations": {
+                    "title": "Remove a link",
+                    "readOnlyHint": false,
+                    "destructiveHint": true,
+                    "idempotentHint": false,
+                    "openWorldHint": true
+                }
+            },
+            {
+                "name": "list_links",
+                "description": "List the links of a running orchestrator, those of its configuration file and those added live: one reply per link with its source, its target, its origin ('file' or 'live') and its scaling, then a final count.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "target": { "type": "string", "description": "host:port of the orchestrator, defaults to --default-target" }
+                    }
+                },
+                "outputSchema": link_tool_output(),
+                "annotations": {
+                    "title": "List the links",
+                    "readOnlyHint": true,
+                    "idempotentHint": true,
+                    "openWorldHint": true
+                }
+            },
+            {
                 "name": "backup_presets",
                 "description": "Back up a hardware device's presets as a .syx file. Listens on the device's MIDI input and records every SysEx message it sends (a 'bulk dump'), stopping 3 s after the last one. Either the user starts the dump from the device's menu during the call, or pass request_hex (the device's dump-request message, from its manual or driver) with out_port. Use detect_hardware first to find the ports.",
                 "inputSchema": {
@@ -1050,9 +1120,29 @@ pub fn tool_schemas() -> Value {
     })
 }
 
+/// The output of the three link tools: the orchestrator's replies, as `get_status` gives them.
+fn link_tool_output() -> Value {
+    json!({
+        "type": "object",
+        "properties": {
+            "target": { "type": "string" },
+            "replied": { "type": "boolean", "description": "False when no reply arrived within 500 ms." },
+            "replies": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": { "addr": { "type": "string" }, "args": { "type": "array" } },
+                    "required": ["addr", "args"]
+                }
+            }
+        },
+        "required": ["target", "replied", "replies"]
+    })
+}
+
 fn tool_names(opts: &McpOptions) -> Vec<&'static str> {
     let local = ["list_devices", "get_device_docs", "list_routes", "export_device", "send", "get_status",
-         "detect_hardware", "backup_presets", "restore_presets"];
+         "add_link", "remove_link", "list_links", "detect_hardware", "backup_presets", "restore_presets"];
     // Taking and loading sounds needs the server's librarian, like the forwarded tools.
     let linked: &[&str] = if opts.online { &["take_sound", "load_preset"] } else { &[] };
     let forwarded = if opts.online { crate::online::FORWARDED_TOOLS.as_slice() } else { &[] };
@@ -1112,6 +1202,13 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
                 None => opts.default_target,
             };
             get_status(target)
+        }
+        "add_link" | "remove_link" | "list_links" => {
+            let target = match args.get("target").and_then(Value::as_str) {
+                Some(s) => s.parse::<SocketAddr>().map_err(|e| format!("invalid target: {e}"))?,
+                None => opts.default_target,
+            };
+            link_tool(name, args, target)
         }
         "backup_presets" => {
             let in_port = args.get("in_port").and_then(Value::as_str).ok_or("missing in_port")?;
@@ -1765,10 +1862,45 @@ fn send_osc_message(addr: &str, args: &Value, target: SocketAddr) -> Result<Valu
 }
 
 fn get_status(target: SocketAddr) -> Result<Value, String> {
+    ask_orchestrator("/bridge/status", vec![], target)
+}
+
+/// `add_link`, `remove_link`, `list_links`: one control address of the running
+/// orchestrator, asked like `/bridge/status`.
+fn link_tool(name: &str, args: &Value, target: SocketAddr) -> Result<Value, String> {
+    use rosc::OscType;
+    let text = |key: &str| args.get(key).and_then(Value::as_str).map(str::to_string)
+        .ok_or_else(|| format!("missing {key}"));
+    match name {
+        "list_links" => ask_orchestrator("/bridge/link/list", vec![], target),
+        "remove_link" => {
+            let osc_args = vec![OscType::String(text("from")?), OscType::String(text("to")?)];
+            ask_orchestrator("/bridge/link/remove", osc_args, target)
+        }
+        _ => {
+            let mut osc_args = vec![OscType::String(text("from")?), OscType::String(text("to")?)];
+            if let Some(map) = args.get("map") {
+                let range = |key: &str| -> Result<[f32; 2], String> {
+                    let a = map.get(key).and_then(Value::as_array).filter(|a| a.len() == 2)
+                        .ok_or_else(|| format!("map.{key} must be [lo, hi]"))?;
+                    let n = |i: usize| a[i].as_f64().map(|x| x as f32).ok_or_else(|| format!("map.{key} must be numbers"));
+                    Ok([n(0)?, n(1)?])
+                };
+                let (from, to) = (range("from")?, range("to")?);
+                osc_args.extend(from.iter().chain(to.iter()).map(|x| OscType::Float(*x)));
+            }
+            ask_orchestrator("/bridge/link/add", osc_args, target)
+        }
+    }
+}
+
+/// Send one control message to a running orchestrator and give every reply
+/// that arrives within 500 ms, or say that none did.
+fn ask_orchestrator(addr: &str, osc_args: Vec<rosc::OscType>, target: SocketAddr) -> Result<Value, String> {
     use rosc::{OscMessage, OscPacket, encoder};
     let sock = UdpSocket::bind("0.0.0.0:0").map_err(|e| e.to_string())?;
     sock.set_read_timeout(Some(Duration::from_millis(500))).map_err(|e| e.to_string())?;
-    let pkt = OscPacket::Message(OscMessage { addr: "/bridge/status".into(), args: vec![] });
+    let pkt = OscPacket::Message(OscMessage { addr: addr.into(), args: osc_args });
     let bytes = encoder::encode(&pkt).map_err(|e| format!("osc encode: {e:?}"))?;
     sock.send_to(&bytes, target).map_err(|e| e.to_string())?;
     let mut buf = [0u8; 65536];

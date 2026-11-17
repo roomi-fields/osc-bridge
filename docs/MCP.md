@@ -75,7 +75,7 @@ The server speaks JSON-RPC 2.0 over stdio.
 - `--offline` — do not contact the SynthHub server (also
   `OSC_BRIDGE_OFFLINE=1`); see *Linked to the SynthHub server* below.
 
-## The nine tools
+## The twelve tools
 
 | Tool | What it does |
 |---|---|
@@ -85,6 +85,9 @@ The server speaks JSON-RPC 2.0 over stdio.
 | `export_device` | Write one driver (`device`: id or slug) as `oscquery` (its OSC namespace, OSCQuery JSON) or `midnam` (its MIDI names, MIDI Name Document XML), with its sources' credit and licence. See [EXPORT.md](EXPORT.md). |
 | `send` | Send a single OSC message to a running `osc-bridge` instance (typed args: int, float, string, bool). |
 | `get_status` | Round-trip `/bridge/status` to a running bridge and report the replies. |
+| `add_link` | Link an address of one device to an address of another on a running bridge, optionally scaling the first argument (`map`: input range, output range); effective at the next message, no restart. Refused, naming the address or the chain, for an unknown device, an address its driver does not have, a loop or more than four hops. |
+| `remove_link` | Remove a link from a running bridge; refused, naming it, when it does not exist. |
+| `list_links` | List a running bridge's links, from the configuration file and added live, each with its source, target, scaling and origin. |
 | `detect_hardware` | Find the MIDI devices plugged into this computer: list ports, ask each device who it is (standard MIDI Identity Request, then the makers' own requests the drivers' identity blocks name — changes nothing on the device), have the SynthHub server match the answers against the catalogue (offline: the drivers cached here), with the firmware read from them (drivers matching equally are listed in `equally_matching`, the one the others share their MIDI with first), and return a ready-to-run `osc-bridge run` command with the right port numbers. |
 | `backup_presets` | Record a device's SysEx dump (its presets) into a `.syx` file — the dump is started from the device's menu, or by a dump-request message. |
 | `restore_presets` | Send a `.syx` file back to a device. Overwrites its memory, so the tool refuses unless `confirm_overwrite: true` (the client should ask the user). |
