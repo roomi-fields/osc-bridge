@@ -3,25 +3,13 @@
 use osd::{MidiIn, MidiType};
 use rosc::{OscMessage, OscType};
 
-/// The address each MIDI message is reported at, under the device's prefix,
-/// with its OSC arguments after the space: fixed by the OSD specification
-/// (`osd` does not export the table).
-const TEMPLATES: [(MidiType, &str); 7] = [
-    (MidiType::NoteOn, "/note/on {note} {velocity} {channel}"),
-    (MidiType::NoteOff, "/note/off {note} {velocity} {channel}"),
-    (MidiType::Cc, "/cc/{num} {value} {channel}"),
-    (MidiType::Pitchbend, "/pitchbend {value_u14} {channel}"),
-    (MidiType::Aftertouch, "/aftertouch {value} {channel}"),
-    (MidiType::PolyAftertouch, "/poly_aftertouch {note} {value} {channel}"),
-    (MidiType::ProgramChange, "/program_change {program} {channel}"),
-];
-
 /// The template a device reports `t` with: none when its `midi_in` does not list it.
+/// A listed type takes the default template `osd` publishes.
 pub fn template(map: Option<&MidiIn>, t: MidiType) -> Option<String> {
     match map? {
         MidiIn::Types(l) => {
             if !l.contains(&t) { return None; }
-            TEMPLATES.iter().find(|(x, _)| *x == t).map(|(_, c)| (*c).to_string())
+            Some(t.template().to_string())
         }
         MidiIn::Templates(m) => match t {
             MidiType::NoteOn => m.note_on.clone(),

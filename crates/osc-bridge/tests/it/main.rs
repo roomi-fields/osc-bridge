@@ -16,6 +16,7 @@ mod electra_one;
 mod electra_one_driver;
 mod isolated_config;
 mod launch_control_xl_3;
+mod midi_in_templates;
 mod midi_out;
 mod newer_version_notice;
 mod online_account;
