@@ -48,7 +48,13 @@ jobs:
           if command -v cygpath >/dev/null; then TESTS_TMP=$(cygpath -m "$TESTS_TMP"); fi
           mkdir -p "$TESTS_TMP"
           status=0
-          TMPDIR="$TESTS_TMP" TMP="$TESTS_TMP" TEMP="$TESTS_TMP" cargo test --workspace --release --no-fail-fast --verbose || status=$?
+          # The day's run plays the libraries, the binaries, the `it` suite and
+          # the doctests; the time benches (`it_budget`) are night benches,
+          # measured at rest, so they are not played on a shared runner.
+          for args in "--lib --bins --test it" "--doc"; do
+            # shellcheck disable=SC2086
+            TMPDIR="$TESTS_TMP" TMP="$TESTS_TMP" TEMP="$TESTS_TMP" cargo test --workspace --release --no-fail-fast --verbose $args || status=$?
+          done
           left=$(ls -A "$TESTS_TMP")
           if [ -n "$left" ]; then
             echo "::error::the tests left these in their temporary folder:"

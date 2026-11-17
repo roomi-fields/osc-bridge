@@ -606,6 +606,46 @@ fn orch_handle(
     apply_routes(&msg, &links.table.snapshot(), devices, prefix_map, send_osc);
 }
 
+/// The orchestrator's message path, reached without a socket or a MIDI port:
+/// the door the time bench drives. Each device is a loaded MIDI device whose
+/// emission queue is the given sender (no port behind it). `dispatch` runs the
+/// very function the UDP and WebSocket loops call for each message
+/// (`orch_handle`): owner lookup, links applied, frame built and queued.
+/// Not a published interface.
+#[doc(hidden)]
+pub struct BenchPath {
+    devices: Vec<LoadedDevice>,
+    prefix_map: HashMap<String, usize>,
+    links: Links,
+}
+
+impl BenchPath {
+    /// Load each device on its emission queue and build the table from `links`.
+    pub fn new(devices: Vec<(Device, crossbeam_channel::Sender<Vec<u8>>)>, links: &[RouteRule]) -> Self {
+        let devices: Vec<LoadedDevice> = devices
+            .into_iter()
+            .map(|(dev, tx)| {
+                LoadedDevice::Midi(MidiLoaded {
+                    dispatch: DeviceDispatch::build(dev, tx),
+                    _midi_out_name: String::new(),
+                })
+            })
+            .collect();
+        let prefix_map = devices
+            .iter()
+            .enumerate()
+            .map(|(i, d)| (d.osc_prefix().to_string(), i))
+            .collect();
+        let links = Links::new(links, &devices);
+        Self { devices, prefix_map, links }
+    }
+
+    /// Follow one message through the orchestrator; replies go to `send_osc`.
+    pub fn dispatch(&self, msg: OscMessage, send_osc: &SendOsc) {
+        orch_handle(msg, &self.devices, &self.prefix_map, &self.links, send_osc, internal_from());
+    }
+}
+
 fn drain_midi_out(mut conn: MidiOutputConnection, rx: Receiver<Vec<u8>>, rate_hz: u32) {
     let interval = if rate_hz > 0 {
         Duration::from_micros(1_000_000 / rate_hz as u64)

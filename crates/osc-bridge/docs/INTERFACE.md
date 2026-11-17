@@ -36,6 +36,10 @@ Three tools link devices of a running orchestrator, reached by its UDP address (
 
 Each device's addresses come from its driver, under its prefix; the uniform addresses (`/identity`, `/program/recall`, `/program/dump`) are the same on every device; `/bridge/status` and `/bridge/docs` describe the bridge itself. An orchestrator also answers, to any client (UDP or WebSocket), `/bridge/link/add <from> <to> [in_lo in_hi out_lo out_hi]` (`/bridge/link/added`, or `/bridge/link/error <text>`), `/bridge/link/remove <from> <to>` (`/bridge/link/removed`, or `/bridge/link/error <text>`) and `/bridge/link/list` (one `/bridge/link/list/item <from> <to> <origin> [scaling]` per link, then `/bridge/link/list/end <count>`). OSCQuery publishes the whole namespace.
 
+## The time the core adds
+
+The core adds under 1 ms to a message, MIDI excluded (the charter's bound). The night bench `tests/it_budget/orchestrator_message_time.rs` holds it with two measures, each judging the median and the worst case: a message that follows a link (`message_that_follows_a_link_adds_under_the_bound`) and a message that follows no link (`message_that_follows_no_link_adds_under_the_bound`). They run on a loaded MIDI device without a port, from the message entering the orchestrator to the frame reaching the device's emission queue; the OSC wire encoding, the socket and the MIDI driver stay outside.
+
 ## The Lua a driver declares
 
 A command `script` sees, besides `ctx` and `ob`, Electra One's two APIs under Electra's names (<https://docs.electra.one/developers/luaext.html>), so a preset's function runs unchanged:

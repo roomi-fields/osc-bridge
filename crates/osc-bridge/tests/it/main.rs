@@ -22,6 +22,7 @@ mod midi_out;
 mod newer_version_notice;
 mod online_account;
 mod orchestrator_config;
+mod orchestrator_message_path;
 mod orchestrator_routing_e2e;
 mod osc_transport_e2e;
 mod osd_driver;
