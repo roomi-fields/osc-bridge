@@ -22,6 +22,8 @@ The application offers three published surfaces: its command line, its MCP tools
 
 ## The MCP tools
 
+`send` always asks for the acknowledgement and hands back at the first answer: `/bridge/done` gives `sent: true`; `/bridge/fault` gives `isError: true` with the address and the reason, in text and in `structuredContent` (`sent: false`, `address`, `reason`); when nothing answers within 3 s (a guard, not a delay) it gives an error saying osc-bridge does not answer at that address.
+
 The tools are described once, from Rust types; the list the server offers is generated from them and compared, at each change, with the published list. Local tools work offline; the others are the service's, forwarded through `synthhub-protocol`.
 
 Three tools link devices of a running orchestrator, reached by its UDP address (`target`, else `--default-target`) through its control addresses, and answering with the orchestrator's replies, or saying that none answered:
@@ -35,6 +37,8 @@ Three tools link devices of a running orchestrator, reached by its UDP address (
 ## The OSC addresses
 
 Each device's addresses come from its driver, under its prefix; the uniform addresses (`/identity`, `/program/recall`, `/program/dump`) are the same on every device; `/bridge/status` and `/bridge/docs` describe the bridge itself. An orchestrator also answers, to any client (UDP or WebSocket), `/bridge/link/add <from> <to> [in_lo in_hi out_lo out_hi]` (`/bridge/link/added`, or `/bridge/link/error <text>`), `/bridge/link/remove <from> <to>` (`/bridge/link/removed`, or `/bridge/link/error <text>`) and `/bridge/link/list` (one `/bridge/link/list/item <from> <to> <origin> [scaling]` per link, then `/bridge/link/list/end <count>`). A link follows the output of another link: with a→b and b→c, a message received at a reaches c, once per device address. A chain is followed for four links; a matching fifth link is not followed, and the cut is said by `/bridge/link/error` naming the chain followed. OSCQuery publishes the whole namespace.
+
+The faults of a message come back to whoever sent it. A message that cannot be built, run or queued (a command or parameter whose frame does not build, a script that fails, an unknown address, a full emission queue) is answered, to its sender alone, `/bridge/fault <address> <reason>` (two strings: the message's address and why). A fault whose message has no real sender (re-injected by a link, set off by an incoming MIDI message, a MIDI port that refuses a frame) is broadcast to the declared clients, as `/bridge/status` is. A correct message answers nothing. A sender that wants to know its message is handled asks for it, in the same packet: `/bridge/sync <id>` is answered `/bridge/done <id>` once what precedes it in the packet is handled, after any `/bridge/fault`; nothing is answered to a sender that does not ask. Over WebSocket the answer goes through the WebSocket broadcast. The Rust door: `runtime::ReplyTo` (the route back to a sender, beside `SendOsc`), `runtime::dispatch_packet_to_device(state, packet, send_osc, reply_to, from)` (one packet, its `/bridge/sync` answered after the lot), and `reply_to` beside `send_osc` in `dispatch_to_device`, `dispatch_osc_to_device` and `BenchPath::dispatch`.
 
 ## The time the core adds
 

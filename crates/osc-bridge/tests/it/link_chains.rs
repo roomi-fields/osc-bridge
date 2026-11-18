@@ -5,6 +5,7 @@
 //! and the emission queue. The depth lives in one counter on the thread that
 //! runs the chain; the cut at four links is said by `/bridge/link/error`.
 
+use crate::common::no_reply;
 use crossbeam_channel::{bounded, Receiver};
 use osc_bridge::orchestrator::{BenchPath, MapRule, RouteRule};
 use osc_bridge::runtime::SendOsc;
@@ -67,7 +68,7 @@ fn faults(seen: &Mutex<Vec<OscMessage>>) -> Vec<String> {
 fn a_message_received_at_a_reaches_c_through_the_links_a_to_b_and_b_to_c() {
     let (path, rx) = rig(&[link(CUTOFF, RESONANCE), link(RESONANCE, ATTACK)]);
     let (send, seen) = recording();
-    path.dispatch(msg(CUTOFF, 64), &send);
+    path.dispatch(msg(CUTOFF, 64), &send, &no_reply());
     let got = frames(&rx);
     assert_eq!(
         got,
@@ -80,14 +81,14 @@ fn a_message_received_at_a_reaches_c_through_the_links_a_to_b_and_b_to_c() {
 #[test]
 fn the_chain_is_followed_whatever_the_order_of_the_links_in_the_table() {
     let (path, rx) = rig(&[link(RESONANCE, ATTACK), link(CUTOFF, RESONANCE)]);
-    path.dispatch(msg(CUTOFF, 10), &recording().0);
+    path.dispatch(msg(CUTOFF, 10), &recording().0, &no_reply());
     assert_eq!(controls(&frames(&rx)), vec![CC_CUTOFF, CC_RESONANCE, CC_ATTACK]);
 }
 
 #[test]
 fn a_message_entering_in_the_middle_of_the_chain_follows_only_the_rest() {
     let (path, rx) = rig(&[link(CUTOFF, RESONANCE), link(RESONANCE, ATTACK)]);
-    path.dispatch(msg(RESONANCE, 5), &recording().0);
+    path.dispatch(msg(RESONANCE, 5), &recording().0, &no_reply());
     assert_eq!(controls(&frames(&rx)), vec![CC_RESONANCE, CC_ATTACK]);
 }
 
@@ -96,7 +97,7 @@ fn the_scaling_of_each_link_is_applied_in_turn_along_the_chain() {
     let scale = MapRule { from: [0.0, 127.0], to: [0.0, 1.0] };
     let first = RouteRule { from: CUTOFF.into(), to: RESONANCE.into(), map: Some(scale) };
     let (path, rx) = rig(&[first, link(RESONANCE, ATTACK)]);
-    path.dispatch(msg(CUTOFF, 127), &recording().0);
+    path.dispatch(msg(CUTOFF, 127), &recording().0, &no_reply());
     assert_eq!(
         frames(&rx),
         vec![vec![0xB0, CC_CUTOFF, 127], vec![0xB0, CC_RESONANCE, 1], vec![0xB0, CC_ATTACK, 1]],
@@ -111,7 +112,7 @@ fn a_link_with_two_followers_and_a_chain_behind_one_emits_each_address_once_in_d
         link(CUTOFF, RELEASE),
         link(RESONANCE, ATTACK),
     ]);
-    path.dispatch(msg(CUTOFF, 9), &recording().0);
+    path.dispatch(msg(CUTOFF, 9), &recording().0, &no_reply());
     assert_eq!(controls(&frames(&rx)), vec![CC_CUTOFF, CC_RESONANCE, CC_ATTACK, CC_RELEASE]);
 }
 
@@ -124,7 +125,7 @@ fn a_chain_of_four_links_is_followed_to_its_end_without_fault() {
         link(RELEASE, WAVEFORM),
     ]);
     let (send, seen) = recording();
-    path.dispatch(msg(CUTOFF, 1), &send);
+    path.dispatch(msg(CUTOFF, 1), &send, &no_reply());
     let got = frames(&rx);
     assert_eq!(got.len(), 5, "the device's frame and four links: {got:?}");
     assert_eq!(controls(&got), vec![CC_CUTOFF, CC_RESONANCE, CC_ATTACK, CC_RELEASE, CC_WAVEFORM]);
@@ -141,7 +142,7 @@ fn a_fifth_link_is_not_followed_and_the_cut_is_said_once_by_the_link_error_addre
         link(WAVEFORM, LFO_RATE),
     ]);
     let (send, seen) = recording();
-    path.dispatch(msg(CUTOFF, 1), &send);
+    path.dispatch(msg(CUTOFF, 1), &send, &no_reply());
     let got = frames(&rx);
     assert_eq!(
         controls(&got),
@@ -176,7 +177,7 @@ fn the_rule_at_adding_and_the_rule_at_running_judge_the_same_chain_of_five_links
     let mut refused = Vec::new();
     for (from, to) in chain {
         let args = vec![OscType::String(from.into()), OscType::String(to.into())];
-        path.dispatch(OscMessage { addr: "/bridge/link/add".into(), args }, &send);
+        path.dispatch(OscMessage { addr: "/bridge/link/add".into(), args }, &send, &no_reply());
         refused.push(seen.lock().unwrap().last().unwrap().addr.clone());
     }
     assert_eq!(
@@ -187,7 +188,7 @@ fn the_rule_at_adding_and_the_rule_at_running_judge_the_same_chain_of_five_links
 
     let (path, rx) = rig(&rules);
     let (send, seen) = recording();
-    path.dispatch(msg(CUTOFF, 1), &send);
+    path.dispatch(msg(CUTOFF, 1), &send, &no_reply());
     assert_eq!(frames(&rx).len(), 5, "run: four links followed");
     assert_eq!(faults(&seen).len(), 1, "run: the fifth is cut");
 }
@@ -198,12 +199,12 @@ fn a_loop_of_concrete_links_is_refused_at_adding_and_never_enters_the_table() {
     let (send, seen) = recording();
     let add = |from: &str, to: &str| {
         let args = vec![OscType::String(from.into()), OscType::String(to.into())];
-        path.dispatch(OscMessage { addr: "/bridge/link/add".into(), args }, &send);
+        path.dispatch(OscMessage { addr: "/bridge/link/add".into(), args }, &send, &no_reply());
         seen.lock().unwrap().last().unwrap().addr.clone()
     };
     assert_eq!(add(CUTOFF, RESONANCE), "/bridge/link/added");
     assert_eq!(add(RESONANCE, CUTOFF), "/bridge/link/error");
-    path.dispatch(msg(CUTOFF, 3), &send);
+    path.dispatch(msg(CUTOFF, 3), &send, &no_reply());
     assert_eq!(controls(&frames(&rx)), vec![CC_CUTOFF, CC_RESONANCE], "the loop never turns");
 }
 
@@ -212,7 +213,7 @@ fn a_loop_of_links_with_captures_emits_four_hops_then_is_cut_with_the_fault() {
     let looping = link("/test_synth/filter/{p}", "/test_synth/filter/{p}");
     let (path, rx) = rig(&[looping]);
     let (send, seen) = recording();
-    path.dispatch(msg(CUTOFF, 7), &send);
+    path.dispatch(msg(CUTOFF, 7), &send, &no_reply());
     let got = frames(&rx);
     assert_eq!(got.len(), 5, "the device's frame and at most four hops: {got:?}");
     let faults = faults(&seen);
@@ -224,10 +225,10 @@ fn a_second_message_after_a_cut_starts_again_from_depth_zero() {
     let (path, rx) = rig(&[link(CUTOFF, RESONANCE), link(RESONANCE, ATTACK)]);
     let looping = rig(&[link("/test_synth/filter/{p}", "/test_synth/filter/{p}")]);
     let (send, seen) = recording();
-    looping.0.dispatch(msg(CUTOFF, 1), &send);
+    looping.0.dispatch(msg(CUTOFF, 1), &send, &no_reply());
     assert_eq!(faults(&seen).len(), 1);
     // The counter of this thread went back to zero: a chain is followed whole.
-    path.dispatch(msg(CUTOFF, 2), &send);
+    path.dispatch(msg(CUTOFF, 2), &send, &no_reply());
     assert_eq!(controls(&frames(&rx)), vec![CC_CUTOFF, CC_RESONANCE, CC_ATTACK]);
     assert_eq!(faults(&seen).len(), 1, "no new fault");
 }

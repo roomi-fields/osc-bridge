@@ -12,6 +12,11 @@
 
 use serde_json::Value;
 use std::path::Path;
+
+/// A reply route that drops every reply: for a test that does not read what the sender is told.
+pub fn no_reply() -> osc_bridge::runtime::ReplyTo {
+    std::sync::Arc::new(|_, _| {})
+}
 use std::sync::{Arc, Mutex};
 
 /// One request the fake server received.

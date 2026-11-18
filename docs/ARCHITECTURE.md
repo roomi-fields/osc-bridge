@@ -95,7 +95,7 @@ sequenceDiagram
 ## 7. Cross-cutting concepts
 
 - **Safety**: every SysEx that may overwrite a device's memory is a consent request the caller must answer; only the identity request goes out without it.
-- **Faults**: each crate returns typed faults; nothing is reported only on standard error.
+- **Faults**: each crate returns typed faults; nothing is reported only on standard error. The faults of a message return to the one who sent it.
 - **Identity**: an installation keeps the id the service issued, linked to its person once they sign in; each call to the service carries the client's version.
 - **Capabilities**: a driver that needs Lua declares it; the core runs scripts in a sandbox with time and memory budgets.
 

@@ -19,6 +19,7 @@ mod isolated_config;
 mod link_chains;
 mod live_links;
 mod launch_control_xl_3;
+mod message_faults;
 mod midi_in_templates;
 mod midi_out;
 mod newer_version_notice;

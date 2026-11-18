@@ -38,7 +38,7 @@ fn state() -> (DeviceDispatch, Receiver<Vec<u8>>) {
 
 fn send(state: &DeviceDispatch, addr: &str, args: Vec<OscType>) {
     let discard: SendOsc = Arc::new(|_| {});
-    dispatch_to_device(state, OscMessage { addr: addr.into(), args }, &discard, from());
+    dispatch_to_device(state, OscMessage { addr: addr.into(), args }, &discard, &crate::common::no_reply(), from());
 }
 
 /// What the script of `/acme/read` answers: the last frame it queued.

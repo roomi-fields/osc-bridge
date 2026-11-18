@@ -42,11 +42,12 @@ fn message() -> OscMessage {
 /// (`expected_frames` frames).
 fn measure(path: &BenchPath, rx: &Receiver<Vec<u8>>, expected_frames: usize) -> (Duration, Duration) {
     let send: SendOsc = Arc::new(|_| {});
+    let reply_to = crate::common::no_reply();
     let mut times = Vec::with_capacity(PASSES);
     for pass in 0..WARM_UP_PASSES + PASSES {
         let msg = message();
         let start = Instant::now();
-        path.dispatch(msg, &send);
+        path.dispatch(msg, &send, &reply_to);
         let elapsed = start.elapsed();
         let frames: Vec<Vec<u8>> = rx.try_iter().collect();
         assert_eq!(frames.len(), expected_frames, "pass {pass}: the message did not reach the emission queue");

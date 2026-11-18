@@ -592,3 +592,90 @@ fn export_device_for_an_osc_only_device_and_an_unknown_format_keep_their_message
         .unwrap().unwrap_err();
     assert!(err.contains("unknown format 'ctrlr' (one of: oscquery, midnam)"), "{err}");
 }
+
+/// A stand-in bridge on a free UDP port: it hands the first packet it receives to the test
+/// (every message of it, a bundle flattened), then answers like osc-bridge does: `faults`
+/// first, then `/bridge/done` echoing the arguments of the `/bridge/sync` it was asked with,
+/// when the packet carried one.
+fn fake_bridge(faults: Vec<rosc::OscMessage>) -> (SocketAddr, std::sync::mpsc::Receiver<Vec<rosc::OscMessage>>) {
+    fn flatten(pkt: rosc::OscPacket, out: &mut Vec<rosc::OscMessage>) {
+        match pkt {
+            rosc::OscPacket::Message(m) => out.push(m),
+            rosc::OscPacket::Bundle(b) => for p in b.content { flatten(p, out); },
+        }
+    }
+    let sock = UdpSocket::bind("127.0.0.1:0").unwrap();
+    let addr = sock.local_addr().unwrap();
+    let (tx, rx) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        let mut buf = [0u8; 65536];
+        let Ok((n, from)) = sock.recv_from(&mut buf) else { return };
+        let mut got = Vec::new();
+        if let Ok((_, pkt)) = rosc::decoder::decode_udp(&buf[..n]) { flatten(pkt, &mut got); }
+        let sync = got.iter().find(|m| m.addr == "/bridge/sync").cloned();
+        let _ = tx.send(got);
+        let mut replies = faults;
+        if let Some(s) = sync { replies.push(osc("/bridge/done", s.args)); }
+        for r in replies {
+            let _ = sock.send_to(&rosc::encoder::encode(&rosc::OscPacket::Message(r)).unwrap(), from);
+        }
+    });
+    (addr, rx)
+}
+
+fn send_args(addr: SocketAddr) -> Value {
+    json!({"addr": "/synth/cutoff", "args": [64], "target": addr.to_string()})
+}
+
+#[test]
+fn send_asks_the_bridge_for_its_acknowledgement_in_the_packet_of_the_message() {
+    let (addr, got) = fake_bridge(vec![]);
+    call_tool("send", &send_args(addr), &test_opts(), &empty_index(), None).unwrap();
+    let seen = got.recv_timeout(Duration::from_secs(5)).unwrap();
+    assert_eq!(seen.len(), 2, "{seen:?}");
+    assert_eq!(seen[0].addr, "/synth/cutoff");
+    assert_eq!(seen[0].args, vec![rosc::OscType::Int(64)]);
+    assert_eq!(seen[1].addr, "/bridge/sync");
+    assert_eq!(seen[1].args.len(), 1, "one id: {seen:?}");
+}
+
+#[test]
+fn send_gives_sent_true_when_the_bridge_says_the_message_is_done() {
+    let (addr, _got) = fake_bridge(vec![]);
+    let res = call_tool("send", &send_args(addr), &test_opts(), &empty_index(), None).unwrap();
+    assert_ne!(res["isError"], json!(true), "{res}");
+    let sc = &res["structuredContent"];
+    assert_eq!(sc["sent"], json!(true), "{res}");
+    assert_eq!(sc["address"], json!("/synth/cutoff"));
+    assert_eq!(sc["target"], json!(addr.to_string()));
+}
+
+#[test]
+fn send_gives_an_error_result_with_the_address_and_the_reason_of_a_fault_the_bridge_sends_back() {
+    let fault = osc("/bridge/fault", vec![ostr("/synth/cutoff"), ostr("missing arg value for /synth/cutoff")]);
+    let (addr, _got) = fake_bridge(vec![fault]);
+    let res = call_tool("send", &send_args(addr), &test_opts(), &empty_index(), None).unwrap();
+    assert_eq!(res["isError"], json!(true), "{res}");
+    let text = res["content"][0]["text"].as_str().unwrap();
+    for part in ["/synth/cutoff", "missing arg value for /synth/cutoff"] {
+        assert!(text.contains(part), "{part} missing from {text}");
+    }
+    let sc = &res["structuredContent"];
+    assert_eq!(sc["address"], json!("/synth/cutoff"));
+    assert_eq!(sc["reason"], json!("missing arg value for /synth/cutoff"));
+    assert_ne!(sc["sent"], json!(true), "a message that did not leave is not sent: {res}");
+}
+
+#[test]
+fn send_says_the_bridge_does_not_answer_at_that_address_when_nothing_replies() {
+    // A bound port nobody reads: the tool times out and says so.
+    let silent = UdpSocket::bind("127.0.0.1:0").unwrap();
+    let addr = silent.local_addr().unwrap();
+    let outcome = call_tool("send", &send_args(addr), &test_opts(), &empty_index(), None);
+    let (is_error, text) = match &outcome {
+        Err(e) => (true, e.clone()),
+        Ok(v) => (v["isError"] == json!(true), v["content"][0]["text"].as_str().unwrap_or_default().to_string()),
+    };
+    assert!(is_error, "silence is not a sent message: {outcome:?}");
+    assert!(text.contains(&addr.to_string()), "the address that did not answer: {text}");
+}

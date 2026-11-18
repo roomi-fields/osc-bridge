@@ -89,7 +89,6 @@ impl Runtime {
 
         let (tx, rx): (Sender<Vec<u8>>, Receiver<Vec<u8>>) = bounded(1024);
         let rate = dev.device.rate_limit_hz.unwrap_or(0).max(0) as u32;
-        std::thread::spawn(move || drain_midi_out(out_conn, rx, rate));
 
         // Outbound OSC — broadcast to every configured client (UDP and WS).
         let ws_clients = opts.ws_bind.as_ref().map(|_| crate::ws::WsClients::new());
@@ -107,6 +106,8 @@ impl Runtime {
                 if let Some(w) = &ws_cb { w.broadcast(&bytes); }
             }
         });
+        let fault_send = send_osc.clone();
+        std::thread::spawn(move || drain_midi_out(out_conn, rx, rate, fault_send));
 
         // Dynamic routes — shared between the Lua engine (scripts register
         // routes after preset ingest) and the dispatch paths (MIDI-in / OSC-in
@@ -173,7 +174,8 @@ impl Runtime {
             let dispatch_cb: crate::ws::WsDispatch = {
                 let state = state.clone();
                 let send_osc = send_osc.clone();
-                Arc::new(move |pkt, from| dispatch(pkt, &state, &send_osc, from))
+                let reply_to = ws_reply_to(ws_clients.clone());
+                Arc::new(move |pkt, from| dispatch_packet_to_device(&state, pkt, &send_osc, &reply_to, from))
             };
             let local = crate::ws::serve(bind, wsc.clone(), dispatch_cb, opts.ws_allow_origins.clone())?;
             eprintln!("WS IN    {local}");
@@ -185,6 +187,7 @@ impl Runtime {
         let osc_addr = sock.local_addr()?;
         serve_oscquery(&opts.oscquery_bind, std::slice::from_ref(dev.as_ref()), &sock, ws_local)?;
         let osc_clients = opts.osc_clients;
+        let udp_reply = udp_reply_to(sock.try_clone()?);
 
         let serve = move || -> Result<()> {
             // Keep the MIDI input connection alive for the life of the loop.
@@ -199,7 +202,7 @@ impl Runtime {
                 match rosc::decoder::decode_udp(&buf[..n]) {
                     Ok((_, pkt)) => {
                         answer_query(&sock, &pkt, from, std::slice::from_ref(dev.as_ref()), &osc_clients);
-                        dispatch(pkt, &state, &send_osc, from)
+                        dispatch_packet_to_device(&state, pkt, &send_osc, &udp_reply, from)
                     }
                     Err(e) => eprintln!("OSC decode err from {from}: {e}"),
                 }
@@ -475,11 +478,18 @@ fn record_received_value(cell: &ScriptCell, dev: &Device, m: &OscMessage) {
 
 /// Run a command's `script` field (if any) against the assembled frame.
 /// Returns the (possibly mutated) frame, or None to drop the message.
-fn maybe_run_cmd_script(cell: &ScriptCell, cmd: &Command, frame: Vec<u8>, device: &str) -> Option<Vec<u8>> {
+fn maybe_run_cmd_script(
+    cell: &ScriptCell,
+    cmd: &Command,
+    frame: Vec<u8>,
+    device: &str,
+    msg_addr: &str,
+    ans: &Answer,
+) -> Option<Vec<u8>> {
     let Some(code) = &cmd.script else { return Some(frame); };
     let osc = address_text(&cmd.osc);
     let Some(m) = cell.get() else {
-        eprintln!("  command {osc} script ignored (engine unavailable)");
+        ans.fault(msg_addr, "command script ignored: script engine unavailable");
         return Some(frame);
     };
     let ctx = ScriptContext {
@@ -497,11 +507,14 @@ fn maybe_run_cmd_script(cell: &ScriptCell, cmd: &Command, frame: Vec<u8>, device
                 None
             }
             Err(e) => {
-                eprintln!("  command {osc} script err: {e} — passing through raw frame");
+                ans.fault(msg_addr, format!("command script failed: {e:#}"));
                 None
             }
         },
-        Err(_) => None,
+        Err(_) => {
+            ans.fault(msg_addr, "script engine lock poisoned");
+            None
+        }
     }
 }
 
@@ -515,11 +528,10 @@ fn run_custom_command(
     dev: &Arc<Device>,
     cell: &ScriptCell,
     tx: &Sender<Vec<u8>>,
-    send_osc: &SendOsc,
-    from: SocketAddr,
+    ans: &Answer,
 ) {
     let Some(m) = cell.get() else {
-        eprintln!("  custom_command {} skipped (engine unavailable)", cc.osc);
+        ans.fault(&msg.addr, "custom command skipped: script engine unavailable");
         return;
     };
 
@@ -558,13 +570,13 @@ fn run_custom_command(
             let o = g.drain_osc_emits();
             (r, e, o)
         }
-        Err(_) => { eprintln!("  custom_command {} lock poisoned", cc.osc); return; }
+        Err(_) => { ans.fault(&msg.addr, "script engine lock poisoned"); return; }
     };
 
     // Enqueue any SysEx blocks the script requested via ob.emit_sysex, in order.
-    enqueue_emits(tx, &emits, dev, &msg.addr, from);
+    enqueue_emits(tx, &emits, dev, &msg.addr, ans);
     // Emit any OSC messages the script requested via ob.emit_osc (introspection).
-    send_script_osc(send_osc, &osc_emits);
+    send_script_osc(ans.send_osc, &osc_emits);
 
     match result {
         Ok(Some(out)) if !out.payload.is_empty() => {
@@ -573,13 +585,13 @@ fn run_custom_command(
             } else {
                 out.payload
             };
-            enqueue(tx, bytes, &msg.addr, from);
+            enqueue(tx, bytes, &msg.addr, ans);
         }
         Ok(_) => {
             // Script returned no payload — pure side-effects (registered
             // routes, logged, etc.). Nothing to send.
         }
-        Err(e) => eprintln!("  custom_command {} script err: {e}", cc.osc),
+        Err(e) => ans.fault(&msg.addr, format!("custom command script failed: {e:#}")),
     }
 }
 
@@ -590,11 +602,12 @@ fn run_reply_script(
     bindings: &Bindings,
     dev: &Arc<Device>,
     cell: &ScriptCell,
+    ans: &Answer,
 ) -> bool {
     let Some(code) = &rp.script else { return true; };
     let emit = address_text(&rp.emit_osc);
     let Some(m) = cell.get() else {
-        eprintln!("  reply.script {emit} skipped (engine unavailable)");
+        ans.fault(&emit, "reply script skipped: script engine unavailable");
         return true;
     };
     let mut binds: std::collections::HashMap<String, i64> = Default::default();
@@ -620,7 +633,10 @@ fn run_reply_script(
             let e = g.drain_emits();
             (r, e)
         }
-        Err(_) => return true,
+        Err(_) => {
+            ans.fault(&emit, "reply script skipped: script engine lock poisoned");
+            return true;
+        }
     };
 
     // Reply scripts rarely emit SysEx but the capability is symmetric; drain
@@ -638,7 +654,7 @@ fn run_reply_script(
         Ok(None) => false, // script dropped the event
         Ok(Some(_)) => true,
         Err(e) => {
-            eprintln!("  reply.script {emit} err: {e} — emitting OSC anyway");
+            ans.fault(&emit, format!("reply script failed, OSC emitted anyway: {e:#}"));
             true
         }
     }
@@ -663,7 +679,7 @@ fn enqueue_emits(
     emits: &[EmitBlock],
     dev: &Arc<Device>,
     addr: &str,
-    from: SocketAddr,
+    ans: &Answer,
 ) {
     for block in emits {
         let bytes = if block.wrap {
@@ -671,26 +687,36 @@ fn enqueue_emits(
         } else {
             block.bytes.clone()
         };
-        enqueue(tx, bytes, addr, from);
+        enqueue(tx, bytes, addr, ans);
     }
 }
 
-fn apply_transform(cell: &ScriptCell, expr: Option<&String>, value: i64, addr: &str) -> i64 {
+fn apply_transform(cell: &ScriptCell, expr: Option<&String>, value: i64, addr: &str, ans: &Answer) -> i64 {
     let Some(code) = expr else { return value; };
     let Some(m) = cell.get() else {
-        eprintln!("  [{addr}] transform ignored (engine unavailable)");
+        ans.fault(addr, "transform ignored, raw value used: script engine unavailable");
         return value;
     };
-    match m.lock().ok().and_then(|g| g.eval_transform(code, value).ok()) {
-        Some(v) => v,
-        None => {
-            eprintln!("  [{addr}] transform failed, using raw value");
+    let Ok(g) = m.lock() else {
+        ans.fault(addr, "transform ignored, raw value used: script engine lock poisoned");
+        return value;
+    };
+    match g.eval_transform(code, value) {
+        Ok(v) => v,
+        Err(e) => {
+            ans.fault(addr, format!("transform failed, raw value used: {e:#}"));
             value
         }
     }
 }
 
-fn drain_midi_out(mut conn: MidiOutputConnection, rx: Receiver<Vec<u8>>, rate_hz: u32) {
+/// A MIDI port that refuses a frame: the frame has left its sender's message, so the fault
+/// goes to the declared clients.
+pub(crate) fn midi_send_fault(send_osc: &SendOsc, e: impl std::fmt::Display) {
+    Answer::broadcast(send_osc).fault("midi out", format!("MIDI send refused: {e}"));
+}
+
+fn drain_midi_out(mut conn: MidiOutputConnection, rx: Receiver<Vec<u8>>, rate_hz: u32, send_osc: SendOsc) {
     let interval = if rate_hz > 0 {
         Duration::from_micros(1_000_000 / rate_hz as u64)
     } else {
@@ -704,7 +730,7 @@ fn drain_midi_out(mut conn: MidiOutputConnection, rx: Receiver<Vec<u8>>, rate_hz
                 std::thread::sleep(interval - elapsed);
             }
         }
-        if let Err(e) = conn.send(&frm) { eprintln!("midi send: {e}"); }
+        if let Err(e) = conn.send(&frm) { midi_send_fault(&send_osc, e); }
         last = Instant::now();
     }
 }
@@ -734,7 +760,7 @@ pub fn handle_midi_in(
                 // Optional reply.script: lets drivers update state (e.g.
                 // ob.set_current_page) in response to device-initiated events.
                 // Returning nil from the script drops the OSC emission.
-                if rp.script.is_some() && !run_reply_script(rp, &bindings, dev, scripts) {
+                if rp.script.is_some() && !run_reply_script(rp, &bindings, dev, scripts, &Answer::broadcast(send)) {
                     return;
                 }
                 let m = emit_reply_osc(&rp.emit_osc, rp.emit_args.as_deref(), &dev.device.osc_prefix, &bindings);
@@ -908,6 +934,80 @@ pub fn build_cc_param_map(dev: &Device) -> HashMap<String, (CcEntry, u8)> {
 
 pub type SendOsc = Arc<dyn Fn(OscMessage) + Send + Sync>;
 
+/// Answers one OSC message to the address it came from (not to every client).
+pub type ReplyTo = Arc<dyn Fn(SocketAddr, OscMessage) + Send + Sync>;
+
+/// The route back to a UDP sender: the bridge's own OSC socket.
+pub(crate) fn udp_reply_to(sock: UdpSocket) -> ReplyTo {
+    Arc::new(move |to, m| {
+        if let Ok(bytes) = rosc::encoder::encode(&OscPacket::Message(m)) { let _ = sock.send_to(&bytes, to); }
+    })
+}
+
+/// The route back to a WebSocket peer: the WebSocket broadcast (no per-peer channel).
+pub(crate) fn ws_reply_to(clients: Option<crate::ws::WsClients>) -> ReplyTo {
+    Arc::new(move |_, m| {
+        if let (Some(w), Ok(bytes)) = (&clients, rosc::encoder::encode(&OscPacket::Message(m))) { w.broadcast(&bytes); }
+    })
+}
+
+/// Where the faults of one message go: to its sender when it has a real one, else to the
+/// declared clients through `send_osc` (as `/bridge/status` is).
+pub(crate) struct Answer<'a> {
+    send_osc: &'a SendOsc,
+    reply_to: Option<&'a ReplyTo>,
+    from: SocketAddr,
+}
+
+impl<'a> Answer<'a> {
+    fn new(send_osc: &'a SendOsc, reply_to: &'a ReplyTo, from: SocketAddr) -> Self {
+        Self { send_osc, reply_to: Some(reply_to), from }
+    }
+
+    /// A message with no sender (an incoming MIDI message): faults are broadcast.
+    fn broadcast(send_osc: &'a SendOsc) -> Self {
+        Self { send_osc, reply_to: None, from: SocketAddr::from(([0, 0, 0, 0], 0)) }
+    }
+
+    /// `/bridge/fault <address> <reason>`; the standard error repeats it.
+    fn fault(&self, addr: &str, reason: impl std::fmt::Display) {
+        let reason = reason.to_string();
+        eprintln!("  [{}] {addr}: {reason}", self.from);
+        let m = OscMessage {
+            addr: "/bridge/fault".into(),
+            args: vec![OscType::String(addr.to_string()), OscType::String(reason)],
+        };
+        match self.reply_to {
+            Some(reply_to) if !self.from.ip().is_unspecified() => reply_to(self.from, m),
+            _ => (self.send_osc)(m),
+        }
+    }
+}
+
+/// Handle each message of `pkt` in order with `handle`; a `/bridge/sync <id…>` is not handled
+/// but, once the whole packet is, answered `/bridge/done <id…>` to the sender (never to a
+/// message with no real sender). The acknowledgement is asked for, never sent unasked.
+pub(crate) fn each_message_then_sync(
+    pkt: OscPacket,
+    reply_to: &ReplyTo,
+    from: SocketAddr,
+    mut handle: impl FnMut(OscMessage),
+) {
+    fn walk(pkt: OscPacket, handle: &mut dyn FnMut(OscMessage), syncs: &mut Vec<Vec<OscType>>) {
+        match pkt {
+            OscPacket::Message(m) if m.addr == "/bridge/sync" => syncs.push(m.args),
+            OscPacket::Message(m) => handle(m),
+            OscPacket::Bundle(b) => for p in b.content { walk(p, handle, syncs); },
+        }
+    }
+    let mut syncs = Vec::new();
+    walk(pkt, &mut handle, &mut syncs);
+    if from.ip().is_unspecified() { return; }
+    for args in syncs {
+        reply_to(from, OscMessage { addr: "/bridge/done".into(), args });
+    }
+}
+
 /// Per-device dispatch state shared between the single-device runtime and
 /// the orchestrator (multi-device). Lets the orchestrator reuse the full
 /// dispatch pipeline (commands, params, cc_params, custom_commands) instead
@@ -947,20 +1047,35 @@ pub fn encode(device: Device, msg: OscMessage) -> Vec<Vec<u8>> {
     let (tx, rx): (Sender<Vec<u8>>, Receiver<Vec<u8>>) = bounded(1024);
     let state = DeviceDispatch::build(device, tx);
     let discard: SendOsc = Arc::new(|_| {});
-    dispatch_to_device(&state, msg, &discard, SocketAddr::from(([0, 0, 0, 0], 0)));
+    let nobody: ReplyTo = Arc::new(|_, _| {});
+    dispatch_to_device(&state, msg, &discard, &nobody, SocketAddr::from(([0, 0, 0, 0], 0)));
     rx.try_iter().collect()
 }
 
 /// Public dispatch entry point used by the orchestrator. For MIDI/SysEx
 /// devices: runs the full command / param / cc_param / midi_out pipeline
-/// just like the single-device runtime.
+/// just like the single-device runtime. A fault goes to `from` through
+/// `reply_to` (to the clients through `send_osc` when `from` is no real sender).
 pub fn dispatch_to_device(
     state: &DeviceDispatch,
     msg: OscMessage,
     send_osc: &SendOsc,
+    reply_to: &ReplyTo,
     from: SocketAddr,
 ) {
-    handle_message(msg, state, send_osc, from);
+    handle_message(msg, state, send_osc, reply_to, from);
+}
+
+/// One packet (a message or a bundle) for a device: each message in order, then the
+/// `/bridge/done` of each `/bridge/sync` the packet carried, after the faults.
+pub fn dispatch_packet_to_device(
+    state: &DeviceDispatch,
+    pkt: OscPacket,
+    send_osc: &SendOsc,
+    reply_to: &ReplyTo,
+    from: SocketAddr,
+) {
+    each_message_then_sync(pkt, reply_to, from, |m| handle_message(m, state, send_osc, reply_to, from));
 }
 
 /// Per-device dispatch state for an OSC-transport (software) device — the
@@ -998,23 +1113,16 @@ pub fn dispatch_osc_to_device(
     handle: &OscDeviceHandle,
     msg: OscMessage,
     send_osc: &SendOsc,
+    reply_to: &ReplyTo,
     from: SocketAddr,
 ) {
     handle_osc_message(msg, &handle.device, &handle.cmds,
-                       &handle.target_sock, handle.target_addr, send_osc, from);
+                       (&handle.target_sock, handle.target_addr), send_osc, reply_to, from);
 }
 
-fn dispatch(pkt: OscPacket, state: &DeviceDispatch, send_osc: &SendOsc, from: SocketAddr) {
-    match pkt {
-        OscPacket::Message(m) => handle_message(m, state, send_osc, from),
-        OscPacket::Bundle(b) => {
-            for p in b.content { dispatch(p, state, send_osc, from); }
-        }
-    }
-}
-
-fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, from: SocketAddr) {
+fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, reply_to: &ReplyTo, from: SocketAddr) {
     let DeviceDispatch { device: dev, cmds, params, cc_params, routes, scripts, tx } = state;
+    let ans = &Answer::new(send_osc, reply_to, from);
     // /bridge/status — RPC-style health check; emit one reply per device.
     if msg.addr == "/bridge/status" {
         for reply in bridge_status_replies(std::slice::from_ref(dev.as_ref())) {
@@ -1038,36 +1146,36 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
     for cc in dev.custom_commands.iter().flatten() {
         let full = full_osc_path(dev, &cc.osc);
         if msg.addr == full {
-            run_custom_command(cc, &msg, dev, scripts, tx, send_osc, from);
+            run_custom_command(cc, &msg, dev, scripts, tx, ans);
             return;
         }
     }
 
     // Dynamic routes (reconfigurable controllers): semantic OSC addr → CC.
     if let Some(bytes) = try_dynamic_osc_out(routes, &msg) {
-        enqueue(tx, bytes, &msg.addr, from);
+        enqueue(tx, bytes, &msg.addr, ans);
         return;
     }
 
     // The same addresses on every device: identity, program recall and dump.
     match crate::programs::uniform_osc(dev, &msg.addr, &msg.args) {
-        Some(Ok(frames)) => { for f in frames { enqueue(tx, f, &msg.addr, from); } return; }
-        Some(Err(e)) => { eprintln!("  {}: {e}", msg.addr); return; }
+        Some(Ok(frames)) => { for f in frames { enqueue(tx, f, &msg.addr, ans); } return; }
+        Some(Err(e)) => { ans.fault(&msg.addr, e); return; }
         None => {}
     }
 
     // Performance MIDI out (midi_out section enables these routes).
     if let Some(mo) = &dev.midi_out {
         if let Some(bytes) = try_midi_out(&msg, mo, &dev.device.osc_prefix) {
-            enqueue(tx, bytes, &msg.addr, from);
+            enqueue(tx, bytes, &msg.addr, ans);
             return;
         }
     }
 
     // Named note triggers (drum machines, samplers).
     match trigger_note_on(dev, &msg) {
-        Some(Ok(bytes)) => { enqueue(tx, bytes, &msg.addr, from); return; }
-        Some(Err(e)) => { eprintln!("  trigger {}: {e}", msg.addr); return; }
+        Some(Ok(bytes)) => { enqueue(tx, bytes, &msg.addr, ans); return; }
+        Some(Err(e)) => { ans.fault(&msg.addr, format!("trigger: {e}")); return; }
         None => {}
     }
 
@@ -1080,14 +1188,14 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
                 OscType::Float(f) => *f as i64,
                 OscType::Double(f) => *f as i64,
                 OscType::Bool(x) => if *x { 1 } else { 0 },
-                _ => { eprintln!("  cc arg not numeric"); return; }
+                _ => { ans.fault(&msg.addr, "cc argument is not numeric"); return; }
             };
-            let val_i = apply_transform(scripts, entry.transform.as_ref(), val_i, &msg.addr);
+            let val_i = apply_transform(scripts, entry.transform.as_ref(), val_i, &msg.addr, ans);
             let [lo, hi] = entry.range.unwrap_or([0, 127]);
             let clamped = val_i.clamp(lo, hi);
             match cc_messages(entry, *default_ch, clamped, &msg.args) {
-                Ok(frames) => for f in frames { enqueue(tx, f, &msg.addr, from); },
-                Err(e) => eprintln!("  {}: {e}", msg.addr),
+                Ok(frames) => for f in frames { enqueue(tx, f, &msg.addr, ans); },
+                Err(e) => ans.fault(&msg.addr, e),
             }
             return;
         }
@@ -1105,9 +1213,9 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
                         OscType::Float(f) => *f as i64,
                         OscType::Double(f) => *f as i64,
                         OscType::Bool(x) => if *x { 1 } else { 0 },
-                        _ => { eprintln!("  param arg not numeric"); return; }
+                        _ => { ans.fault(&msg.addr, "param argument is not numeric"); return; }
                     };
-                    let t = apply_transform(scripts, entry.transform.as_ref(), as_i, &msg.addr);
+                    let t = apply_transform(scripts, entry.transform.as_ref(), as_i, &msg.addr, ans);
                     OscType::Long(t)
                 } else {
                     v.clone()
@@ -1115,11 +1223,11 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
                 match frame::bindings_for_param_set(pt, entry, &v_transformed) {
                     Ok(b) => {
                         match frame::build_frame(dev, &pt.set_frame, &b) {
-                            Ok(frm) => { enqueue(tx, frm, &msg.addr, from); return; }
-                            Err(e) => eprintln!("build_frame err: {}: {}: {e}", dev.device.name, msg.addr),
+                            Ok(frm) => { enqueue(tx, frm, &msg.addr, ans); return; }
+                            Err(e) => ans.fault(&msg.addr, format!("build_frame: {}: {e}", dev.device.name)),
                         }
                     }
-                    Err(e) => eprintln!("coerce err: {e}"),
+                    Err(e) => ans.fault(&msg.addr, format!("coerce: {e}")),
                 }
             }
         }
@@ -1133,14 +1241,14 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
                 Ok((frm, slots)) => {
                     record_sent_value(scripts, &h.cmd, &msg.args);
                     let built_len = frm.len();
-                    if let Some(post) = maybe_run_cmd_script(scripts, &h.cmd, frm, &dev.device.name) {
+                    if let Some(post) = maybe_run_cmd_script(scripts, &h.cmd, frm, &dev.device.name, &msg.addr, ans) {
                         match finish_cmd_checksums(dev, &h.cmd, built_len, post, &slots) {
-                            Ok(post) => enqueue(tx, post, &msg.addr, from),
-                            Err(e) => eprintln!("command '{}' err: {e}", address_text(&h.cmd.osc)),
+                            Ok(post) => enqueue(tx, post, &msg.addr, ans),
+                            Err(e) => ans.fault(&msg.addr, e),
                         }
                     }
                 }
-                Err(e) => eprintln!("command '{}' err: {e}", address_text(&h.cmd.osc)),
+                Err(e) => ans.fault(&msg.addr, e),
             }
             return;
         }
@@ -1154,7 +1262,7 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
                 .filter_map(|t| u8::from_str_radix(t.trim_start_matches("0x"), 16).ok())
                 .collect();
             if bytes.first() == Some(&0xF0) && bytes.last() == Some(&0xF7) {
-                enqueue(tx, bytes, &msg.addr, from);
+                enqueue(tx, bytes, &msg.addr, ans);
                 return;
             }
         }
@@ -1173,14 +1281,17 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, f
                 let mut b = Bindings::new();
                 b.set_u7("pr", pr); b.set_u7("p", p); b.set_u7("c", c); b.set_u7("r", r);
                 match frame::build_frame(dev, &pt.get_frame, &b) {
-                    Ok(frm) => { enqueue(tx, frm, &msg.addr, from); return; }
-                    Err(e) => eprintln!("build_frame err: {}: {}: {e}", dev.device.name, msg.addr),
+                    Ok(frm) => { enqueue(tx, frm, &msg.addr, ans); return; }
+                    Err(e) => {
+                        ans.fault(&msg.addr, format!("build_frame: {}: {e}", dev.device.name));
+                        return;
+                    }
                 }
             }
         }
     }
 
-    eprintln!("  unknown OSC: {}", msg.addr);
+    ans.fault(&msg.addr, "unknown address");
 }
 
 fn dispatch_command(cmd: &Command, caps: &HashMap<String, String>, args: &[OscType], dev: &Device) -> Result<(Vec<u8>, Vec<frame::ChecksumSlot>)> {
@@ -1378,12 +1489,12 @@ fn cc_messages(entry: &CcEntry, default_ch: u8, value: i64, args: &[OscType]) ->
     Ok(out)
 }
 
-fn enqueue(tx: &Sender<Vec<u8>>, frm: Vec<u8>, addr: &str, from: SocketAddr) {
+fn enqueue(tx: &Sender<Vec<u8>>, frm: Vec<u8>, addr: &str, ans: &Answer) {
     let len = frm.len();
     if let Err(e) = tx.try_send(frm) {
-        eprintln!("  [{from}] queue full for {addr}: {e}");
+        ans.fault(addr, format!("emission queue refused the frame: {e}"));
     } else {
-        eprintln!("  [{from}] {addr} -> {len} bytes SysEx");
+        eprintln!("  [{}] {addr} -> {len} bytes SysEx", ans.from);
     }
 }
 
@@ -1459,8 +1570,9 @@ fn bind_osc(opts: RuntimeOptions) -> Result<BoundRuntime> {
             let cmds = cmds.clone();
             let target_sock = target_sock.clone();
             let send_osc = send_osc.clone();
+            let reply_to = ws_reply_to(ws_clients.clone());
             Arc::new(move |pkt, from| {
-                dispatch_osc(pkt, &dev, &cmds, &target_sock, target_addr, &send_osc, from);
+                dispatch_osc(pkt, &dev, &cmds, (&target_sock, target_addr), &send_osc, &reply_to, from);
             })
         };
         let local = crate::ws::serve(bind, wsc.clone(), dispatch_cb, opts.ws_allow_origins.clone())?;
@@ -1473,6 +1585,7 @@ fn bind_osc(opts: RuntimeOptions) -> Result<BoundRuntime> {
     let osc_addr = sock.local_addr()?;
     serve_oscquery(&opts.oscquery_bind, std::slice::from_ref(dev.as_ref()), &sock, ws_local)?;
     let osc_clients = opts.osc_clients;
+    let udp_reply = udp_reply_to(sock.try_clone()?);
 
     let serve = move || -> Result<()> {
         eprintln!("Ready. Ctrl-C to stop.");
@@ -1485,7 +1598,7 @@ fn bind_osc(opts: RuntimeOptions) -> Result<BoundRuntime> {
             match rosc::decoder::decode_udp(&buf[..n]) {
                 Ok((_, pkt)) => {
                     answer_query(&sock, &pkt, from, std::slice::from_ref(dev.as_ref()), &osc_clients);
-                    dispatch_osc(pkt, &dev, &cmds, &target_sock, target_addr, &send_osc, from)
+                    dispatch_osc(pkt, &dev, &cmds, (&target_sock, target_addr), &send_osc, &udp_reply, from)
                 }
                 Err(e) => eprintln!("OSC decode err from {from}: {e}"),
             }
@@ -1498,30 +1611,26 @@ fn dispatch_osc(
     pkt: OscPacket,
     dev: &Arc<Device>,
     cmds: &[CommandHandler],
-    target_sock: &Arc<UdpSocket>,
-    target: SocketAddr,
+    target: (&Arc<UdpSocket>, SocketAddr),
     send_osc: &SendOsc,
+    reply_to: &ReplyTo,
     from: SocketAddr,
 ) {
-    match pkt {
-        OscPacket::Message(m) => handle_osc_message(m, dev, cmds, target_sock, target, send_osc, from),
-        OscPacket::Bundle(b) => {
-            for p in b.content {
-                dispatch_osc(p, dev, cmds, target_sock, target, send_osc, from);
-            }
-        }
-    }
+    each_message_then_sync(pkt, reply_to, from, |m| {
+        handle_osc_message(m, dev, cmds, target, send_osc, reply_to, from)
+    });
 }
 
 pub fn handle_osc_message(
     msg: OscMessage,
     dev: &Arc<Device>,
     cmds: &[CommandHandler],
-    target_sock: &Arc<UdpSocket>,
-    target: SocketAddr,
+    (target_sock, target): (&Arc<UdpSocket>, SocketAddr),
     send_osc: &SendOsc,
+    reply_to: &ReplyTo,
     from: SocketAddr,
 ) {
+    let ans = &Answer::new(send_osc, reply_to, from);
     // /bridge/status, /bridge/docs — same surface as MIDI flow.
     if msg.addr == "/bridge/status" {
         for r in bridge_status_replies(std::slice::from_ref(dev.as_ref())) { send_osc(r); }
@@ -1546,7 +1655,7 @@ pub fn handle_osc_message(
             send_osc_to_target(target_sock, target, &out);
             eprintln!("  [{from}] passthrough {} -> {}", msg.addr, out.addr);
         } else {
-            eprintln!("  [{from}] passthrough miss (prefix not matched) for {}", msg.addr);
+            ans.fault(&msg.addr, "passthrough miss: prefix not matched");
         }
         return;
     }
@@ -1555,7 +1664,7 @@ pub fn handle_osc_message(
         if let Some(caps) = match_osc_path(&handler.pattern_parts, &msg.addr) {
             let cmd = &handler.cmd;
             let Some(forward) = &cmd.forward else {
-                eprintln!("  [{from}] {} matched but no `forward` block", msg.addr);
+                ans.fault(&msg.addr, "command matched but has no `forward` block");
                 return;
             };
             let bindings = build_forward_bindings(cmd, &caps, &msg.args);
@@ -1563,12 +1672,12 @@ pub fn handle_osc_message(
                 send_osc_to_target(target_sock, target, &out_msg);
                 eprintln!("  [{from}] {} -> {} {:?}", msg.addr, out_msg.addr, out_msg.args);
             } else {
-                eprintln!("  [{from}] {} -> forward build failed (missing binding?)", msg.addr);
+                ans.fault(&msg.addr, "forward build failed (missing binding?)");
             }
             return;
         }
     }
-    eprintln!("  [{from}] no command for {}", msg.addr);
+    ans.fault(&msg.addr, "no command for this address");
 }
 
 /// Compose the bindings that interpolate into a `ForwardSpec`. Path captures

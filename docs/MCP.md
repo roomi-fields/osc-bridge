@@ -83,7 +83,7 @@ The server speaks JSON-RPC 2.0 over stdio.
 | `get_device_docs` | Fetch the markdown companion guide for one device (by slug). |
 | `list_routes` | Return a device's full OSC surface — declarative commands, CC/NRPN params, SysEx params, named drum sounds, reply patterns. |
 | `export_device` | Write one driver (`device`: id or slug) as `oscquery` (its OSC namespace, OSCQuery JSON) or `midnam` (its MIDI names, MIDI Name Document XML), with its sources' credit and licence. See [EXPORT.md](EXPORT.md). |
-| `send` | Send a single OSC message to a running `osc-bridge` instance (typed args: int, float, string, bool). |
+| `send` | Send a single OSC message to a running `osc-bridge` instance (typed args: int, float, string, bool). The tool always asks the bridge for its acknowledgement (`/bridge/sync`) and returns on the first reply: `/bridge/done` gives `sent: true`; `/bridge/fault` gives an `isError: true` result carrying the message's address and the reason, as text and as structured content. If nothing replies within a guard delay, the result is an error saying osc-bridge does not answer at that address. |
 | `get_status` | Round-trip `/bridge/status` to a running bridge and report the replies. |
 | `add_link` | Link an address of one device to an address of another on a running bridge, optionally scaling the first argument (`map`: input range, output range); effective at the next message, no restart. Refused, naming the address or the chain, for an unknown device, an address its driver does not have, a loop or more than four hops. |
 | `remove_link` | Remove a link from a running bridge; refused, naming it, when it does not exist. |

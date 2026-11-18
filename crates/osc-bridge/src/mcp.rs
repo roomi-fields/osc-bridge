@@ -578,6 +578,7 @@ pub fn tool_schemas() -> Value {
                     "properties": {
                         "sent": { "type": "boolean" },
                         "address": { "type": "string" },
+                        "reason": { "type": "string", "description": "Present when osc-bridge could not handle the message (sent is false): why." },
                         "bytes": { "type": "integer", "description": "Encoded OSC packet size." },
                         "target": { "type": "string", "description": "host:port the packet was sent to." }
                     },
@@ -1874,20 +1875,71 @@ fn list_routes(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
     Ok(content_structured(&text, payload))
 }
 
+/// How long `send` waits for osc-bridge to answer before saying it does not: a guard for a
+/// bridge that is not there, never the time of a message.
+const SEND_ANSWER_GUARD: Duration = Duration::from_secs(3);
+
+/// Send one message in a packet with a `/bridge/sync <id>` and hand back at the first answer:
+/// `/bridge/fault <address> <reason>` is an error result, `/bridge/done <id>` is `sent: true`.
 fn send_osc_message(addr: &str, args: &Value, target: SocketAddr) -> Result<Value, String> {
-    use rosc::{OscMessage, OscPacket, OscType, encoder};
+    use rosc::{OscBundle, OscMessage, OscPacket, OscTime, OscType, encoder};
     let osc_args: Vec<OscType> = args.as_array().map(|a| a.iter().map(json_to_osc).collect()).unwrap_or_default();
-    let pkt = OscPacket::Message(OscMessage { addr: addr.to_string(), args: osc_args });
+    let id = format!("send-{}", std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_nanos()));
+    let pkt = OscPacket::Bundle(OscBundle {
+        timetag: OscTime { seconds: 0, fractional: 1 },
+        content: vec![
+            OscPacket::Message(OscMessage { addr: addr.to_string(), args: osc_args }),
+            OscPacket::Message(OscMessage { addr: "/bridge/sync".into(), args: vec![OscType::String(id.clone())] }),
+        ],
+    });
     let bytes = encoder::encode(&pkt).map_err(|e| format!("osc encode: {e:?}"))?;
     let sock = UdpSocket::bind("0.0.0.0:0").map_err(|e| e.to_string())?;
     sock.send_to(&bytes, target).map_err(|e| e.to_string())?;
-    let structured = json!({
-        "sent": true,
-        "address": addr,
-        "bytes": bytes.len(),
-        "target": target.to_string(),
-    });
-    Ok(content_structured(&format!("Sent {addr} ({} bytes) to {target}.", bytes.len()), structured))
+    let deadline = std::time::Instant::now() + SEND_ANSWER_GUARD;
+    let mut buf = [0u8; 65536];
+    loop {
+        let left = deadline.saturating_duration_since(std::time::Instant::now());
+        let silent = || format!(
+            "osc-bridge does not answer at {target}: {addr} may not have been handled. Is osc-bridge running on that address?");
+        if left.is_zero() { return Err(silent()); }
+        sock.set_read_timeout(Some(left)).map_err(|e| e.to_string())?;
+        let Ok((n, _)) = sock.recv_from(&mut buf) else { return Err(silent()); };
+        let Ok((_, pkt)) = rosc::decoder::decode_udp(&buf[..n]) else { continue };
+        let mut answers = Vec::new();
+        flatten_messages(pkt, &mut answers);
+        for m in answers {
+            let strings: Vec<String> = m.args.iter().filter_map(|a| match a { OscType::String(s) => Some(s.clone()), _ => None }).collect();
+            if m.addr == "/bridge/fault" && strings.len() == 2 {
+                let structured = json!({
+                    "sent": false,
+                    "address": strings[0],
+                    "reason": strings[1],
+                    "bytes": bytes.len(),
+                    "target": target.to_string(),
+                });
+                let mut res = content_structured(&format!("Not sent: {} — {}", strings[0], strings[1]), structured);
+                res["isError"] = json!(true);
+                return Ok(res);
+            }
+            if m.addr == "/bridge/done" && m.args.first() == Some(&OscType::String(id.clone())) {
+                let structured = json!({
+                    "sent": true,
+                    "address": addr,
+                    "bytes": bytes.len(),
+                    "target": target.to_string(),
+                });
+                return Ok(content_structured(&format!("Sent {addr} ({} bytes) to {target}.", bytes.len()), structured));
+            }
+        }
+    }
+}
+
+fn flatten_messages(pkt: rosc::OscPacket, out: &mut Vec<rosc::OscMessage>) {
+    match pkt {
+        rosc::OscPacket::Message(m) => out.push(m),
+        rosc::OscPacket::Bundle(b) => for p in b.content { flatten_messages(p, out); },
+    }
 }
 
 fn get_status(target: SocketAddr) -> Result<Value, String> {

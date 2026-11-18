@@ -4,6 +4,7 @@
 //! owner device is found, the links are applied, and the frames reach the
 //! emission queue of a loaded device that has no port.
 
+use crate::common::no_reply;
 use crossbeam_channel::{bounded, Receiver};
 use osc_bridge::orchestrator::{BenchPath, RouteRule};
 use osc_bridge::runtime::SendOsc;
@@ -32,7 +33,7 @@ fn silent() -> SendOsc {
 #[test]
 fn message_to_a_loaded_device_reaches_its_emission_queue() {
     let (path, rx) = rig(&[]);
-    path.dispatch(msg(SOURCE, 64), &silent());
+    path.dispatch(msg(SOURCE, 64), &silent(), &no_reply());
     let frames: Vec<Vec<u8>> = rx.try_iter().collect();
     assert_eq!(frames, vec![vec![0xB0, 74, 64]]);
 }
@@ -41,7 +42,7 @@ fn message_to_a_loaded_device_reaches_its_emission_queue() {
 fn message_following_a_link_reaches_the_queue_twice_the_link_after_the_owner() {
     let link = RouteRule { from: SOURCE.into(), to: TARGET.into(), map: None };
     let (path, rx) = rig(&[link]);
-    path.dispatch(msg(SOURCE, 64), &silent());
+    path.dispatch(msg(SOURCE, 64), &silent(), &no_reply());
     let frames: Vec<Vec<u8>> = rx.try_iter().collect();
     assert_eq!(frames, vec![vec![0xB0, 74, 64], vec![0xB0, 71, 64]]);
 }
@@ -51,7 +52,7 @@ fn link_scaling_is_applied_before_the_frame_is_built() {
     let map = osc_bridge::orchestrator::MapRule { from: [0.0, 127.0], to: [0.0, 1.0] };
     let link = RouteRule { from: SOURCE.into(), to: TARGET.into(), map: Some(map) };
     let (path, rx) = rig(&[link]);
-    path.dispatch(msg(SOURCE, 127), &silent());
+    path.dispatch(msg(SOURCE, 127), &silent(), &no_reply());
     let frames: Vec<Vec<u8>> = rx.try_iter().collect();
     assert_eq!(frames, vec![vec![0xB0, 74, 127], vec![0xB0, 71, 1]]);
 }
@@ -59,7 +60,7 @@ fn link_scaling_is_applied_before_the_frame_is_built() {
 #[test]
 fn message_no_device_owns_reaches_no_queue() {
     let (path, rx) = rig(&[]);
-    path.dispatch(msg("/nobody/home", 1), &silent());
+    path.dispatch(msg("/nobody/home", 1), &silent(), &no_reply());
     assert!(rx.try_recv().is_err());
 }
 
@@ -69,7 +70,7 @@ fn link_control_address_is_answered_through_the_send_function() {
     let seen: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
     let sink = seen.clone();
     let send: SendOsc = Arc::new(move |m| sink.lock().unwrap().push(m.addr));
-    path.dispatch(OscMessage { addr: "/bridge/link/list".into(), args: vec![] }, &send);
+    path.dispatch(OscMessage { addr: "/bridge/link/list".into(), args: vec![] }, &send, &no_reply());
     assert_eq!(*seen.lock().unwrap(), vec!["/bridge/link/list/end".to_string()]);
     assert!(rx.try_recv().is_err());
 }

@@ -55,8 +55,8 @@ use std::sync::OnceLock;
 use osd::Device;
 use crate::runtime::{
     answer_query, bridge_query_replies, bridge_status_replies, build_forward_msg, dispatch_osc_to_device,
-    dispatch_to_device, handle_midi_in, match_osc_path, run_osc_reply_loop,
-    send_osc_to_target, DeviceDispatch, OscDeviceHandle, SendOsc,
+    dispatch_to_device, each_message_then_sync, handle_midi_in, midi_send_fault, match_osc_path, run_osc_reply_loop,
+    send_osc_to_target, udp_reply_to, ws_reply_to, DeviceDispatch, OscDeviceHandle, ReplyTo, SendOsc,
 };
 
 mod links;
@@ -117,6 +117,7 @@ fn dispatch_into_owner(
     devices: &[LoadedDevice],
     prefix_map: &HashMap<String, usize>,
     send_osc: &SendOsc,
+    reply_to: &ReplyTo,
     from: SocketAddr,
 ) -> bool {
     let owner = prefix_map.iter()
@@ -126,8 +127,8 @@ fn dispatch_into_owner(
     match owner {
         Some(idx) => {
             match &devices[idx] {
-                LoadedDevice::Midi(m) => dispatch_to_device(&m.dispatch, msg, send_osc, from),
-                LoadedDevice::Osc(h) => dispatch_osc_to_device(h, msg, send_osc, from),
+                LoadedDevice::Midi(m) => dispatch_to_device(&m.dispatch, msg, send_osc, reply_to, from),
+                LoadedDevice::Osc(h) => dispatch_osc_to_device(h, msg, send_osc, reply_to, from),
             }
             true
         }
@@ -141,9 +142,10 @@ fn apply_routes(
     devices: &[LoadedDevice],
     prefix_map: &HashMap<String, usize>,
     send_osc: &SendOsc,
+    reply_to: &ReplyTo,
 ) {
     let mut chain = vec![msg.addr.clone()];
-    follow_links(msg, routes, devices, prefix_map, send_osc, &mut chain);
+    follow_links(msg, routes, devices, prefix_map, send_osc, reply_to, &mut chain);
 }
 
 /// Follow the links from `msg`: each message a link puts out goes to its
@@ -156,6 +158,7 @@ fn follow_links(
     devices: &[LoadedDevice],
     prefix_map: &HashMap<String, usize>,
     send_osc: &SendOsc,
+    reply_to: &ReplyTo,
     chain: &mut Vec<String>,
 ) {
     let depth = ROUTE_DEPTH.with(|c| c.get());
@@ -188,9 +191,9 @@ fn follow_links(
         let new_msg = OscMessage { addr: new_addr.clone(), args: new_args };
         eprintln!("  [route] {} -> {}", msg.addr, new_addr);
         ROUTE_DEPTH.with(|c| c.set(depth + 1));
-        let hit = dispatch_into_owner(new_msg.clone(), devices, prefix_map, send_osc, internal_from());
+        let hit = dispatch_into_owner(new_msg.clone(), devices, prefix_map, send_osc, reply_to, internal_from());
         chain.push(new_addr.clone());
-        follow_links(&new_msg, routes, devices, prefix_map, send_osc, chain);
+        follow_links(&new_msg, routes, devices, prefix_map, send_osc, reply_to, chain);
         chain.pop();
         ROUTE_DEPTH.with(|c| c.set(depth));
         if !hit {
@@ -403,7 +406,8 @@ impl Orchestrator {
                     .map_err(|e| anyhow!("midi out for {}: {e}", dev.device.name))?;
                 let (tx, rx) = bounded::<Vec<u8>>(1024);
                 let rate = u32::try_from(dev.device.rate_limit_hz.unwrap_or(0)).unwrap_or(0);
-                std::thread::spawn(move || drain_midi_out(out_conn, rx, rate));
+                let fault_send = raw_send.clone();
+                std::thread::spawn(move || drain_midi_out(out_conn, rx, rate, fault_send));
 
                 eprintln!("  + {} → out[{midi_out_port}] {name}", dev.device.osc_prefix);
                 let idx = devices.len();
@@ -452,10 +456,12 @@ impl Orchestrator {
             let prefix_map = prefix_map.clone();
             let links = links.clone();
             let holder = routed_holder.clone();
+            // Links re-inject with no real sender: a fault is broadcast, nothing is answered.
+            let nobody: ReplyTo = Arc::new(|_, _| {});
             Arc::new(move |msg: OscMessage| {
                 raw(msg.clone());
                 if let Some(self_send) = holder.get() {
-                    apply_routes(&msg, &links.table.snapshot(), &devices, &prefix_map, self_send);
+                    apply_routes(&msg, &links.table.snapshot(), &devices, &prefix_map, self_send, &nobody);
                 }
             })
         };
@@ -463,6 +469,8 @@ impl Orchestrator {
 
         // WebSocket transport — browser clients dispatch through the same
         // prefix-routing (and inter-device routes) as the UDP loop below.
+        // A WebSocket peer is answered through the WebSocket broadcast (no per-peer channel).
+        let ws_reply: ReplyTo = ws_reply_to(ws_clients.clone());
         let mut ws_local = None;
         if let (Some(bind), Some(wsc)) = (&cfg.osc.ws_bind, &ws_clients) {
             let dispatch_cb: crate::ws::WsDispatch = {
@@ -470,8 +478,9 @@ impl Orchestrator {
                 let prefix_map = prefix_map.clone();
                 let links = links.clone();
                 let send = routed_send.clone();
+                let reply_to = ws_reply.clone();
                 Arc::new(move |pkt, from| {
-                    orch_dispatch(pkt, &devices, &prefix_map, &links, &send, from);
+                    orch_dispatch(pkt, &devices, &prefix_map, &links, &send, &reply_to, from);
                 })
             };
             let local = crate::ws::serve(bind, wsc.clone(), dispatch_cb, cfg.osc.ws_allow_origins.clone())?;
@@ -540,6 +549,7 @@ impl Orchestrator {
         // Inbound OSC socket
         let sock = UdpSocket::bind(&cfg.osc.bind)
             .with_context(|| format!("bind {}", cfg.osc.bind))?;
+        let udp_reply: ReplyTo = udp_reply_to(sock.try_clone()?);
         let served: Vec<Device> = devices.iter().map(|d| d.device().clone()).collect();
         crate::runtime::serve_oscquery(&cfg.osc.oscquery_bind, &served, &sock, ws_local)?;
         eprintln!("Orchestrator ready. {} device(s) on {}", devices.len(), cfg.osc.bind);
@@ -573,7 +583,7 @@ impl Orchestrator {
                         let devs: Vec<Device> = devices.iter().map(|d| d.device().clone()).collect();
                         answer_query(&sock, &pkt, from, &devs, &client_addrs);
                     }
-                    orch_dispatch(pkt, &devices, &prefix_map, &links, &routed_send, from)
+                    orch_dispatch(pkt, &devices, &prefix_map, &links, &routed_send, &udp_reply, from)
                 }
                 Err(e) => eprintln!("OSC decode err: {e}"),
             }
@@ -581,18 +591,19 @@ impl Orchestrator {
     }
 }
 
+/// One packet: each message in order, then the `/bridge/done` of each `/bridge/sync` it carried.
 fn orch_dispatch(
     pkt: OscPacket,
     devices: &[LoadedDevice],
     prefix_map: &HashMap<String, usize>,
     links: &Links,
     send_osc: &SendOsc,
+    reply_to: &ReplyTo,
     from: SocketAddr,
 ) {
-    match pkt {
-        OscPacket::Message(m) => orch_handle(m, devices, prefix_map, links, send_osc, from),
-        OscPacket::Bundle(b) => for p in b.content { orch_dispatch(p, devices, prefix_map, links, send_osc, from); }
-    }
+    each_message_then_sync(pkt, reply_to, from, |m| {
+        orch_handle(m, devices, prefix_map, links, send_osc, reply_to, from)
+    });
 }
 
 fn orch_handle(
@@ -601,6 +612,7 @@ fn orch_handle(
     prefix_map: &HashMap<String, usize>,
     links: &Links,
     send_osc: &SendOsc,
+    reply_to: &ReplyTo,
     from: SocketAddr,
 ) {
     // Global: /bridge/link/* → change or list the links, answer through the clients.
@@ -631,13 +643,13 @@ fn orch_handle(
     }
 
     // Dispatch into the owning device (MIDI or OSC transport).
-    if !dispatch_into_owner(msg.clone(), devices, prefix_map, send_osc, from) {
+    if !dispatch_into_owner(msg.clone(), devices, prefix_map, send_osc, reply_to, from) {
         // No device owns this address — it may still be a route source.
     }
 
     // Inter-device routing: always apply, regardless of whether a device owns
     // the source address (lets you route from any client-emitted path too).
-    apply_routes(&msg, &links.table.snapshot(), devices, prefix_map, send_osc);
+    apply_routes(&msg, &links.table.snapshot(), devices, prefix_map, send_osc, reply_to);
 }
 
 /// The orchestrator's message path, reached without a socket or a MIDI port:
@@ -675,12 +687,12 @@ impl BenchPath {
     }
 
     /// Follow one message through the orchestrator; replies go to `send_osc`.
-    pub fn dispatch(&self, msg: OscMessage, send_osc: &SendOsc) {
-        orch_handle(msg, &self.devices, &self.prefix_map, &self.links, send_osc, internal_from());
+    pub fn dispatch(&self, msg: OscMessage, send_osc: &SendOsc, reply_to: &ReplyTo) {
+        orch_handle(msg, &self.devices, &self.prefix_map, &self.links, send_osc, reply_to, internal_from());
     }
 }
 
-fn drain_midi_out(mut conn: MidiOutputConnection, rx: Receiver<Vec<u8>>, rate_hz: u32) {
+fn drain_midi_out(mut conn: MidiOutputConnection, rx: Receiver<Vec<u8>>, rate_hz: u32, send_osc: SendOsc) {
     let interval = if rate_hz > 0 {
         Duration::from_micros(1_000_000 / rate_hz as u64)
     } else { Duration::ZERO };
@@ -690,7 +702,7 @@ fn drain_midi_out(mut conn: MidiOutputConnection, rx: Receiver<Vec<u8>>, rate_hz
             let e = last.elapsed();
             if e < interval { std::thread::sleep(interval - e); }
         }
-        if let Err(e) = conn.send(&frm) { eprintln!("midi send: {e}"); }
+        if let Err(e) = conn.send(&frm) { midi_send_fault(&send_osc, e); }
         last = Instant::now();
     }
 }
