@@ -72,6 +72,25 @@ fn a_changed_driver_replaces_the_kept_one_and_its_etag() {
 }
 
 #[test]
+fn a_kept_etag_whose_file_is_gone_is_ignored_and_the_driver_fetched_again() {
+    let dir = temp("fresh-gone");
+    let (root, cache) = (dir.path().join("server"), dir.path().join("cache"));
+    catalogue(&root);
+    let server = FakeSynthHub::start(&root, None);
+    online_in(&server.base, dir.path()).fetch_driver("acme/synth", &cache).unwrap();
+    assert!(cache.join("acme/synth.json.etag").is_file());
+    std::fs::remove_file(cache.join("acme/synth.json")).unwrap();
+
+    server.forget_requests();
+    online_in(&server.base, dir.path()).fetch_driver("acme/synth", &cache).unwrap();
+    let asked = server.driver_requests();
+    let driver = asked.iter().find(|s| s.url.ends_with("synth.json")).unwrap();
+    assert_eq!((driver.if_none_match.as_deref(), driver.status), (None, 200), "{asked:?}");
+    assert_eq!(std::fs::read(cache.join("acme/synth.json")).unwrap(), std::fs::read(root.join("acme/synth.json")).unwrap());
+    assert_eq!(std::fs::read_to_string(cache.join("acme/synth.json.etag")).unwrap(), etag_of(&root.join("acme/synth.json")));
+}
+
+#[test]
 fn notes_the_server_no_longer_has_are_dropped_with_their_etag() {
     let dir = temp("fresh-notes");
     let (root, cache) = (dir.path().join("server"), dir.path().join("cache"));

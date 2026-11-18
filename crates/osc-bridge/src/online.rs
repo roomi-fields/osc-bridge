@@ -181,10 +181,22 @@ fn newer_notice(url: &str) -> String {
         env!("CARGO_PKG_VERSION"))
 }
 
+/// Whether a `Deprecation` value (RFC 9745: `@<Unix seconds>`) announces a
+/// withdrawal at `now`: a date still to come does not; a date reached, or a
+/// value that is not a date, does.
+fn deprecation_announces(value: &str, now: i64) -> bool {
+    match value.trim().strip_prefix('@').and_then(|s| s.parse::<i64>().ok()) {
+        Some(at) => at <= now,
+        None => true,
+    }
+}
+
 /// Note a reply's `Deprecation` with its `Link rel="deprecation"`: told on
 /// standard error the first time in this run.
 fn note_deprecation(headers: &ureq::http::HeaderMap) {
-    if !headers.contains_key("deprecation") { return; }
+    let Some(value) = headers.get("deprecation") else { return };
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_secs() as i64);
+    if !deprecation_announces(value.to_str().unwrap_or(""), now) { return; }
     let link = headers.get_all("link").iter().filter_map(|v| v.to_str().ok()).find_map(deprecation_link);
     if let Some(url) = link {
         if NEWER.set(url.clone()).is_ok() {
@@ -235,16 +247,36 @@ struct Got {
     fresh: bool,
 }
 
-/// Write a kept file and its ETag (the old ETag goes first, so that it never
-/// stands for the new file).
+/// `path` with `suffix` appended to its name.
+fn with_suffix(path: &Path, suffix: &str) -> PathBuf {
+    let mut name = path.as_os_str().to_owned();
+    name.push(suffix);
+    PathBuf::from(name)
+}
+
+/// Write `text` to `path` whole: to a temporary file beside it, then renamed
+/// into place, as Cargo's registry cache does.
+fn write_whole(path: &Path, text: &str) -> Result<()> {
+    let tmp = with_suffix(path, ".tmp");
+    let written = std::fs::write(&tmp, text).and_then(|()| std::fs::rename(&tmp, path));
+    if written.is_err() { let _ = std::fs::remove_file(&tmp); }
+    written.with_context(|| format!("write {}", path.display()))
+}
+
+/// Write a kept file and its ETag, under an exclusive lock on
+/// `<file>.lock` (so the pair is one writer's), each whole (temporary file
+/// then rename). The old ETag goes first, so that it never stands for the
+/// new file.
 fn keep(file: &Path, text: &str, etag: Option<&str>) -> Result<()> {
     let etag_file = etag_path(file);
-    let _ = std::fs::remove_file(&etag_file);
     std::fs::create_dir_all(file.parent().expect("a maker folder"))?;
-    std::fs::write(file, text).with_context(|| format!("write {}", file.display()))?;
-    if let Some(etag) = etag {
-        std::fs::write(&etag_file, etag).with_context(|| format!("write {}", etag_file.display()))?;
-    }
+    let lock_path = with_suffix(file, ".lock");
+    let lock = std::fs::OpenOptions::new().create(true).write(true).truncate(false).open(&lock_path)
+        .with_context(|| format!("open {}", lock_path.display()))?;
+    lock.lock().with_context(|| format!("lock {}", lock_path.display()))?;
+    let _ = std::fs::remove_file(&etag_file);
+    write_whole(file, text)?;
+    if let Some(etag) = etag { write_whole(&etag_file, etag)?; }
     Ok(())
 }
 
@@ -670,52 +702,4 @@ impl Online {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn settings_default_to_sharing_and_round_trip() {
-        let dir = tempfile::Builder::new().prefix("osc-bridge-settings-").tempdir().unwrap();
-        let path = dir.path().join("osc-bridge/settings.toml");
-        assert_eq!(Settings::load(Some(&path)).unwrap(), Settings { offline: false, private: vec![] });
-        assert_eq!(Settings::load(None).unwrap(), Settings::default());
-        let mine = Settings { offline: true, private: vec!["korg/minilogue".into()] };
-        mine.save(&path).unwrap();
-        assert_eq!(Settings::load(Some(&path)).unwrap(), mine);
-        std::fs::write(&path, "private = [\"arturia/minilab3\"]\n").unwrap();
-        assert_eq!(Settings::load(Some(&path)).unwrap(), Settings { offline: false, private: vec!["arturia/minilab3".into()] });
-        let text = mine.render();
-        assert!(text.contains("# true: do not contact the server") && text.contains("\"korg/minilogue\","), "{text}");
-        assert_eq!(toml::from_str::<Settings>(&text).unwrap(), mine, "the commented file reads back");
-        let fresh = dir.path().join("fresh/settings.toml");
-        assert_eq!(Settings::load_or_create(&fresh).unwrap(), Settings::default());
-        assert!(std::fs::read_to_string(&fresh).unwrap().contains("Edit this file freely"));
-        let p = vec!["korg/*".to_string(), "minilab3".to_string(), "moog/sub37".to_string()];
-        assert!(Settings::covers(&p, "korg/minilogue", "minilogue"));
-        assert!(Settings::covers(&p, "arturia/minilab3.vendor.fw-1", "minilab3"));
-        assert!(Settings::covers(&p, "moog/sub37", "sub37"));
-        assert!(!Settings::covers(&p, "korgish/x", "x") && !Settings::covers(&p, "moog/sub37_v2", "sub37_v2"));
-    }
-
-    #[test]
-    fn driver_ids_stay_inside_the_cache() {
-        assert!(is_driver_id("korg/minilogue") && is_driver_id("arturia/microfreak.vendor.fw-freakpatch-0.3.0"));
-        for bad in ["../etc/passwd", "/abs", "korg/../x", "korg//x", "a\\b", "korg", "a/b/c", "korg/.hidden", "korg/x y", ""] {
-            assert!(!is_driver_id(bad), "{bad}");
-        }
-        assert_eq!(driver_path(Path::new("/c"), "korg/minilogue"), Path::new("/c/korg/minilogue.json"));
-        assert_eq!(driver_path(Path::new("/c"), "arturia/x.fw-1.0"), Path::new("/c/arturia/x.fw-1.0.json"));
-        assert_eq!(sha256_hex(b""), "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
-        assert_eq!(etag_path(Path::new("/c/korg/minilogue.json")), Path::new("/c/korg/minilogue.json.etag"));
-    }
-
-    #[test]
-    fn the_deprecation_link_is_read_from_a_link_header() {
-        assert_eq!(deprecation_link(r#"<https://x.example/new>; rel="deprecation""#).as_deref(), Some("https://x.example/new"));
-        assert_eq!(deprecation_link(r#"<https://a.example/>; rel="next", <https://x.example/new>; type="text/html"; rel=deprecation"#).as_deref(),
-            Some("https://x.example/new"));
-        assert_eq!(deprecation_link(r#"<https://x.example/new>; rel="alternate deprecation""#).as_deref(), Some("https://x.example/new"));
-        assert_eq!(deprecation_link(r#"<https://a.example/>; rel="next""#), None);
-        assert_eq!(deprecation_link("not a link"), None);
-    }
-}
+mod tests;

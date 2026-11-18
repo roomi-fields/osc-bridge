@@ -201,7 +201,7 @@ fn a_driver_that_names_nothing_else_is_downloaded_with_its_note_alone() {
     let cache = dir.path().join("cache");
     online_in(&server.base, dir.path()).fetch_driver("acme/synth", &cache).unwrap();
     assert_eq!(urls(&server), ["/api/v1/devices/acme/synth.json", "/api/v1/devices/acme/synth.md"]);
-    assert_eq!(kept(&cache), ["acme/synth.json", "acme/synth.json.etag", "acme/synth.md", "acme/synth.md.etag"]);
+    assert_eq!(kept(&cache), ["acme/synth.json", "acme/synth.json.etag", "acme/synth.json.lock", "acme/synth.md", "acme/synth.md.etag", "acme/synth.md.lock"]);
 }
 
 #[test]

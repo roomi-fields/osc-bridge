@@ -22,6 +22,18 @@ fn test_opts() -> McpOptions {
 }
 
 #[test]
+fn a_lock_file_beside_a_kept_driver_is_never_taken_for_a_driver() {
+    let dir = tempfile::Builder::new().prefix("osc-bridge-walk-").tempdir().unwrap();
+    std::fs::create_dir_all(dir.path().join("acme")).unwrap();
+    for name in ["box.json", "box.json.etag", "box.json.lock", "box.md", "box.md.lock"] {
+        std::fs::write(dir.path().join("acme").join(name), "x").unwrap();
+    }
+    let mut seen = Vec::new();
+    walk_json(dir.path(), &mut |p| seen.push(p.file_name().unwrap().to_string_lossy().into_owned())).unwrap();
+    assert_eq!(seen, ["box.json"]);
+}
+
+#[test]
 fn list_devices_filters_by_words_vendor_kind_and_limit() {
     let idx = fixtures();
     let run = |args: Value| list_devices(&idx, &DeviceFilter::from_args(&args), &|_| None).unwrap()["structuredContent"].clone();
