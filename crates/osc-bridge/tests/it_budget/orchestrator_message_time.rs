@@ -73,6 +73,17 @@ fn message_that_follows_a_link_adds_under_the_bound() {
 }
 
 #[test]
+fn message_that_follows_a_chain_of_two_links_adds_under_the_bound() {
+    let links = [
+        RouteRule { from: SOURCE.into(), to: TARGET.into(), map: None },
+        RouteRule { from: TARGET.into(), to: "/test_synth/amp/attack".into(), map: None },
+    ];
+    let (path, rx) = rig(&links);
+    // The device's frame, then one frame per link.
+    assert_under_bound("message following a chain of two links", measure(&path, &rx, 3));
+}
+
+#[test]
 fn message_that_follows_no_link_adds_under_the_bound() {
     let (path, rx) = rig(&[]);
     assert_under_bound("message following no link", measure(&path, &rx, 1));

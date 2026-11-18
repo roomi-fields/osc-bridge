@@ -142,8 +142,39 @@ fn apply_routes(
     prefix_map: &HashMap<String, usize>,
     send_osc: &SendOsc,
 ) {
+    let mut chain = vec![msg.addr.clone()];
+    follow_links(msg, routes, devices, prefix_map, send_osc, &mut chain);
+}
+
+/// Follow the links from `msg`: each message a link puts out goes to its
+/// owner, then back through the table one depth further (`ROUTE_DEPTH` is the
+/// chain's one counter). At `ROUTE_MAX_DEPTH` a matching link is cut and the
+/// cut is said by `/bridge/link/error`.
+fn follow_links(
+    msg: &OscMessage,
+    routes: &[Arc<CompiledRoute>],
+    devices: &[LoadedDevice],
+    prefix_map: &HashMap<String, usize>,
+    send_osc: &SendOsc,
+    chain: &mut Vec<String>,
+) {
     let depth = ROUTE_DEPTH.with(|c| c.get());
-    if depth >= ROUTE_MAX_DEPTH { return; }
+    if depth >= ROUTE_MAX_DEPTH {
+        if msg.addr == "/bridge/link/error" { return; }
+        for r in routes {
+            let Some(caps) = match_osc_path(&r.from_parts, &msg.addr) else { continue };
+            let target = interp_to_template(&r.to_template, &caps);
+            send_osc(OscMessage {
+                addr: "/bridge/link/error".into(),
+                args: vec![rosc::OscType::String(format!(
+                    "link chain cut at {ROUTE_MAX_DEPTH} hops: followed {}, not followed {target}",
+                    chain.join(" -> ")
+                ))],
+            });
+            break;
+        }
+        return;
+    }
     for r in routes {
         let Some(caps) = match_osc_path(&r.from_parts, &msg.addr) else { continue };
         let new_addr = interp_to_template(&r.to_template, &caps);
@@ -157,7 +188,10 @@ fn apply_routes(
         let new_msg = OscMessage { addr: new_addr.clone(), args: new_args };
         eprintln!("  [route] {} -> {}", msg.addr, new_addr);
         ROUTE_DEPTH.with(|c| c.set(depth + 1));
-        let hit = dispatch_into_owner(new_msg, devices, prefix_map, send_osc, internal_from());
+        let hit = dispatch_into_owner(new_msg.clone(), devices, prefix_map, send_osc, internal_from());
+        chain.push(new_addr.clone());
+        follow_links(&new_msg, routes, devices, prefix_map, send_osc, chain);
+        chain.pop();
         ROUTE_DEPTH.with(|c| c.set(depth));
         if !hit {
             eprintln!("  [route] no device owns {new_addr}");

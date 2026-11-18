@@ -221,6 +221,17 @@ fn a_link_added_live_is_followed_by_the_next_message_with_its_scaling() {
 }
 
 #[test]
+fn a_message_received_at_a_link_source_reaches_the_end_of_a_chain_of_two_links_once() {
+    let rig = start("", None);
+    // The file's link /ctl/knob -> /synth/vol, then a live link /synth/vol -> /synth/a.
+    assert_eq!(add(&rig, "/synth/vol", "/synth/a", None).addr, "/bridge/link/added");
+    let got = forwards_after(&rig, "/ctl/knob", vec![f(0.5)]);
+    let reached = |addr: &str| got.iter().filter(|m| m.addr == addr).count();
+    assert_eq!(reached("/fx/vol"), 1, "{got:?}");
+    assert_eq!(reached("/fx/a"), 1, "the second link follows the first one's output: {got:?}");
+}
+
+#[test]
 fn a_link_added_live_with_an_inverted_output_range_scales_inverted() {
     let rig = start("", None);
     assert_eq!(add(&rig, "/ctl/wheel", "/synth/cutoff", Some([0.0, 100.0, 1.0, 0.0])).addr, "/bridge/link/added");
