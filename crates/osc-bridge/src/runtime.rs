@@ -150,6 +150,7 @@ impl Runtime {
         } else { None };
 
         eprintln!("Device:  {} ({})", dev.device.name, dev.device.revision.as_deref().unwrap_or_default());
+        for line in fault_lines(&dev) { eprintln!("{line}"); }
         eprintln!("MIDI OUT [{}] {out_name}", opts.midi_out_port_idx);
         eprintln!("OSC IN   {}", opts.osc_bind);
         for c in &opts.osc_clients { eprintln!("OSC OUT  {c}"); }
@@ -209,6 +210,14 @@ impl Runtime {
 }
 
 pub type ScriptCell = Arc<OnceLock<Mutex<ScriptEngine>>>;
+
+/// One start-up line per fault the loaded driver carries: the driver, the field, the cause.
+pub fn fault_lines(dev: &Device) -> Vec<String> {
+    crate::device::faults(dev).into_iter()
+        .map(|f| format!("Fault:   {}: {}: {} — detection answers with the Universal Identity Request",
+            f.device, f.field, f.cause))
+        .collect()
+}
 
 /// Start the OSCQuery listener when `bind` is set, describing `devices` as
 /// reached on `sock` (UDP) and the WebSocket at `ws`.

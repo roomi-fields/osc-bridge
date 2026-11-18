@@ -152,11 +152,28 @@ pub fn probe_of(id: &osd::Identity) -> Result<Option<Probe>> {
 }
 
 /// Every distinct request the identities name, in a stable order.
-pub fn probes<'a>(identities: impl IntoIterator<Item = &'a osd::Identity>) -> Vec<Probe> {
-    let mut out: Vec<Probe> = identities.into_iter().filter_map(|i| probe_of(i).ok().flatten()).collect();
-    out.sort_by(|a, b| (&a.request, &a.ports).cmp(&(&b.request, &b.ports)));
-    out.dedup();
+/// with the faults of the identities set aside because their request cannot be built,
+/// each named by its device.
+pub fn probes<'a>(identities: impl IntoIterator<Item = (&'a str, &'a osd::Identity)>) -> Probes {
+    let mut out = Probes::default();
+    for (name, id) in identities {
+        match probe_of(id) {
+            Ok(Some(p)) => out.probes.push(p),
+            Ok(None) => {}
+            Err(e) => out.faults.push(crate::device::DeviceFault {
+                device: name.to_string(), field: "identity.request".into(), cause: e.to_string() }),
+        }
+    }
+    out.probes.sort_by(|a, b| (&a.request, &a.ports).cmp(&(&b.request, &b.ports)));
+    out.probes.dedup();
     out
+}
+
+/// The requests of `probes` and the faults of the identities it set aside.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct Probes {
+    pub probes: Vec<Probe>,
+    pub faults: Vec<crate::device::DeviceFault>,
 }
 
 /// A port name holds one of `patterns`, any case.

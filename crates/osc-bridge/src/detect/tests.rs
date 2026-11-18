@@ -147,7 +147,7 @@ fn a_maker_request_and_its_text_tell_a_firmware_apart() {
     let other = [&[0xF0, 0x7D, 0x46, 0x4C, 0x02][..], b"Grimm", &[0xF7]].concat();
     assert!(recognise(cat[2].identity.as_ref().unwrap(), "x", &[other]).is_none(), "its text is not there");
 
-    let all = probes(cat.iter().filter_map(|c| c.identity.as_ref()));
+    let all = probes(cat.iter().filter_map(|c| c.identity.as_ref().map(|i| (c.slug.as_str(), i)))).probes;
     assert_eq!(all.len(), 2, "the universal request is not a probe: {all:?}");
     let felucca = all.iter().find(|p| p.request[1] == 0x7D).unwrap();
     assert!(felucca.goes_to("FM-1 Midi") && !felucca.goes_to("Digitakt"), "sent only where it is safe");

@@ -14,6 +14,7 @@ mod electra_lua_api;
 mod electra_lua_runtime;
 mod electra_one;
 mod electra_one_driver;
+mod identity_request_fault;
 mod isolated_config;
 mod live_links;
 mod launch_control_xl_3;

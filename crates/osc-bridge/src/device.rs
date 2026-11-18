@@ -171,6 +171,24 @@ pub fn address_text(a: &osd::Address) -> String {
     }
 }
 
+/// A thing a driver names that the engine cannot use: the driver, the
+/// field, and the cause (the text of the error that refused it).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DeviceFault {
+    pub device: String,
+    pub field: String,
+    pub cause: String,
+}
+
+/// The faults `dev` carries from loading: an `identity.request` that
+/// `probe_of` cannot build. Nothing refuses the driver for them; `lint` and
+/// `inspect` list them, and detection says when it fell back on the universal request.
+pub fn faults(dev: &Device) -> Vec<DeviceFault> {
+    dev.identity.as_ref().and_then(|i| crate::detect::probe_of(i).err())
+        .map(|e| DeviceFault { device: dev.device.name.clone(), field: "identity.request".into(), cause: e.to_string() })
+        .into_iter().collect()
+}
+
 /// The checksums the engine cannot compute, as `(place, problem)`: the place
 /// is the OSC address of a command or parameter, or the block (`programs`,
 /// `identity.request`). Nothing refuses a driver for them; `lint` and

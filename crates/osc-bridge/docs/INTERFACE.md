@@ -52,6 +52,7 @@ A command `script` sees, besides `ctx` and `ob`, Electra One's two APIs under El
 - `NoDriver` — no driver matches the name, in the cache or the service.
 - `Unauthorized` — an MCP request over HTTP without the right token.
 - `ConsentRefused` — the person refused a message at the door.
+- `DeviceFault` — a device description that cannot be used as written (device, field, cause), held by the loaded device and read by `lint` and `inspect`; `mcp::fault_blocks(faults)` turns the faults of the identities `detect_hardware` set aside into one text block each, without MIDI.
 - the faults of `synth-core`, `synth-io` and `synthhub-protocol`, passed on with their code.
 
 ## The guard

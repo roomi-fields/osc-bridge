@@ -166,7 +166,7 @@ fn criterion_9_identity_request_checksums_the_replaced_dev_and_family_bytes() {
         "device_id":{"default":16},"family":[89,1],"reply":[240,65]}"#);
     // 41+10+06+59+01 = 177 -> 49 -> 0x4F.
     let want = vec![0xF0, 0x41, 0x10, 0x06, 0x59, 0x01, 0x4F, 0xF7];
-    assert_eq!(programs::identity_request(&d), want);
+    assert_eq!(programs::identity_request(&d).bytes, want);
     assert_eq!(probe_of(d.identity.as_ref().unwrap()).unwrap().unwrap().request, want);
 }
 

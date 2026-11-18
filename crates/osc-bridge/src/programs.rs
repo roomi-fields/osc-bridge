@@ -162,9 +162,23 @@ pub fn dump(dev: &Device, program: Option<(&str, i64)>, channel: Option<u8>) -> 
 /// The request the device answers with its identity, its `{dev}` the
 /// device-id rule's default; the Universal Identity Request when the driver
 /// names none.
-pub fn identity_request(dev: &Device) -> Vec<u8> {
-    dev.identity.as_ref().and_then(|i| crate::detect::probe_of(i).ok().flatten())
-        .map(|p| p.request).unwrap_or_else(|| crate::detect::IDENTITY_REQUEST.to_vec())
+pub fn identity_request(dev: &Device) -> SentRequest {
+    let universal = |fault| SentRequest { bytes: crate::detect::IDENTITY_REQUEST.to_vec(), own: false, fault };
+    match dev.identity.as_ref().map(crate::detect::probe_of) {
+        Some(Ok(Some(p))) => SentRequest { bytes: p.request, own: true, fault: None },
+        Some(Err(_)) => universal(crate::device::faults(dev).into_iter().next()),
+        _ => universal(None),
+    }
+}
+
+/// The identity request sent, which of the two it is (`own`: the driver's,
+/// else the universal one), and the driver's fault when the universal one
+/// stands in for a request that could not be built.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SentRequest {
+    pub bytes: Vec<u8>,
+    pub own: bool,
+    pub fault: Option<crate::device::DeviceFault>,
 }
 
 /// `/<prefix>/identity/reply <firmware> <hex>` when `msg` is the device's
@@ -191,7 +205,7 @@ pub fn uniform_osc(dev: &Device, addr: &str, args: &[OscType]) -> Option<Result<
     };
     let channel = |i: usize| args.get(i).and_then(int).map(|c| c.clamp(0, 15) as u8);
     if addr == full_osc_path(dev, IDENTITY) && dev.device.transport.as_ref().is_none_or(|t| t.kind != osd::TransportKind::Osc) {
-        return Some(Ok(vec![identity_request(dev)]));
+        return Some(Ok(vec![identity_request(dev).bytes]));
     }
     dev.programs.as_ref()?;
     if addr == full_osc_path(dev, RECALL) {

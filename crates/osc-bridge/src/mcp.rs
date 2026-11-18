@@ -1345,7 +1345,25 @@ pub fn hardware_candidates(index: &DeviceIndex) -> Vec<crate::detect::Candidate>
 /// The maker requests the identity blocks of `index` name, sent while
 /// detecting after the Universal Identity Request.
 pub fn detect_probes(index: &DeviceIndex) -> Vec<crate::detect::Probe> {
-    crate::detect::probes(index.entries.iter().filter(|e| e.kind != "software").filter_map(|e| e.identity.as_ref()))
+    detect_plan(index).probes
+}
+
+/// The requests of `detect_probes` with the faults of the identities set aside.
+fn detect_plan(index: &DeviceIndex) -> crate::detect::Probes {
+    crate::detect::probes(index.entries.iter().filter(|e| e.kind != "software")
+        .filter_map(|e| e.identity.as_ref().map(|i| (e.name.as_str(), i))))
+}
+
+/// A fault as one line of text: the device, the field and the cause.
+fn fault_line(f: &crate::device::DeviceFault) -> String {
+    format!("{}: {}: {}", f.device, f.field, f.cause)
+}
+
+/// The text blocks `detect_hardware` adds after its report, one per fault of an identity set
+/// aside: only the Universal Identity Request went out for it. Pure: no MIDI.
+pub fn fault_blocks(faults: &[crate::device::DeviceFault]) -> Vec<String> {
+    faults.iter().map(|f| format!(
+        "Fault, {}: its own identity request was not sent, only the Universal Identity Request was.", fault_line(f))).collect()
 }
 
 /// The probes as the hosted server lists them (`GET /v1/detect`).
@@ -1387,10 +1405,11 @@ pub fn match_port(catalogue: &[crate::detect::Candidate], port: &str, replies: &
 /// file when `by_file` (a folder the user keeps), else by its id.
 fn detect_hardware(index: &DeviceIndex, server: Option<&crate::online::Online>, by_file: bool, probe: bool,
                    wait: std::time::Duration) -> Result<Value, String> {
+    let mut faults = Vec::new();
     let probes = match server {
         Some(server) if probe => server.probes().map_err(|e| format!("detect_hardware asks the SynthHub server which \
             requests recognise devices, and it could not be reached: {e}. Offline, the ports are matched against the drivers cached here."))?,
-        _ => detect_probes(index),
+        _ => { let plan = detect_plan(index); faults = plan.faults; plan.probes }
     };
     let found = crate::detect::scan(probe, wait, &probes).map_err(|e| format!("MIDI scan: {e}"))?;
     let matched: Vec<Vec<Value>> = match server {
@@ -1437,7 +1456,15 @@ fn detect_hardware(index: &DeviceIndex, server: Option<&crate::online::Online>, 
     }).collect();
     let structured = json!({ "probed": probe, "devices": devices });
     let text = serde_json::to_string_pretty(&structured).unwrap_or_default();
-    Ok(content_structured(&text, structured))
+    let mut out = content_structured(&text, structured);
+    // Each identity set aside is told in a text block of its own, after the report: only the
+    // universal request went out for it. The report's JSON is unchanged.
+    if let Some(blocks) = out["content"].as_array_mut() {
+        for text in fault_blocks(&faults) {
+            blocks.push(json!({ "type": "text", "text": text }));
+        }
+    }
+    Ok(out)
 }
 
 fn backup_presets(in_port: &str, file: &Path, request: Option<&str>, out_port: Option<&str>, max_secs: u64) -> Result<Value, String> {

@@ -322,9 +322,11 @@ fn cmd_lint(path: PathBuf) -> Result<()> {
 
 /// One `WARN` line per checksum the engine cannot compute; the build of that frame fails.
 fn checksum_warnings(dev: &Device) -> Vec<String> {
-    osc_bridge::device::checksum_problems(dev).into_iter()
-        .map(|(place, problem)| format!("  WARN: checksum at {place}: {problem} — building this frame fails."))
-        .collect()
+    let faults = osc_bridge::device::faults(dev).into_iter()
+        .map(|f| format!("  WARN: {} {}: {} — detection sends the universal request instead.", f.device, f.field, f.cause));
+    let checksums = osc_bridge::device::checksum_problems(dev).into_iter()
+        .map(|(place, problem)| format!("  WARN: checksum at {place}: {problem} — building this frame fails."));
+    faults.chain(checksums).collect()
 }
 
 fn cmd_list() -> Result<()> {
