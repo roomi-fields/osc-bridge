@@ -9,6 +9,8 @@ all-features = true
 # A crate with a known vulnerability, or no longer maintained, is refused.
 version = 2
 yanked = "deny"
+# chrono is declared unmaintained (no vulnerability); ticket OB-ud1.6 replaces it and removes this line.
+ignore = [{ id = "RUSTSEC-2026-0543", reason = "chrono is unmaintained; replaced by OB-ud1.6" }]
 
 [licenses]
 version = 2
