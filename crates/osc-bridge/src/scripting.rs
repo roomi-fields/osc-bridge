@@ -8,8 +8,10 @@
 //! - Native JSON codec (`ob.json_decode` / `ob.json_encode`) — required to
 //!   parse hardware preset files without writing a parser in Lua.
 //! - Execution profiles (`Profile::Default` / `Profile::PresetIngest`) —
-//!   preset ingestion needs a wider budget (500 ms, 4 MiB) than the per-frame
-//!   transform hot path (10 ms, 1 MiB).
+//!   preset ingestion needs a wider budget (20M instructions, 500 ms, 4 MiB)
+//!   than the per-frame transform hot path (100k instructions, 10 ms, 1 MiB).
+//!   The instruction count is the deterministic bound; the wall clock is the
+//!   guard of last resort.
 //!
 //! See `docs/scripting.md` for the user-facing guide and `docs/CR-lua-scripting.md`
 //! for the design rationale.
@@ -17,7 +19,7 @@
 use anyhow::{anyhow, bail, Context, Result};
 use mlua::{Lua, LuaOptions, StdLib, Table, Value};
 use serde_json::Value as JsonValue;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
@@ -31,17 +33,27 @@ const PRESET_INGEST_MEMORY_LIMIT_BYTES: usize = 4 * 1_024 * 1_024; // 4 MiB
 const DEFAULT_TIMEOUT: Duration = Duration::from_millis(10);
 const PRESET_INGEST_TIMEOUT: Duration = Duration::from_millis(500);
 const INSTRUCTION_INTERVAL: u32 = 200;
+/// Lua VM instruction budgets: deterministic, independent of machine load.
+/// The wall-clock timeout above stays as the guard of last resort.
+const DEFAULT_INSTRUCTION_BUDGET: u64 = 100_000;
+const PRESET_INGEST_INSTRUCTION_BUDGET: u64 = 20_000_000;
 
 /// Execution budget for a single script invocation.
 #[derive(Debug, Clone, Copy)]
 pub enum Profile {
-    /// Hot-path per-frame transforms: 10 ms, 1 MiB.
+    /// Hot-path per-frame transforms: 100k instructions, 10 ms, 1 MiB.
     Default,
-    /// Preset ingestion / route rebuild: 500 ms, 4 MiB.
+    /// Preset ingestion / route rebuild: 20M instructions, 500 ms, 4 MiB.
     PresetIngest,
 }
 
 impl Profile {
+    fn instructions(&self) -> u64 {
+        match self {
+            Profile::Default => DEFAULT_INSTRUCTION_BUDGET,
+            Profile::PresetIngest => PRESET_INGEST_INSTRUCTION_BUDGET,
+        }
+    }
     fn timeout(&self) -> Duration {
         match self {
             Profile::Default => DEFAULT_TIMEOUT,
@@ -89,6 +101,9 @@ pub enum EmitOscArg {
 pub struct ScriptEngine {
     lua: Lua,
     deadline_flag: Arc<AtomicBool>,
+    /// Instructions consumed by the current call, and the profile's budget.
+    instructions_used: Arc<AtomicU64>,
+    instruction_budget: Arc<AtomicU64>,
     /// Blocks queued during the current/most-recent script call. Drained by
     /// the runtime after each invocation and enqueued to the MIDI-out channel.
     emit_queue: Arc<Mutex<Vec<EmitBlock>>>,
@@ -237,15 +252,20 @@ impl ScriptEngine {
         let deadline_flag = Arc::new(AtomicBool::new(false));
         let flag_hook = deadline_flag.clone();
         let triggers = mlua::HookTriggers::new().every_nth_instruction(INSTRUCTION_INTERVAL);
+        let used = Arc::new(AtomicU64::new(0));
+        let budget = Arc::new(AtomicU64::new(DEFAULT_INSTRUCTION_BUDGET));
+        let (used_hook, budget_hook) = (used.clone(), budget.clone());
         lua.set_hook(triggers, move |_, _| {
-            if flag_hook.load(Ordering::Relaxed) {
+            let n = used_hook.fetch_add(INSTRUCTION_INTERVAL as u64, Ordering::Relaxed)
+                + INSTRUCTION_INTERVAL as u64;
+            if flag_hook.load(Ordering::Relaxed) || n > budget_hook.load(Ordering::Relaxed) {
                 Err(mlua::Error::RuntimeError("script timeout".into()))
             } else {
                 Ok(mlua::VmState::Continue)
             }
         });
 
-        Ok(Self { lua, deadline_flag, emit_queue, osc_queue, values })
+        Ok(Self { lua, deadline_flag, instructions_used: used, instruction_budget: budget, emit_queue, osc_queue, values })
     }
 
     /// Drain SysEx blocks emitted during the last script call. The runtime
@@ -276,6 +296,8 @@ impl ScriptEngine {
         let prev_mem = self.lua.set_memory_limit(new_mem)
             .map_err(|e| anyhow!("set memory limit: {e}"))?;
 
+        self.instructions_used.store(0, Ordering::Relaxed);
+        self.instruction_budget.store(profile.instructions(), Ordering::Relaxed);
         self.deadline_flag.store(false, Ordering::Relaxed);
         let flag = self.deadline_flag.clone();
         let start = Instant::now();

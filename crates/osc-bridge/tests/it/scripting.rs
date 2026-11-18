@@ -92,12 +92,11 @@ fn infinite_loop_timeouts_cleanly() {
 #[test]
 fn memory_cap_enforced() {
     let e = ScriptEngine::new().unwrap();
-    // Allocate a big table — should blow past 1 MiB and fail.
-    let err = e.eval_transform(
-        "local t = {}; for i = 1, 10000000 do t[i] = i end; return #t",
-        0,
-    );
-    assert!(err.is_err(), "huge allocation should fail");
+    // A 1.2 MB string in a few instructions blows past 1 MiB: memory error.
+    let err = e.eval_transform("local s = string.rep('x', 1200000); return #s", 0)
+        .expect_err("huge allocation should fail");
+    let msg = format!("{err:#}").to_lowercase();
+    assert!(msg.contains("memory") && !msg.contains("timeout"), "got: {msg}");
 }
 
 #[test]
@@ -195,33 +194,71 @@ fn json_decode_large_payload_under_preset_profile() {
 }
 
 #[test]
-fn preset_ingest_profile_widens_timeout() {
-    // A loop that runs ~30 ms — fails under Default (10 ms), passes under
-    // PresetIngest (500 ms).
+fn preset_ingest_profile_widens_instruction_budget() {
+    // Sized by instruction count, not by time: a numeric `for` loop costs
+    // about 2 Lua VM instructions per iteration, so 200_000 iterations are
+    // ~400k instructions. That must exceed the Default profile's instruction
+    // budget (< 400k) and fit the PresetIngest budget (> 400k, with margin).
     let e = ScriptEngine::new().unwrap();
-    // Sized to reliably bust 10 ms but stay well under 500 ms on slow hosts.
-    let busy = "local x=0; for i=1,40000 do x=x+i end; return x % 127";
-    let _ = e.eval_transform_with(Profile::Default, busy, 0);
+    let busy = "local x=0; for i=1,200000 do x=x+i end; return x % 127";
+    let err = e.eval_transform_with(Profile::Default, busy, 0)
+        .expect_err("Default instruction budget must be exceeded");
+    assert!(format!("{err:#}").contains("Timeout"), "got: {err:#}");
     let v = e.eval_transform_with(Profile::PresetIngest, busy, 0).unwrap();
     assert!((0..127).contains(&v));
 }
 
 #[test]
-fn memory_cap_restored_after_preset_profile() {
+fn small_script_fits_default_instruction_budget() {
     let e = ScriptEngine::new().unwrap();
-    // Run a preset-ingest call that allocates a large table (under 4 MiB).
-    let _ = e.eval_transform_with(
-        Profile::PresetIngest,
-        "local t={}; for i=1,50000 do t[i]='x' end; return #t",
+    let v = e.eval_transform_with(
+        Profile::Default,
+        "local x=0; for i=1,100 do x=x+i end; return x % 127",
         0,
     ).unwrap();
-    // After it returns, Default cap must be back in effect: the same big
-    // allocation pattern should fail.
-    let err = e.eval_transform(
-        "local t={}; for i=1,10000000 do t[i]=i end; return #t",
-        0,
-    );
-    assert!(err.is_err(), "Default memory cap must be restored");
+    assert!((0..127).contains(&v));
+}
+
+#[test]
+fn infinite_loop_stops_with_timeout_error_under_every_profile() {
+    let e = ScriptEngine::new().unwrap();
+    for profile in [Profile::Default, Profile::PresetIngest] {
+        let err = e.eval_transform_with(profile, "while true do end\nreturn 0", 0)
+            .expect_err("an endless loop must be stopped");
+        assert!(format!("{err:#}").contains("Timeout"), "{profile:?}: {err:#}");
+    }
+}
+
+#[test]
+fn preset_ingest_keeps_its_wider_memory_cap_and_default_keeps_its_own() {
+    let e = ScriptEngine::new().unwrap();
+    // One 1.2 MB string in a handful of instructions: over Default's 1 MiB,
+    // under PresetIngest's 4 MiB (string.rep's buffer included), far under
+    // both instruction budgets. 1_200_000 % 127 == 104.
+    let alloc = "local s = string.rep('x', 1200000); return #s % 127";
+    let assert_memory_error = |e: &ScriptEngine| {
+        let err = e.eval_transform_with(Profile::Default, alloc, 0)
+            .expect_err("Default memory cap must refuse 2 MiB");
+        let msg = format!("{err:#}").to_lowercase();
+        assert!(msg.contains("memory"), "expected memory error, got: {msg}");
+        assert!(!msg.contains("timeout"), "stopped by budget, not memory: {msg}");
+    };
+    assert_memory_error(&e);
+    assert_eq!(e.eval_transform_with(Profile::PresetIngest, alloc, 0).unwrap(), 104);
+    assert_memory_error(&e);
+}
+
+#[test]
+fn memory_cap_restored_after_preset_profile() {
+    let e = ScriptEngine::new().unwrap();
+    // Run a preset-ingest call that allocates a large string (under 4 MiB).
+    let big = "local s = string.rep('x', 1200000); return #s % 127";
+    let _ = e.eval_transform_with(Profile::PresetIngest, big, 0).unwrap();
+    // After it returns, Default cap must be back in effect: the same
+    // allocation must fail with a memory error.
+    let err = e.eval_transform(big, 0).expect_err("Default memory cap must be restored");
+    let msg = format!("{err:#}").to_lowercase();
+    assert!(msg.contains("memory") && !msg.contains("timeout"), "got: {msg}");
 }
 
 #[test]
