@@ -5,6 +5,9 @@ use std::path::PathBuf;
 
 use osc_bridge::{Device, Runtime, RuntimeOptions};
 
+#[cfg(test)]
+mod tests;
+
 #[derive(Parser)]
 #[command(name = "osc-bridge", version, about = "Declarative OSC ↔ MIDI/SysEx bridge")]
 struct Cli {
@@ -437,6 +440,18 @@ fn cmd_osc_listen(bind: String) -> Result<()> {
     }
 }
 
+/// Wall-clock time printed before a logged message: `HH:MM:SS.mmm`,
+/// milliseconds truncated and zero-padded to three digits.
+fn format_log_time(t: &jiff::Zoned) -> String {
+    format!(
+        "{:02}:{:02}:{:02}.{:03}",
+        t.hour(),
+        t.minute(),
+        t.second(),
+        t.millisecond()
+    )
+}
+
 fn print_osc(pkt: rosc::OscPacket, indent: usize) {
     use rosc::{OscPacket, OscType};
     let pad = "  ".repeat(indent);
@@ -455,7 +470,7 @@ fn print_osc(pkt: rosc::OscPacket, indent: usize) {
                 OscType::Bool(b) => b.to_string(),
                 other => format!("{other:?}"),
             }).collect();
-            let now = chrono::Local::now().format("%H:%M:%S%.3f");
+            let now = format_log_time(&jiff::Zoned::now());
             println!("{pad}{now}  {:<40} {}", m.addr, args.join(" "));
         }
     }

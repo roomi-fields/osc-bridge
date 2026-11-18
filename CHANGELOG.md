@@ -11,6 +11,11 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed
+- The date library `chrono` (declared unmaintained, RUSTSEC-2026-0543) is
+  replaced by `jiff`; the time printed before a logged message keeps its form
+  (`HH:MM:SS.mmm`, local time).
+
 ## [0.21.0] — 2026-11-17
 
 ### Added
