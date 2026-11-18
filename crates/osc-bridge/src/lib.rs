@@ -30,7 +30,7 @@ pub mod connect;
 pub mod take;
 pub mod export;
 pub mod oscquery;
-pub mod midnam;
+pub mod bridge_routes;
 pub mod programs;
 
 pub use osd::Device;

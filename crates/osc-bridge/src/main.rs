@@ -236,7 +236,11 @@ fn main() -> Result<()> {
         Cmd::Run(args) => cmd_run(args),
         Cmd::Export { device, format } => {
             let dev = osc_bridge::device::load(osc_bridge::catalogue::locate(&device)?)?;
-            print!("{}", osc_bridge::export::export(&dev, format.parse()?)?);
+            let out = osc_bridge::export::export(&dev, format.parse()?)?;
+            for l in &out.lost {
+                eprintln!("not carried: {}: {}", l.place, l.reason);
+            }
+            print!("{}", out.value);
             Ok(())
         }
         Cmd::OscSend { target, addr, args, from_file } => cmd_osc_send(target, addr, args, from_file),

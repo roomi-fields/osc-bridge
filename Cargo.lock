@@ -666,6 +666,7 @@ dependencies = [
  "midir",
  "mlua",
  "osd",
+ "osd-formats",
  "pretty_assertions",
  "ring",
  "rosc",
@@ -683,8 +684,17 @@ dependencies = [
 [[package]]
 name = "osd"
 version = "0.1.0"
-source = "git+https://github.com/roomi-fields/open-synth-descriptors?rev=805b3fbf8a91f7927d7428738d73750187515f03#805b3fbf8a91f7927d7428738d73750187515f03"
+source = "git+https://github.com/roomi-fields/open-synth-descriptors?rev=8807d8f2d27a83885d3daa93c0b3b108fd17e258#8807d8f2d27a83885d3daa93c0b3b108fd17e258"
 dependencies = [
+ "serde_json",
+]
+
+[[package]]
+name = "osd-formats"
+version = "0.1.0"
+source = "git+https://github.com/roomi-fields/open-synth-descriptors?rev=8807d8f2d27a83885d3daa93c0b3b108fd17e258#8807d8f2d27a83885d3daa93c0b3b108fd17e258"
+dependencies = [
+ "osd",
  "serde_json",
 ]
 

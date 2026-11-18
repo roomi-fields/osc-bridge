@@ -1,0 +1,12 @@
+/box/identity access=2 type="" range= ext=
+/box/identity/reply access=1 type="ss" range= ext=["firmware","hex"]
+/box/program/dump access=2 type="si" range=[{"VALS":["User","Factory"]},{"MAX":16383,"MIN":0}] ext=["bank","number"]
+/box/program/dump overload type="sii" range=[{"VALS":["User","Factory"]},{"MAX":16383,"MIN":0},{"MAX":15,"MIN":0}] ext=["bank","number","channel"]
+/box/program/recall access=2 type="si" range=[{"VALS":["User","Factory"]},{"MAX":64,"MIN":1}] ext=["bank","number"]
+/box/program/recall overload type="sii" range=[{"VALS":["User","Factory"]},{"MAX":64,"MIN":1},{"MAX":15,"MIN":0}] ext=["bank","number","channel"]
+/box/raw/syx access=2 type="s" range= ext=["hex"]
+/box/sysex/raw access=1 type="s" range= ext=["hex"]
+/bridge/docs access=2 type="" range= ext=
+/bridge/docs/device access=1 type="ss" range= ext=["device","markdown"]
+/bridge/status access=2 type="" range= ext=
+/bridge/status/device access=1 type="ss" range= ext=["device","status"]

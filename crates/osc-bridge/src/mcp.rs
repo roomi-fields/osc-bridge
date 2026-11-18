@@ -1760,10 +1760,12 @@ fn export_device(index: &DeviceIndex, args: &Value) -> Result<Value, String> {
         .parse().map_err(|e: anyhow::Error| e.to_string())?;
     let entry = index.find(wanted).ok_or_else(|| format!("no driver '{wanted}' (see list_devices)"))?;
     let dev = crate::device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.path.display()))?;
-    let document = crate::export::export(&dev, format).map_err(|e| e.to_string())?;
+    let out = crate::export::export(&dev, format).map_err(|e| e.to_string())?;
+    let document = out.value;
     let file_name = format!("{}.{}", entry.id.replace('/', "_"), format.extension());
+    let lost: Vec<Value> = out.lost.iter().map(|l| json!({ "place": l.place, "reason": l.reason })).collect();
     let structured = json!({ "device": entry.id, "format": args["format"], "media_type": format.media_type(),
-        "file_name": file_name, "bytes": document.len() });
+        "file_name": file_name, "bytes": document.len(), "lost": lost });
     Ok(content_structured(&document, structured))
 }
 

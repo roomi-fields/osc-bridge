@@ -119,6 +119,8 @@ fn is_reachable_address(n: &serde_json::Value) -> bool {
 /// and the prefixes that own an address.
 struct KnownAddresses {
     namespace: serde_json::Value,
+    /// Prefixes of the devices with no namespace: their addresses are not judged.
+    unjudged: Vec<String>,
     passthrough: Vec<String>,
     prefixes: Vec<String>,
 }
@@ -126,8 +128,12 @@ struct KnownAddresses {
 impl KnownAddresses {
     fn new(devices: &[LoadedDevice]) -> Self {
         let devs: Vec<Device> = devices.iter().map(|d| d.device().clone()).collect();
+        // A device with no namespace (no `_sources`, faulted when the namespace is served) has
+        // no address to judge a link by: what lies under its prefix is passed as it is.
+        let served = crate::oscquery::namespace(&devs);
         Self {
-            namespace: crate::oscquery::namespace(&devs),
+            namespace: served.namespace,
+            unjudged: served.unserved_prefixes,
             passthrough: devs
                 .iter()
                 .filter(|d| d.device.transport.as_ref().is_some_and(|t| t.passthrough_prefix.is_some()))
@@ -142,7 +148,7 @@ impl KnownAddresses {
     }
 
     fn has(&self, addr: &str) -> bool {
-        if self.passthrough.iter().any(|p| addr.starts_with(p.as_str())) {
+        if self.passthrough.iter().chain(&self.unjudged).any(|p| addr.starts_with(p.as_str())) {
             return true;
         }
         let mut node = &self.namespace;

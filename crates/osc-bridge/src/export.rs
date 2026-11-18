@@ -1,13 +1,13 @@
 //! Driver files written in the formats other tools read: OSCQuery (the OSC
-//! address space, `crate::oscquery`) and MIDNAM (MIDI names, `crate::midnam`).
+//! address space) and MIDNAM (MIDI names), both written by `osd-formats`.
 //! The same text is given by the CLI (`osc-bridge export`), the MCP tool
 //! `export_device` and the hosted server, which shares the catalogue tools.
 //! Each document carries the credit and licence of the driver's sources.
 
 use anyhow::{bail, Result};
-use serde_json::{json, Value};
 
-use osd::{Device, Source};
+use osd::Device;
+pub use osd_formats::{Loss, Translated};
 
 /// The formats a driver is written in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -49,73 +49,37 @@ impl Format {
 }
 
 /// One loaded driver written in `format` (OSCQuery as compact JSON: a
-/// namespace runs to thousands of nodes). Fails for MIDNAM when the device
-/// speaks OSC only.
-pub fn export(dev: &Device, format: Format) -> Result<String> {
-    match format {
-        Format::OscQuery => Ok(serde_json::to_string(&crate::oscquery::namespace(std::slice::from_ref(dev)))?),
-        Format::Midnam => crate::midnam::midnam(dev),
+/// namespace runs to thousands of nodes), with what the format could not
+/// carry. Fails for MIDNAM when the device speaks OSC only.
+pub fn export(dev: &Device, format: Format) -> Result<Translated<String>> {
+    if format == Format::Midnam && dev.device.transport.as_ref().is_some_and(|t| t.kind == osd::TransportKind::Osc) {
+        bail!("{} speaks OSC, not MIDI: it has no MIDI names", device_title(dev));
     }
-}
-
-/// One line of credit: who (attribution, else author, else the source
-/// tier), the firmware, the licence and where the data was read.
-pub fn credit(s: &Source) -> String {
-    let who = s.attribution.clone().or_else(|| s.author.clone())
-        .unwrap_or_else(|| format!("{} source", if s.kind.is_empty() { "unnamed" } else { &s.kind }));
-    let mut out = who;
-    if let Some(fw) = s.firmware.as_deref().filter(|f| *f != "unknown") {
-        out.push_str(&format!(", firmware {fw}"));
+    let mut device = dev.clone();
+    let shared = shared_sources(dev);
+    if !shared.is_empty() {
+        device.sources.get_or_insert_with(Vec::new).extend(shared);
     }
-    out.push_str(&format!(", licence {}", s.license.as_deref().unwrap_or("not stated")));
-    if let Some(url) = &s.url {
-        out.push_str(&format!(", {url}"));
-    }
-    out
-}
-
-/// Credit lines for everything a driver holds: its own sources, then those
-/// of the file whose MIDI it shares (`midi_of`).
-pub fn credits(dev: &Device) -> Vec<String> {
-    let mut out: Vec<String> = own_sources(dev).iter().map(|s| format!("Source: {}", credit(s))).collect();
-    let shared = dev.midi_of.as_deref().unwrap_or("another driver");
-    out.extend(shared_sources(dev).iter().map(|s| format!("MIDI shared from {shared}: {}", credit(s))));
-    if out.is_empty() {
-        out.push("Source: not stated".into());
-    }
-    out
-}
-
-/// The same credit as data: the sources, the shared file, its sources.
-pub fn sources_json(dev: &Device) -> Value {
-    let list = |v: &[Source]| -> Vec<Value> {
-        v.iter().map(|s| {
-            let mut o = serde_json::Map::new();
-            o.insert("type".into(), json!(s.kind));
-            for (k, v) in [("url", &s.url), ("attribution", &s.attribution), ("author", &s.author), ("license", &s.license), ("firmware", &s.firmware)] {
-                if let Some(v) = v { o.insert(k.into(), json!(v)); }
-            }
-            Value::Object(o)
-        }).collect()
+    let resolved = osd::Resolved { device, files: Vec::new(), capabilities: Vec::new(), inherited: Vec::new() };
+    let target = match format {
+        Format::OscQuery => osd_formats::Format::OscQuery,
+        Format::Midnam => osd_formats::Format::Midnam,
     };
-    let mut out = json!({ "sources": list(own_sources(dev)) });
-    if let Some(id) = &dev.midi_of {
-        out["midi_of"] = json!(id);
-        out["midi_of_sources"] = json!(list(&shared_sources(dev)));
+    let mut out = osd_formats::export(&resolved, target)?;
+    if format == Format::OscQuery {
+        let mut namespace = serde_json::from_str::<serde_json::Value>(&out.value)?;
+        crate::bridge_routes::add_to(&mut namespace, &[dev]);
+        out.value = serde_json::to_string(&namespace)?;
     }
-    out
-}
-
-/// The sources a driver states itself.
-fn own_sources(dev: &Device) -> &[Source] {
-    dev.sources.as_deref().unwrap_or_default()
+    Ok(out)
 }
 
 /// The sources of the file whose MIDI a driver shares: `osd` keeps them, once
-/// resolved, in the driver's `_midi_of_sources` remark.
-pub(crate) fn shared_sources(dev: &Device) -> Vec<Source> {
+/// resolved, in the driver's `_midi_of_sources` remark. They are credited
+/// beside the driver's own sources.
+fn shared_sources(dev: &Device) -> Vec<osd::Source> {
     let Some(list) = dev.remarks.get("_midi_of_sources") else { return Vec::new() };
-    let text = json!({
+    let text = serde_json::json!({
         "$schema": "https://w3id.org/osd/0.5/device.schema.json",
         "device": { "name": "shared", "osc_prefix": "/shared" },
         "_sources": list,
@@ -135,14 +99,6 @@ pub fn device_title(dev: &Device) -> String {
         out.push_str(&format!(" ({rev})"));
     }
     out
-}
-
-/// A route address read as words: `/filter/env_amount` → "Filter Env Amount".
-pub fn label(osc: &str) -> String {
-    osc.split(['/', '_', ' ']).filter(|w| !w.is_empty()).map(|w| {
-        let mut c = w.chars();
-        c.next().map(|f| f.to_uppercase().chain(c).collect::<String>()).unwrap_or_default()
-    }).collect::<Vec<_>>().join(" ")
 }
 
 #[cfg(test)]

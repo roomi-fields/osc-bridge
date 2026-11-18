@@ -11,6 +11,24 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed
+- The MIDNAM and OSCQuery documents are now written by the shared `osd-formats`
+  package; osc-bridge keeps only its own addresses (`/bridge/*`, `/identity`,
+  `/program/*`, `/raw/syx`, `/sysex/raw`), added to the same namespace for the
+  export and for the running bridge's answer.
+- Named values of a control are read from its `values` field (descriptor 0.6),
+  no longer from the free text `_usage`.
+- A device with no `_sources` entry is refused by the export with the package's
+  fault; the running bridge reports that fault at load and does not serve that
+  device's OSCQuery namespace (the rest of the device works as before).
+- Accepted differences from the former documents (no OVERLOADS, credit on the
+  device node, no empty PatchBank) are written in `docs/EXPORT.md`.
+
+### Added
+- What a format could not carry is shown: the `export` command prints the lost
+  elements on the error output (never inside the document), and the MCP tool
+  `export_device` returns them in a `lost` field beside the document.
+
 ## [0.21.1] — 2026-11-18
 
 ### Changed

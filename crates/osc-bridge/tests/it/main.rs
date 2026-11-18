@@ -36,4 +36,6 @@ mod scripting_integration;
 mod single_executable;
 mod temp_folders;
 mod triggers;
+mod export_command;
+mod export_documents;
 mod ws_transport;

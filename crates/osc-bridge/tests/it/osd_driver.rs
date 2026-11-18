@@ -47,6 +47,15 @@ fn osd_fault(err: &anyhow::Error) -> &osd::Fault {
 
 // ---- reading through osd ----------------------------------------------------
 
+/// A test driver is 0.5, or 0.6 when it carries a field only 0.6 defines (named `values` of a CC entry).
+fn assert_schema(schema: Option<osd::Version>, text: &str, path: &Path) {
+    match schema {
+        Some(osd::Version::V0_5) => {}
+        Some(osd::Version::V0_6) => assert!(text.contains("\"values\""), "{}: 0.6 without a 0.6-only field", path.display()),
+        other => panic!("{}: {other:?}", path.display()),
+    }
+}
+
 #[test]
 fn every_test_driver_is_the_converters_output_and_reads_without_fault() {
     let all = fixture_files();
@@ -56,11 +65,14 @@ fn every_test_driver_is_the_converters_output_and_reads_without_fault() {
         let kind = kind_of(&path);
         let read = osd::read(&text, kind).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
         match read {
-            osd::Descriptor::Device(d) => assert_eq!(d.schema, Some(osd::Version::V0_5), "{}", path.display()),
-            osd::Descriptor::Profile(p) => assert_eq!(p.schema, Some(osd::Version::V0_5), "{}", path.display()),
+            osd::Descriptor::Device(d) => assert_schema(d.schema, &text, &path),
+            osd::Descriptor::Profile(p) => assert_schema(p.schema, &text, &path),
             other => panic!("{}: {:?}", path.display(), other.kind()),
         }
-        assert_eq!(osd::convert(&text, kind).unwrap(), text, "{}: committed as it comes out of the converter", path.display());
+        // The converter goes forward to 0.5 only: a 0.6 driver is already past it.
+        if !text.contains("/osd/0.6/") {
+            assert_eq!(osd::convert(&text, kind).unwrap(), text, "{}: committed as it comes out of the converter", path.display());
+        }
     }
 }
 

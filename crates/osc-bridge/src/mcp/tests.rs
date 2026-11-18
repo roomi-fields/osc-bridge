@@ -565,3 +565,30 @@ fn the_link_tools_default_to_the_default_target() {
     call_tool("list_links", &json!({}), &opts, &empty_index(), None).unwrap();
     assert_eq!(got.recv_timeout(Duration::from_secs(5)).unwrap().addr, "/bridge/link/list");
 }
+
+#[test]
+fn export_device_returns_what_the_format_lost_beside_the_document() {
+    let idx = fixtures();
+    for (format, tag) in [("midnam", "<MIDINameDocument>"), ("oscquery", "\"FULL_PATH\"")] {
+        let out = catalogue_tool("export_device", &json!({"device": "arturia/microfreak.vendor.fw-microfreak-tools-0.1.0", "format": format}), &idx, &|_| None)
+            .unwrap().unwrap();
+        let text = out["content"][0]["text"].as_str().unwrap();
+        assert!(text.contains(tag), "{format}: the content stays the document");
+        assert!(!text.contains("/_sources/0/firmware"), "{format}: the document holds no list of losses");
+        let lost = out["structuredContent"]["lost"].as_array().unwrap_or_else(|| panic!("{format}: no lost list: {out}"));
+        assert!(lost.iter().any(|l| l["place"] == "/_sources/0/firmware" && l["reason"].as_str().is_some_and(|r| !r.is_empty())), "{format}: {lost:?}");
+        assert_eq!(out["structuredContent"]["media_type"], if format == "midnam" { "application/xml" } else { "application/json" });
+        assert_eq!(out["structuredContent"]["bytes"], text.len());
+    }
+}
+
+#[test]
+fn export_device_for_an_osc_only_device_and_an_unknown_format_keep_their_messages() {
+    let idx = fixtures();
+    let err = catalogue_tool("export_device", &json!({"device": "bitwig/bitwig-studio.third-party-osc.fw-5", "format": "midnam"}), &idx, &|_| None)
+        .unwrap().unwrap_err();
+    assert!(err.contains("speaks OSC, not MIDI: it has no MIDI names"), "{err}");
+    let err = catalogue_tool("export_device", &json!({"device": "minilogue", "format": "ctrlr"}), &idx, &|_| None)
+        .unwrap().unwrap_err();
+    assert!(err.contains("unknown format 'ctrlr' (one of: oscquery, midnam)"), "{err}");
+}

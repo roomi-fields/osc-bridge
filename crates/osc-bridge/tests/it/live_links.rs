@@ -39,20 +39,28 @@ fn free_tcp() -> u16 {
     TcpListener::bind("127.0.0.1:0").unwrap().local_addr().unwrap().port()
 }
 
-fn device_json(prefix: &str, port: u16, commands: &[&str]) -> String {
+fn device_json(prefix: &str, port: u16, commands: &[&str], sourced: bool) -> String {
+    let sources = if sourced {
+        r#","_sources": [{ "type": "vendor-doc", "firmware": "1", "attribution": "osc-bridge test fixture", "license": "CC0-1.0" }]"#
+    } else { "" };
     let cmds: Vec<String> = commands.iter().map(|c| format!(
         r#"{{ "osc": "/{c}", "args": [{{ "name": "v", "type": "float" }}],
              "forward": {{ "path": "/fx/{c}", "args": ["{{v}}"] }} }}"#)).collect();
     format!(r#"{{
         "device": {{ "name": "Test {prefix}", "vendor": "Test", "osc_prefix": "{prefix}", "kind": "software",
             "transport": {{ "kind": "osc", "host": "127.0.0.1", "port": {port} }} }},
-        "commands": [{}]
+        "commands": [{}]{sources}
     }}"#, cmds.join(","))
 }
 
 /// Start an orchestrator on the two-device topology; `extra` is more TOML
 /// (further `[[routes]]` or `[osc]` keys are not accepted there: routes only).
 fn start(extra_routes: &str, ws_port: Option<u16>) -> Rig {
+    start_with(extra_routes, ws_port, true)
+}
+
+/// `synth_sourced` false: the synth driver has no `_sources`.
+fn start_with(extra_routes: &str, ws_port: Option<u16>, synth_sourced: bool) -> Rig {
     let synth_target = UdpSocket::bind("127.0.0.1:0").unwrap();
     let synth_port = synth_target.local_addr().unwrap().port();
     let ctl_target = UdpSocket::bind("127.0.0.1:0").unwrap();
@@ -62,8 +70,8 @@ fn start(extra_routes: &str, ws_port: Option<u16>) -> Rig {
     let synth = dir.path().join("synth.json");
     let ctl = dir.path().join("ctl.json");
     std::fs::write(&synth, device_json("/synth", synth_port,
-        &["vol", "sentinel", "cutoff", "a", "b", "c", "d", "e", "f"])).unwrap();
-    std::fs::write(&ctl, device_json("/ctl", ctl_port, &["knob", "sentinel", "wheel"])).unwrap();
+        &["vol", "sentinel", "cutoff", "a", "b", "c", "d", "e", "f"], synth_sourced)).unwrap();
+    std::fs::write(&ctl, device_json("/ctl", ctl_port, &["knob", "sentinel", "wheel"], true)).unwrap();
     let ws_line = ws_port.map(|p| format!("ws_bind = \"127.0.0.1:{p}\"\n")).unwrap_or_default();
     let toml = dir.path().join("bridge.toml");
     std::fs::write(&toml, format!(r#"
@@ -400,4 +408,16 @@ fn the_control_addresses_answer_a_websocket_client() {
     }
     assert!(seen.iter().any(|m| m.addr == "/bridge/link/added"), "{seen:?}");
     assert!(list(&rig).iter().any(|l| l.0 == "/ctl/wheel" && l.2 == "live"), "the link added over WS is in the table");
+}
+
+#[test]
+fn a_device_without_sources_keeps_working_and_a_link_to_its_addresses_is_accepted_unjudged() {
+    let rig = start_with("", None, false);
+    let r = add(&rig, "/ctl/knob", "/synth/cutoff", None);
+    assert_eq!(r.addr, "/bridge/link/added", "no namespace to judge /synth/cutoff by: {r:?}");
+    let got = forwards_after(&rig, "/ctl/knob", vec![f(80.0)]);
+    assert!(forward_of(&got, "/fx/cutoff").is_some(), "the new link follows: {got:?}");
+    assert!(forward_of(&got, "/fx/vol").is_some(), "the file's link still follows: {got:?}");
+    let e = add(&rig, "/ctl/nothing", "/synth/vol", None);
+    assert_eq!(e.addr, "/bridge/link/error", "the sourced device's addresses are still judged: {e:?}");
 }
