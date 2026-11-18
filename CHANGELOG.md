@@ -11,6 +11,8 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+## [0.21.1] — 2026-11-18
+
 ### Changed
 - The date library `chrono` (declared unmaintained, RUSTSEC-2026-0543) is
   replaced by `jiff`; the time printed before a logged message keeps its form
