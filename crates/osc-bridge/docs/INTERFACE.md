@@ -12,7 +12,7 @@ The application offers three published surfaces: its command line, its MCP tools
 | `detect` | `--no-probe` | the devices recognised on the ports |
 | `run` | a driver, ports, OSC and WebSocket addresses, OSCQuery | a bridge for one device |
 | `orchestrate` | a `bridge.toml` | several devices with routes between them |
-| `mcp` | `--http <addr> --token <file>`, `--offline`, `--devices-dir` | the MCP server |
+| `mcp` | `--offline`, `--devices-dir` | the MCP server |
 | `connect` | the relay address, private ports | a relay door |
 | `export` | a driver, a format | the exported file |
 | `backup`, `restore` | ports, a `.syx` file | a dump taken or sent |
