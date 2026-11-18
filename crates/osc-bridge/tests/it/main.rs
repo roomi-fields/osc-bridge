@@ -29,6 +29,7 @@ mod orchestrator_routing_e2e;
 mod osc_transport_e2e;
 mod osd_driver;
 mod privacy_policy;
+mod published_tool_lists;
 mod script_log_and_checksum;
 mod scripting;
 mod scripting_integration;

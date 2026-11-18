@@ -75,7 +75,7 @@ The server speaks JSON-RPC 2.0 over stdio.
 - `--offline` — do not contact the SynthHub server (also
   `OSC_BRIDGE_OFFLINE=1`); see *Linked to the SynthHub server* below.
 
-## The twelve tools
+## The tools
 
 | Tool | What it does |
 |---|---|

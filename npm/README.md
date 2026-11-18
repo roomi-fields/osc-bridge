@@ -58,8 +58,9 @@ Add to your MCP client config (e.g. Claude Desktop
 }
 ```
 
-Nine tools — `list_devices`, `get_device_docs`, `list_routes`, `export_device`,
-`send`, `get_status`, `detect_hardware`, `backup_presets`, `restore_presets` — plus
+The local tools — `list_devices`, `get_device_docs`, `list_routes`, `export_device`,
+`send`, `get_status`, `add_link`, `remove_link`, `list_links`, `detect_hardware`,
+`backup_presets`, `restore_presets` — plus
 the server's (reports, trust, contributions, shared presets, sounds taken from the synth), so the model can search
 the SynthHub catalogue, read a device's OSC surface, and drive your devices.
 
