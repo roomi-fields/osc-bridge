@@ -32,6 +32,13 @@ is tracked explicitly under each release.
 - `osd` and `osd-formats` are pinned at the OSD commit that holds `resources` and
   the formats' `media_type()` and `extension()`.
 
+### Removed — breaking: the browser relay script
+- `docs/assets/connect.js`, the browser side of the relay door, is gone from
+  this repository: it lives in SyntHub, behind its page
+  <https://synthhub.roomi-fields.com/connect/>. `osc-bridge connect` is
+  unchanged; its relay frames are now built and read by
+  `osc_bridge::relay_protocol`.
+
 ### Changed — breaking: `restore_presets` and `backup_presets` name a device
 - `device` is required on the MCP tools `restore_presets` and `backup_presets`
   and on the CLI words `restore` and `backup` (`--device`); the mode without a
