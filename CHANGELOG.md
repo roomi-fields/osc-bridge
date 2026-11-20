@@ -11,6 +11,8 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+## [0.22.0] — 2026-11-20
+
 ### Changed
 - The MIDNAM and OSCQuery documents are now written by the shared `osd-formats`
   package; osc-bridge keeps only its own addresses (`/bridge/*`, `/identity`,
