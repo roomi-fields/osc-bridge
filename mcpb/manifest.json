@@ -155,6 +155,81 @@
       }
     },
     {
+      "name": "list_roles",
+      "description": "List the roles of a driver's controls (OSD paths such as filter/cutoff), most important first, each with its address, range, default and steps. A driver without roles gives an empty list.",
+      "inputSchema": {
+        "properties": {
+          "device": {
+            "description": "Driver id (see list_devices).",
+            "type": "string"
+          },
+          "limit": {
+            "description": "Keep only the first roles, up to this number.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "device"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "set_by_role",
+      "description": "Set a control by its role (e.g. filter/cutoff) without knowing its address or numbers. value is from 0 to 1 on the range of the role; osc-bridge scales it on the range and steps of this driver. Sent like `send`. A role whose control writes the device's memory is refused: restore_presets (confirm_overwrite) does that.",
+      "inputSchema": {
+        "properties": {
+          "device": {
+            "description": "Driver id (see list_devices).",
+            "type": "string"
+          },
+          "role": {
+            "description": "The role as listed by list_roles, e.g. filter/cutoff.",
+            "type": "string"
+          },
+          "target": {
+            "description": "Optional override host:port. Defaults to MCP server's --default-target.",
+            "type": "string"
+          },
+          "value": {
+            "description": "From 0 to 1 on the range of the role.",
+            "type": "number"
+          }
+        },
+        "required": [
+          "device",
+          "role",
+          "value"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_by_role",
+      "description": "Read a control's current value by its role: sends the read request the driver declares and gives the reply's value from 0 to 1 on the range of the role. A driver that declares no read for the control says it does not report it.",
+      "inputSchema": {
+        "properties": {
+          "device": {
+            "description": "Driver id (see list_devices).",
+            "type": "string"
+          },
+          "role": {
+            "description": "The role as listed by list_roles.",
+            "type": "string"
+          },
+          "target": {
+            "description": "Optional override host:port. Defaults to MCP server's --default-target.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "device",
+          "role"
+        ],
+        "type": "object"
+      }
+    },
+    {
       "name": "send",
       "description": "Send a single OSC message to a running osc-bridge instance. Target defaults to the server's --default-target. Args are typed (int, float, string, bool).",
       "inputSchema": {

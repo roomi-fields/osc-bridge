@@ -159,11 +159,12 @@ fn device_index_builds_from_a_folder_of_drivers() {
 fn tools_list_has_the_local_tools_including_the_three_link_tools() {
     let t = tools_list(&test_opts());
     let arr = t.get("tools").unwrap().as_array().unwrap();
-    assert_eq!(arr.len(), 12);
+    assert_eq!(arr.len(), 15);
     let names: Vec<&str> = arr.iter().map(|t| t.get("name").unwrap().as_str().unwrap()).collect();
     for expected in ["list_devices", "get_device_docs", "list_routes", "export_device", "send", "get_status",
                      "detect_hardware", "backup_presets", "restore_presets",
-                     "add_link", "remove_link", "list_links"] {
+                     "add_link", "remove_link", "list_links",
+                     "list_roles", "set_by_role", "get_by_role"] {
         assert!(names.contains(&expected), "tool {expected} missing");
     }
 }

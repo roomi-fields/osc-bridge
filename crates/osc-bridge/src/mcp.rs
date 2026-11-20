@@ -254,7 +254,7 @@ fn driver_wanted(req: &Value) -> Option<&str> {
     let (name, args) = (req["params"]["name"].as_str()?, &req["params"]["arguments"]);
     match name {
         "get_device_docs" | "list_routes" => args["slug"].as_str(),
-        "export_device" => args["device"].as_str(),
+        "export_device" | "list_roles" | "set_by_role" | "get_by_role" => args["device"].as_str(),
         n if crate::online::FORWARDED_TOOLS.contains(&n) => args["device"].as_str(),
         _ => None,
     }
@@ -589,6 +589,109 @@ pub fn tool_schemas() -> Value {
                     "readOnlyHint": false,
                     "destructiveHint": false,
                     "idempotentHint": false,
+                    "openWorldHint": true
+                }
+            },
+            {
+                "name": "list_roles",
+                "description": "List the roles of a driver's controls (OSD paths such as filter/cutoff), most important first, each with its address, range, default and steps. A driver without roles gives an empty list.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "device": { "type": "string", "description": "Driver id (see list_devices)." },
+                        "limit": { "type": "integer", "description": "Keep only the first roles, up to this number." }
+                    },
+                    "required": ["device"]
+                },
+                "outputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "device": { "type": "string" },
+                        "roles": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "role": { "type": "string" },
+                                    "address": { "type": "string" },
+                                    "range": { "type": "array", "items": { "type": "integer" } },
+                                    "default": { "type": "integer" },
+                                    "step_count": { "type": "integer" },
+                                    "priority": { "type": "integer", "description": "1 (essential) to 5 (hidden)." }
+                                },
+                                "required": ["role", "address", "range", "priority"]
+                            }
+                        }
+                    },
+                    "required": ["device", "roles"]
+                },
+                "annotations": {
+                    "title": "List the roles of a driver",
+                    "readOnlyHint": true,
+                    "idempotentHint": true,
+                    "openWorldHint": false
+                }
+            },
+            {
+                "name": "set_by_role",
+                "description": "Set a control by its role (e.g. filter/cutoff) without knowing its address or numbers. value is from 0 to 1 on the range of the role; osc-bridge scales it on the range and steps of this driver. Sent like `send`. A role whose control writes the device's memory is refused: restore_presets (confirm_overwrite) does that.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "device": { "type": "string", "description": "Driver id (see list_devices)." },
+                        "role": { "type": "string", "description": "The role as listed by list_roles, e.g. filter/cutoff." },
+                        "value": { "type": "number", "description": "From 0 to 1 on the range of the role." },
+                        "target": { "type": "string", "description": "Optional override host:port. Defaults to MCP server's --default-target." }
+                    },
+                    "required": ["device", "role", "value"]
+                },
+                "outputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "sent": { "type": "boolean" },
+                        "address": { "type": "string" },
+                        "reason": { "type": "string" },
+                        "bytes": { "type": "integer" },
+                        "target": { "type": "string" },
+                        "role": { "type": "string", "description": "Present when the role is unknown." },
+                        "nearest": { "type": "array", "items": { "type": "string" }, "description": "Present when the role is unknown: the nearest roles of the driver." }
+                    }
+                },
+                "annotations": {
+                    "title": "Set a control by its role",
+                    "readOnlyHint": false,
+                    "destructiveHint": false,
+                    "idempotentHint": false,
+                    "openWorldHint": true
+                }
+            },
+            {
+                "name": "get_by_role",
+                "description": "Read a control's current value by its role: sends the read request the driver declares and gives the reply's value from 0 to 1 on the range of the role. A driver that declares no read for the control says it does not report it.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "device": { "type": "string", "description": "Driver id (see list_devices)." },
+                        "role": { "type": "string", "description": "The role as listed by list_roles." },
+                        "target": { "type": "string", "description": "Optional override host:port. Defaults to MCP server's --default-target." }
+                    },
+                    "required": ["device", "role"]
+                },
+                "outputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "device": { "type": "string" },
+                        "role": { "type": "string" },
+                        "address": { "type": "string" },
+                        "value": { "type": "number", "description": "From 0 to 1 on the range of the role." },
+                        "raw": { "type": "number", "description": "The value the driver reported." },
+                        "nearest": { "type": "array", "items": { "type": "string" }, "description": "Present when the role is unknown." }
+                    }
+                },
+                "annotations": {
+                    "title": "Read a control by its role",
+                    "readOnlyHint": true,
+                    "idempotentHint": true,
                     "openWorldHint": true
                 }
             },
@@ -1143,7 +1246,8 @@ fn link_tool_output() -> Value {
 
 fn tool_names(opts: &McpOptions) -> Vec<&'static str> {
     let local = ["list_devices", "get_device_docs", "list_routes", "export_device", "send", "get_status",
-         "add_link", "remove_link", "list_links", "detect_hardware", "backup_presets", "restore_presets"];
+         "add_link", "remove_link", "list_links", "detect_hardware", "backup_presets", "restore_presets",
+         "list_roles", "set_by_role", "get_by_role"];
     // Taking and loading sounds needs the server's librarian, like the forwarded tools.
     let linked: &[&str] = if opts.online { &["take_sound", "load_preset"] } else { &[] };
     let forwarded = if opts.online { crate::online::FORWARDED_TOOLS.as_slice() } else { &[] };
@@ -1196,6 +1300,14 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
                 None => opts.default_target,
             };
             send_osc_message(addr, &osc_args, target)
+        }
+        "list_roles" => roles::list_roles(index, args),
+        "set_by_role" | "get_by_role" => {
+            let target = match args.get("target").and_then(Value::as_str) {
+                Some(s) => s.parse::<SocketAddr>().map_err(|e| format!("invalid target: {e}"))?,
+                None => opts.default_target,
+            };
+            if name == "set_by_role" { roles::set_by_role(index, args, target) } else { roles::get_by_role(index, args, target) }
         }
         "get_status" => {
             let target = match args.get("target").and_then(Value::as_str) {
@@ -2077,6 +2189,8 @@ fn walk_json<F: FnMut(&Path)>(dir: &Path, f: &mut F) -> std::io::Result<()> {
     }
     Ok(())
 }
+
+mod roles;
 
 #[cfg(test)]
 mod tests;

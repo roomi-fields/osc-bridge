@@ -25,6 +25,11 @@ is tracked explicitly under each release.
   device node, no empty PatchBank) are written in `docs/EXPORT.md`.
 
 ### Added
+- An agent sets a sound by the role of a control, on any loaded device, without
+  knowing its numbers: the MCP tools `list_roles` (roles of a device, most
+  important first), `set_by_role` (value normalised 0 to 1, scaled on the range
+  and steps of the device's control) and `get_by_role` (current value, when the
+  device declares a read request). Described in `docs/MCP.md`.
 - What a format could not carry is shown: the `export` command prints the lost
   elements on the error output (never inside the document), and the MCP tool
   `export_device` returns them in a `lost` field beside the document.

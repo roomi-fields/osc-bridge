@@ -31,6 +31,7 @@ mod osc_transport_e2e;
 mod osd_driver;
 mod privacy_policy;
 mod published_tool_lists;
+mod roles;
 mod script_log_and_checksum;
 mod scripting;
 mod scripting_integration;
