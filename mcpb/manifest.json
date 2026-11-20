@@ -360,9 +360,13 @@
     },
     {
       "name": "backup_presets",
-      "description": "Back up a hardware device's presets as a .syx file. Listens on the device's MIDI input and records every SysEx message it sends (a 'bulk dump'), stopping 3 s after the last one. Either the user starts the dump from the device's menu during the call, or pass request_hex (the device's dump-request message, from its manual or driver) with out_port. Use detect_hardware first to find the ports.",
+      "description": "Back up a hardware device's presets as a .syx file. The device is named (device: a catalogue id or slug, see list_devices): its driver says which messages are its sounds, on any channel or device number, and how to ask for them. Listens on the device's MIDI input and records those messages (a 'bulk dump'), stopping 3 s after the last one. Either the user starts the dump from the device's menu during the call, or pass out_port and the driver's dump request is sent. Use detect_hardware first to find the ports.",
       "inputSchema": {
         "properties": {
+          "device": {
+            "description": "The device's catalogue id or slug (e.g. 'korg/minilogue'); a device the catalogue does not know has to be described first.",
+            "type": "string"
+          },
           "file": {
             "description": "Path of the .syx file to write.",
             "type": "string"
@@ -376,15 +380,12 @@
             "type": "integer"
           },
           "out_port": {
-            "description": "MIDI OUT port for request_hex: index or name fragment.",
-            "type": "string"
-          },
-          "request_hex": {
-            "description": "Optional dump-request SysEx as hex, e.g. 'F0 43 20 00 F7'.",
+            "description": "MIDI OUT port: the driver's dump request is sent on it first (index or name fragment).",
             "type": "string"
           }
         },
         "required": [
+          "device",
           "in_port",
           "file"
         ],
@@ -393,19 +394,27 @@
     },
     {
       "name": "restore_presets",
-      "description": "Send a .syx file to a hardware device, e.g. to restore a preset backup. This OVERWRITES the device's memory: confirm with the user first, then pass confirm_overwrite: true. Messages are paced (gap_ms) because older devices drop fast dumps.",
+      "description": "Send a .syx file to a hardware device, e.g. to restore a preset backup. This OVERWRITES the device's memory: confirm with the user first, then pass confirm_overwrite: true. The device is named (device): its driver sets the pause between messages, refuses a bank that cannot be written before anything is sent, and the sounds are sent on the configured channel. For a sound that carries no place, pass bank and number.",
       "inputSchema": {
         "properties": {
+          "bank": {
+            "description": "The bank to write into, by name or place (with number), for a sound that carries no place.",
+            "type": "string"
+          },
           "confirm_overwrite": {
             "description": "Must be true: the user agreed to overwrite the device's memory.",
             "type": "boolean"
+          },
+          "device": {
+            "description": "The device's catalogue id or slug (e.g. 'korg/minilogue'); a device the catalogue does not know has to be described first.",
+            "type": "string"
           },
           "file": {
             "description": "Path of the .syx file to send.",
             "type": "string"
           },
-          "gap_ms": {
-            "description": "Pause between messages, 0-2000 ms (default 50).",
+          "number": {
+            "description": "The program number to write into, as the device shows it (with bank).",
             "type": "integer"
           },
           "out_port": {
@@ -414,6 +423,7 @@
           }
         },
         "required": [
+          "device",
           "out_port",
           "file",
           "confirm_overwrite"

@@ -16,6 +16,7 @@ use crate::device::full_osc_path;
 use crate::frame::{build_message, expand_identity, Bindings};
 use osd::{Bank, Device, FrameToken, Programs};
 use rosc::{OscMessage, OscType};
+use std::time::Duration;
 
 /// The arguments a `programs` frame may name (`{"arg": name}`).
 pub const PLACEHOLDERS: [&str; 7] = ["channel", "msb", "lsb", "bank", "program", "index", "number"];
@@ -159,6 +160,138 @@ pub fn dump(dev: &Device, program: Option<(&str, i64)>, channel: Option<u8>) -> 
     build(dev, std::slice::from_ref(frame), &bindings(dev, t.as_ref(), ch))
 }
 
+/// What waits for a pause: the real clock sleeps, a test's records.
+pub trait Clock {
+    fn sleep(&mut self, d: Duration);
+}
+
+/// The clock of the machine.
+pub struct SystemClock;
+impl Clock for SystemClock {
+    fn sleep(&mut self, d: Duration) {
+        std::thread::sleep(d);
+    }
+}
+
+/// The pause `programs.delay_ms` declares between two messages; none when absent or 0.
+fn pause_of(dev: &Device) -> Option<Duration> {
+    dev.programs.as_ref()?.delay_ms.filter(|d| *d > 0).map(|d| Duration::from_millis(d as u64))
+}
+
+/// `recall`, the declared pause (`delay_ms`) asked of `clock` between two
+/// messages, none after the last. A driver stating no pause waits nothing.
+pub fn recall_paced(dev: &Device, bank: &str, number: i64, channel: Option<u8>, clock: &mut dyn Clock) -> Result<Vec<Vec<u8>>, String> {
+    let out = recall(dev, bank, number, channel)?;
+    if let Some(pause) = pause_of(dev) {
+        for _ in 1..out.len() {
+            clock.sleep(pause);
+        }
+    }
+    Ok(out)
+}
+
+/// `dump`, then the reply bound (`dump.reply_timeout_ms`) asked of `clock`
+/// once for the sequence. A driver stating none waits nothing.
+pub fn dump_paced(dev: &Device, program: Option<(&str, i64)>, channel: Option<u8>, clock: &mut dyn Clock) -> Result<Vec<Vec<u8>>, String> {
+    let out = dump(dev, program, channel)?;
+    let timeout = dev.programs.as_ref().and_then(|p| p.dump.as_ref()).and_then(|d| d.reply_timeout_ms).filter(|t| *t > 0);
+    if let Some(t) = timeout {
+        clock.sleep(Duration::from_millis(t as u64));
+    }
+    Ok(out)
+}
+
+/// The messages that select the slot `number` of `bank` for a write, refused
+/// before any message when the descriptor says the bank cannot be written
+/// (`writable: false`; absent means writable). The error names the bank.
+pub fn store(dev: &Device, bank: &str, number: i64, channel: Option<u8>) -> Result<Vec<Vec<u8>>, String> {
+    let p = dev.programs.as_ref().ok_or("this driver says nothing of its programs")?;
+    let t = target(p, bank, number)?;
+    if t.bank.writable == Some(false) {
+        return Err(format!("bank {} cannot be written: the driver says writable is false", t.bank.name));
+    }
+    recall(dev, bank, number, channel)
+}
+
+/// The byte spans of the parts of a transfer that vary from one message to
+/// the next (channel, device number, header, checksum, bank, program).
+fn transport_spans(t: &osd::SoundTransfer) -> Vec<(usize, usize)> {
+    let e = &t.elements;
+    [&e.channel, &e.device_number, &e.header, &e.checksum, &e.bank_number, &e.program_number]
+        .into_iter()
+        .flatten()
+        .filter_map(|el| Some((usize::try_from(el.from?).ok()?, usize::try_from(el.length?).ok()?)))
+        .collect()
+}
+
+fn transfer_of<'a>(dev: &'a Device, frame: &[u8]) -> Option<&'a osd::SoundTransfer> {
+    dev.sound_transfers.iter().flatten().find(|t| {
+        let spans = transport_spans(t);
+        let masked = |at: usize| spans.iter().any(|(f, l)| (*f..f + l).contains(&at));
+        frame.len() == t.match_frame.len()
+            && t.match_frame.iter().zip(frame).enumerate()
+                .all(|(at, (token, b))| masked(at) || !matches!(token, FrameToken::Byte(x) if x != b))
+    })
+}
+
+/// The id of the sound transfer `frame` is, whatever its channel and device
+/// number (and the other parts that vary); None when it is none of them.
+pub fn recognise_transfer(dev: &Device, frame: &[u8]) -> Option<String> {
+    transfer_of(dev, frame).map(|t| t.id.clone())
+}
+
+/// `frame` ready to send: its channel written as `channel` and, when given,
+/// its device number as `device_number`; the rest as received. Refused when
+/// no declared transfer recognises it.
+pub fn normalise_transfer(dev: &Device, frame: &[u8], channel: u8, device_number: Option<u8>) -> Result<Vec<u8>, String> {
+    let t = transfer_of(dev, frame).ok_or("this message is none of the driver's sound transfers")?;
+    let mut out = frame.to_vec();
+    let mut put = |el: &Option<osd::Element>, v: u8| {
+        if let Some(from) = el.as_ref().and_then(|e| e.from).and_then(|f| usize::try_from(f).ok()) {
+            if let Some(b) = out.get_mut(from) { *b = v; }
+        }
+    };
+    put(&t.elements.channel, channel);
+    if let Some(n) = device_number { put(&t.elements.device_number, n); }
+    Ok(out)
+}
+
+/// Writes a file's messages to a device: the slot selection of `target` (a
+/// bank and number; refused before any message when the bank cannot be
+/// written), then each message of `msgs` with its channel (and device
+/// number) written as the configured ones when a declared sound transfer
+/// recognises it, else as it is. The pause the driver declares
+/// (`delay_ms`) is asked of `clock` between two messages. The number of
+/// messages sent, or the first refusal.
+pub fn restore(dev: &Device, msgs: &[Vec<u8>], target: Option<(&str, i64)>, channel: u8, device_number: Option<u8>,
+               clock: &mut dyn Clock, send: &mut dyn FnMut(&[u8]) -> Result<(), String>) -> Result<usize, String> {
+    let mut out = match target {
+        Some((bank, number)) => store(dev, bank, number, Some(channel))?,
+        None => Vec::new(),
+    };
+    for m in msgs {
+        out.push(normalise_transfer(dev, m, channel, device_number).unwrap_or_else(|_| m.clone()));
+    }
+    let pause = pause_of(dev);
+    for (i, m) in out.iter().enumerate() {
+        if i > 0 {
+            if let Some(p) = pause { clock.sleep(p); }
+        }
+        send(m).map_err(|e| format!("send message {}: {e}", i + 1))?;
+    }
+    Ok(out.len())
+}
+
+/// The messages of `received` the driver's sound transfers recognise, on
+/// any channel and from any device number; all of them when the driver
+/// declares no sound transfer.
+pub fn backup_filter(dev: &Device, received: &[Vec<u8>]) -> Vec<Vec<u8>> {
+    if dev.sound_transfers.as_ref().is_none_or(|t| t.is_empty()) {
+        return received.to_vec();
+    }
+    received.iter().filter(|m| recognise_transfer(dev, m).is_some()).cloned().collect()
+}
+
 /// The request the device answers with its identity, its `{dev}` the
 /// device-id rule's default; the Universal Identity Request when the driver
 /// names none.
@@ -211,7 +344,7 @@ pub fn uniform_osc(dev: &Device, addr: &str, args: &[OscType]) -> Option<Result<
     if addr == full_osc_path(dev, RECALL) {
         let Some(bank) = bank_arg(args.first()) else { return Some(Err(format!("{RECALL} <bank> <number> [channel]"))) };
         let Some(number) = args.get(1).and_then(int) else { return Some(Err("number: the program's number".into())) };
-        return Some(recall(dev, &bank, number, channel(2)));
+        return Some(recall_paced(dev, &bank, number, channel(2), &mut SystemClock));
     }
     if addr == full_osc_path(dev, DUMP) {
         return Some(match (args.first(), args.get(1).and_then(int)) {

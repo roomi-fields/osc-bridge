@@ -339,11 +339,14 @@ name only.
 
 ### Back up and restore presets (SysEx librarian)
 ```
-osc-bridge backup  --in-port minilab --out backups/minilab3.syx   # then start the dump on the device
-osc-bridge restore --out-port minilab backups/minilab3.syx        # overwrites the device's memory
+osc-bridge backup  --device arturia/minilab3 --in-port minilab --out backups/minilab3.syx   # then start the dump on the device
+osc-bridge restore --device arturia/minilab3 --out-port minilab backups/minilab3.syx        # overwrites the device's memory
 ```
-Ports take an index or a name fragment. `backup --request "F0 … F7" --out-port …`
-sends a dump request first; `restore --gap-ms` paces older devices.
+`--device` is required (a driver file, id or slug): its driver says which
+messages are the device's sounds, the pauses between messages, and which banks
+can be written. Ports take an index or a name fragment. `backup --out-port …`
+sends the driver's dump request first; `restore --bank … --number …` gives the
+place of a sound that carries none.
 
 ### Drum machines: play sounds by name
 Drivers with a drum map expose each voice: `/drm1_mkiv/drum/kick 110` fires

@@ -129,6 +129,51 @@ pub fn send_messages(out_port: &str, messages: &[Vec<u8>], gap: Duration) -> Res
     Ok(())
 }
 
+/// Writes the `.syx` file `file` to `dev` on `out_port`, as its driver says
+/// (`programs::restore`): `target` is a bank and number for a sound that
+/// carries no place. A bank the driver says cannot be written is refused
+/// before the port is opened. The number of messages sent.
+pub fn restore_to_device(dev: &osd::Device, out_port: &str, file: &Path, target: Option<(&str, i64)>) -> Result<usize> {
+    let msgs = read_syx(file)?;
+    let channel = dev.midi_out.as_ref().and_then(|m| m.default_channel).unwrap_or(0) & 0x0F;
+    let number = dev.identity.as_ref().and_then(|i| i.device_id.as_ref()).and_then(|d| d.default).map(|d| d as u8);
+    if let Some((bank, n)) = target {
+        crate::programs::store(dev, bank, n, Some(channel)).map_err(|e| anyhow!(e))?;
+    }
+    let output = MidiOutput::new("osc-bridge-librarian-out")?;
+    let ports = output.ports();
+    let names: Vec<String> = ports.iter().map(|p| output.port_name(p).unwrap_or_default()).collect();
+    let idx = resolve_port(&ports, &names, out_port)?;
+    let mut conn = output.connect(&ports[idx], "osc-bridge-librarian-out")
+        .map_err(|e| anyhow!("open MIDI out {:?}: {e}", names[idx]))?;
+    crate::programs::restore(dev, &msgs, target, channel, number, &mut crate::programs::SystemClock,
+        &mut |m: &[u8]| conn.send(m).map_err(|e| e.to_string())).map_err(|e| anyhow!(e))
+}
+
+/// Records the sounds `dev` sends on `in_port`, taking every message its
+/// driver's sound transfers recognise whatever the channel. With `out_port`,
+/// the driver's request is sent first (`programs.dump`).
+pub fn backup_from_device(dev: &osd::Device, in_port: &str, out_port: Option<&str>, idle: Duration, max: Duration) -> Result<Capture> {
+    /// Records the wait the driver asks instead of sleeping: `capture` is the wait.
+    struct Asked(Duration);
+    impl crate::programs::Clock for Asked {
+        fn sleep(&mut self, d: Duration) {
+            self.0 += d;
+        }
+    }
+    let mut asked = Asked(Duration::ZERO);
+    let request = match out_port {
+        Some(port) => Some((port, crate::programs::dump_paced(dev, None, None, &mut asked).map_err(|e| anyhow!(e))?.concat())),
+        None => None,
+    };
+    // The reply timeout the description states bounds the wait for the answer.
+    let max = if asked.0.is_zero() { max } else { asked.0 };
+    let cap = capture(in_port, request.as_ref().map(|(p, b)| (*p, b.as_slice())), idle, max)?;
+    let messages = crate::programs::backup_filter(dev, &cap.messages);
+    let bytes = messages.iter().map(Vec::len).sum();
+    Ok(Capture { messages, bytes })
+}
+
 pub fn write_syx(path: &Path, messages: &[Vec<u8>]) -> Result<()> {
     if let Some(dir) = path.parent().filter(|d| !d.as_os_str().is_empty()) {
         std::fs::create_dir_all(dir).with_context(|| format!("create {}", dir.display()))?;

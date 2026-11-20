@@ -11,6 +11,32 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed — breaking: `restore_presets` and `backup_presets` name a device
+- `device` is required on the MCP tools `restore_presets` and `backup_presets`
+  and on the CLI words `restore` and `backup` (`--device`); the mode without a
+  device is gone. A command that does not know which device it talks to cannot
+  respect its banks, pauses or sounds, as every send and receive of KnobKraft
+  Orm goes through a named device's adaptation. A device the catalogue does
+  not know is refused with an invitation to describe it.
+- `restore_presets` takes `bank` and `number` (optional, for a sound that
+  carries no place) and uses the driver: a bank it says cannot be written is
+  refused before any message, the pauses (`delay_ms`) are kept, the channel and
+  device number are written as configured. `gap_ms` is removed: the pause comes
+  from the driver.
+- `backup_presets` takes the sounds the driver recognises on any channel or
+  device number; `request_hex` is removed: the request comes from the driver
+  (`out_port` sends it). The CLI loses `restore --gap-ms` and `backup --request`.
+
+### Changed
+- `/program/recall` waits the pause a driver declares (`programs.delay_ms`)
+  between the messages of a recall; a driver declaring none waits nothing.
+  So a device that needs time between a bank select and a program change
+  gets it, as KnobKraft Orm's adaptations give it.
+- `osd` and `osd-formats` move to the revision that reads `delay_ms`,
+  `reply_timeout_ms`, `writable` and the sound-transfer elements (OSD 0.6).
+- The reply bound of a read-back (`dump_paced`) is in `programs`; no tool,
+  address or CLI word exposes it yet.
+
 ## [0.22.0] — 2026-11-20
 
 ### Changed

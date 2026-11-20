@@ -88,6 +88,46 @@ fn bundle_manifest_describes_each_tool_as_the_code_does() {
     }
 }
 
+/// The input schema (`required` names, property names) of an offline tool, from the code.
+fn code_schema(tool: &str) -> (BTreeSet<String>, BTreeSet<String>) {
+    let dir = super::common::temp("tool-schemas");
+    let opts = osc_bridge::mcp::McpOptions {
+        devices_dir: Some(dir.path().to_path_buf()),
+        default_target: "127.0.0.1:9000".parse().unwrap(),
+        online: false,
+        private: vec![],
+    };
+    let request = serde_json::json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" });
+    let input = format!("{request}\n");
+    let mut out = Vec::new();
+    osc_bridge::mcp::serve(opts, "http://127.0.0.1:1", None, input.as_bytes(), &mut out).unwrap();
+    let reply: Value = serde_json::from_str(String::from_utf8(out).unwrap().lines().next().unwrap()).unwrap();
+    let t = reply["result"]["tools"].as_array().unwrap().iter().find(|t| t["name"] == tool).unwrap().clone();
+    schema_names(&t)
+}
+
+fn schema_names(tool: &Value) -> (BTreeSet<String>, BTreeSet<String>) {
+    let s = &tool["inputSchema"];
+    let required = s["required"].as_array().into_iter().flatten().map(|v| v.as_str().unwrap().to_string()).collect();
+    let props = s["properties"].as_object().unwrap().keys().cloned().collect();
+    (required, props)
+}
+
+#[test]
+fn the_preset_tools_require_a_device_and_offer_no_pause_nor_request_argument_in_code_and_manifest() {
+    let (_, text) = root_file("mcpb/manifest.json");
+    let manifest: Value = serde_json::from_str(&text).unwrap();
+    for tool in ["restore_presets", "backup_presets"] {
+        let (required, props) = code_schema(tool);
+        assert!(required.contains("device"), "{tool} (code): device is required");
+        assert!(!props.contains("gap_ms") && !props.contains("request_hex"), "{tool} (code): {props:?}");
+        let m = manifest["tools"].as_array().unwrap().iter().find(|t| t["name"] == tool).unwrap();
+        assert_eq!(schema_names(m), (required, props), "{tool}: the manifest says what the code's schema says");
+    }
+    let (_, restore) = code_schema("restore_presets");
+    assert!(restore.contains("bank") && restore.contains("number"), "{restore:?}");
+}
+
 #[test]
 fn mcp_guide_tool_table_names_every_offline_tool_and_no_other() {
     let (file, text) = root_file("docs/MCP.md");

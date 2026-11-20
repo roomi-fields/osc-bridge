@@ -15,7 +15,7 @@ The application offers three published surfaces: its command line, its MCP tools
 | `mcp` | `--offline`, `--devices-dir` | the MCP server |
 | `connect` | the relay address, private ports | a relay door |
 | `export` | a driver, a format | the exported file |
-| `backup`, `restore` | ports, a `.syx` file | a dump taken or sent |
+| `backup`, `restore` | `--device` (required: a driver file, id or slug), ports, a `.syx` file; `restore` also `--bank` and `--number` for a sound that carries no place | a dump taken (the sounds the driver recognises, on any channel) or sent (the driver's pauses; a bank it says cannot be written refused before any message; channel and device number written as configured) |
 | `privacy` | `--offline`, `--private`, `--public` | the installation's settings |
 | `inspect`, `lint` | a driver | its summary, its warnings |
 | `osc-send`, `osc-listen` | an address and arguments, a bind address | one OSC message, the messages received |

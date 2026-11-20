@@ -800,17 +800,17 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "backup_presets",
-                "description": "Back up a hardware device's presets as a .syx file. Listens on the device's MIDI input and records every SysEx message it sends (a 'bulk dump'), stopping 3 s after the last one. Either the user starts the dump from the device's menu during the call, or pass request_hex (the device's dump-request message, from its manual or driver) with out_port. Use detect_hardware first to find the ports.",
+                "description": "Back up a hardware device's presets as a .syx file. The device is named (device: a catalogue id or slug, see list_devices): its driver says which messages are its sounds, on any channel or device number, and how to ask for them. Listens on the device's MIDI input and records those messages (a 'bulk dump'), stopping 3 s after the last one. Either the user starts the dump from the device's menu during the call, or pass out_port and the driver's dump request is sent. Use detect_hardware first to find the ports.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
+                        "device": { "type": "string", "description": "The device's catalogue id or slug (e.g. 'korg/minilogue'); a device the catalogue does not know has to be described first." },
                         "in_port": { "type": "string", "description": "MIDI IN port of the device: index or name fragment (e.g. 'minilab')." },
                         "file": { "type": "string", "description": "Path of the .syx file to write." },
-                        "request_hex": { "type": "string", "description": "Optional dump-request SysEx as hex, e.g. 'F0 43 20 00 F7'." },
-                        "out_port": { "type": "string", "description": "MIDI OUT port for request_hex: index or name fragment." },
+                        "out_port": { "type": "string", "description": "MIDI OUT port: the driver's dump request is sent on it first (index or name fragment)." },
                         "max_seconds": { "type": "integer", "description": "Give up after this long, 1-600 (default 60)." }
                     },
-                    "required": ["in_port", "file"]
+                    "required": ["device", "in_port", "file"]
                 },
                 "outputSchema": {
                     "type": "object",
@@ -831,16 +831,18 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "restore_presets",
-                "description": "Send a .syx file to a hardware device, e.g. to restore a preset backup. This OVERWRITES the device's memory: confirm with the user first, then pass confirm_overwrite: true. Messages are paced (gap_ms) because older devices drop fast dumps.",
+                "description": "Send a .syx file to a hardware device, e.g. to restore a preset backup. This OVERWRITES the device's memory: confirm with the user first, then pass confirm_overwrite: true. The device is named (device): its driver sets the pause between messages, refuses a bank that cannot be written before anything is sent, and the sounds are sent on the configured channel. For a sound that carries no place, pass bank and number.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
+                        "device": { "type": "string", "description": "The device's catalogue id or slug (e.g. 'korg/minilogue'); a device the catalogue does not know has to be described first." },
                         "out_port": { "type": "string", "description": "MIDI OUT port of the device: index or name fragment." },
                         "file": { "type": "string", "description": "Path of the .syx file to send." },
-                        "gap_ms": { "type": "integer", "description": "Pause between messages, 0-2000 ms (default 50)." },
-                        "confirm_overwrite": { "type": "boolean", "description": "Must be true: the user agreed to overwrite the device's memory." }
+                        "confirm_overwrite": { "type": "boolean", "description": "Must be true: the user agreed to overwrite the device's memory." },
+                        "bank": { "type": "string", "description": "The bank to write into, by name or place (with number), for a sound that carries no place." },
+                        "number": { "type": "integer", "description": "The program number to write into, as the device shows it (with bank)." }
                     },
-                    "required": ["out_port", "file", "confirm_overwrite"]
+                    "required": ["device", "out_port", "file", "confirm_overwrite"]
                 },
                 "outputSchema": {
                     "type": "object",
@@ -1324,21 +1326,28 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
             link_tool(name, args, target)
         }
         "backup_presets" => {
+            let wanted = args.get("device").and_then(Value::as_str).ok_or("missing device: name the device whose sounds are saved")?;
             let in_port = args.get("in_port").and_then(Value::as_str).ok_or("missing in_port")?;
             let file = args.get("file").and_then(Value::as_str).ok_or("missing file")?;
-            let request = args.get("request_hex").and_then(Value::as_str);
             let out_port = args.get("out_port").and_then(Value::as_str);
             let max = args.get("max_seconds").and_then(Value::as_u64).unwrap_or(60).clamp(1, 600);
-            backup_presets(in_port, Path::new(file), request, out_port, max)
+            let dev = preset_device(index, wanted)?;
+            backup_presets(&dev, in_port, Path::new(file), out_port, max)
         }
         "restore_presets" => {
+            let wanted = args.get("device").and_then(Value::as_str).ok_or("missing device: name the device that receives the file")?;
             if args.get("confirm_overwrite").and_then(Value::as_bool) != Some(true) {
                 return Err("restore overwrites the device's memory: ask the user, then pass confirm_overwrite: true".into());
             }
             let out_port = args.get("out_port").and_then(Value::as_str).ok_or("missing out_port")?;
             let file = args.get("file").and_then(Value::as_str).ok_or("missing file")?;
-            let gap = args.get("gap_ms").and_then(Value::as_u64).unwrap_or(50).min(2000);
-            restore_presets(out_port, Path::new(file), gap)
+            let target = match (args.get("bank"), args.get("number").and_then(Value::as_i64)) {
+                (Some(b), Some(n)) => Some((match b { Value::String(s) => s.clone(), v => v.to_string() }, n)),
+                (None, None) => None,
+                _ => return Err("bank and number go together: the place to write the sound".into()),
+            };
+            let dev = preset_device(index, wanted)?;
+            restore_presets(&dev, out_port, Path::new(file), target.as_ref().map(|(b, n)| (b.as_str(), *n)))
         }
         "detect_hardware" => {
             let probe = args.get("probe").and_then(Value::as_bool).unwrap_or(true);
@@ -1580,30 +1589,30 @@ fn detect_hardware(index: &DeviceIndex, server: Option<&crate::online::Online>, 
     Ok(out)
 }
 
-fn backup_presets(in_port: &str, file: &Path, request: Option<&str>, out_port: Option<&str>, max_secs: u64) -> Result<Value, String> {
-    use crate::librarian::{capture, parse_hex, write_syx};
-    let req = match (request, out_port) {
-        (Some(hex), Some(port)) => Some((port, parse_hex(hex).map_err(|e| e.to_string())?)),
-        (Some(_), None) => return Err("request_hex needs out_port".into()),
-        _ => None,
-    };
-    let cap = capture(in_port, req.as_ref().map(|(p, b)| (*p, b.as_slice())),
-                      Duration::from_secs(3), Duration::from_secs(max_secs)).map_err(|e| e.to_string())?;
+/// The driver of the device a preset tool is told to talk to; a device the
+/// catalogue does not know is refused, with the invitation to describe it.
+fn preset_device(index: &DeviceIndex, wanted: &str) -> Result<Device, String> {
+    let entry = index.find(wanted).ok_or_else(|| format!(
+        "no driver '{wanted}' in the catalogue (see list_devices): describe the device first, so osc-bridge knows its banks and sounds"))?;
+    crate::device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.path.display()))
+}
+
+fn backup_presets(dev: &Device, in_port: &str, file: &Path, out_port: Option<&str>, max_secs: u64) -> Result<Value, String> {
+    use crate::librarian::{backup_from_device, write_syx};
+    let cap = backup_from_device(dev, in_port, out_port, Duration::from_secs(3), Duration::from_secs(max_secs)).map_err(|e| e.to_string())?;
     if cap.messages.is_empty() {
-        return Err(format!("no SysEx received within {max_secs} s — start the dump from the device's menu, or pass request_hex"));
+        return Err(format!("no sound of {} received within {max_secs} s — start the dump from the device's menu, or pass out_port to send the driver's request", dev.device.name));
     }
     write_syx(file, &cap.messages).map_err(|e| e.to_string())?;
     let structured = json!({ "file": file.display().to_string(), "messages": cap.messages.len(), "bytes": cap.bytes });
     Ok(content_structured(&format!("Saved {} SysEx message(s), {} bytes, to {}", cap.messages.len(), cap.bytes, file.display()), structured))
 }
 
-fn restore_presets(out_port: &str, file: &Path, gap_ms: u64) -> Result<Value, String> {
-    use crate::librarian::{read_syx, send_messages};
-    let msgs = read_syx(file).map_err(|e| e.to_string())?;
-    let bytes: usize = msgs.iter().map(Vec::len).sum();
-    send_messages(out_port, &msgs, Duration::from_millis(gap_ms)).map_err(|e| e.to_string())?;
-    let structured = json!({ "file": file.display().to_string(), "messages": msgs.len(), "bytes": bytes });
-    Ok(content_structured(&format!("Sent {} SysEx message(s), {} bytes, from {}", msgs.len(), bytes, file.display()), structured))
+fn restore_presets(dev: &Device, out_port: &str, file: &Path, target: Option<(&str, i64)>) -> Result<Value, String> {
+    let sent = crate::librarian::restore_to_device(dev, out_port, file, target).map_err(|e| format!("{e:#}"))?;
+    let bytes = std::fs::metadata(file).map(|m| m.len()).unwrap_or(0);
+    let structured = json!({ "file": file.display().to_string(), "messages": sent, "bytes": bytes });
+    Ok(content_structured(&format!("Sent {sent} SysEx message(s), {bytes} bytes, from {}", file.display()), structured))
 }
 
 /// A shared preset's files on this machine, read: `file` (a .syx) sent as

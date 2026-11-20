@@ -256,7 +256,7 @@ fn tool_failure_is_a_result_and_unknown_tool_a_protocol_error() {
 fn restore_refuses_without_explicit_confirmation() {
     let idx = fixtures();
     let opts = test_opts();
-    let err = call_tool("restore_presets", &json!({"out_port": "0", "file": "x.syx"}), &opts, &idx, None).unwrap_err();
+    let err = call_tool("restore_presets", &json!({"device": "acme/box", "out_port": "0", "file": "x.syx"}), &opts, &idx, None).unwrap_err();
     assert!(err.contains("confirm_overwrite"), "{err}");
 }
 

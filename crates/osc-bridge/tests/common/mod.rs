@@ -139,13 +139,10 @@ pub fn files(root: &Path, files: &[(&str, &str)]) {
 }
 
 /// The OSD 0.5 text of a 0.4 driver, as `osd::convert` writes it. A checksum
-/// is written `{checksum:twos7@5}` in the tests; 0.4 names its algorithms
-/// `twos`, `sum` and `xor`, and the converter turns them into `twos7`, `sum7`
-/// and `xor7`.
+/// is written `{checksum:twos7@5}` in the tests, as the catalogue writes it,
+/// and the converter reads it as is.
 pub fn to05(text: &str) -> String {
-    let text = text.replace("{checksum:twos7@", "{checksum:twos@").replace("{checksum:sum7@", "{checksum:sum@")
-        .replace("{checksum:xor7@", "{checksum:xor@");
-    osd::convert(&text, osd::Kind::Device).unwrap_or_else(|e| panic!("convert: {e}\n{text}"))
+    osd::convert(text, osd::Kind::Device).unwrap_or_else(|e| panic!("convert: {e}\n{text}"))
 }
 
 /// The device a text holds, read by `osd` (no file, no resolution).
