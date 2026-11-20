@@ -643,13 +643,22 @@ fn orch_handle(
     }
 
     // Dispatch into the owning device (MIDI or OSC transport).
+    let routes = links.table.snapshot();
     if !dispatch_into_owner(msg.clone(), devices, prefix_map, send_osc, reply_to, from) {
-        // No device owns this address — it may still be a route source.
+        // No device owns this address: a link may still follow it; else, outside
+        // /bridge/ (which other paths handle), the sender is told, as a single device does.
+        let followed = routes.iter().any(|r| match_osc_path(&r.from_parts, &msg.addr).is_some());
+        if !followed {
+            if !msg.addr.starts_with("/bridge/") {
+                crate::runtime::Answer::new(send_osc, reply_to, from).fault(&msg.addr, "unknown address");
+            }
+            return;
+        }
     }
 
     // Inter-device routing: always apply, regardless of whether a device owns
     // the source address (lets you route from any client-emitted path too).
-    apply_routes(&msg, &links.table.snapshot(), devices, prefix_map, send_osc, reply_to);
+    apply_routes(&msg, &routes, devices, prefix_map, send_osc, reply_to);
 }
 
 /// The orchestrator's message path, reached without a socket or a MIDI port:

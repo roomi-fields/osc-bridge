@@ -255,3 +255,68 @@ fn a_message_sent_with_the_no_reply_route_still_builds_its_frame() {
     dispatch_to_device(&st, msg(CUTOFF, vec![OscType::Int(5)]), &Said::default().send_osc(), &no_reply(), client());
     assert_eq!(rx.try_iter().collect::<Vec<_>>(), vec![vec![0xB0, 74, 5]]);
 }
+
+fn two_devices(links: &[osc_bridge::orchestrator::RouteRule]) -> (BenchPath, Receiver<Vec<u8>>, Receiver<Vec<u8>>) {
+    let (tx_a, rx_a) = bounded::<Vec<u8>>(8);
+    let (tx_b, rx_b) = bounded::<Vec<u8>>(8);
+    (BenchPath::new(vec![(synth(), tx_a), (driver(), tx_b)], links), rx_a, rx_b)
+}
+
+#[test]
+fn an_orchestrator_answers_an_address_no_device_owns_with_an_unknown_address_fault() {
+    // The bench door carries no real sender, so the fault is broadcast, as for any fault there.
+    let (path, rx_a, rx_b) = two_devices(&[]);
+    let said = Said::default();
+    path.dispatch(msg("/nobody/home", vec![OscType::Int(1)]), &said.send_osc(), &said.reply_to());
+    let b = said.broadcast();
+    assert_eq!(b.len(), 1, "{b:?}");
+    assert_eq!(b[0].addr, "/bridge/fault");
+    assert_eq!(strings(&b[0]), vec!["/nobody/home".to_string(), "unknown address".to_string()]);
+    assert!(rx_a.try_recv().is_err() && rx_b.try_recv().is_err(), "no device receives a byte");
+}
+
+#[test]
+fn an_unowned_address_that_a_link_follows_reaches_the_link_target_without_a_fault() {
+    let link = osc_bridge::orchestrator::RouteRule { from: "/free/in".into(), to: CUTOFF.into(), map: None };
+    let (path, rx_a, rx_b) = two_devices(&[link]);
+    let said = Said::default();
+    path.dispatch(msg("/free/in", vec![OscType::Int(64)]), &said.send_osc(), &said.reply_to());
+    assert!(said.to_sender().is_empty(), "{:?}", said.to_sender());
+    assert!(said.broadcast().is_empty(), "{:?}", said.broadcast());
+    assert_eq!(rx_a.try_iter().collect::<Vec<_>>(), vec![vec![0xB0, 74, 64]]);
+    assert!(rx_b.try_recv().is_err());
+}
+
+#[test]
+fn an_unowned_address_that_a_link_follows_to_an_unowned_target_answers_no_fault() {
+    let link = osc_bridge::orchestrator::RouteRule { from: "/free/in".into(), to: "/free/out".into(), map: None };
+    let (path, rx_a, rx_b) = two_devices(&[link]);
+    let said = Said::default();
+    path.dispatch(msg("/free/in", vec![OscType::Int(64)]), &said.send_osc(), &said.reply_to());
+    assert!(said.to_sender().is_empty(), "{:?}", said.to_sender());
+    assert!(said.broadcast().is_empty(), "{:?}", said.broadcast());
+    assert!(rx_a.try_recv().is_err() && rx_b.try_recv().is_err());
+}
+
+#[test]
+fn an_address_under_bridge_that_the_orchestrator_handles_answers_no_unknown_address_fault() {
+    let (path, _a, _b) = two_devices(&[]);
+    for addr in ["/bridge/status", "/bridge/docs", "/bridge/link/list"] {
+        let said = Said::default();
+        path.dispatch(msg(addr, vec![]), &said.send_osc(), &said.reply_to());
+        assert!(said.to_sender().iter().all(|(_, m)| m.addr != "/bridge/fault"), "{addr}: {:?}", said.to_sender());
+        assert!(said.broadcast().iter().all(|m| m.addr != "/bridge/fault"), "{addr}: {:?}", said.broadcast());
+    }
+}
+
+#[test]
+fn a_message_the_owner_device_rejects_gets_one_fault_not_two() {
+    let (path, _a, _b) = two_devices(&[]);
+    let said = Said::default();
+    path.dispatch(msg(CUTOFF, vec![s("loud")]), &said.send_osc(), &said.reply_to());
+    let b = said.broadcast();
+    assert_eq!(b.len(), 1, "{b:?}");
+    let a = strings(&b[0]);
+    assert_eq!(a[0], CUTOFF);
+    assert_ne!(a[1], "unknown address");
+}

@@ -960,7 +960,7 @@ pub(crate) struct Answer<'a> {
 }
 
 impl<'a> Answer<'a> {
-    fn new(send_osc: &'a SendOsc, reply_to: &'a ReplyTo, from: SocketAddr) -> Self {
+    pub(crate) fn new(send_osc: &'a SendOsc, reply_to: &'a ReplyTo, from: SocketAddr) -> Self {
         Self { send_osc, reply_to: Some(reply_to), from }
     }
 
@@ -970,7 +970,7 @@ impl<'a> Answer<'a> {
     }
 
     /// `/bridge/fault <address> <reason>`; the standard error repeats it.
-    fn fault(&self, addr: &str, reason: impl std::fmt::Display) {
+    pub(crate) fn fault(&self, addr: &str, reason: impl std::fmt::Display) {
         let reason = reason.to_string();
         eprintln!("  [{}] {addr}: {reason}", self.from);
         let m = OscMessage {
