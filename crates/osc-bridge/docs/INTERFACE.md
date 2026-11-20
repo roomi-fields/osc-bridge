@@ -20,6 +20,14 @@ The application offers three published surfaces: its command line, its MCP tools
 | `inspect`, `lint` | a driver | its summary, its warnings |
 | `osc-send`, `osc-listen` | an address and arguments, a bind address | one OSC message, the messages received |
 
+## The relay frames
+
+`crate::relay_protocol` publishes the frames of the relay door, one contract with the service, whose browser door reads the same reference frames (`tests/fixtures/relay_frames.json`):
+
+- built: `ports_frame(outputs, inputs)`, `share_frame(enabled, private)`, `midi_in_frame(port, data)`, `confirm_reply_frame(id, accepted)`, each a JSON value;
+- read: `parse_door_frame(text)` gives a `ServerFrame` (`Hello`, `MidiOut`, `Confirm`, `ConfirmCancel`, `Paired`, `Error`) or nothing for text that is not a known frame;
+- the rule `needs_confirmation` and `is_identity_request` on a message.
+
 ## The MCP tools
 
 `send` always asks for the acknowledgement and hands back at the first answer: `/bridge/done` gives `sent: true`; `/bridge/fault` gives `isError: true` with the address and the reason, in text and in `structuredContent` (`sent: false`, `address`, `reason`); when nothing answers within 3 s (a guard, not a delay) it gives an error saying osc-bridge does not answer at that address.

@@ -1,7 +1,13 @@
-//! The relay protocol: how a "door" — the `/connect` page in a browser (Web
-//! MIDI), `osc-bridge connect` (`crate::connect`), a plugin, any program
+//! The relay protocol: how a "door" — the browser door (Web MIDI), which is
+//! the SyntHub service's, on its page https://synthhub.roomi-fields.com/connect ;
+//! `osc-bridge connect` (`crate::connect`), a plugin, any program
 //! speaking it — lets an agent reach the MIDI ports of a machine it does not
 //! run on, through the SynthHub server.
+//!
+//! The reference frames, one per kind, are in `tests/fixtures/relay_frames.json`:
+//! the contract the other doors read. A test builds and reads each frame
+//! against that file, so a change of frame here breaks it until the file is
+//! updated; the file's diff is what the service's door rereads.
 //!
 //! The door opens a WebSocket to the server (`crate::connect::DEFAULT_RELAY`).
 //! The server gives the session a pairing code; the user hands that code to
@@ -33,6 +39,71 @@
 //!
 //! The door connects with `?user=<id>` to keep its account; an id the server
 //! did not issue gets a new account. A session lives as long as its socket.
+
+use serde_json::{json, Value};
+
+/// A frame the server sends to a door, as the door reads it.
+#[derive(Debug, Clone, PartialEq)]
+pub enum ServerFrame {
+    Hello { code: String, user: String },
+    MidiOut { port: String, data: Vec<u8> },
+    Confirm { id: Value, port: String, messages: Vec<Vec<u8>>, bytes: u64, gap_ms: u64, why: Option<String> },
+    ConfirmCancel { id: Value },
+    Paired,
+    /// `{"type":"error","error"}`: the server refuses or reports a fault.
+    Error { error: Value },
+}
+
+fn bytes_of(v: &Value) -> Vec<u8> {
+    v.as_array().map(|a| a.iter().filter_map(Value::as_u64).map(|b| b as u8).collect()).unwrap_or_default()
+}
+
+/// Read a server frame; `None` for text that is not JSON or not a known frame.
+pub fn parse_door_frame(text: &str) -> Option<ServerFrame> {
+    let v: Value = serde_json::from_str(text).ok()?;
+    Some(match v["type"].as_str()? {
+        "hello" => ServerFrame::Hello {
+            code: v["code"].as_str().unwrap_or("?").to_string(),
+            user: v["user"].as_str().unwrap_or("").to_string(),
+        },
+        "midi_out" => ServerFrame::MidiOut {
+            port: v["port"].as_str().unwrap_or("").to_string(),
+            data: bytes_of(&v["data"]),
+        },
+        "confirm" => ServerFrame::Confirm {
+            id: v["id"].clone(),
+            port: v["port"].as_str().unwrap_or("").to_string(),
+            messages: v["messages"].as_array().map(|a| a.iter().map(bytes_of).collect()).unwrap_or_default(),
+            bytes: v["bytes"].as_u64().unwrap_or(0),
+            gap_ms: v["gap_ms"].as_u64().unwrap_or(0),
+            why: v["why"].as_str().map(str::to_string),
+        },
+        "confirm_cancel" => ServerFrame::ConfirmCancel { id: v["id"].clone() },
+        "paired" => ServerFrame::Paired,
+        "error" => ServerFrame::Error { error: v["error"].clone() },
+        _ => return None,
+    })
+}
+
+/// The door's port list.
+pub fn ports_frame(outputs: &[String], inputs: &[String]) -> Value {
+    json!({ "type": "ports", "outputs": outputs, "inputs": inputs })
+}
+
+/// The door's sharing choice.
+pub fn share_frame(enabled: bool, private: &[String]) -> Value {
+    json!({ "type": "share", "enabled": enabled, "private": private })
+}
+
+/// A message a device sent.
+pub fn midi_in_frame(port: &str, data: &[u8]) -> Value {
+    json!({ "type": "midi_in", "port": port, "data": data })
+}
+
+/// The person's answer to a `confirm` request.
+pub fn confirm_reply_frame(id: &Value, accepted: bool) -> Value {
+    json!({ "type": "confirm_reply", "id": id, "accepted": accepted })
+}
 
 /// The MIDI Identity Request, whatever device id it addresses.
 pub fn is_identity_request(msg: &[u8]) -> bool {

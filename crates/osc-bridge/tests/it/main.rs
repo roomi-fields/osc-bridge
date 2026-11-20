@@ -28,6 +28,7 @@ mod orchestrator_config;
 mod orchestrator_message_path;
 mod orchestrator_routing_e2e;
 mod osc_transport_e2e;
+mod relay_frames;
 mod osd_driver;
 mod presets_with_device;
 mod privacy_policy;

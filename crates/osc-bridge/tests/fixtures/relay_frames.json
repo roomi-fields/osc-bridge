@@ -1,0 +1,19 @@
+{
+  "hello": { "type": "hello", "code": "ABC-123", "user": "u_42" },
+  "ports": { "type": "ports", "outputs": ["Out A", "Out B"], "inputs": ["In A"] },
+  "share": { "type": "share", "enabled": true, "private": ["Out B"] },
+  "midi_out": { "type": "midi_out", "port": "Out A", "data": [176, 74, 64] },
+  "midi_in": { "type": "midi_in", "port": "In A", "data": [144, 60, 100] },
+  "confirm": {
+    "type": "confirm",
+    "id": "c1",
+    "port": "Out A",
+    "messages": [[240, 66, 48, 0, 1, 44, 76, 0, 247], [240, 126, 127, 6, 2, 247]],
+    "bytes": 15,
+    "gap_ms": 50,
+    "why": "stores a program"
+  },
+  "confirm_reply": { "type": "confirm_reply", "id": "c1", "accepted": true },
+  "confirm_cancel": { "type": "confirm_cancel", "id": "c1" },
+  "paired": { "type": "paired" }
+}

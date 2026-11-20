@@ -1,6 +1,7 @@
 //! `osc-bridge connect`: a relay door on this machine's MIDI ports.
 //!
-//! The command-line twin of the site's `/connect` page, for Safari users,
+//! The command-line twin of the SyntHub service's browser door
+//! (https://synthhub.roomi-fields.com/connect), for Safari users,
 //! servers without a browser, and agents that run next to the hardware. It
 //! opens a WebSocket to the hosted relay (protocol in `crate::relay_protocol`), shows
 //! the pairing code, and moves bytes: `midi_out` frames to the named output
@@ -21,7 +22,9 @@
 use anyhow::{anyhow, Context, Result};
 use crossbeam_channel::{unbounded, Sender};
 use midir::{Ignore, MidiInput, MidiInputConnection, MidiOutput, MidiOutputConnection};
-use serde_json::{json, Value};
+use crate::relay_protocol::{
+    confirm_reply_frame, midi_in_frame, needs_confirmation, parse_door_frame, ports_frame, share_frame, ServerFrame,
+};
 use std::collections::{HashMap, VecDeque};
 use std::net::TcpStream;
 use std::time::{Duration, Instant};
@@ -184,10 +187,6 @@ fn private_port_names<'a>(names: impl Iterator<Item = &'a String>, fragments: &[
     out
 }
 
-fn bytes_of(v: &Value) -> Vec<u8> {
-    v.as_array().map(|a| a.iter().filter_map(Value::as_u64).map(|b| b as u8).collect()).unwrap_or_default()
-}
-
 fn set_read_timeout(ws: &WebSocket<MaybeTlsStream<TcpStream>>, t: Duration) -> Result<()> {
     match ws.get_ref() {
         MaybeTlsStream::Plain(s) => s.set_read_timeout(Some(t))?,
@@ -209,17 +208,19 @@ pub fn run(server: &str, share: bool, test_synth: bool, private_ports: &[String]
         _ => server.to_string(),
     };
     let (mut ws, _) = tungstenite::connect(url.as_str()).with_context(|| format!("connect to {server}"))?;
-    let hello: Value = loop {
+    let hello = loop {
         match ws.read()? {
-            Message::Text(t) => break serde_json::from_str(&t)?,
+            Message::Text(t) => break parse_door_frame(&t),
             Message::Close(_) => return Err(anyhow!("the relay closed the connection")),
             _ => {}
         }
     };
-    if hello["type"] == "error" {
-        return Err(anyhow!("relay: {}", hello["error"]));
-    }
-    let (code, user) = (hello["code"].as_str().unwrap_or("?"), hello["user"].as_str().unwrap_or(""));
+    let (code, user) = match hello {
+        Some(ServerFrame::Error { error }) => return Err(anyhow!("relay: {error}")),
+        Some(ServerFrame::Hello { code, user }) => (code, user),
+        _ => ("?".to_string(), String::new()),
+    };
+    let (code, user) = (code.as_str(), user.as_str());
     if let Some(f) = &file {
         if known.as_deref() != Some(user) {
             if let Some(dir) = f.parent() { let _ = std::fs::create_dir_all(dir); }
@@ -238,7 +239,7 @@ pub fn run(server: &str, share: bool, test_synth: bool, private_ports: &[String]
     let (in_tx, in_rx) = unbounded::<(String, Vec<u8>)>();
     let mut ports = open_ports(&in_tx)?;
     let typed = answers();
-    let mut asking: VecDeque<Value> = VecDeque::new();
+    let mut asking: VecDeque<ServerFrame> = VecDeque::new();
     let mut asked = false;
     let (mut always, mut nobody) = (false, false);
     let mut announce = true;
@@ -266,12 +267,12 @@ pub fn run(server: &str, share: bool, test_synth: bool, private_ports: &[String]
                 ins.push(TEST_SYNTH_PORT.into());
             }
             println!("Devices: outputs [{}], inputs [{}]", outs.join(", "), ins.join(", "));
-            ws.send(Message::Text(json!({ "type": "ports", "outputs": outs, "inputs": ins }).to_string().into()))?;
+            ws.send(Message::Text(ports_frame(&outs, &ins).to_string().into()))?;
             let private = private_port_names(outs.iter().chain(&ins), private_ports);
             if !private.is_empty() {
                 println!("Private (identity never recorded): {}", private.join(", "));
             }
-            ws.send(Message::Text(json!({ "type": "share", "enabled": share, "private": private }).to_string().into()))?;
+            ws.send(Message::Text(share_frame(share, &private).to_string().into()))?;
         }
         while let Ok(line) = typed.try_recv() {
             let word = line.as_deref().map(|l| l.trim().to_lowercase());
@@ -284,23 +285,23 @@ pub fn run(server: &str, share: bool, test_synth: bool, private_ports: &[String]
                 answer(&mut ws, &mut ports, &in_tx, &mut synth, &req, accepted)?;
             }
         }
-        if let Some(req) = asking.front() {
+        if let Some(ServerFrame::Confirm { port, messages, bytes, why, .. }) = asking.front() {
             if always || nobody {
                 let req = asking.pop_front().expect("front");
                 if nobody && !always { println!("  x  refused (no terminal to ask)"); }
                 answer(&mut ws, &mut ports, &in_tx, &mut synth, &req, always)?;
             } else if !asked {
                 asked = true;
-                let n = req["messages"].as_array().map_or(0, Vec::len);
+                let n = messages.len();
                 println!();
-                let port = req["port"].as_str().unwrap_or("?");
-                match req["why"].as_str() {
+                let port = if port.is_empty() { "?" } else { port.as_str() };
+                match why {
                     Some(why) => {
-                        println!("Your agent wants to {why}: {n} SysEx message(s) ({} bytes) to {port}.", req["bytes"]);
+                        println!("Your agent wants to {why}: {n} SysEx message(s) ({bytes} bytes) to {port}.");
                         println!("Accept only if you expect it: this program cannot check what they do.");
                     }
                     None => {
-                        println!("Your agent wants to send {n} SysEx message(s) ({} bytes) to {port}.", req["bytes"]);
+                        println!("Your agent wants to send {n} SysEx message(s) ({bytes} bytes) to {port}.");
                         println!("This can replace sounds or settings stored in the device.");
                     }
                 }
@@ -309,31 +310,29 @@ pub fn run(server: &str, share: bool, test_synth: bool, private_ports: &[String]
         }
         while let Ok((port, data)) = in_rx.try_recv() {
             println!("  <- {port}  {}", hex(&data));
-            ws.send(Message::Text(json!({ "type": "midi_in", "port": port, "data": data }).to_string().into()))?;
+            ws.send(Message::Text(midi_in_frame(&port, &data).to_string().into()))?;
         }
         match ws.read() {
             Ok(Message::Text(t)) => {
-                let Ok(v) = serde_json::from_str::<Value>(&t) else { continue };
-                match v["type"].as_str() {
-                    Some("midi_out") => {
-                        let port = v["port"].as_str().unwrap_or("");
-                        let data = bytes_of(&v["data"]);
-                        if crate::relay_protocol::needs_confirmation(&data) {
+                let Some(frame) = parse_door_frame(&t) else { continue };
+                match frame {
+                    ServerFrame::MidiOut { port, data } => {
+                        if needs_confirmation(&data) {
                             println!("  x  {port}  {}  (not confirmed)", hex(&data));
                             continue;
                         }
-                        deliver(&mut ports, &in_tx, &mut synth, port, &data);
+                        deliver(&mut ports, &in_tx, &mut synth, &port, &data);
                     }
-                    Some("confirm") => asking.push_back(v),
-                    Some("confirm_cancel") => {
-                        if let Some(i) = asking.iter().position(|r| r["id"] == v["id"]) {
+                    ServerFrame::Confirm { .. } => asking.push_back(frame),
+                    ServerFrame::ConfirmCancel { id } => {
+                        if let Some(i) = asking.iter().position(|r| matches!(r, ServerFrame::Confirm { id: i, .. } if *i == id)) {
                             asking.remove(i);
                             if i == 0 && asked { asked = false; println!("  (the agent withdrew its request)"); }
                         }
                     }
-                    Some("paired") => println!("An agent is connected. Only it can use this code; restart for a new one."),
-                    Some("error") => println!("relay error: {}", v["error"]),
-                    _ => {}
+                    ServerFrame::Paired => println!("An agent is connected. Only it can use this code; restart for a new one."),
+                    ServerFrame::Error { error } => println!("relay error: {error}"),
+                    ServerFrame::Hello { .. } => {}
                 }
             }
             Ok(Message::Close(_)) => { println!("The relay closed the session."); return Ok(()); }
@@ -351,19 +350,18 @@ pub fn run(server: &str, share: bool, test_synth: bool, private_ports: &[String]
 
 /// Send an accepted batch, spaced by its `gap_ms`, then tell the server.
 fn answer(ws: &mut WebSocket<MaybeTlsStream<TcpStream>>, ports: &mut Ports, incoming: &Sender<(String, Vec<u8>)>,
-          synth: &mut Option<TestSynth>, req: &Value, accepted: bool) -> Result<()> {
+          synth: &mut Option<TestSynth>, req: &ServerFrame, accepted: bool) -> Result<()> {
+    let ServerFrame::Confirm { id, port, messages, gap_ms, .. } = req else { return Ok(()) };
     if accepted {
-        let port = req["port"].as_str().unwrap_or("");
-        let gap = Duration::from_millis(req["gap_ms"].as_u64().unwrap_or(0).min(2000));
-        let messages = req["messages"].as_array().cloned().unwrap_or_default();
+        let gap = Duration::from_millis((*gap_ms).min(2000));
         for (i, m) in messages.iter().enumerate() {
             if i > 0 { std::thread::sleep(gap); }
-            deliver(ports, incoming, synth, port, &bytes_of(m));
+            deliver(ports, incoming, synth, port, m);
         }
     } else {
         println!("  x  refused: nothing sent");
     }
-    ws.send(Message::Text(json!({ "type": "confirm_reply", "id": req["id"], "accepted": accepted }).to_string().into()))?;
+    ws.send(Message::Text(confirm_reply_frame(id, accepted).to_string().into()))?;
     Ok(())
 }
 
