@@ -29,7 +29,7 @@ Each crate's role and refusals live in its `CADRE.md`, what crosses its edges in
 1. **The core performs no I/O.** `synth-core` turns messages into MIDI or OSC messages and back, keeps a session per device (script state, dynamic routes), and returns its faults; ports, sockets and clocks are given to it. Reason: the same core runs in this application, on the service, in the browser, in virtual devices and plugins, as `quinn-proto` runs under any transport.
 2. **A device is compiled once.** A resolved descriptor becomes a compiled device whose value encodings, checksums and address templates are parsed when it loads; a template naming an unknown capture is a load fault. Reason: no step re-parses strings while playing, a descriptor that cannot be read is refused at load, and a part that cannot be built is reported at load and refused when used, never in silence mid-performance.
 3. **The wire is a transport.** MIDI 1, MIDI 2 (UMP) and OSC are adapters of `synth-io` around the same core messages. Reason: a device's description says what it understands, not how the cable carries it.
-4. **One contract with the service.** The service API, the relay protocol and the installation's identity are the types of `synthhub-protocol`, used on both sides. Reason: an installed copy keeps working with the service, and no side re-writes the other's contract.
+4. **One contract with the service.** The service API, the relay protocol and the installation's identity are the types of `synthhub-protocol`, used on both sides. Reason: both sides read the same contract, and no side re-writes the other's.
 
 ## 3. Components
 
@@ -103,7 +103,7 @@ sequenceDiagram
 
 - **Live play**: a bench measures the core's delay from message to bytes; budget under 1 ms per message.
 - **One test surface**: the session is tested through its interface with the shared cases (driver, inputs, expected outputs), never by opening a module's inside.
-- **Compatibility**: requests recorded from published clients replay against the service's types.
+- **Compatibility**: a published surface has one form; an installed copy too old for the service gets an explicit error that asks to install the current version.
 
 ## 9. Risks
 

@@ -22,7 +22,7 @@ In this order:
 2. **What already exists?** A standard, an off-the-shelf tool, a proven crate, a convention of the neighbouring projects is taken as is.
 3. **Does the domain require it?** In this order of priority:
    - **safety**: a message that may overwrite a device's memory waits for the person's consent;
-   - **compatibility**: a valid descriptor stays readable by later versions, and an installed copy keeps working with the service;
+   - **compatibility**: a valid descriptor stays readable by later versions, and an installed copy too old for the service gets an explicit error that asks to install the current version;
    - **live play**: the delay the core adds is measured, under 1 ms per message excluding MIDI;
    - **credit**: every driver, sound and export carries its sources and their licence.
    A choice that weakens them is measured and stated.
