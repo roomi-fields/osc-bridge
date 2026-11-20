@@ -94,9 +94,9 @@ fn a_driver_naming_a_profile_is_completed_by_osd_from_the_catalogue_folder() {
     let dev = load(Path::new(FIXTURES).join("acme/box.vendor.fw-2.json")).unwrap();
     let id = dev.identity.as_ref().unwrap();
     assert_eq!(id.profile.as_deref(), Some("acme"));
-    assert_eq!(id.reply.as_ref().map(Vec::len), Some(10), "the reply of the profile");
+    assert_eq!(osc_bridge::device::kept_list(&id.reply).len(), 10, "the reply of the profile");
     assert_eq!(id.firmware.as_ref().and_then(|f| f.as_ref()).map(|f| f.decode.as_str()), Some("raw_bytes"));
-    assert_eq!(id.family.as_deref(), Some(&[1u8, 0][..]), "the model's own bytes");
+    assert_eq!(osc_bridge::device::kept_list(&id.family), &[1u8, 0][..], "the model's own bytes");
 }
 
 #[test]
@@ -170,9 +170,9 @@ fn the_signs_a_device_gives_of_itself_are_kept_as_written() {
     let root = catalogue(&[("acme/pad.json", &recognised_by_signs())]);
     let dev = load(root.path().join("acme/pad.json")).unwrap();
     let id: &osd::Identity = dev.identity.as_ref().unwrap();
-    let usb = id.usb.as_ref().unwrap();
+    let usb = osc_bridge::device::kept(&id.usb).unwrap();
     assert_eq!(usb.iter().map(|u| (u.vendor_id, u.product_id)).collect::<Vec<_>>(), [(4661, 22136), (1, 2)]);
-    let sends = id.sends.as_ref().unwrap();
+    let sends = osc_bridge::device::kept(&id.sends).unwrap();
     assert_eq!((sends.active_sensing, sends.clock, sends.note_off), (Some(true), Some(false), Some(osd::NoteOff::NoteOnVelocity0)));
 }
 
@@ -181,9 +181,10 @@ fn a_profile_brings_the_signs_and_the_driver_keeps_its_own() {
     let profile = format!(r#"{{"$schema":"{P05}","identity":{{"usb":[{{"vendor_id":9,"product_id":9}}],"sends":{{"clock":true}}}}}}"#);
     let own = device05("Pad", "/pad", r#","identity":{"profile":"acme","ports":["Pad"],"sends":{"active_sensing":true}}"#);
     let root = catalogue(&[("acme/_profile.json", &profile), ("acme/pad.json", &own)]);
-    let id = load(root.path().join("acme/pad.json")).unwrap().identity.unwrap();
-    assert_eq!(id.usb.as_ref().map(|u| (u[0].vendor_id, u[0].product_id)), Some((9, 9)), "from the profile");
-    assert_eq!(id.sends.as_ref().and_then(|s| s.active_sensing), Some(true), "its own, in place of the profile's");
+    let dev = load(root.path().join("acme/pad.json")).unwrap();
+    let id = dev.identity.as_ref().unwrap();
+    assert_eq!(osc_bridge::device::kept(&id.usb).map(|u| (u[0].vendor_id, u[0].product_id)), Some((9, 9)), "from the profile");
+    assert_eq!(osc_bridge::device::kept(&id.sends).and_then(|s| s.active_sensing), Some(true), "its own, in place of the profile's");
 }
 
 #[test]
@@ -379,5 +380,5 @@ fn what_agents_are_served_for_a_driver_is_the_same_in_0_5_as_in_0_4() {
     let lc = entry("novation/launch-control-xl-3");
     assert_eq!((lc.slug.as_str(), lc.name.as_str(), lc.tier.as_str()), ("lcxl3", "Launch Control XL 3", "vendor-doc"));
     let boxed = entry("acme/box.vendor.fw-2");
-    assert_eq!(boxed.identity.as_ref().map(|i: &osd::Identity| i.family.clone()), Some(Some(vec![1, 0])), "the profile applied");
+    assert_eq!(boxed.identity.as_ref().map(|i: &osd::Identity| i.family.clone()), Some(Some(Some(vec![1, 0]))), "the profile applied");
 }

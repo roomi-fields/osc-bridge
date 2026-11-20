@@ -189,6 +189,18 @@ pub fn faults(dev: &Device) -> Vec<DeviceFault> {
         .into_iter().collect()
 }
 
+/// The value a block key holds once resolved: `osd` reads an optional key of
+/// `identity` or `programs` as absent, `null` (a key of the maker profile
+/// dropped) or a value; the engine uses a value, so absent and `null` are one.
+pub fn kept<T>(key: &Option<Option<T>>) -> Option<&T> {
+    key.as_ref().and_then(Option::as_ref)
+}
+
+/// `kept` for a key that holds a list, read as a slice.
+pub fn kept_list<T>(key: &Option<Option<Vec<T>>>) -> &[T] {
+    kept(key).map_or(&[], Vec::as_slice)
+}
+
 /// The checksums the engine cannot compute, as `(place, problem)`: the place
 /// is the OSC address of a command or parameter, or the block (`programs`,
 /// `identity.request`). Nothing refuses a driver for them; `lint` and
@@ -209,13 +221,20 @@ pub fn checksum_problems(dev: &Device) -> Vec<(String, String)> {
         add(set, pt.set_frame.as_deref().unwrap_or_default(), head);
         add(full_osc_path(dev, "/param/get"), pt.get_frame.as_deref().unwrap_or_default(), head);
     }
-    if let Some(req) = dev.identity.as_ref().and_then(|i| i.request.as_ref()) { add("identity.request".into(), req, 0); }
+    if let Some(req) = dev.identity.as_ref().and_then(|i| kept(&i.request)) { add("identity.request".into(), req, 0); }
     if let Some(p) = &dev.programs {
-        for f in p.before.iter().chain(&p.after).flatten().chain(p.dump.iter().filter_map(|d| d.request.as_ref())) {
+        for f in program_frames(p) {
             add("programs".into(), f, 0);
         }
     }
     out
+}
+
+/// The frames a `programs` block sends: `before`, `after` and the dump request.
+pub fn program_frames(p: &osd::Programs) -> impl Iterator<Item = &Vec<FrameToken>> {
+    kept_list(&p.before).iter()
+        .chain(kept_list(&p.after))
+        .chain(kept(&p.dump).and_then(|d| d.request.as_ref()))
 }
 
 /// Refuse an `identity` or `programs` block the engine could not use: what
@@ -236,22 +255,22 @@ pub fn check_blocks(dev: &Device) -> Result<()> {
     let uses_family = |frame: &[FrameToken]| has(frame, |p| matches!(p, FramePart::Identity { part: IdentityPart::Family, .. }));
     let uses_member = |frame: &[FrameToken]| has(frame, |p| matches!(p, FramePart::Identity { part: IdentityPart::Member, .. }));
     if let Some(id) = &dev.identity {
-        let ports = id.ports.as_ref().is_some_and(|p| !p.is_empty());
-        if id.to == Some(osd::IdentityTo::NamedPorts) && !ports {
+        let ports = !kept_list(&id.ports).is_empty();
+        if kept(&id.to) == Some(&osd::IdentityTo::NamedPorts) && !ports {
             bail!("identity.to named_ports needs ports");
         }
-        if let Some(req) = &id.request {
+        if let Some(req) = kept(&id.request) {
             if req.first() != Some(&FrameToken::Byte(0xF0)) || req.last() != Some(&FrameToken::Byte(0xF7)) {
                 bail!("identity.request runs from F0 to F7");
             }
             if let Some(n) = names(req).into_iter().next() {
                 bail!("identity.request names the argument {n}: only device_id, identity and checksum elements");
             }
-            if uses_dev(req) && id.device_id.is_none() {
+            if uses_dev(req) && kept(&id.device_id).is_none() {
                 bail!("identity.request holds {{\"device_id\": true}}: give identity.device_id");
             }
         }
-        if let Some(Some(fw)) = &id.firmware {
+        if let Some(fw) = kept(&id.firmware) {
             if fw.decode != "lua" {
                 let want = match fw.decode.as_str() {
                     "korg_minor_major" => Some(4),
@@ -262,16 +281,16 @@ pub fn check_blocks(dev: &Device) -> Result<()> {
                     bail!("identity.firmware.at: wrong number of offsets for {}", fw.decode);
                 }
             }
-            if id.reply.as_ref().is_none_or(Vec::is_empty) && id.script.is_none() {
+            if kept_list(&id.reply).is_empty() && kept(&id.script).is_none() {
                 bail!("identity.firmware without a reply");
             }
         }
-        if id.reply.as_ref().is_none_or(Vec::is_empty) && id.script.is_none() && !ports {
+        if kept_list(&id.reply).is_empty() && kept(&id.script).is_none() && !ports {
             bail!("identity: a reply, a script or ports");
         }
-        let frames: Vec<FrameToken> = id.reply.iter().flatten().chain(id.request.iter().flatten()).cloned().collect();
-        let family_empty = id.family.as_ref().is_none_or(Vec::is_empty);
-        let member_empty = id.member.as_ref().is_none_or(Vec::is_empty);
+        let frames: Vec<FrameToken> = kept_list(&id.reply).iter().chain(kept_list(&id.request)).cloned().collect();
+        let family_empty = kept_list(&id.family).is_empty();
+        let member_empty = kept_list(&id.member).is_empty();
         if uses_family(&frames) && family_empty {
             bail!("identity names the family: give identity.family");
         }
@@ -280,30 +299,29 @@ pub fn check_blocks(dev: &Device) -> Result<()> {
         }
     }
     if let Some(p) = &dev.programs {
-        let frames = p.before.iter().chain(&p.after).flatten().chain(p.dump.iter().filter_map(|d| d.request.as_ref()));
         let identity = dev.identity.as_ref();
-        for f in frames {
-            if uses_dev(f) && identity.and_then(|i| i.device_id.as_ref()).is_none() {
+        for f in program_frames(p) {
+            if uses_dev(f) && identity.and_then(|i| kept(&i.device_id)).is_none() {
                 bail!("programs: a frame holds {{\"device_id\": true}}: give identity.device_id");
             }
-            if uses_family(f) && identity.is_none_or(|i| i.family.as_ref().is_none_or(Vec::is_empty)) {
+            if uses_family(f) && identity.is_none_or(|i| kept_list(&i.family).is_empty()) {
                 bail!("programs: a frame names the family: give identity.family");
             }
             if let Some(n) = names(f).into_iter().find(|n| !crate::programs::PLACEHOLDERS.contains(&n.as_str())) {
                 bail!("programs: a frame names the argument {n}: one of {:?}", crate::programs::PLACEHOLDERS);
             }
         }
-        let program_change = p.program_change.unwrap_or(true);
-        let no_message = p.before.as_ref().is_none_or(Vec::is_empty) && p.after.as_ref().is_none_or(Vec::is_empty);
-        if !program_change && no_message && p.recall_script.is_none() {
+        let program_change = kept(&p.program_change).copied().unwrap_or(true);
+        let no_message = kept_list(&p.before).is_empty() && kept_list(&p.after).is_empty();
+        if !program_change && no_message && kept(&p.recall_script).is_none() {
             bail!("programs: no program change and no message to recall");
         }
         let mut seen = std::collections::HashSet::new();
-        for b in p.banks.iter().flatten() {
+        for b in kept_list(&p.banks) {
             if !seen.insert(b.name.as_str()) {
                 bail!("programs: bank {:?} twice", b.name);
             }
-            if program_change && p.recall_script.is_none() && b.first_pc.unwrap_or(0) as i64 + b.size > 128 {
+            if program_change && kept(&p.recall_script).is_none() && b.first_pc.unwrap_or(0) as i64 + b.size > 128 {
                 bail!("programs: bank {:?} runs past program change 127", b.name);
             }
         }

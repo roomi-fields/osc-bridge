@@ -62,7 +62,7 @@ fn a_driver_sharing_another_files_midi_is_downloaded_with_that_file_and_its_prof
     let dev = osc_bridge::device::load(&path).unwrap();
     assert_eq!(dev.device.osc_prefix, "/fork");
     assert_eq!(dev.commands.as_ref().map(Vec::len), Some(1), "the shared routes came with it");
-    assert_eq!(dev.identity.unwrap().family, Some(vec![1]), "and the profile of the shared file");
+    assert_eq!(dev.identity.unwrap().family, Some(Some(vec![1])), "and the profile of the shared file");
 }
 
 #[test]
@@ -81,7 +81,7 @@ fn profiles_that_name_profiles_are_followed_as_osd_resolves_them() {
     }
     let dev = osc_bridge::device::load(cache.join("acme/box.json")).unwrap();
     let id = dev.identity.unwrap();
-    assert_eq!((id.family, id.member), (Some(vec![2]), Some(vec![3])));
+    assert_eq!((id.family.clone(), id.member.clone()), (Some(Some(vec![2])), Some(Some(vec![3]))));
 }
 
 #[test]
@@ -192,7 +192,7 @@ fn files_already_kept_are_downloaded_again_only_when_the_servers_copy_changed() 
     assert_eq!(status("acme/_profile.json"), 200, "the changed copy is downloaded again");
     assert_eq!(json_requests.len(), 3, "each file once: {json_requests:?}");
     let dev = osc_bridge::device::load(cache.join("acme/fork.json")).unwrap();
-    assert_eq!(dev.identity.unwrap().family, Some(vec![9]), "the cache holds the new profile");
+    assert_eq!(dev.identity.unwrap().family, Some(Some(vec![9])), "the cache holds the new profile");
 }
 
 #[test]

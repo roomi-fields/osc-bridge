@@ -11,6 +11,15 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Fixed — the OSCQuery export keeps a command whose address takes a number
+- `osd` and `osd-formats` are pinned to commit `9fd94ec` of Open Synth Descriptors
+  (was `bc6afe9`). The OSCQuery export of a 0.5 descriptor no longer drops the
+  commands with a number captured in their address ("volume of track 3"): for
+  `ableton/live.third-party-osc.fw-12.2` it writes its numbered commands instead
+  of 12 nodes out of 20. The same bump lets a descriptor drop a key its maker
+  profile gives (`null`, OSD-b91.8) and lets osc-bridge read it; nothing changes in
+  what osc-bridge publishes.
+
 ## [0.23.0] — 2026-11-20
 
 ### Added — an export put on a recognised device in one gesture

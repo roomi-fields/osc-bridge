@@ -102,7 +102,7 @@ fn device_routes(ns: &mut Value, d: &Device) {
         let path = p(rel);
         put(ns, &path, method(&path, access, args, required, primary, what));
     };
-    let banks_of = |pr: &osd::Programs| pr.banks.clone().unwrap_or_default();
+    let banks_of = |pr: &osd::Programs| crate::device::kept_list(&pr.banks).to_vec();
     if let Some(pr) = d.programs.as_ref().filter(|pr| !banks_of(pr).is_empty()) {
         let all = banks_of(pr);
         let first = |b: &osd::Bank| b.first_number.unwrap_or(1);
@@ -110,13 +110,13 @@ fn device_routes(ns: &mut Value, d: &Device) {
         let lo = all.iter().map(first).min().unwrap_or(0);
         let hi = all.iter().map(|b| first(b) + b.size - 1).max().unwrap_or(0);
         let banks: Vec<String> = all.iter().map(|b| format!("{} {}-{}", b.name, first(b), first(b) + b.size - 1)).collect();
-        let selects = pr.selects.as_deref().unwrap_or("program");
+        let selects = crate::device::kept(&pr.selects).map_or("program", String::as_str);
         add(ns, crate::programs::RECALL, 2,
             vec![Arg { tag: "s", name: "bank", range: json!({ "VALS": names }) }, int("number", lo, hi), channel()], 2, 2,
             &format!("Recalls a stored {selects} by bank (its name, or its place from 0) and number: {}.", banks.join(", ")));
     }
-    if let Some(dump) = d.programs.as_ref().and_then(|pr| pr.dump.as_ref()).filter(|x| x.request.is_some() || x.script.is_some()) {
-        let names: Vec<&str> = d.programs.iter().flat_map(|pr| pr.banks.iter().flatten()).map(|b| b.name.as_str()).collect();
+    if let Some(dump) = d.programs.as_ref().and_then(|pr| crate::device::kept(&pr.dump)).filter(|x| x.request.is_some() || x.script.is_some()) {
+        let names: Vec<&str> = d.programs.iter().flat_map(|pr| crate::device::kept_list(&pr.banks)).map(|b| b.name.as_str()).collect();
         let (args, what) = if dump.kind == osd::DumpKind::EditBuffer || names.is_empty() {
             (vec![channel()], "Asks the device for the sound it plays (recall the stored one first).")
         } else {
@@ -128,7 +128,7 @@ fn device_routes(ns: &mut Value, d: &Device) {
     }
     add(ns, crate::programs::IDENTITY, 2, vec![], 0, 0,
         "Sends the request the device answers with its identity (the Universal Identity Request unless its driver names another).");
-    if d.identity.as_ref().is_some_and(|i| i.reply.as_ref().is_some_and(|r| !r.is_empty()) || i.script.is_some()) {
+    if d.identity.as_ref().is_some_and(|i| !crate::device::kept_list(&i.reply).is_empty() || crate::device::kept(&i.script).is_some()) {
         add(ns, crate::programs::IDENTITY_REPLY, 1, vec![text("firmware"), text("hex")], 2, 2,
             "Sent by the bridge: the device's identity reply, with the firmware version read from it.");
     }

@@ -12,7 +12,7 @@
 //! - `/<prefix>/identity` sends the request the device answers; its reply
 //!   comes back as `/<prefix>/identity/reply <firmware> <hex>`.
 
-use crate::device::full_osc_path;
+use crate::device::{full_osc_path, kept, kept_list};
 use crate::frame::{build_message, expand_identity, Bindings};
 use osd::{Bank, Device, FrameToken, Programs};
 use rosc::{OscMessage, OscType};
@@ -29,7 +29,7 @@ pub const IDENTITY_REPLY: &str = "/identity/reply";
 
 /// A bank of `p` by its name (any case) or its place in the list.
 pub fn find_bank<'a>(p: &'a Programs, bank: &str) -> Option<(usize, &'a Bank)> {
-    let banks = p.banks.as_deref().unwrap_or_default();
+    let banks = kept_list(&p.banks);
     banks.iter().enumerate().find(|(_, b)| b.name.eq_ignore_ascii_case(bank))
         .or_else(|| bank.parse::<usize>().ok().and_then(|i| banks.get(i).map(|b| (i, b))))
 }
@@ -44,7 +44,7 @@ struct Target<'a> {
 }
 
 fn target<'a>(p: &'a Programs, bank: &str, number: i64) -> Result<Target<'a>, String> {
-    let banks = p.banks.as_deref().unwrap_or_default();
+    let banks = kept_list(&p.banks);
     if banks.is_empty() {
         return Err("this driver lists no banks".into());
     }
@@ -78,7 +78,7 @@ fn bindings(dev: &Device, t: Option<&Target>, ch: u8) -> Bindings {
         bind.set_u14("index", t.index);
         bind.set_u14("number", t.number as u16);
     }
-    if let Some(d) = dev.identity.as_ref().and_then(|i| i.device_id.as_ref()).and_then(|d| d.default) {
+    if let Some(d) = dev.identity.as_ref().and_then(|i| kept(&i.device_id)).and_then(|d| d.default) {
         bind.set_u7("dev", d as u8);
     }
     bind
@@ -89,9 +89,9 @@ fn script_ctx(dev: &Device, t: Option<&Target>, ch: u8) -> serde_json::Value {
     let id = dev.identity.as_ref();
     serde_json::json!({
         "channel": ch,
-        "dev": id.and_then(|i| i.device_id.as_ref()).and_then(|d| d.default),
-        "family": id.and_then(|i| i.family.clone()).unwrap_or_default(),
-        "member": id.and_then(|i| i.member.clone()).unwrap_or_default(),
+        "dev": id.and_then(|i| kept(&i.device_id)).and_then(|d| d.default),
+        "family": id.map(|i| kept_list(&i.family)).unwrap_or_default(),
+        "member": id.map(|i| kept_list(&i.member)).unwrap_or_default(),
         "bank": t.map(|t| t.bank_index), "bank_name": t.map(|t| t.bank.name.clone()),
         "msb": t.and_then(|t| t.bank.msb), "lsb": t.and_then(|t| t.bank.lsb),
         "program": t.map(|t| t.pc), "index": t.map(|t| t.index), "number": t.map(|t| t.number),
@@ -126,17 +126,17 @@ pub fn recall(dev: &Device, bank: &str, number: i64, channel: Option<u8>) -> Res
     let p = dev.programs.as_ref().ok_or("this driver says nothing of its programs")?;
     let t = target(p, bank, number)?;
     let ch = channel_of(dev, Some(&t), channel);
-    if let Some(code) = &p.recall_script {
+    if let Some(code) = kept(&p.recall_script) {
         return run_script(code, &script_ctx(dev, Some(&t), ch));
     }
     let bind = bindings(dev, Some(&t), ch);
-    let mut out = build(dev, p.before.as_deref().unwrap_or_default(), &bind)?;
-    if p.program_change.unwrap_or(true) {
+    let mut out = build(dev, kept_list(&p.before), &bind)?;
+    if kept(&p.program_change).copied().unwrap_or(true) {
         if let Some(msb) = t.bank.msb { out.push(vec![0xB0 | ch, 0, msb & 0x7F]); }
         if let Some(lsb) = t.bank.lsb { out.push(vec![0xB0 | ch, 32, lsb & 0x7F]); }
         out.push(vec![0xC0 | ch, t.pc & 0x7F]);
     }
-    out.extend(build(dev, p.after.as_deref().unwrap_or_default(), &bind)?);
+    out.extend(build(dev, kept_list(&p.after), &bind)?);
     Ok(out)
 }
 
@@ -144,7 +144,7 @@ pub fn recall(dev: &Device, bank: &str, number: i64, channel: Option<u8>) -> Res
 /// given (a request naming the stored program), else of the edit buffer.
 pub fn dump(dev: &Device, program: Option<(&str, i64)>, channel: Option<u8>) -> Result<Vec<Vec<u8>>, String> {
     let p = dev.programs.as_ref().ok_or("this driver says nothing of its programs")?;
-    let d = p.dump.as_ref().ok_or("this driver does not say how a sound is read back")?;
+    let d = kept(&p.dump).ok_or("this driver does not say how a sound is read back")?;
     let t = program.map(|(b, n)| target(p, b, n)).transpose()?;
     let ch = channel_of(dev, t.as_ref(), channel);
     if let Some(code) = &d.script {
@@ -175,7 +175,7 @@ impl Clock for SystemClock {
 
 /// The pause `programs.delay_ms` declares between two messages; none when absent or 0.
 fn pause_of(dev: &Device) -> Option<Duration> {
-    dev.programs.as_ref()?.delay_ms.filter(|d| *d > 0).map(|d| Duration::from_millis(d as u64))
+    kept(&dev.programs.as_ref()?.delay_ms).copied().filter(|d| *d > 0).map(|d| Duration::from_millis(d as u64))
 }
 
 /// `recall`, the declared pause (`delay_ms`) asked of `clock` between two
@@ -194,7 +194,7 @@ pub fn recall_paced(dev: &Device, bank: &str, number: i64, channel: Option<u8>, 
 /// once for the sequence. A driver stating none waits nothing.
 pub fn dump_paced(dev: &Device, program: Option<(&str, i64)>, channel: Option<u8>, clock: &mut dyn Clock) -> Result<Vec<Vec<u8>>, String> {
     let out = dump(dev, program, channel)?;
-    let timeout = dev.programs.as_ref().and_then(|p| p.dump.as_ref()).and_then(|d| d.reply_timeout_ms).filter(|t| *t > 0);
+    let timeout = dev.programs.as_ref().and_then(|p| kept(&p.dump)).and_then(|d| d.reply_timeout_ms).filter(|t| *t > 0);
     if let Some(t) = timeout {
         clock.sleep(Duration::from_millis(t as u64));
     }

@@ -77,7 +77,7 @@ pub fn install(
 /// The output port that is the target's: a port name that holds one of the
 /// names the descriptor gives it for its ports, or else its own name.
 fn port_of(target: &Device, outputs: &[String]) -> Option<String> {
-    let named = target.identity.as_ref().and_then(|i| i.ports.clone()).filter(|p| !p.is_empty());
+    let named = target.identity.as_ref().and_then(|i| crate::device::kept(&i.ports).cloned()).filter(|p| !p.is_empty());
     let patterns = named.unwrap_or_else(|| vec![target.device.name.clone()]);
     outputs.iter().find(|p| crate::detect::port_matches(&patterns, p)).cloned()
 }

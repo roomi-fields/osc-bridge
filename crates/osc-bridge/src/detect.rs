@@ -11,6 +11,7 @@
 //! "who are you?" every editor sends on connection.
 
 use anyhow::{anyhow, Result};
+use crate::device::{kept, kept_list};
 use osd::{FirmwareRule, FrameToken};
 use midir::{Ignore, MidiInput, MidiInputConnection, MidiOutput};
 use std::collections::HashSet;
@@ -138,8 +139,8 @@ impl Probe {
 /// The request `id` names, its `{dev}` set to the device-id rule's default;
 /// None for the Universal Identity Request, which every scan sends.
 pub fn probe_of(id: &osd::Identity) -> Result<Option<Probe>> {
-    let Some(tokens) = &id.request else { return Ok(None) };
-    let dev = id.device_id.as_ref().and_then(|d| d.default).unwrap_or(0x7F) as u8;
+    let Some(tokens) = kept(&id.request) else { return Ok(None) };
+    let dev = kept(&id.device_id).and_then(|d| d.default).unwrap_or(0x7F) as u8;
     let mut bind = crate::frame::Bindings::new();
     bind.set_u7("dev", dev);
     let bytes = crate::frame::build_message(&crate::frame::expand_identity(id, tokens), &bind)
@@ -147,7 +148,7 @@ pub fn probe_of(id: &osd::Identity) -> Result<Option<Probe>> {
     if bytes == IDENTITY_REQUEST {
         return Ok(None);
     }
-    let ports = if id.to == Some(osd::IdentityTo::NamedPorts) { id.ports.clone().unwrap_or_default() } else { vec![] };
+    let ports = if kept(&id.to) == Some(&osd::IdentityTo::NamedPorts) { kept_list(&id.ports).to_vec() } else { vec![] };
     Ok(Some(Probe { request: bytes, ports }))
 }
 
@@ -197,13 +198,13 @@ pub struct Recognised {
 
 /// Whether `id` recognises the device on `port` that sent `replies`.
 pub fn recognise(id: &osd::Identity, port: &str, replies: &[Vec<u8>]) -> Option<Recognised> {
-    let read: Vec<Vec<u8>> = match id.unpack {
+    let read: Vec<Vec<u8>> = match kept(&id.unpack) {
         Some(_) => replies.iter().map(|r| unpack_lsb_8to7(r)).collect(),
         None => replies.to_vec(),
     };
-    let reply = id.reply.as_deref().unwrap_or_default();
-    let ports = id.ports.as_deref().unwrap_or_default();
-    let matching = (!reply.is_empty() || id.script.is_some()).then(|| read.iter().find(|r| reply_matches(id, r))).flatten();
+    let reply = kept_list(&id.reply);
+    let ports = kept_list(&id.ports);
+    let matching = (!reply.is_empty() || kept(&id.script).is_some()).then(|| read.iter().find(|r| reply_matches(id, r))).flatten();
     let by_port = !ports.is_empty() && port_matches(ports, port);
     if matching.is_none() && !by_port {
         return None;
@@ -212,7 +213,7 @@ pub fn recognise(id: &osd::Identity, port: &str, replies: &[Vec<u8>]) -> Option<
         by_reply: matching.is_some(),
         by_port,
         own_request: matching.is_some() && probe_of(id).ok().flatten().is_some(),
-        firmware: matching.and_then(|r| id.firmware.as_ref().and_then(|f| f.as_ref()).and_then(|f| decode_firmware(f, r))),
+        firmware: matching.and_then(|r| kept(&id.firmware).and_then(|f| decode_firmware(f, r))),
     })
 }
 
@@ -235,17 +236,17 @@ pub fn unpack_lsb_8to7(msg: &[u8]) -> Vec<u8> {
 }
 
 fn reply_matches(id: &osd::Identity, reply: &[u8]) -> bool {
-    let pattern = crate::frame::expand_identity(id, id.reply.as_deref().unwrap_or_default());
+    let pattern = crate::frame::expand_identity(id, kept_list(&id.reply));
     reply.len() >= pattern.len()
         && pattern.iter().zip(reply).all(|(t, b)| match t {
             FrameToken::Byte(l) => l == b,
             // `any`, `device_id`, a 0.4 `{placeholder}`: one byte, whatever it is.
             _ => true,
         })
-        && id.reply_text.as_deref().is_none_or(|text| {
+        && kept(&id.reply_text).is_none_or(|text| {
             !text.is_empty() && reply.windows(text.len()).any(|w| w == text.as_bytes())
         })
-        && id.script.as_deref().is_none_or(|code| {
+        && kept(&id.script).is_none_or(|code| {
             matches!(run_lua(code, reply), Some(serde_json::Value::Bool(true)))
         })
 }

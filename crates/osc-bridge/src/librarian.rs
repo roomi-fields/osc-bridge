@@ -136,7 +136,7 @@ pub fn send_messages(out_port: &str, messages: &[Vec<u8>], gap: Duration) -> Res
 pub fn restore_to_device(dev: &osd::Device, out_port: &str, file: &Path, target: Option<(&str, i64)>) -> Result<usize> {
     let msgs = read_syx(file)?;
     let channel = dev.midi_out.as_ref().and_then(|m| m.default_channel).unwrap_or(0) & 0x0F;
-    let number = dev.identity.as_ref().and_then(|i| i.device_id.as_ref()).and_then(|d| d.default).map(|d| d as u8);
+    let number = dev.identity.as_ref().and_then(|i| crate::device::kept(&i.device_id)).and_then(|d| d.default).map(|d| d as u8);
     if let Some((bank, n)) = target {
         crate::programs::store(dev, bank, n, Some(channel)).map_err(|e| anyhow!(e))?;
     }

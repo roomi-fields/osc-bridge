@@ -2031,13 +2031,13 @@ fn list_routes(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
         "profile": dev.identity.as_ref().and_then(|i| i.profile.clone()),
     }));
     let programs = dev.programs.as_ref().map(|p| json!({
-        "address": p.banks.as_ref().is_some_and(|b| !b.is_empty()).then(|| format!("{prefix}{} <bank> <number> [channel]", crate::programs::RECALL)),
-        "dump_address": p.dump.as_ref().filter(|d| d.request.is_some() || d.script.is_some())
+        "address": (!crate::device::kept_list(&p.banks).is_empty()).then(|| format!("{prefix}{} <bank> <number> [channel]", crate::programs::RECALL)),
+        "dump_address": crate::device::kept(&p.dump).filter(|d| d.request.is_some() || d.script.is_some())
             .map(|_| format!("{prefix}{} [<bank> <number>] [channel]", crate::programs::DUMP)),
-        "selects": p.selects,
-        "banks": p.banks.iter().flatten().map(bank_json).collect::<Vec<_>>(),
-        "requires": p.requires.clone().unwrap_or_default(),
-        "dump": p.dump.as_ref().map(|d| crate::device::dump_kind_name(d.kind)),
+        "selects": crate::device::kept(&p.selects),
+        "banks": crate::device::kept_list(&p.banks).iter().map(bank_json).collect::<Vec<_>>(),
+        "requires": crate::device::kept_list(&p.requires),
+        "dump": crate::device::kept(&p.dump).map(|d| crate::device::dump_kind_name(d.kind)),
     }));
     let payload = json!({
         "device": dev.device.name,

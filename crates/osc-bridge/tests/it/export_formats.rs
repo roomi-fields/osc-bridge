@@ -63,6 +63,26 @@ fn a_format_osd_formats_adds_is_exported_without_a_case_of_its_own() {
     }
 }
 
+#[test]
+fn the_oscquery_export_writes_a_command_whose_address_takes_a_number_captured() {
+    let dev = source(&format!(
+        r#","commands":[{{"osc":["/box/track/",{{"capture":"n"}},"/volume"],"args":[{{"name":"n","type":"int","range":[1,8]}},{{"name":"value","type":"float","range":[0,1]}}]}}]{CREDIT}"#
+    ));
+    let out = export(&dev, "oscquery".parse().unwrap()).unwrap();
+    assert!(out.value.contains("volume"), "the numbered command is in the namespace: {}", out.value);
+    assert!(out.value.contains("track"), "{}", out.value);
+}
+
+#[test]
+fn the_oscquery_export_keeps_a_plain_command_beside_a_numbered_one() {
+    let dev = source(&format!(
+        r#","commands":[{{"osc":"/box/play","args":[]}},{{"osc":["/box/track/",{{"capture":"n"}},"/mute"],"args":[{{"name":"n","type":"int","range":[1,8]}}]}}]{CREDIT}"#
+    ));
+    let out = export(&dev, "oscquery".parse().unwrap()).unwrap();
+    assert!(out.value.contains("play"), "{}", out.value);
+    assert!(out.value.contains("mute"), "{}", out.value);
+}
+
 // ---- the tool ------------------------------------------------------------------------------
 
 fn call(root: &tempfile::TempDir, tool: &str, args: Value) -> Value {

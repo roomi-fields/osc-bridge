@@ -209,10 +209,9 @@ pub fn expand_identity(identity: &osd::Identity, tokens: &[FrameToken]) -> Vec<F
     for t in tokens {
         let FrameToken::Part(FramePart::Identity { part, index }) = t else { out.push(t.clone()); continue };
         let bytes = match part {
-            IdentityPart::Family => identity.family.as_deref(),
-            IdentityPart::Member => identity.member.as_deref(),
-        }
-        .unwrap_or_default();
+            IdentityPart::Family => crate::device::kept_list(&identity.family),
+            IdentityPart::Member => crate::device::kept_list(&identity.member),
+        };
         match index {
             Some(i) => out.extend(bytes.get(*i as usize).map(|b| FrameToken::Byte(*b))),
             None => out.extend(bytes.iter().map(|b| FrameToken::Byte(*b))),

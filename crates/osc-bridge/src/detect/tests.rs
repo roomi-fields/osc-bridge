@@ -177,7 +177,7 @@ fn a_packed_reply_is_read_once_unpacked() {
     let r = recognise(&v16, "FM-1 Midi", std::slice::from_ref(&reply)).unwrap();
     assert_eq!(r.firmware.as_deref(), Some("FM-1_016"));
     let mut v15 = v16.clone();
-    v15.reply_text = Some("FM-1_015".into());
+    v15.reply_text = Some(Some("FM-1_015".into()));
     assert!(recognise(&v15, "FM-1 Midi", &[reply]).is_none());
 }
 
@@ -186,7 +186,7 @@ fn a_maker_pattern_takes_the_models_bytes_and_lua_reads_what_no_rule_covers() {
     let id = ident(r#"{"family":[89,1],"member":[0,0],"reply":[240,126,{"device_id":true},6,2,65,{"identity":"family"},{"identity":"member"}]}"#);
     assert!(recognise(&id, "x", &[ROLAND.to_vec()]).is_some());
     let mut other = id.clone();
-    other.family = Some(vec![20, 2]);
+    other.family = Some(Some(vec![20, 2]));
     assert!(recognise(&other, "x", &[ROLAND.to_vec()]).is_none(), "another model's bytes");
     let req = ident(r#"{"request":[240,0,32,50,0,1,{"identity":"family"},8,0,247],"family":[36,0],"reply":[240]}"#);
     assert_eq!(probe_of(&req).unwrap().unwrap().request, [0xF0, 0, 0x20, 0x32, 0, 1, 0x24, 0, 8, 0, 0xF7]);
@@ -213,7 +213,7 @@ fn the_signs_a_device_gives_of_itself_do_not_change_what_recognises_it() {
     let plain = ident(r#"{"reply":[240,126,{"device_id":true},6,2,65,89,1,0,0]}"#);
     let signed = ident(r#"{"reply":[240,126,{"device_id":true},6,2,65,89,1,0,0],
         "usb":[{"vendor_id":1,"product_id":2}],"sends":{"active_sensing":true,"clock":true}}"#);
-    assert_eq!(signed.usb.as_ref().map(Vec::len), Some(1), "read and kept");
+    assert_eq!(signed.usb.as_ref().and_then(Option::as_ref).map(Vec::len), Some(1), "read and kept");
     assert_eq!(recognise(&plain, "x", &[ROLAND.to_vec()]).is_some(), recognise(&signed, "x", &[ROLAND.to_vec()]).is_some());
     assert!(recognise(&signed, "x", &[]).is_none(), "what it sends unasked is not a reply");
     assert_eq!(probe_of(&plain).unwrap(), probe_of(&signed).unwrap());
