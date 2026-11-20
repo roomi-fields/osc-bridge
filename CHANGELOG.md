@@ -11,6 +11,8 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+## [0.23.1] — 2026-11-20
+
 ### Fixed — the OSCQuery export keeps a command whose address takes a number
 - `osd` and `osd-formats` are pinned to commit `9fd94ec` of Open Synth Descriptors
   (was `bc6afe9`). The OSCQuery export of a 0.5 descriptor no longer drops the
