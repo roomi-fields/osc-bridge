@@ -206,8 +206,8 @@ pub fn checksum_problems(dev: &Device) -> Vec<(String, String)> {
     }
     if let Some(pt) = &dev.params {
         let set = pt.entries.first().map(|e| full_osc_path(dev, &e.osc)).unwrap_or_else(|| "param set".into());
-        add(set, &pt.set_frame, head);
-        add(full_osc_path(dev, "/param/get"), &pt.get_frame, head);
+        add(set, pt.set_frame.as_deref().unwrap_or_default(), head);
+        add(full_osc_path(dev, "/param/get"), pt.get_frame.as_deref().unwrap_or_default(), head);
     }
     if let Some(req) = dev.identity.as_ref().and_then(|i| i.request.as_ref()) { add("identity.request".into(), req, 0); }
     if let Some(p) = &dev.programs {

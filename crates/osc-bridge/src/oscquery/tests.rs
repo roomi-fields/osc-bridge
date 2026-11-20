@@ -10,7 +10,7 @@ fn load(id: &str) -> osd::Device {
 
 /// The namespace the export writes, as the server answers from it.
 fn namespace_of(dev: &osd::Device) -> Value {
-    serde_json::from_str(&export(dev, Format::OscQuery).unwrap().value).unwrap()
+    serde_json::from_str(&export(dev, Format(osd_formats::Format::OscQuery)).unwrap().value).unwrap()
 }
 
 /// The address of the first node that takes a value, depth first.
@@ -71,7 +71,7 @@ fn unsourced(id: &str, prefix: &str) -> osd::Device {
 #[test]
 fn a_device_without_sources_is_named_in_faults_and_serves_nothing_under_its_prefix() {
     let bare = unsourced("novation/bass_station_ii", "/bare");
-    assert!(export(&bare, Format::OscQuery).is_err(), "the export of a device without sources is refused");
+    assert!(export(&bare, Format(osd_formats::Format::OscQuery)).is_err(), "the export of a device without sources is refused");
     let served = namespace(std::slice::from_ref(&bare));
     assert_eq!(served.unserved_prefixes, vec!["/bare".to_string()]);
     assert_eq!(served.faults.len(), 1, "{:?}", served.faults);

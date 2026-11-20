@@ -29,6 +29,7 @@ pub mod online;
 pub mod connect;
 pub mod take;
 pub mod export;
+pub mod install;
 pub mod oscquery;
 pub mod bridge_routes;
 pub mod programs;

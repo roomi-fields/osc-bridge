@@ -116,14 +116,24 @@ enum Cmd {
     },
     /// Run the bridge for a given device JSON.
     Run(RunArgs),
-    /// Write a device JSON in another format on stdout: `oscquery` (its OSC
-    /// namespace, JSON) or `midnam` (its MIDI names, MIDI Name Document XML).
+    /// Write a device JSON in another format on stdout (`oscquery`, `midnam`,
+    /// `deluge`, and the others of osd-formats; an unknown name lists them).
+    /// With `--on`, put its export on a plugged device instead: the format,
+    /// the path and the way come from that device's own driver. Without
+    /// `--yes` nothing is sent and what would be written is shown.
     Export {
         /// The driver: a JSON file, or its catalogue id or slug (see `run`).
         #[arg(long)]
         device: PathBuf,
-        #[arg(long, value_parser = osc_bridge::export::FORMATS)]
-        format: String,
+        /// The format to write on stdout (not with `--on`: the target's driver gives it).
+        #[arg(long, required_unless_present = "on", conflicts_with = "on")]
+        format: Option<String>,
+        /// The device that receives the export: its driver file, catalogue id or slug.
+        #[arg(long)]
+        on: Option<PathBuf>,
+        /// With `--on`: the file may be overwritten on the target; send.
+        #[arg(long, requires = "on")]
+        yes: bool,
     },
     /// Send one OSC message to a local bridge for quick testing.
     OscSend {
@@ -244,8 +254,27 @@ fn main() -> Result<()> {
         Cmd::Detect { no_probe, devices_dir } => osc_bridge::mcp::print_detection(devices_dir.as_deref(), !no_probe),
         Cmd::Inspect { device } => cmd_inspect(device),
         Cmd::Run(args) => cmd_run(args),
-        Cmd::Export { device, format } => {
+        Cmd::Export { device, on: Some(on), yes, .. } => {
             let dev = osc_bridge::device::load(osc_bridge::catalogue::locate(&device)?)?;
+            let target = osc_bridge::device::load(osc_bridge::catalogue::locate(&on)?)?;
+            let mut midi = osc_bridge::take::Hardware::open()
+                .map_err(|e| anyhow::anyhow!("{} cannot be reached: MIDI: {e}", osc_bridge::export::device_title(&target)))?;
+            let done = osc_bridge::install::install(&dev, &target, yes, &mut midi, &mut osc_bridge::programs::SystemClock)
+                .map_err(anyhow::Error::msg)?;
+            for l in &done.lost {
+                eprintln!("not carried: {}: {}", l.place, l.reason);
+            }
+            if done.written {
+                println!("wrote {} ({} bytes, {}, by {}): {} message(s) sent", done.path, done.size, done.format, done.way, done.messages);
+            } else {
+                println!("nothing sent: it would write {} ({} bytes, {}, by {}) and may overwrite a file on the device; add --yes to send",
+                    done.path, done.size, done.format, done.way);
+            }
+            Ok(())
+        }
+        Cmd::Export { device, format, .. } => {
+            let dev = osc_bridge::device::load(osc_bridge::catalogue::locate(&device)?)?;
+            let format = format.ok_or_else(|| anyhow::anyhow!("--format is required without --on"))?;
             let out = osc_bridge::export::export(&dev, format.parse()?)?;
             for l in &out.lost {
                 eprintln!("not carried: {}: {}", l.place, l.reason);

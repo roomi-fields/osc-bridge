@@ -15,11 +15,11 @@ fn every_test_driver_is_written_in_both_formats() {
     let mut exported = 0;
     for f in &files {
         let Ok(dev) = crate::device::load(f) else { continue };
-        let Ok(ns) = export(&dev, Format::OscQuery) else { continue };
+        let Ok(ns) = export(&dev, Format(osd_formats::Format::OscQuery)) else { continue };
         let ns: serde_json::Value = serde_json::from_str(&ns.value).unwrap();
         assert_eq!(ns["FULL_PATH"], "/", "{}", f.display());
         exported += 1;
-        if let Ok(xml) = export(&dev, Format::Midnam) {
+        if let Ok(xml) = export(&dev, Format(osd_formats::Format::Midnam)) {
             roxmltree::Document::parse_with_options(&xml.value, opts)
                 .unwrap_or_else(|e| panic!("{}: MIDNAM not well-formed: {e}", f.display()));
             midnams += 1;
@@ -31,13 +31,13 @@ fn every_test_driver_is_written_in_both_formats() {
 
 #[test]
 fn formats_are_read_by_name() {
-    assert_eq!("OSCQuery".parse::<Format>().unwrap(), Format::OscQuery);
-    assert_eq!("midnam".parse::<Format>().unwrap(), Format::Midnam);
+    assert_eq!("OSCQuery".parse::<Format>().unwrap(), Format(osd_formats::Format::OscQuery));
+    assert_eq!("midnam".parse::<Format>().unwrap(), Format(osd_formats::Format::Midnam));
     assert!("ctrlr".parse::<Format>().is_err());
 }
 
 #[test]
 fn a_format_gives_its_media_type_and_extension() {
-    assert_eq!((Format::OscQuery.media_type(), Format::OscQuery.extension()), ("application/json", "json"));
-    assert_eq!((Format::Midnam.media_type(), Format::Midnam.extension()), ("application/xml", "midnam"));
+    assert_eq!((Format(osd_formats::Format::OscQuery).media_type(), Format(osd_formats::Format::OscQuery).extension()), ("application/json", "json"));
+    assert_eq!((Format(osd_formats::Format::Midnam).media_type(), Format(osd_formats::Format::Midnam).extension()), ("application/xml", "midnam"));
 }

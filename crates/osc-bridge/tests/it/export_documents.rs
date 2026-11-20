@@ -4,6 +4,9 @@
 //! docs/EXPORT.md.
 
 use osc_bridge::export::{export, Format};
+
+const OSCQUERY: Format = Format(osd_formats::Format::OscQuery);
+const MIDNAM: Format = Format(osd_formats::Format::Midnam);
 use serde_json::Value;
 use std::collections::BTreeSet;
 
@@ -93,31 +96,31 @@ fn assert_keeps(id: &str, format: Format, ext: &str) {
 
 #[test]
 fn an_oscquery_document_keeps_every_node_the_reference_has() {
-    assert_keeps("acme/box.vendor.fw-2", Format::OscQuery, "oscquery");
+    assert_keeps("acme/box.vendor.fw-2", OSCQUERY, "oscquery");
 }
 
 #[test]
 fn a_midnam_document_keeps_its_controls_values_and_banks() {
-    assert_keeps("acme/box.vendor.fw-2", Format::Midnam, "midnam");
-    assert_keeps("arturia/microfreak.vendor.fw-microfreak-tools-0.1.0", Format::Midnam, "midnam");
+    assert_keeps("acme/box.vendor.fw-2", MIDNAM, "midnam");
+    assert_keeps("arturia/microfreak.vendor.fw-microfreak-tools-0.1.0", MIDNAM, "midnam");
 }
 
 #[test]
 fn a_midnam_document_keeps_the_notes_a_drum_machine_names() {
-    assert_keeps("elektron/model_samples", Format::Midnam, "midnam");
+    assert_keeps("elektron/model_samples", MIDNAM, "midnam");
 }
 
 #[test]
 fn both_documents_carry_the_credit_and_licence_of_the_sources() {
     let acme = load("acme/box.vendor.fw-2");
-    let ns: Value = serde_json::from_str(&export(&acme, Format::OscQuery).unwrap().value).unwrap();
+    let ns: Value = serde_json::from_str(&export(&acme, OSCQUERY).unwrap().value).unwrap();
     let node = ns["CONTENTS"]["box"]["DESCRIPTION"].as_str().expect("the device's node carries the credit");
     assert!(node.contains("CC0-1.0") && node.contains("osc-bridge test fixture"), "{node}");
-    let xml = export(&acme, Format::Midnam).unwrap().value;
+    let xml = export(&acme, MIDNAM).unwrap().value;
     assert!(xml.contains("CC0-1.0") && xml.contains("osc-bridge test fixture"), "{xml}");
 
     let shared = load("arturia/microfreak.vendor.fw-microfreak-tools-0.1.0");
-    for format in [Format::OscQuery, Format::Midnam] {
+    for format in [OSCQUERY, MIDNAM] {
         let text = export(&shared, format).unwrap().value;
         assert!(text.contains("Apache-2.0") && text.contains("CC-BY-SA-4.0"), "{format:?}: the sources of the file whose MIDI it shares are credited too");
     }
@@ -133,7 +136,7 @@ fn the_running_bridge_answers_the_namespace_the_export_writes() {
     let mut reply = String::new();
     s.read_to_string(&mut reply).unwrap();
     let served = oscquery_facts(reply.split("\r\n\r\n").nth(1).unwrap());
-    let exported = oscquery_facts(&export(&dev, Format::OscQuery).unwrap().value);
+    let exported = oscquery_facts(&export(&dev, OSCQUERY).unwrap().value);
     assert!(!exported.is_empty());
     for line in &exported {
         assert!(served.contains(line), "the running bridge does not serve: {line}");
@@ -146,21 +149,25 @@ fn the_running_bridge_answers_the_namespace_the_export_writes() {
 #[test]
 fn a_device_that_speaks_only_osc_has_no_midnam_and_says_so() {
     let dev = load("bitwig/bitwig-studio.third-party-osc.fw-5");
-    let err = export(&dev, Format::Midnam).unwrap_err().to_string();
+    let err = export(&dev, MIDNAM).unwrap_err().to_string();
     assert_eq!(err, "Bitwig Bitwig Studio (Bitwig Studio 5 + DrivenByMoss (latest)) speaks OSC, not MIDI: it has no MIDI names");
 }
 
 #[test]
 fn an_unknown_format_name_keeps_its_message() {
     let err = "ctrlr".parse::<Format>().unwrap_err().to_string();
-    assert_eq!(err, "unknown format 'ctrlr' (one of: oscquery, midnam)");
+    assert!(err.starts_with("unknown format 'ctrlr' (one of: "), "{err}");
+    for name in osc_bridge::export::format_names() {
+        assert!(err.contains(name), "{name} missing from {err}");
+    }
+    assert!(err.contains("oscquery") && err.contains("midnam") && err.contains("deluge"), "{err}");
 }
 
 #[test]
 fn what_the_formats_could_not_carry_comes_with_the_document() {
     let dev = load("arturia/microfreak.vendor.fw-microfreak-tools-0.1.0");
     // The firmware of a source has no place in a MIDNAM or an OSCQuery document: osd-formats lists it.
-    for format in [Format::Midnam, Format::OscQuery] {
+    for format in [MIDNAM, OSCQUERY] {
         let out = export(&dev, format).unwrap();
         assert!(!out.value.is_empty());
         assert!(out.lost.iter().any(|l| l.place == "/_sources/0/firmware"), "{format:?}: {:?}", out.lost);

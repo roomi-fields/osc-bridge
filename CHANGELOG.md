@@ -11,6 +11,25 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Added — an export put on a recognised device in one gesture
+- `export_device` and `osc-bridge export --format` offer every format of
+  `osd-formats` (`deluge` among them: a Deluge definition file); the names, media
+  types and extensions come from `osd-formats`, and an unknown name is refused
+  with the list. The `Format` type of `osc_bridge::export` now wraps the
+  `osd-formats` one (no case per format).
+- New MCP tool `install_export` (`device`, `on`, `confirm_overwrite`) and CLI form
+  `osc-bridge export --device <device> --on <target> [--yes]`: the export of a
+  device is put on a plugged target, the format, the path and the way (a file
+  written by SysEx) being read in the target's own descriptor (`resources`), so no
+  command or tool is specific to a device. Without consent nothing is sent and the
+  preview (format, way, path, size, losses) is returned; a target that declares
+  nothing it receives, a target not plugged in and a source whose export cannot be
+  built are refused before any message; a send that fails on the way says the step
+  reached and the messages already sent, with no retry. `export_device` stays
+  read-only.
+- `osd` and `osd-formats` are pinned at the OSD commit that holds `resources` and
+  the formats' `media_type()` and `extension()`.
+
 ### Changed — breaking: `restore_presets` and `backup_presets` name a device
 - `device` is required on the MCP tools `restore_presets` and `backup_presets`
   and on the CLI words `restore` and `backup` (`--device`); the mode without a

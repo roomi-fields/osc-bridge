@@ -498,7 +498,7 @@ page, [synthhub.roomi-fields.com/connect](https://synthhub.roomi-fields.com/conn
 ```
 
 The local tools — `list_devices`, `get_device_docs`, `list_routes`, `export_device`,
-`send`, `get_status`, `detect_hardware`, `backup_presets`, `restore_presets`, the ones that set and read a control by its role,
+`send`, `get_status`, `detect_hardware`, `backup_presets`, `restore_presets`, `install_export`, the ones that set and read a control by its role,
 `list_roles`, `set_by_role`, `get_by_role`, and the
 ones that change a running bridge's links, `add_link`, `remove_link`, `list_links` — plus
 the server's: reports, trust, contributions and shared presets (find, load, take from the synth,

@@ -159,12 +159,12 @@ fn device_index_builds_from_a_folder_of_drivers() {
 fn tools_list_has_the_local_tools_including_the_three_link_tools() {
     let t = tools_list(&test_opts());
     let arr = t.get("tools").unwrap().as_array().unwrap();
-    assert_eq!(arr.len(), 15);
+    assert_eq!(arr.len(), 16);
     let names: Vec<&str> = arr.iter().map(|t| t.get("name").unwrap().as_str().unwrap()).collect();
     for expected in ["list_devices", "get_device_docs", "list_routes", "export_device", "send", "get_status",
                      "detect_hardware", "backup_presets", "restore_presets",
                      "add_link", "remove_link", "list_links",
-                     "list_roles", "set_by_role", "get_by_role"] {
+                     "list_roles", "set_by_role", "get_by_role", "install_export"] {
         assert!(names.contains(&expected), "tool {expected} missing");
     }
 }
@@ -591,7 +591,8 @@ fn export_device_for_an_osc_only_device_and_an_unknown_format_keep_their_message
     assert!(err.contains("speaks OSC, not MIDI: it has no MIDI names"), "{err}");
     let err = catalogue_tool("export_device", &json!({"device": "minilogue", "format": "ctrlr"}), &idx, &|_| None)
         .unwrap().unwrap_err();
-    assert!(err.contains("unknown format 'ctrlr' (one of: oscquery, midnam)"), "{err}");
+    assert!(err.contains("unknown format 'ctrlr' (one of: "), "{err}");
+    assert!(err.contains("oscquery") && err.contains("midnam") && err.contains("deluge"), "{err}");
 }
 
 /// A stand-in bridge on a free UDP port: it hands the first packet it receives to the test

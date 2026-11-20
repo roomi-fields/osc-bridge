@@ -33,7 +33,7 @@ pub fn namespace(devices: &[Device]) -> Served {
     let (mut faults, mut unserved_prefixes) = (Vec::new(), Vec::new());
     let mut served = Vec::new();
     for d in devices {
-        match export(d, Format::OscQuery).and_then(|out| Ok(serde_json::from_str::<Value>(&out.value)?)) {
+        match export(d, Format(osd_formats::Format::OscQuery)).and_then(|out| Ok(serde_json::from_str::<Value>(&out.value)?)) {
             Ok(doc) => {
                 docs.push(doc);
                 served.push(d);

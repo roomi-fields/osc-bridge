@@ -131,7 +131,7 @@
     },
     {
       "name": "export_device",
-      "description": "Write one driver in a format other tools read: 'oscquery' gives its OSC namespace as OSCQuery JSON (every route with type tags, ranges and access, for OSC controllers and browsers); 'midnam' gives its MIDI names as a MIDI Name Document (controllers incl. NRPN/RPN, named values, drum notes per channel, for DAWs such as Ardour or Logic). Both carry the credit and licence of the driver's sources. The document is the text content; an OSCQuery namespace is large (every address, each CC 0-127 included).",
+      "description": "Write one driver in a format other tools read, any of the formats of osd-formats: 'oscquery' gives its OSC namespace as OSCQuery JSON (every route with type tags, ranges and access, for OSC controllers and browsers); 'midnam' gives its MIDI names as a MIDI Name Document (controllers incl. NRPN/RPN, named values, drum notes per channel, for DAWs such as Ardour or Logic); 'deluge' gives the definition file of a Deluge; and the others in the enum. Each carries the credit and licence of the driver's sources. The document is the text content; an OSCQuery namespace is large (every address, each CC 0-127 included). It only reads: to put an export on a device, use install_export.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -141,8 +141,14 @@
           },
           "format": {
             "enum": [
+              "midi-csv",
+              "midi-triggers-csv",
+              "electra-one",
+              "midnam",
               "oscquery",
-              "midnam"
+              "midi2-controllers",
+              "deluge",
+              "knobkraft"
             ],
             "type": "string"
           }
@@ -150,6 +156,32 @@
         "required": [
           "device",
           "format"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "install_export",
+      "description": "Put the export of one driver (device) on another device plugged into this computer (on), in one gesture the same for every target: the format the target receives, the path of the file and the way it is sent (a file written by SysEx, step by step) all come from the target's own driver, and a target that declares nothing it receives is refused. This may OVERWRITE a file on the device (it is not read first): without confirm_overwrite: true nothing is sent, and the call returns what it would write (format, way, path, size, what the format could not carry); confirm with the user, then call again with confirm_overwrite: true. A target that is not plugged in is refused before any message; a send that fails on the way says the step reached and the messages already sent, with no retry and no undo.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "confirm_overwrite": {
+            "description": "True once the user agreed that the file may be overwritten on the target; without it nothing is sent.",
+            "type": "boolean"
+          },
+          "device": {
+            "description": "The driver to export: id (e.g. 'korg/minilogue') or slug, from list_devices.",
+            "type": "string"
+          },
+          "on": {
+            "description": "The device that receives it: its catalogue id or slug; its driver says what it receives.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "device",
+          "on"
         ],
         "type": "object"
       }

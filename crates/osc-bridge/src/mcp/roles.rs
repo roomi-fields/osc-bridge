@@ -49,7 +49,7 @@ fn controls(dev: &osd::Device) -> Vec<Control> {
         for e in &t.entries {
             let Some(role) = &e.role else { continue };
             let address = format!("{prefix}{}", e.osc);
-            let reads = !t.get_frame.is_empty()
+            let reads = t.get_frame.as_ref().is_some_and(|f| !f.is_empty())
                 && dev.replies.iter().flatten().any(|r| crate::device::address_text(&r.emit_osc) == address);
             out.push(Control {
                 role: role_text(role), address, range: e.range.unwrap_or([0, 127]),

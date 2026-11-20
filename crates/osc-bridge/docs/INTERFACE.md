@@ -14,7 +14,7 @@ The application offers three published surfaces: its command line, its MCP tools
 | `orchestrate` | a `bridge.toml` | several devices with routes between them |
 | `mcp` | `--offline`, `--devices-dir` | the MCP server |
 | `connect` | the relay address, private ports | a relay door |
-| `export` | a driver, a format | the exported file |
+| `export` | `--device` (a driver) and either `--format` (any format of `osd-formats`; an unknown name lists them), or `--on` (the target device, a driver file, id or slug) with `--yes` | the exported file on the standard output; with `--on`, the export put on the plugged target by the way its descriptor declares, or, without `--yes`, what would be written (nothing is sent) |
 | `backup`, `restore` | `--device` (required: a driver file, id or slug), ports, a `.syx` file; `restore` also `--bank` and `--number` for a sound that carries no place | a dump taken (the sounds the driver recognises, on any channel) or sent (the driver's pauses; a bank it says cannot be written refused before any message; channel and device number written as configured) |
 | `privacy` | `--offline`, `--private`, `--public` | the installation's settings |
 | `inspect`, `lint` | a driver | its summary, its warnings |
@@ -33,6 +33,8 @@ The application offers three published surfaces: its command line, its MCP tools
 `send` always asks for the acknowledgement and hands back at the first answer: `/bridge/done` gives `sent: true`; `/bridge/fault` gives `isError: true` with the address and the reason, in text and in `structuredContent` (`sent: false`, `address`, `reason`); when nothing answers within 3 s (a guard, not a delay) it gives an error saying osc-bridge does not answer at that address.
 
 The tools are described once, from Rust types; the list the server offers is generated from them and compared, at each change, with the published list. Local tools work offline; the others are the service's, forwarded through `synthhub-protocol`.
+
+`export_device` writes one driver in a format of `osd-formats` and only reads. `install_export` (`device`, `on`, `confirm_overwrite`) is the tool that puts an export on a plugged device, the only one of the two that writes: the format, the path and the way come from the target's descriptor, nothing names a device, and without `confirm_overwrite: true` nothing is sent and the preview (format, way, path, size, losses) is returned. The library publishes `osc_bridge::install::install` (the gesture) and `osc_bridge::export::Format`, which wraps the `osd-formats` format.
 
 Three tools link devices of a running orchestrator, reached by its UDP address (`target`, else `--default-target`) through its control addresses, and answering with the orchestrator's replies, or saying that none answered:
 

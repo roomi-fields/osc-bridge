@@ -1222,7 +1222,7 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, r
                 };
                 match frame::bindings_for_param_set(pt, entry, &v_transformed) {
                     Ok(b) => {
-                        match frame::build_frame(dev, &pt.set_frame, &b) {
+                        match frame::build_frame(dev, pt.set_frame.as_deref().unwrap_or_default(), &b) {
                             Ok(frm) => { enqueue(tx, frm, &msg.addr, ans); return; }
                             Err(e) => ans.fault(&msg.addr, format!("build_frame: {}: {e}", dev.device.name)),
                         }
@@ -1280,7 +1280,7 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, r
                 (as_u7(&msg.args[0]), as_u7(&msg.args[1]), as_u7(&msg.args[2]), as_u7(&msg.args[3])) {
                 let mut b = Bindings::new();
                 b.set_u7("pr", pr); b.set_u7("p", p); b.set_u7("c", c); b.set_u7("r", r);
-                match frame::build_frame(dev, &pt.get_frame, &b) {
+                match frame::build_frame(dev, pt.get_frame.as_deref().unwrap_or_default(), &b) {
                     Ok(frm) => { enqueue(tx, frm, &msg.addr, ans); return; }
                     Err(e) => {
                         ans.fault(&msg.addr, format!("build_frame: {}: {e}", dev.device.name));

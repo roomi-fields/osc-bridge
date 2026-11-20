@@ -221,6 +221,19 @@ pub fn expand_identity(identity: &osd::Identity, tokens: &[FrameToken]) -> Vec<F
     out
 }
 
+/// Append the bytes of one frame element to `out`, a checksum computed over
+/// what `out` already holds: for a message put together piece by piece.
+pub fn append_token(tok: &FrameToken, bindings: &Bindings, out: &mut Vec<u8>) -> Result<()> {
+    match Checksum::of_token(tok) {
+        Some(c) => {
+            let b = c.compute(out)?;
+            out.push(b);
+            Ok(())
+        }
+        None => emit_token(tok, bindings, out),
+    }
+}
+
 /// Write the bytes of one frame element other than a checksum.
 fn emit_token(tok: &FrameToken, b: &Bindings, out: &mut Vec<u8>) -> Result<()> {
     match tok {
@@ -361,9 +374,10 @@ pub fn bindings_for_param_set(pt: &osd::Params, entry: &osd::ParamEntry, val: &r
     let [lo, hi] = entry.range.unwrap_or([0, 127]);
     let clamped = val_int.clamp(lo, hi);
     match pt.value_type {
-        osd::ValueType::U7 => b.set_u7("val", clamped as u8),
-        osd::ValueType::U14 => b.set_u14("val", clamped as u16),
-        osd::ValueType::S32 => b.set_s32("val", clamped as i32),
+        Some(osd::ValueType::U7) => b.set_u7("val", clamped as u8),
+        Some(osd::ValueType::U14) => b.set_u14("val", clamped as u16),
+        Some(osd::ValueType::S32) => b.set_s32("val", clamped as i32),
+        None => bail!("the parameters declare no value_type: no SysEx value to set"),
     }
     Ok(b)
 }

@@ -1,5 +1,6 @@
-//! Driver files written in the formats other tools read: OSCQuery (the OSC
-//! address space) and MIDNAM (MIDI names), both written by `osd-formats`.
+//! Driver files written in the formats other tools read (OSCQuery, MIDNAM, the
+//! Deluge definition, and every other format of `osd-formats`), all written by
+//! `osd-formats`.
 //! The same text is given by the CLI (`osc-bridge export`), the MCP tool
 //! `export_device` and the hosted server, which shares the catalogue tools.
 //! Each document carries the credit and licence of the driver's sources.
@@ -9,42 +10,41 @@ use anyhow::{bail, Result};
 use osd::Device;
 pub use osd_formats::{Loss, Translated};
 
-/// The formats a driver is written in.
+/// A format a driver is written in: one of `osd-formats`, which gives its
+/// name, media type and extension. osc-bridge holds no case per format.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Format {
-    OscQuery,
-    Midnam,
-}
+pub struct Format(pub osd_formats::Format);
 
-/// The names `Format` is read from, as the CLI and the MCP tool take them.
-pub const FORMATS: [&str; 2] = ["oscquery", "midnam"];
+/// The names `Format` is read from, as the CLI and the MCP tool take them:
+/// those of `osd-formats`.
+pub fn format_names() -> Vec<&'static str> {
+    osd_formats::Format::ALL.iter().map(|f| f.name()).collect()
+}
 
 impl std::str::FromStr for Format {
     type Err = anyhow::Error;
     fn from_str(s: &str) -> Result<Self> {
-        match s.to_ascii_lowercase().as_str() {
-            "oscquery" => Ok(Format::OscQuery),
-            "midnam" => Ok(Format::Midnam),
-            other => bail!("unknown format '{other}' (one of: {})", FORMATS.join(", ")),
+        match osd_formats::Format::from_name(&s.to_ascii_lowercase()) {
+            Some(f) => Ok(Format(f)),
+            None => bail!("unknown format '{s}' (one of: {})", format_names().join(", ")),
         }
     }
 }
 
 impl Format {
+    /// Its name.
+    pub fn name(self) -> &'static str {
+        self.0.name()
+    }
+
     /// Media type of the written document.
     pub fn media_type(self) -> &'static str {
-        match self {
-            Format::OscQuery => "application/json",
-            Format::Midnam => "application/xml",
-        }
+        self.0.media_type()
     }
 
     /// Usual file extension.
     pub fn extension(self) -> &'static str {
-        match self {
-            Format::OscQuery => "json",
-            Format::Midnam => "midnam",
-        }
+        self.0.extension()
     }
 }
 
@@ -52,7 +52,7 @@ impl Format {
 /// namespace runs to thousands of nodes), with what the format could not
 /// carry. Fails for MIDNAM when the device speaks OSC only.
 pub fn export(dev: &Device, format: Format) -> Result<Translated<String>> {
-    if format == Format::Midnam && dev.device.transport.as_ref().is_some_and(|t| t.kind == osd::TransportKind::Osc) {
+    if format.0 == osd_formats::Format::Midnam && dev.device.transport.as_ref().is_some_and(|t| t.kind == osd::TransportKind::Osc) {
         bail!("{} speaks OSC, not MIDI: it has no MIDI names", device_title(dev));
     }
     let mut device = dev.clone();
@@ -61,12 +61,8 @@ pub fn export(dev: &Device, format: Format) -> Result<Translated<String>> {
         device.sources.get_or_insert_with(Vec::new).extend(shared);
     }
     let resolved = osd::Resolved { device, files: Vec::new(), capabilities: Vec::new(), inherited: Vec::new() };
-    let target = match format {
-        Format::OscQuery => osd_formats::Format::OscQuery,
-        Format::Midnam => osd_formats::Format::Midnam,
-    };
-    let mut out = osd_formats::export(&resolved, target)?;
-    if format == Format::OscQuery {
+    let mut out = osd_formats::export(&resolved, format.0)?;
+    if format.0 == osd_formats::Format::OscQuery {
         let mut namespace = serde_json::from_str::<serde_json::Value>(&out.value)?;
         crate::bridge_routes::add_to(&mut namespace, &[dev]);
         out.value = serde_json::to_string(&namespace)?;

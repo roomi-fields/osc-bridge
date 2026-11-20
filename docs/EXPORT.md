@@ -1,6 +1,8 @@
-# Writing a driver in other formats — OSCQuery and MIDNAM
+# Writing a driver in other formats — every format of osd-formats
 
-A driver file can be written in two formats other tools read:
+A driver file can be written in every format the `osd-formats` package offers
+(`oscquery`, `midnam`, `deluge`, and the others it lists), which other tools
+read. Two are detailed here:
 
 - **OSCQuery** — the OSC addresses of the device, with their types, ranges and
   access, as the JSON namespace of the
@@ -10,7 +12,7 @@ A driver file can be written in two formats other tools read:
   controllers and drum notes, by name, for DAWs (Ardour, Logic, Digital
   Performer…).
 
-Both are written by the `osd-formats` package, the one everyone uses: a format
+Every format is written by the `osd-formats` package, the one everyone uses: a format
 corrected there is corrected here. What each element of a descriptor becomes in
 each format is in its documents (`osd-formats/docs/oscquery.md`,
 `osd-formats/docs/midnam.md`).
@@ -19,9 +21,29 @@ The same text comes from three places:
 
 | Where | How |
 |---|---|
-| Command line | `osc-bridge export --device korg/minilogue --format oscquery` (or `midnam`): the document on the standard output, what the format could not carry on the error output, one line each (`not carried: <place>: <reason>`) |
+| Command line | `osc-bridge export --device korg/minilogue --format oscquery` (any format of `osd-formats`, for example `midnam` or `deluge`; an unknown name lists them): the document on the standard output, what the format could not carry on the error output, one line each (`not carried: <place>: <reason>`) |
 | MCP server | tool `export_device` with `device` (id or slug) and `format`; the document is the text content, the list `lost` (`place`, `reason`) is beside it in the structured result |
 | Running bridge | `osc-bridge run … --oscquery-bind 127.0.0.1:7891`, or `oscquery_bind` in the `[osc]` section of `bridge.toml` |
+
+## Putting an export on a device
+
+An export can be put on a recognised device, in one gesture that is the same
+for every target: what the target receives is said in its own descriptor
+(`resources`: the format it exports, the path of the file, the steps of a file
+written by SysEx), so osc-bridge holds no command per device. A target that
+declares nothing it receives is refused.
+
+| Where | How |
+|---|---|
+| Command line | `osc-bridge export --device korg/minilogue --on synthstrom/deluge [--yes]` (no `--format`: the target gives it) |
+| MCP server | tool `install_export` with `device`, `on` and `confirm_overwrite` |
+
+A write may overwrite a file on the device, which is not read first: without
+`--yes` (`confirm_overwrite: true`) nothing is sent, and the format, the way,
+the path, the size and what the format could not carry are shown. A target that
+is not plugged in is refused before any message. A send that fails on the way
+says the step reached and the messages already sent; nothing is retried or
+undone. The library function is `osc_bridge::install::install`.
 
 The library function is `osc_bridge::export::export(&device, format)`: it
 returns the document with the list of what the format could not carry. The

@@ -526,12 +526,12 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "export_device",
-                "description": "Write one driver in a format other tools read: 'oscquery' gives its OSC namespace as OSCQuery JSON (every route with type tags, ranges and access, for OSC controllers and browsers); 'midnam' gives its MIDI names as a MIDI Name Document (controllers incl. NRPN/RPN, named values, drum notes per channel, for DAWs such as Ardour or Logic). Both carry the credit and licence of the driver's sources. The document is the text content; an OSCQuery namespace is large (every address, each CC 0-127 included).",
+                "description": "Write one driver in a format other tools read, any of the formats of osd-formats: 'oscquery' gives its OSC namespace as OSCQuery JSON (every route with type tags, ranges and access, for OSC controllers and browsers); 'midnam' gives its MIDI names as a MIDI Name Document (controllers incl. NRPN/RPN, named values, drum notes per channel, for DAWs such as Ardour or Logic); 'deluge' gives the definition file of a Deluge; and the others in the enum. Each carries the credit and licence of the driver's sources. The document is the text content; an OSCQuery namespace is large (every address, each CC 0-127 included). It only reads: to put an export on a device, use install_export.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
                         "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or slug, from list_devices." },
-                        "format": { "type": "string", "enum": crate::export::FORMATS }
+                        "format": { "type": "string", "enum": crate::export::format_names() }
                     },
                     "required": ["device", "format"],
                     "additionalProperties": false
@@ -541,7 +541,7 @@ pub fn tool_schemas() -> Value {
                     "properties": {
                         "device": { "type": "string", "description": "Driver id." },
                         "format": { "type": "string" },
-                        "media_type": { "type": "string", "description": "'application/json' or 'application/xml'." },
+                        "media_type": { "type": "string", "description": "The media type of the format (e.g. 'application/json', 'application/xml')." },
                         "file_name": { "type": "string", "description": "A file name to save it under." },
                         "bytes": { "type": "integer", "description": "Size of the document, which is the text content." }
                     },
@@ -552,6 +552,42 @@ pub fn tool_schemas() -> Value {
                     "readOnlyHint": true,
                     "idempotentHint": true,
                     "openWorldHint": false
+                }
+            },
+            {
+                "name": "install_export",
+                "description": "Put the export of one driver (device) on another device plugged into this computer (on), in one gesture the same for every target: the format the target receives, the path of the file and the way it is sent (a file written by SysEx, step by step) all come from the target's own driver, and a target that declares nothing it receives is refused. This may OVERWRITE a file on the device (it is not read first): without confirm_overwrite: true nothing is sent, and the call returns what it would write (format, way, path, size, what the format could not carry); confirm with the user, then call again with confirm_overwrite: true. A target that is not plugged in is refused before any message; a send that fails on the way says the step reached and the messages already sent, with no retry and no undo.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "device": { "type": "string", "description": "The driver to export: id (e.g. 'korg/minilogue') or slug, from list_devices." },
+                        "on": { "type": "string", "description": "The device that receives it: its catalogue id or slug; its driver says what it receives." },
+                        "confirm_overwrite": { "type": "boolean", "description": "True once the user agreed that the file may be overwritten on the target; without it nothing is sent." }
+                    },
+                    "required": ["device", "on"],
+                    "additionalProperties": false
+                },
+                "outputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "device": { "type": "string" },
+                        "on": { "type": "string" },
+                        "format": { "type": "string", "description": "The format the target receives." },
+                        "way": { "type": "string", "description": "How it is sent (sysex)." },
+                        "path": { "type": "string", "description": "The path of the file on the target." },
+                        "size": { "type": "integer", "description": "Bytes of the file." },
+                        "lost": { "type": "array", "items": { "type": "object" }, "description": "What the format could not carry (place, reason)." },
+                        "written": { "type": "boolean", "description": "False for a preview: nothing was sent." },
+                        "messages": { "type": "integer", "description": "SysEx messages sent." }
+                    },
+                    "required": ["device", "on", "format", "way", "path", "size", "lost", "written", "messages"]
+                },
+                "annotations": {
+                    "title": "Put an export on a device",
+                    "readOnlyHint": false,
+                    "destructiveHint": true,
+                    "idempotentHint": true,
+                    "openWorldHint": true
                 }
             },
             {
@@ -1248,7 +1284,7 @@ fn link_tool_output() -> Value {
 
 fn tool_names(opts: &McpOptions) -> Vec<&'static str> {
     let local = ["list_devices", "get_device_docs", "list_routes", "export_device", "send", "get_status",
-         "add_link", "remove_link", "list_links", "detect_hardware", "backup_presets", "restore_presets",
+         "add_link", "remove_link", "list_links", "detect_hardware", "backup_presets", "restore_presets", "install_export",
          "list_roles", "set_by_role", "get_by_role"];
     // Taking and loading sounds needs the server's librarian, like the forwarded tools.
     let linked: &[&str] = if opts.online { &["take_sound", "load_preset"] } else { &[] };
@@ -1348,6 +1384,12 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
             };
             let dev = preset_device(index, wanted)?;
             restore_presets(&dev, out_port, Path::new(file), target.as_ref().map(|(b, n)| (b.as_str(), *n)))
+        }
+        "install_export" => {
+            let wanted = args.get("device").and_then(Value::as_str).ok_or("missing device: the driver to export")?;
+            let on = args.get("on").and_then(Value::as_str).ok_or("missing on: the device that receives the export")?;
+            let confirm = args.get("confirm_overwrite").and_then(Value::as_bool) == Some(true);
+            install_export(&preset_device(index, wanted)?, &preset_device(index, on)?, wanted, on, confirm)
         }
         "detect_hardware" => {
             let probe = args.get("probe").and_then(Value::as_bool).unwrap_or(true);
@@ -1595,6 +1637,24 @@ fn preset_device(index: &DeviceIndex, wanted: &str) -> Result<Device, String> {
     let entry = index.find(wanted).ok_or_else(|| format!(
         "no driver '{wanted}' in the catalogue (see list_devices): describe the device first, so osc-bridge knows its banks and sounds"))?;
     crate::device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.path.display()))
+}
+
+/// `install_export`: the export of `source` put on `target` by the way its
+/// driver declares (see `crate::install`).
+fn install_export(source: &Device, target: &Device, device: &str, on: &str, confirm: bool) -> Result<Value, String> {
+    let mut midi = crate::take::Hardware::open()
+        .map_err(|e| format!("{} cannot be reached: MIDI: {e}", crate::export::device_title(target)))?;
+    let done = crate::install::install(source, target, confirm, &mut midi, &mut crate::programs::SystemClock)?;
+    let lost: Vec<Value> = done.lost.iter().map(|l| json!({ "place": l.place, "reason": l.reason })).collect();
+    let text = if done.written {
+        format!("Wrote {} ({} bytes, {}) on {on}: {} message(s) sent.", done.path, done.size, done.format, done.messages)
+    } else {
+        format!("Nothing sent. With confirm_overwrite: true it would write {} ({} bytes, {}) on {on}, by {}; it may overwrite a file there.",
+            done.path, done.size, done.format, done.way)
+    };
+    let structured = json!({ "device": device, "on": on, "format": done.format, "way": done.way, "path": done.path,
+        "size": done.size, "lost": lost, "written": done.written, "messages": done.messages });
+    Ok(content_structured(&text, structured))
 }
 
 fn backup_presets(dev: &Device, in_port: &str, file: &Path, out_port: Option<&str>, max_secs: u64) -> Result<Value, String> {
