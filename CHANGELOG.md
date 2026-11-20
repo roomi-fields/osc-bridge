@@ -11,6 +11,8 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+## [0.23.0] — 2026-11-20
+
 ### Added — an export put on a recognised device in one gesture
 - `export_device` and `osc-bridge export --format` offer every format of
   `osd-formats` (`deluge` among them: a Deluge definition file); the names, media
