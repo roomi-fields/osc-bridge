@@ -239,12 +239,13 @@ const LINKED_INSTRUCTIONS: &str = "osc-bridge with the SynthHub catalogue of MID
     Identity Reply: it improves the driver for everyone.";
 
 /// Fetch the trust of every reported driver from the hosted server, in the
-/// background.
-fn trust_in_background(link: std::sync::Arc<Link>) {
+/// background; the session waits for it when it ends, so nothing of it (the account it may
+/// have delivered) is written after the session.
+fn trust_in_background(link: std::sync::Arc<Link>) -> std::thread::JoinHandle<()> {
     std::thread::spawn(move || match link.client.trust() {
         Ok(t) => if let Ok(mut g) = link.trust.write() { *g = t },
         Err(e) => eprintln!("SynthHub server unreachable ({e}): only the drivers cached on this machine"),
-    });
+    })
 }
 
 /// The driver a tool call needs on this machine, by id or OSC prefix: the one it
@@ -286,9 +287,7 @@ pub fn serve(opts: McpOptions, base: &str, cache: Option<PathBuf>, input: impl B
     let cache = if opts.devices_dir.is_some() { None } else { cache };
     let root = opts.devices_dir.clone().or_else(|| cache.clone()).unwrap_or_default();
     let index = RwLock::new(Arc::new(build_index(&root, &opts)));
-    if let Some(link) = &link {
-        trust_in_background(link.clone());
-    }
+    let trust = link.as_ref().map(|link| trust_in_background(link.clone()));
     let mut fetched = std::collections::HashSet::new();
 
     for line in input.lines() {
@@ -331,6 +330,7 @@ pub fn serve(opts: McpOptions, base: &str, cache: Option<PathBuf>, input: impl B
             out.flush()?;
         }
     }
+    if let Some(trust) = trust { let _ = trust.join(); }
     Ok(())
 }
 
@@ -1021,11 +1021,11 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "report_mapping",
-                "description": "Teach the catalogue which MIDI message a control really sends: after the user moved one control on the device (see relay_listen), give the driver address it is (from list_routes) — or, for a control the driver lacks, its panel label — and the CC, NRPN or note it sent, with the firmware and the device's Identity Reply when you have them. When several accounts observe the same thing on one firmware the mapping is learned; get_trust shows learned mappings and where they differ from the driver.",
+                "description": "Teach the catalogue which MIDI message a control really sends: after the user moved one control on the device (see relay_listen), give the driver address it is (from list_routes) — or, for a control the driver lacks, its panel label — and the CC, NRPN or note it sent, with the firmware and the device's Identity Reply when you have them. When several accounts observe the same thing on one firmware the mapping is learned; get_trust shows learned mappings and where they differ from the driver. For a device with no driver, the first step of its first driver: after detect_hardware in learn mode (its next_step), the person names the device (the name they give as device_name when sharing its fingerprint), and you map its controls one by one with device set to that name; the mappings then make the first driver you send with submit_driver.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
-                        "device": { "type": "string", "description": "Driver id or OSC prefix." },
+                        "device": { "type": "string", "description": "Driver id or OSC prefix; for a device with no driver yet, the name the person gave its fingerprint (device_name)." },
                         "address": { "type": "string", "description": "The driver's OSC address for the control." },
                         "label": { "type": "string", "description": "The control's panel label, when the driver has no address for it." },
                         "cc": { "type": "integer", "minimum": 0, "maximum": 127 },
@@ -1043,7 +1043,7 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "submit_driver",
-                "description": "Contribute a driver for a device the catalogue lacks (or a better one): the full driver file as a JSON object, in the Open Synth Descriptors format (device.name, device.vendor, device.osc_prefix, and cc_params / params / commands / triggers — see https://synthhub.roomi-fields.com/osd/). It is checked, then merged into the SynthHub catalogue by the merge job if it parses, lints and passes the tests, as its own file of source 'agent-contributed'. Say where the data comes from (manual page, tested on the device).",
+                "description": "Contribute a driver for a device the catalogue lacks (or a better one): the full driver file as a JSON object, in the Open Synth Descriptors format (device.name, device.vendor, device.osc_prefix, and cc_params / params / commands / triggers — see https://synthhub.roomi-fields.com/osd/). It is checked, then merged into the SynthHub catalogue by the merge job if it parses, lints and passes the tests, as its own file of source 'agent-contributed'. Say where the data comes from (manual page, tested on the device). A first driver for a device with no driver: build it from the mappings sent with report_mapping, naming the device as its fingerprint was shared (device_name), and give its source and its licence (e.g. 'mapped on the device by report_mapping; license CC0-1.0').",
                 "inputSchema": { "type": "object", "properties": {
                     "driver": { "type": "object", "description": "The driver file." },
                     "firmware": { "type": "string", "description": "Firmware the driver was written or tested for." },
@@ -1421,7 +1421,7 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
                 }),
                 _ => return Err("share_fingerprint and device_name go together: the port, and the name the person gives the device".into()),
             };
-            learn_hardware(crate::detect::learn_listen(args.get("listen_ms").and_then(Value::as_u64))?, share)
+            learn_hardware(index, crate::detect::learn_listen(args.get("listen_ms").and_then(Value::as_u64))?, share)
         }
         "detect_hardware" => {
             let probe = args.get("probe").and_then(Value::as_bool).unwrap_or(true);
@@ -1727,25 +1727,48 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>,
 
 /// `detect_hardware` in learn mode: a fingerprint per device, and its measures beside it. The
 /// report's text tells the person how long it listens and to move the controls.
-fn learn_hardware(listen: std::time::Duration, share: Option<Share>) -> Result<Value, String> {
+fn learn_hardware(index: &DeviceIndex, listen: std::time::Duration, share: Option<Share>) -> Result<Value, String> {
     let learned = crate::detect::learn_all(listen).map_err(|e| format!("MIDI scan: {e}"))?;
     let sharing = share.map(|s| share_learned(&s, &learned)).transpose()?;
-    let devices: Vec<Value> = learned.iter().map(|(d, l)| json!({
-        "port": d.label(),
-        "inputs": d.inputs,
-        "outputs": d.outputs,
-        "fingerprint": l.fingerprint,
-        "measured": l.measured,
-    })).collect();
-    let notice = crate::detect::learn_notice(listen);
-    let mut structured = json!({ "probed": true, "learn": true, "listen_ms": listen.as_millis() as u64,
-        "notice": notice, "devices": devices });
-    let mut text = format!("{notice}\n{}", serde_json::to_string_pretty(&structured).unwrap_or_default());
+    let mut report = learn_report(&learned, index, listen);
     if let Some(said) = sharing {
-        structured["sharing"] = json!(said);
-        text.push_str(&format!("\nSharing: {said}"));
+        report["structuredContent"]["sharing"] = json!(said);
+        let text = format!("{}\nSharing: {said}", report["content"][0]["text"].as_str().unwrap_or_default());
+        report["content"][0]["text"] = json!(text);
     }
-    Ok(content_structured(&text, structured))
+    Ok(report)
+}
+
+/// The next step of a device the local catalogue has no driver for: name it, then map its controls.
+const NEXT_STEP: &str = "No driver in the local catalogue matches this device. Ask the person to name it, then map its \
+    controls with report_mapping (device: the name they gave, as device_name when the fingerprint is shared); \
+    a first driver built from the mappings goes to submit_driver.";
+
+/// The learn mode's result for `learned`: the structured devices and their text. A device with no
+/// driver in `catalogue` carries a `next_step`; a recognised one does not. Pure: no MIDI.
+pub fn learn_report(learned: &[(crate::detect::Unit, crate::detect::Learned)], catalogue: &DeviceIndex, listen: std::time::Duration) -> Value {
+    let candidates = hardware_candidates(catalogue);
+    let devices: Vec<Value> = learned.iter().map(|(d, l)| {
+        let replies: Vec<Vec<u8>> = l.fingerprint["identity_reply"].as_str().map(|h| {
+            h.split_whitespace().filter_map(|b| u8::from_str_radix(b, 16).ok()).collect()
+        }).into_iter().collect();
+        let known = d.inputs.iter().chain(&d.outputs)
+            .any(|p| !crate::detect::rank(p, d.usb, &replies, &candidates, 1).is_empty());
+        let mut out = json!({
+            "port": d.label(),
+            "inputs": d.inputs,
+            "outputs": d.outputs,
+            "fingerprint": l.fingerprint,
+            "measured": l.measured,
+        });
+        if !known { out["next_step"] = json!(NEXT_STEP); }
+        out
+    }).collect();
+    let notice = crate::detect::learn_notice(listen);
+    let structured = json!({ "probed": true, "learn": true, "listen_ms": listen.as_millis() as u64,
+        "notice": notice, "devices": devices });
+    let text = format!("{notice}\n{}", serde_json::to_string_pretty(&structured).unwrap_or_default());
+    content_structured(&text, structured)
 }
 
 /// The fingerprint to share, as `detect_hardware` is told: the port, the name the person gave
@@ -1976,7 +1999,8 @@ pub fn print_learning(listen_ms: Option<u64>, share: Option<(&str, &str)>) -> Re
     let client = share.and(crate::online::linked().then(|| crate::online::Online::new(crate::online::SERVER)));
     let private = crate::online::settings_file().and_then(|f| crate::online::Settings::load(Some(&f)).ok()).map(|s| s.private).unwrap_or_default();
     let share = share.map(|(port, name)| Share { port, name, client: client.as_ref(), private: &private });
-    let report = learn_hardware(listen, share).map_err(|e| anyhow::anyhow!(e))?;
+    let catalogue = DeviceIndex::build(&crate::online::cache_dir().unwrap_or_default());
+    let report = learn_hardware(&catalogue, listen, share).map_err(|e| anyhow::anyhow!(e))?;
     if let Some(said) = report["structuredContent"]["sharing"].as_str() { println!("Sharing: {said}"); }
     let devices = report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default();
     if devices.is_empty() {
@@ -1988,6 +2012,7 @@ pub fn print_learning(listen_ms: Option<u64>, share: Option<(&str, &str)>) -> Re
         println!("{}  (out {}; in {})", d["port"].as_str().unwrap_or("?"), names("outputs"), names("inputs"));
         println!("  fingerprint: {}", serde_json::to_string_pretty(&d["fingerprint"]).unwrap_or_default().replace('\n', "\n  "));
         println!("  measured: {}", d["measured"]);
+        if let Some(step) = d["next_step"].as_str() { println!("  next step: {step}"); }
     }
     Ok(())
 }

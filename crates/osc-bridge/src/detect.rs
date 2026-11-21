@@ -1023,7 +1023,11 @@ fn today() -> String {
 /// The learn mode on every device plugged in: each is asked the universal identity request on
 /// each of its outputs and heard on each of its inputs for `listen`, all at the same time.
 pub fn learn_all(listen: Duration) -> Result<Vec<(Unit, Learned)>> {
-    let devices = units(&observe(false, Duration::ZERO, &[], &[])?);
+    learn_units(&units(&observe(false, Duration::ZERO, &[], &[])?), listen)
+}
+
+/// The learn mode on the `devices` given and no other: the same listening as `learn_all`.
+pub fn learn_units(devices: &[Unit], listen: Duration) -> Result<Vec<(Unit, Learned)>> {
     let observed = today();
     std::thread::scope(|s| {
         let tasks: Vec<_> = devices.iter().map(|d| {

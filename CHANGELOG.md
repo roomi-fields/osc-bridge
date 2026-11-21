@@ -11,6 +11,14 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Added — an agent goes from an unknown device to a first driver
+- `detect_hardware` in learn mode gives each device the local catalogue has no driver for a
+  `next_step` (in the structured result and in the text): have the person name it, then map its
+  controls with `report_mapping`, `device` being the name given. A device a driver matches has none.
+- The descriptions of `report_mapping` and `submit_driver` describe the path of a first driver:
+  fingerprint name, mappings, OSD driver with its source and licence. Both calls go to the service
+  as they are for a device with no local driver.
+
 ### Added — a named device fingerprint is shared with SynthHub when the person names it
 - `detect_hardware` (learn mode) takes `share_fingerprint` (the port) and `device_name`; `osc-bridge
   detect --learn` takes `--share-fingerprint` and `--device-name`. The fingerprint is sent to
