@@ -694,6 +694,27 @@ impl Online {
         Ok(out)
     }
 
+    /// Shares a device fingerprint the person named (`POST /v1/fingerprints`). Nothing goes
+    /// out for a private device (by the id or the slug of `name`), when offline, : naming
+    /// the device is the person's act of sending. A failure leaves the fingerprint here, with
+    /// no retry.
+    pub fn share_fingerprint(&self, settings_file: &Path, name: &str, fp: &Value) -> Sharing {
+        let settings = match Settings::load(Some(settings_file)) {
+            Ok(s) => s,
+            Err(e) => return Sharing::Failed(format!("settings: {e:#}")),
+        };
+        let slug = crate::mcp::slugify(name, '-');
+        if settings.offline || Settings::covers(&settings.private, name, &slug) {
+            return Sharing::Withheld(format!("{name} is private or the link is cut: nothing is sent"));
+        }
+        let body = serde_json::to_value(FingerprintBody::new(name, fp)).unwrap_or(Value::Null);
+        match self.post("/v1/fingerprints", &body) {
+            Ok((200..=299, _)) => Sharing::Sent,
+            Ok((status, v)) => Sharing::Failed(v["error"].as_str().map(|e| format!("HTTP {status}: {e}")).unwrap_or_else(|| format!("HTTP {status}"))),
+            Err(e) => Sharing::Failed(format!("{e:#}")),
+        }
+    }
+
     /// One of the server's catalogue tools (`list_devices`…), (`POST /mcp`).
     pub fn catalogue_call(&self, name: &str, args: &Value) -> Result<Value> {
         let rpc = json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": { "name": name, "arguments": args } });
@@ -703,6 +724,51 @@ impl Online {
             (None, Some(e)) => bail!("{}", e["message"].as_str().unwrap_or("error")),
             _ => bail!("the server answered HTTP {status}"),
         }
+    }
+}
+
+/// What `Online::share_fingerprint` did.
+#[derive(Debug, PartialEq)]
+pub enum Sharing {
+    Sent,
+    /// Not sent, and why (private, offline).
+    Withheld(String),
+    /// The sending failed, and why; the fingerprint stays on this machine.
+    Failed(String),
+}
+
+#[derive(serde::Serialize)]
+pub struct UsbIds {
+    vendor_id: Value,
+    product_id: Value,
+}
+
+/// The body of `POST /v1/fingerprints`, as the service reads it today (a mirror until
+/// synthhub-protocol holds the type): the name the person gave and the identification fields
+/// of the fingerprint. The serial number, the host name and everything local are left out.
+#[derive(serde::Serialize)]
+pub struct FingerprintBody {
+    name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    usb: Option<UsbIds>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    identity_reply: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    ports: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    sends: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    controls: Option<Value>,
+}
+
+impl FingerprintBody {
+    pub fn new(name: &str, fp: &Value) -> Self {
+        let given = |k: &str| fp.get(k).filter(|v| !v.is_null()).cloned();
+        let usb = fp.get("usb").filter(|u| u.is_object()).map(|u| UsbIds {
+            vendor_id: u.get("vendor_id").cloned().unwrap_or(Value::Null),
+            product_id: u.get("product_id").cloned().unwrap_or(Value::Null),
+        });
+        Self { name: name.to_string(), usb, identity_reply: given("identity_reply"), ports: given("ports"), sends: given("sends"), controls: given("controls") }
     }
 }
 

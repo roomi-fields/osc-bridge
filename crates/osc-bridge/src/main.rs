@@ -115,6 +115,15 @@ enum Cmd {
         /// With --learn: how long to listen, 1000-30000 ms (default 5000).
         #[arg(long, requires = "learn")]
         listen_ms: Option<u64>,
+        /// With --learn: the port (a part of its name) whose fingerprint is sent to SynthHub, so that
+        /// everyone recognises the device. Naming it sends to POST /v1/fingerprints: the name, USB vendor and product
+        /// ids, identity reply, ports, what it sends and its controls; no serial number or host name
+        /// is sent, and a private device never is. Needs --device-name.
+        #[arg(long, value_name = "PORT", requires_all = ["learn", "device_name"])]
+        share_fingerprint: Option<String>,
+        /// With --share-fingerprint: the name you give the device.
+        #[arg(long, value_name = "NAME", requires = "share_fingerprint")]
+        device_name: Option<String>,
         /// Write what the detection observed, raw, to this capture file (JSON). Works with
         /// --no-probe and --devices-dir. Read the file before sharing it: a maker's reply may
         /// carry a serial number.
@@ -272,7 +281,9 @@ fn main() -> Result<()> {
             print!("{}", osc_bridge::mcp::privacy(&path, &cached, server.as_ref(), offline, &private, &public)?);
             Ok(())
         }
-        Cmd::Detect { learn: true, listen_ms, .. } => osc_bridge::mcp::print_learning(listen_ms),
+        Cmd::Detect { learn: true, listen_ms, share_fingerprint, device_name, .. } => {
+            osc_bridge::mcp::print_learning(listen_ms, share_fingerprint.as_deref().zip(device_name.as_deref()))
+        }
         Cmd::Detect { no_probe, devices_dir, write, read, consent, .. } => {
             osc_bridge::mcp::print_detection(devices_dir.as_deref(), !no_probe, write.as_deref(), read.as_deref(), &consent)
         }

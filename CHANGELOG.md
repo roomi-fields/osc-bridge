@@ -11,6 +11,15 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Added — a named device fingerprint is shared with SynthHub when the person names it
+- `detect_hardware` (learn mode) takes `share_fingerprint` (the port) and `device_name`; `osc-bridge
+  detect --learn` takes `--share-fingerprint` and `--device-name`. The fingerprint is sent to
+  `POST /v1/fingerprints` so that everyone recognises the device.
+- Naming the device is the act that sends it: no consent is asked or kept, nothing is written to
+  `settings.toml`. Nothing is sent for a private device or offline. No serial number, host name or
+  local measure is sent. A failure of the service leaves the fingerprint on the machine, without
+  retry, and is told in the tool result and on standard error. `PRIVACY.md` says it.
+
 ### Changed — the detection holds back the maker requests of other makers
 - `detect_hardware` and `osc-bridge detect` send each port the universal Identity Request and only
   the maker requests of the maker its USB id names (or, with no USB id read, of the drivers whose

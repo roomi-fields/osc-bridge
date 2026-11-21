@@ -9,6 +9,7 @@ mod checksum_lenient;
 mod custom_commands;
 mod detect_consent;
 mod detection_capture;
+mod fingerprint_sharing;
 mod driver_download;
 mod driver_freshness;
 mod dynamic_routing;

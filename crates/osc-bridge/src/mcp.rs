@@ -916,7 +916,9 @@ pub fn tool_schemas() -> Value {
                         "timeout_ms": { "type": "integer", "description": "How long to wait for identity replies, 100-5000 ms (default 800)." },
                         "consent_ports": { "type": "array", "items": { "type": "string" }, "description": "Ports (a part of the name, or the exact out_port index) that receive every maker request, the held back ones too. Ask the person first and pass a port only with their explicit agreement for that port: a request meant for another maker's device may overwrite its memory. A fragment naming several ports or none is refused, and nothing is sent." },
                         "learn": { "type": "boolean", "description": "Learn mode: instead of matching drivers, listen to each device and return its fingerprint (an OSD 0.6 fingerprint: usb, ports, identity_reply, sends, controls) with the measured delay of the identity reply and the period of what it sends alone, beside it. Sends nothing but the universal Identity Request; tell the person to move the device's controls while it listens." },
-                        "listen_ms": { "type": "integer", "description": "Learn mode only: how long to listen, 1000-30000 ms (default 5000)." }
+                        "listen_ms": { "type": "integer", "description": "Learn mode only: how long to listen, 1000-30000 ms (default 5000)." },
+                        "share_fingerprint": { "type": "string", "description": "Learn mode only: the port (a part of its name) whose fingerprint is sent to SynthHub, so that everyone recognises this device. Giving it, with device_name, sends that device's fingerprint to SynthHub (POST /v1/fingerprints): the name, the USB vendor and product ids, the identity_reply, the ports (names without machine numbers), what the device sends and its controls; never a serial number, a host name, a measure or anything about the person. Nothing is sent for a private device or when offline. Ask the person first. Needs device_name." },
+                        "device_name": { "type": "string", "description": "Learn mode only: the name the person gives the device whose fingerprint is shared (share_fingerprint)." }
                     }
                 },
                 "outputSchema": {
@@ -1412,7 +1414,14 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
             install_export(&preset_device(index, wanted)?, &preset_device(index, on)?, wanted, on, confirm)
         }
         "detect_hardware" if args.get("learn").and_then(Value::as_bool) == Some(true) => {
-            learn_hardware(crate::detect::learn_listen(args.get("listen_ms").and_then(Value::as_u64))?)
+            let share = match (args.get("share_fingerprint").and_then(Value::as_str), args.get("device_name").and_then(Value::as_str)) {
+                (None, None) => None,
+                (Some(port), Some(name)) if !name.trim().is_empty() => Some(Share {
+                    port, name: name.trim(), client: link.map(|l| &l.client), private: &opts.private,
+                }),
+                _ => return Err("share_fingerprint and device_name go together: the port, and the name the person gives the device".into()),
+            };
+            learn_hardware(crate::detect::learn_listen(args.get("listen_ms").and_then(Value::as_u64))?, share)
         }
         "detect_hardware" => {
             let probe = args.get("probe").and_then(Value::as_bool).unwrap_or(true);
@@ -1718,8 +1727,9 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>,
 
 /// `detect_hardware` in learn mode: a fingerprint per device, and its measures beside it. The
 /// report's text tells the person how long it listens and to move the controls.
-fn learn_hardware(listen: std::time::Duration) -> Result<Value, String> {
+fn learn_hardware(listen: std::time::Duration, share: Option<Share>) -> Result<Value, String> {
     let learned = crate::detect::learn_all(listen).map_err(|e| format!("MIDI scan: {e}"))?;
+    let sharing = share.map(|s| share_learned(&s, &learned)).transpose()?;
     let devices: Vec<Value> = learned.iter().map(|(d, l)| json!({
         "port": d.label(),
         "inputs": d.inputs,
@@ -1728,10 +1738,50 @@ fn learn_hardware(listen: std::time::Duration) -> Result<Value, String> {
         "measured": l.measured,
     })).collect();
     let notice = crate::detect::learn_notice(listen);
-    let structured = json!({ "probed": true, "learn": true, "listen_ms": listen.as_millis() as u64,
+    let mut structured = json!({ "probed": true, "learn": true, "listen_ms": listen.as_millis() as u64,
         "notice": notice, "devices": devices });
-    let text = format!("{notice}\n{}", serde_json::to_string_pretty(&structured).unwrap_or_default());
+    let mut text = format!("{notice}\n{}", serde_json::to_string_pretty(&structured).unwrap_or_default());
+    if let Some(said) = sharing {
+        structured["sharing"] = json!(said);
+        text.push_str(&format!("\nSharing: {said}"));
+    }
     Ok(content_structured(&text, structured))
+}
+
+/// The fingerprint to share, as `detect_hardware` is told: the port, the name the person gave
+/// and the link and private list that decide whether anything goes out.
+const SENT_FIELDS: &str = "sent: the name, USB vendor and product ids, identity_reply, ports, what it sends, its controls; no serial number, host name or measure";
+
+struct Share<'a> {
+    port: &'a str,
+    name: &'a str,
+    client: Option<&'a crate::online::Online>,
+    private: &'a [String],
+}
+
+/// Shares the fingerprint of the one device `share.port` names, and says what happened. A
+/// failure of the service is said here and on the standard error, and the detection goes on.
+fn share_learned(share: &Share, learned: &[(crate::detect::Unit, crate::detect::Learned)]) -> Result<String, String> {
+    let wanted = share.port.to_lowercase();
+    let found: Vec<_> = learned.iter().filter(|(u, _)| u.inputs.iter().chain(&u.outputs).any(|p| p.to_lowercase().contains(&wanted))).collect();
+    let [(unit, one)] = found.as_slice() else {
+        return Err(format!("share_fingerprint {:?} names {} device(s): name exactly one port", share.port, found.len()));
+    };
+    let slug = slugify(share.name, '-');
+    if crate::online::Settings::covers(share.private, share.name, &slug) {
+        return Ok(format!("not sent: {} is private on this machine", share.name));
+    }
+    let (Some(client), Some(file)) = (share.client, crate::online::settings_file()) else {
+        return Ok("not sent: this copy is not linked to the SynthHub server".into());
+    };
+    Ok(match client.share_fingerprint(&file, share.name, &one.fingerprint) {
+        crate::online::Sharing::Sent => format!("the fingerprint of {} ({}) was sent to SynthHub ({})", share.name, unit.label(), SENT_FIELDS),
+        crate::online::Sharing::Withheld(why) => format!("not sent: {why}"),
+        crate::online::Sharing::Failed(why) => {
+            eprintln!("osc-bridge: the fingerprint of {} was not sent, it stays on this machine: {why}", share.name);
+            format!("not sent, it stays on this machine: {why}")
+        }
+    })
 }
 
 /// The driver of the device a preset tool is told to talk to; a device the
@@ -1918,10 +1968,16 @@ fn load_preset(args: &Value, link: &Link) -> Result<Value, String> {
 
 /// `osc-bridge detect --learn`: the notice first (the person moves the controls while it
 /// listens), then the fingerprint of each port and its measures.
-pub fn print_learning(listen_ms: Option<u64>) -> Result<()> {
+/// With `share` (the port, the name the person gives), that fingerprint is sent to SynthHub when
+/// linked and not private; naming the port is the person's agreement.
+pub fn print_learning(listen_ms: Option<u64>, share: Option<(&str, &str)>) -> Result<()> {
     let listen = crate::detect::learn_listen(listen_ms).map_err(|e| anyhow::anyhow!(e))?;
     println!("{}", crate::detect::learn_notice(listen));
-    let report = learn_hardware(listen).map_err(|e| anyhow::anyhow!(e))?;
+    let client = share.and(crate::online::linked().then(|| crate::online::Online::new(crate::online::SERVER)));
+    let private = crate::online::settings_file().and_then(|f| crate::online::Settings::load(Some(&f)).ok()).map(|s| s.private).unwrap_or_default();
+    let share = share.map(|(port, name)| Share { port, name, client: client.as_ref(), private: &private });
+    let report = learn_hardware(listen, share).map_err(|e| anyhow::anyhow!(e))?;
+    if let Some(said) = report["structuredContent"]["sharing"].as_str() { println!("Sharing: {said}"); }
     let devices = report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default();
     if devices.is_empty() {
         println!("No MIDI port found.");
