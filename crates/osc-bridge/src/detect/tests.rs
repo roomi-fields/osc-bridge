@@ -262,7 +262,7 @@ fn cards() -> Vec<(String, u16, u16)> {
 fn usb_cards_lists_the_short_name_and_ids_of_each_usb_card() {
     assert_eq!(cards(), vec![
         ("Minilab3".to_string(), 0x1c75, 0x0288),
-        ("Minilab3_1".to_string(), 0x1c75, 0x0288),
+        ("Minilab3".to_string(), 0x1c75, 0x0288),
         ("Pad".to_string(), 0x1234, 0x5678),
     ]);
 }
@@ -275,6 +275,43 @@ fn usb_cards_leaves_out_a_card_without_usbid_and_ignores_unreadable_lines() {
     assert_eq!(usb_cards("garbage\n\n [ : \n", &[(0, "zz")]), vec![]);
     assert_eq!(usb_cards(CARDS, &[(1, "not an id"), (3, "1234:5678")]), only_pad, "an unreadable usbid is skipped");
     assert_eq!(usb_cards("", &[]), vec![]);
+}
+
+#[test]
+fn usb_cards_name_a_card_by_its_name_not_its_id() {
+    let listing = " 2 [BCR32          ]: USB-Audio - Behringer BCR-32\n                      Behringer BCR-32 at usb-0000:00:14.0-1\n 5 [Foo            ]: USB-Audio - Foo - Bar - Baz\n 7 [Odd            ]: USB-Audio\n";
+    let got = usb_cards(listing, &[(2, "1397:12cf"), (5, "0001:0002"), (7, "0003:0004")]);
+    assert_eq!(got, vec![
+        ("Behringer BCR-32".to_string(), 0x1397, 0x12cf),
+        ("Foo - Bar - Baz".to_string(), 0x0001, 0x0002),
+    ], "name = text after the first ' - '; a line without it is left out");
+}
+
+const BENCH: &str = " 2 [BCR32          ]: USB-Audio - Behringer BCR-32
+                      Behringer Behringer BCR-32 at usb-0000:00:14.0-1, full speed
+ 3 [Controller     ]: USB-Audio - Electra Controller
+                      Electra Electra Controller at usb-0000:00:14.0-2, full speed
+ 6 [Minilab3       ]: USB-Audio - Minilab3
+                      Arturia Minilab3 at usb-0000:00:14.0-3, full speed
+";
+
+#[test]
+fn every_usb_device_of_the_bench_listing_gets_its_ids_whatever_its_card_id() {
+    let c = usb_cards(BENCH, &[(2, "1397:12cf\n"), (3, "1fc9:82cf\n"), (6, "1c75:020b\n")]);
+    assert_eq!(usb_of_port("Behringer BCR-32:Behringer BCR-32 BCR-32 CTRL 24:0", &c), Some((0x1397, 0x12cf)));
+    assert_eq!(usb_of_port("Electra Controller:Electra Controller Electra Port 28:0", &c), Some((0x1fc9, 0x82cf)));
+    assert_eq!(usb_of_port("Minilab3:Minilab3 MIDI 40:0", &c), Some((0x1c75, 0x020b)));
+    assert_eq!(usb_of_port("BCR32:BCR32 MIDI 1 24:0", &c), None, "the card id names nothing");
+    assert_eq!(usb_of_port("Controller:x 1:0", &c), None, "the card id names nothing");
+}
+
+#[test]
+fn cards_whose_names_squash_alike_share_one_name() {
+    let listing = " 0 [A ]: USB-Audio - Mini Lab 3\n 1 [B ]: USB-Audio - MiniLab-3\n";
+    let differ = usb_cards(listing, &[(0, "1:2"), (1, "3:4")]);
+    assert_eq!(usb_of_port("Minilab3:Minilab3 MIDI 40:0", &differ), None);
+    let same = usb_cards(listing, &[(0, "1:2"), (1, "1:2")]);
+    assert_eq!(usb_of_port("Minilab3:Minilab3 MIDI 40:0", &same), Some((1, 2)));
 }
 
 #[test]

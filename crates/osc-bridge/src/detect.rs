@@ -352,7 +352,8 @@ pub fn output_for(input: &str, outputs: &[String]) -> Option<String> {
 
 /// The USB cards of an ALSA listing: from the text of `/proc/asound/cards`
 /// and the `usbid` text (`vid:pid`, hex) of each card by its number, the
-/// short name of each card that has a readable one, with its ids. A card
+/// name of each card (the text after the first " - " following "]:", what ALSA
+/// names the card's sequencer client; not its id between brackets), with its ids. A card
 /// without `usbid` (virtual, DIN) and an unreadable line are left out.
 pub fn usb_cards(cards: &str, usbids: &[(u32, &str)]) -> Vec<(String, u16, u16)> {
     cards.lines().filter_map(|line| {
@@ -360,7 +361,8 @@ pub fn usb_cards(cards: &str, usbids: &[(u32, &str)]) -> Vec<(String, u16, u16)>
         let digits = line.find(|c: char| !c.is_ascii_digit())?;
         let number: u32 = line[..digits].parse().ok()?;
         let rest = line[digits..].trim_start().strip_prefix('[')?;
-        let name = rest[..rest.find(']')?].trim();
+        let after = rest[rest.find(']')? + 1..].trim_start().strip_prefix(':')?;
+        let name = after.split_once(" - ")?.1.trim();
         let (_, text) = usbids.iter().find(|(n, _)| *n == number)?;
         let (vendor, product) = text.trim().split_once(':')?;
         let vendor = u16::from_str_radix(vendor.trim(), 16).ok()?;
