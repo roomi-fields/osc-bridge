@@ -42,8 +42,8 @@ fn one_run() {
 
     let replies = mcp_session(&server.base, &cache, &[
         common::initialize(),
-        tool_call(1, "list_routes", json!({ "slug": "box" })),
-        tool_call(2, "get_device_docs", json!({ "slug": "synth" })),
+        tool_call(1, "list_routes", json!({ "device": "box" })),
+        tool_call(2, "get_device_docs", json!({ "device": "synth" })),
     ]);
     assert_eq!(replies.len(), 3, "{replies:?}");
     assert!(!replies[0].to_string().contains(NEWER), "not in initialize: {}", replies[0]);

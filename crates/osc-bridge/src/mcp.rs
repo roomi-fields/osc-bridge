@@ -6,7 +6,7 @@
 //! Tools exposed:
 //!  - `list_devices`   — find drivers: in the SynthHub catalogue, or under
 //!    `--devices-dir` (offline: the drivers cached on this machine)
-//!  - `get_device_docs`— fetch the .md companion of one device by slug
+//!  - `get_device_docs`— fetch the .md companion of one device
 //!  - `list_routes`    — return the OSC routes (commands + cc/params) of one device
 //!  - `export_device`  — one driver written as OSCQuery or MIDNAM (`crate::export`)
 //!  - `send`           — emit an OSC message to a running osc-bridge bind port
@@ -234,7 +234,7 @@ fn build_index(devices_dir: &Path, opts: &McpOptions) -> DeviceIndex {
 const LINKED_INSTRUCTIONS: &str = "osc-bridge with the SynthHub catalogue of MIDI implementations (CC, NRPN, \
     SysEx, drum maps) of synths, drum machines and DAWs: each driver is fetched from the SynthHub server when a \
     tool needs it, as other users and agents fixed and confirmed it. Start with list_devices (or detect_hardware), \
-    then list_routes with the slug; usage_status and get_trust tell how far other users confirmed a driver, per \
+    then list_routes with the device; usage_status and get_trust tell how far other users confirmed a driver, per \
     firmware. After testing a driver on the real device, call report_result with the firmware and the device's \
     Identity Reply: it improves the driver for everyone.";
 
@@ -247,14 +247,13 @@ fn trust_in_background(link: std::sync::Arc<Link>) {
     });
 }
 
-/// The driver a tool call needs on this machine, by id or slug: the one it
+/// The driver a tool call needs on this machine, by id or OSC prefix: the one it
 /// reads, or the one it reports on (to tell whether it is private).
 fn driver_wanted(req: &Value) -> Option<&str> {
     if req["method"] != "tools/call" { return None; }
     let (name, args) = (req["params"]["name"].as_str()?, &req["params"]["arguments"]);
     match name {
-        "get_device_docs" | "list_routes" => args["slug"].as_str(),
-        "export_device" | "list_roles" | "set_by_role" | "get_by_role" => args["device"].as_str(),
+        "get_device_docs" | "list_routes" | "export_device" | "list_roles" | "set_by_role" | "get_by_role" => args["device"].as_str(),
         n if crate::online::FORWARDED_TOOLS.contains(&n) => args["device"].as_str(),
         _ => None,
     }
@@ -402,11 +401,11 @@ pub fn tool_schemas() -> Value {
         "tools": [
             {
                 "name": "list_devices",
-                "description": "Find device drivers in the catalogue of synths, drum machines, controllers and DAWs. Without arguments it lists them all; `query` keeps drivers whose vendor, name or slug contain every word (e.g. 'korg minilogue'). Returns name, vendor, OSC prefix (slug), kind, source tier and firmware version when the source states one. Pass the slug to list_routes for the full CC/NRPN/SysEx map.",
+                "description": "Find device drivers in the catalogue of synths, drum machines, controllers and DAWs. Without arguments it lists them all; `query` keeps drivers whose vendor, name or OSC prefix contain every word (e.g. 'korg minilogue'). Returns device (the catalogue id), name, vendor, OSC prefix, kind, source tier and firmware version when the source states one. Pass device to list_routes for the full CC/NRPN/SysEx map.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
-                        "query": { "type": "string", "description": "Words that must all appear in the vendor, name or slug (case-insensitive)." },
+                        "query": { "type": "string", "description": "Words that must all appear in the vendor, name or OSC prefix (case-insensitive)." },
                         "vendor": { "type": "string", "description": "Exact vendor name, case-insensitive (e.g. 'Moog')." },
                         "kind": { "type": "string", "enum": ["hardware", "software"] },
                         "limit": { "type": "integer", "minimum": 1, "description": "Return at most this many drivers." }
@@ -422,18 +421,18 @@ pub fn tool_schemas() -> Value {
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    "id": { "type": "string", "description": "Driver id (path in the catalogue), e.g. 'korg/minilogue'." },
+                                    "device": { "type": "string", "description": "The device: its catalogue id, e.g. 'korg/minilogue'. Pass it as it is to list_routes and the other tools." },
                                     "usage_status": { "type": ["string", "null"], "description": "Hosted server only: trust from usage reports (see get_trust)." },
                                     "name": { "type": "string" },
                                     "vendor": { "type": "string" },
-                                    "slug": { "type": "string", "description": "OSC prefix without the leading slash." },
+                                    "osc_prefix": { "type": "string", "description": "OSC prefix without the leading slash." },
                                     "kind": { "type": "string", "description": "'hardware' or 'software'." },
                                     "revision": { "type": "string" },
                                     "source_tier": { "type": "string" },
                                     "firmware": { "type": ["string", "null"], "description": "Firmware the source documents; null when it does not say." },
                                     "file": { "type": "string" }
                                 },
-                                "required": ["name", "vendor", "slug", "kind"]
+                                "required": ["device", "name", "vendor", "osc_prefix", "kind"]
                             }
                         }
                     },
@@ -448,22 +447,22 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "get_device_docs",
-                "description": "Fetch the markdown companion documentation for one device, if present. The slug is the device's OSC prefix without the leading slash (e.g. 'ableton' for /ableton).",
+                "description": "Fetch the markdown companion documentation for one device, if present. The device is a catalogue id or an OSC prefix without the leading slash (e.g. 'ableton' for /ableton).",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
-                        "slug": { "type": "string", "description": "Device slug, e.g. 'ableton' or 'minilab3'" }
+                        "device": { "type": "string", "description": "The device: a catalogue id or OSC prefix, e.g. 'ableton' or 'minilab3'." }
                     },
-                    "required": ["slug"]
+                    "required": ["device"]
                 },
                 "outputSchema": {
                     "type": "object",
                     "properties": {
-                        "slug": { "type": "string" },
+                        "device": { "type": "string", "description": "The device as the caller named it." },
                         "has_docs": { "type": "boolean", "description": "False when no companion .md exists for the device." },
                         "markdown": { "type": "string", "description": "The companion documentation, or a not-found message when has_docs is false." }
                     },
-                    "required": ["slug", "has_docs", "markdown"]
+                    "required": ["device", "has_docs", "markdown"]
                 },
                 "annotations": {
                     "title": "Get device docs",
@@ -478,9 +477,9 @@ pub fn tool_schemas() -> Value {
                 "inputSchema": {
                     "type": "object",
                     "properties": {
-                        "slug": { "type": "string", "description": "Device slug, e.g. 'minilab3'" }
+                        "device": { "type": "string", "description": "The device: a catalogue id or OSC prefix, e.g. 'minilab3'." }
                     },
-                    "required": ["slug"]
+                    "required": ["device"]
                 },
                 "outputSchema": {
                     "type": "object",
@@ -530,7 +529,7 @@ pub fn tool_schemas() -> Value {
                 "inputSchema": {
                     "type": "object",
                     "properties": {
-                        "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or slug, from list_devices." },
+                        "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or OSC prefix, from list_devices." },
                         "format": { "type": "string", "enum": crate::export::format_names() }
                     },
                     "required": ["device", "format"],
@@ -560,8 +559,8 @@ pub fn tool_schemas() -> Value {
                 "inputSchema": {
                     "type": "object",
                     "properties": {
-                        "device": { "type": "string", "description": "The driver to export: id (e.g. 'korg/minilogue') or slug, from list_devices." },
-                        "on": { "type": "string", "description": "The device that receives it: its catalogue id or slug; its driver says what it receives." },
+                        "device": { "type": "string", "description": "The driver to export: id (e.g. 'korg/minilogue') or OSC prefix, from list_devices." },
+                        "on": { "type": "string", "description": "The device that receives it: its catalogue id or OSC prefix; its driver says what it receives." },
                         "confirm_overwrite": { "type": "boolean", "description": "True once the user agreed that the file may be overwritten on the target; without it nothing is sent." }
                     },
                     "required": ["device", "on"],
@@ -836,11 +835,11 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "backup_presets",
-                "description": "Back up a hardware device's presets as a .syx file. The device is named (device: a catalogue id or slug, see list_devices): its driver says which messages are its sounds, on any channel or device number, and how to ask for them. Listens on the device's MIDI input and records those messages (a 'bulk dump'), stopping 3 s after the last one. Either the user starts the dump from the device's menu during the call, or pass out_port and the driver's dump request is sent. Use detect_hardware first to find the ports.",
+                "description": "Back up a hardware device's presets as a .syx file. The device is named (device: a catalogue id or OSC prefix, see list_devices): its driver says which messages are its sounds, on any channel or device number, and how to ask for them. Listens on the device's MIDI input and records those messages (a 'bulk dump'), stopping 3 s after the last one. Either the user starts the dump from the device's menu during the call, or pass out_port and the driver's dump request is sent. Use detect_hardware first to find the ports.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
-                        "device": { "type": "string", "description": "The device's catalogue id or slug (e.g. 'korg/minilogue'); a device the catalogue does not know has to be described first." },
+                        "device": { "type": "string", "description": "The device's catalogue id or OSC prefix (e.g. 'korg/minilogue'); a device the catalogue does not know has to be described first." },
                         "in_port": { "type": "string", "description": "MIDI IN port of the device: index or name fragment (e.g. 'minilab')." },
                         "file": { "type": "string", "description": "Path of the .syx file to write." },
                         "out_port": { "type": "string", "description": "MIDI OUT port: the driver's dump request is sent on it first (index or name fragment)." },
@@ -871,7 +870,7 @@ pub fn tool_schemas() -> Value {
                 "inputSchema": {
                     "type": "object",
                     "properties": {
-                        "device": { "type": "string", "description": "The device's catalogue id or slug (e.g. 'korg/minilogue'); a device the catalogue does not know has to be described first." },
+                        "device": { "type": "string", "description": "The device's catalogue id or OSC prefix (e.g. 'korg/minilogue'); a device the catalogue does not know has to be described first." },
                         "out_port": { "type": "string", "description": "MIDI OUT port of the device: index or name fragment." },
                         "file": { "type": "string", "description": "Path of the .syx file to send." },
                         "confirm_overwrite": { "type": "boolean", "description": "Must be true: the user agreed to overwrite the device's memory." },
@@ -943,7 +942,7 @@ pub fn tool_schemas() -> Value {
                 "inputSchema": {
                     "type": "object",
                     "properties": {
-                        "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or slug, from list_devices." },
+                        "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or OSC prefix, from list_devices." },
                         "outcome": { "type": "string", "enum": ["works", "fails", "partial"] },
                         "address": { "type": "string", "description": "One OSC address of the driver (e.g. '/minilogue/filter/cutoff'); omit to report on the whole driver." },
                         "firmware": { "type": "string", "description": "Firmware version of the tested device." },
@@ -977,7 +976,7 @@ pub fn tool_schemas() -> Value {
                 "inputSchema": {
                     "type": "object",
                     "properties": {
-                        "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or slug, from list_devices." }
+                        "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or OSC prefix, from list_devices." }
                     },
                     "required": ["device"],
                     "additionalProperties": false
@@ -1004,7 +1003,7 @@ pub fn tool_schemas() -> Value {
                 "inputSchema": {
                     "type": "object",
                     "properties": {
-                        "device": { "type": "string", "description": "Driver id or slug." },
+                        "device": { "type": "string", "description": "Driver id or OSC prefix." },
                         "address": { "type": "string", "description": "The driver's OSC address for the control." },
                         "label": { "type": "string", "description": "The control's panel label, when the driver has no address for it." },
                         "cc": { "type": "integer", "minimum": 0, "maximum": 127 },
@@ -1035,7 +1034,7 @@ pub fn tool_schemas() -> Value {
                 "name": "submit_fix",
                 "description": "Contribute a corrected variant of a driver from what the catalogue learned: where learned mappings (get_trust → mappings, differs: true) disagree with the driver on one firmware, builds a copy of the driver with the learned CC / NRPN numbers, as a new file for that firmware, and queues it for the merge job.",
                 "inputSchema": { "type": "object", "properties": {
-                    "device": { "type": "string", "description": "Driver id or slug." },
+                    "device": { "type": "string", "description": "Driver id or OSC prefix." },
                     "firmware": { "type": "string", "description": "Needed when learned mappings differ on several firmwares." } },
                     "required": ["device"], "additionalProperties": false },
                 "annotations": { "title": "Contribute a fix from learned mappings", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
@@ -1052,7 +1051,7 @@ pub fn tool_schemas() -> Value {
                 "inputSchema": {
                     "type": "object",
                     "properties": {
-                        "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or slug." },
+                        "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or OSC prefix." },
                         "name": { "type": "string", "description": "Its name (80 characters at most)." },
                         "own_sound": { "type": "boolean", "description": "Must be true: the user made it (not a factory preset, not someone else's)." },
                         "kind": { "type": "string", "enum": ["sound", "sequence", "kit", "project", "bank", "clip"], "description": "What it is (default sound)." },
@@ -1104,7 +1103,7 @@ pub fn tool_schemas() -> Value {
                 "inputSchema": {
                     "type": "object",
                     "properties": {
-                        "device": { "type": "string", "description": "Driver id or slug (its other variants are included)." },
+                        "device": { "type": "string", "description": "Driver id or OSC prefix (its other variants are included)." },
                         "kind": { "type": "string", "enum": ["sound", "sequence", "kit", "project", "bank", "clip"] },
                         "category": { "type": "string", "enum": ["bass", "lead", "pad", "pluck", "keys", "organ", "brass", "strings", "bell", "arp", "sequence", "drums", "percussion", "fx", "texture", "vocal", "other"] },
                         "genre": { "type": "string" },
@@ -1293,6 +1292,7 @@ fn tool_names(opts: &McpOptions) -> Vec<&'static str> {
 }
 
 fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, link: Option<&Link>) -> Result<Value, String> {
+    if args.get("slug").is_some() { device_arg(args)?; }
     if let Some(link) = link {
         if crate::online::FORWARDED_TOOLS.contains(&name) {
             if let Some(id) = private_device(index, opts, args) {
@@ -1362,7 +1362,7 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
             link_tool(name, args, target)
         }
         "backup_presets" => {
-            let wanted = args.get("device").and_then(Value::as_str).ok_or("missing device: name the device whose sounds are saved")?;
+            let wanted = device_arg(args)?;
             let in_port = args.get("in_port").and_then(Value::as_str).ok_or("missing in_port")?;
             let file = args.get("file").and_then(Value::as_str).ok_or("missing file")?;
             let out_port = args.get("out_port").and_then(Value::as_str);
@@ -1371,7 +1371,7 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
             backup_presets(&dev, in_port, Path::new(file), out_port, max)
         }
         "restore_presets" => {
-            let wanted = args.get("device").and_then(Value::as_str).ok_or("missing device: name the device that receives the file")?;
+            let wanted = device_arg(args)?;
             if args.get("confirm_overwrite").and_then(Value::as_bool) != Some(true) {
                 return Err("restore overwrites the device's memory: ask the user, then pass confirm_overwrite: true".into());
             }
@@ -1386,7 +1386,7 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
             restore_presets(&dev, out_port, Path::new(file), target.as_ref().map(|(b, n)| (b.as_str(), *n)))
         }
         "install_export" => {
-            let wanted = args.get("device").and_then(Value::as_str).ok_or("missing device: the driver to export")?;
+            let wanted = device_arg(args)?;
             let on = args.get("on").and_then(Value::as_str).ok_or("missing on: the device that receives the export")?;
             let confirm = args.get("confirm_overwrite").and_then(Value::as_bool) == Some(true);
             install_export(&preset_device(index, wanted)?, &preset_device(index, on)?, wanted, on, confirm)
@@ -1400,16 +1400,24 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
     }
 }
 
+/// The one reading of the argument that names a device: `device`. The former
+/// `slug`, alone or beside `device`, is refused before any device is read.
+fn device_arg(args: &Value) -> Result<&str, String> {
+    if args.get("slug").is_some() {
+        return Err("`slug` no longer exists: name the device by `device` (a catalogue id or an OSC prefix, see list_devices)".into());
+    }
+    args.get("device").and_then(Value::as_str).ok_or_else(|| "missing device: name the device (a catalogue id or an OSC prefix, see list_devices)".to_string())
+}
+
 /// The catalogue tools — `list_devices`, `get_device_docs`, `list_routes`,
 /// `export_device` — shared with the hosted server; None for any other
 /// tool. `status` gives a driver's trust for `list_devices`, when known.
 pub fn catalogue_tool(name: &str, args: &Value, index: &DeviceIndex, status: &dyn Fn(&str) -> Option<String>)
                       -> Option<Result<Value, String>> {
-    let slug = || args.get("slug").and_then(Value::as_str).ok_or_else(|| "missing slug".to_string());
     Some(match name {
         "list_devices" => list_devices(index, &DeviceFilter::from_args(args), status),
-        "get_device_docs" => slug().and_then(|s| get_device_docs(index, s)),
-        "list_routes" => slug().and_then(|s| list_routes(index, s)),
+        "get_device_docs" => device_arg(args).and_then(|d| get_device_docs(index, d)),
+        "list_routes" => device_arg(args).and_then(|d| list_routes(index, d)),
         "export_device" => export_device(index, args),
         _ => return None,
     })
@@ -1453,7 +1461,7 @@ pub fn privacy(path: &Path, index: &DeviceIndex, server: Option<&crate::online::
                 let known = found["variants"].as_array()?.iter().any(|v| v["id"] == name);
                 if known { Some(name.to_string()) } else { found["best"].as_str().map(str::to_string) }
             })
-            .ok_or_else(|| anyhow::anyhow!("no device '{name}' in the catalogue (use an id or slug from list_devices, or vendor/*)")),
+            .ok_or_else(|| anyhow::anyhow!("no device '{name}' in the catalogue (use an id or OSC prefix from list_devices, or vendor/*)")),
     };
     let changed = offline.is_some() || !private.is_empty() || !public.is_empty();
     if let Some(o) = offline { settings.offline = o; }
@@ -1549,7 +1557,7 @@ pub fn hex_bytes(bytes: &[u8]) -> String {
 pub fn match_port(catalogue: &[crate::detect::Candidate], port: &str, replies: &[Vec<u8>]) -> Vec<Value> {
     crate::detect::rank(port, replies, catalogue, 3).iter().map(|r| {
         let c = &catalogue[r.index];
-        let mut out = json!({ "id": c.id, "slug": c.slug, "name": c.name, "vendor": c.vendor, "source_tier": c.tier, "score": r.score });
+        let mut out = json!({ "device": c.id, "osc_prefix": c.slug, "name": c.name, "vendor": c.vendor, "source_tier": c.tier, "score": r.score });
         if let Some(rec) = &r.recognised {
             let by: Vec<&str> = [(rec.by_reply, "identity reply"), (rec.by_port, "port name")].iter()
                 .filter(|(on, _)| *on).map(|(_, what)| *what).collect();
@@ -1593,11 +1601,11 @@ fn detect_hardware(index: &DeviceIndex, server: Option<&crate::online::Online>, 
     };
     let devices: Vec<Value> = found.iter().zip(matched).map(|(d, mut candidates)| {
         for c in candidates.iter_mut() {
-            if let Some(e) = c["id"].as_str().and_then(|id| index.find(id)) {
+            if let Some(e) = c["device"].as_str().and_then(|id| index.find(id)) {
                 c["file"] = json!(e.path.display().to_string());
             }
         }
-        let driver = candidates.first().and_then(|c| if by_file { c["file"].as_str() } else { c["id"].as_str() });
+        let driver = candidates.first().and_then(|c| if by_file { c["file"].as_str() } else { c["device"].as_str() });
         let run_command = match (driver, d.out_index) {
             (Some(driver), Some(out)) => Some(format!("osc-bridge run --device {driver} --out-port {out}{}",
                 d.in_index.map(|n| format!(" --in-port {n}")).unwrap_or_default())),
@@ -1840,8 +1848,8 @@ pub fn print_detection(devices_dir: Option<&Path>, probe: bool) -> Result<()> {
         }
         for c in d["candidates"].as_array().into_iter().flatten() {
             let fw = c["firmware"].as_str().map(|f| format!(", firmware {f}")).unwrap_or_default();
-            println!("  match: {} — {} ({}, score {}{fw})", c["slug"].as_str().unwrap_or(""),
-                c["file"].as_str().or(c["id"].as_str()).unwrap_or(""), c["source_tier"].as_str().unwrap_or(""), c["score"]);
+            println!("  match: {} — {} ({}, score {}{fw})", c["device"].as_str().unwrap_or(""),
+                c["file"].as_str().or(c["device"].as_str()).unwrap_or(""), c["source_tier"].as_str().unwrap_or(""), c["score"]);
         }
         if let Some(cmd) = d["run_command"].as_str() {
             println!("  run:   {cmd}");
@@ -1883,11 +1891,11 @@ fn list_devices(index: &DeviceIndex, filter: &DeviceFilter, status: &dyn Fn(&str
     let matching: Vec<&DeviceIndexEntry> = index.entries.iter().filter(|e| filter.keeps(e)).collect();
     let count = matching.len();
     let devices: Vec<Value> = matching.into_iter().take(filter.limit.unwrap_or(usize::MAX)).map(|e| json!({
-        "id": e.id,
+        "device": e.id,
         "usage_status": status(&e.id),
         "name": e.name,
         "vendor": e.vendor,
-        "slug": e.slug,
+        "osc_prefix": e.slug,
         "kind": e.kind,
         "revision": e.revision,
         "source_tier": e.tier,
@@ -1931,13 +1939,13 @@ pub fn vendor_dir(index: &DeviceIndex, vendor: &str) -> String {
 }
 
 fn load_device_by_slug(index: &DeviceIndex, slug: &str) -> Result<Device, String> {
-    let path = index.find_path(slug)
-        .ok_or_else(|| format!("no device with slug '{slug}'"))?;
+    let path = index.find(slug).map(|e| e.path.as_path()).or_else(|| index.find_path(slug))
+        .ok_or_else(|| format!("no device '{slug}' (see list_devices)"))?;
     crate::device::load_with_docs(path).map_err(|e| format!("load {}: {e}", path.display()))
 }
 
 fn export_device(index: &DeviceIndex, args: &Value) -> Result<Value, String> {
-    let wanted = args.get("device").and_then(Value::as_str).ok_or("missing device")?;
+    let wanted = device_arg(args)?;
     let format: crate::export::Format = args.get("format").and_then(Value::as_str).ok_or("missing format")?
         .parse().map_err(|e: anyhow::Error| e.to_string())?;
     let entry = index.find(wanted).ok_or_else(|| format!("no driver '{wanted}' (see list_devices)"))?;
@@ -1957,7 +1965,7 @@ fn get_device_docs(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
         Some(md) => (true, md),
         None => (false, format!("No companion .md found for device '{slug}'.")),
     };
-    let structured = json!({ "slug": slug, "has_docs": has_docs, "markdown": markdown });
+    let structured = json!({ "device": slug, "has_docs": has_docs, "markdown": markdown });
     Ok(content_structured(&markdown, structured))
 }
 

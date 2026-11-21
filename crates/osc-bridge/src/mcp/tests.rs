@@ -122,7 +122,7 @@ fn an_offline_copy_does_not_offer_the_server_tools() {
 #[test]
 fn the_catalogue_tools_are_shared_with_the_hosted_server() {
     let idx = fixtures();
-    let routes = catalogue_tool("list_routes", &json!({"slug": "minilogue"}), &idx, &|_| None).unwrap().unwrap();
+    let routes = catalogue_tool("list_routes", &json!({"device": "minilogue"}), &idx, &|_| None).unwrap().unwrap();
     assert!(routes["structuredContent"].is_object());
     let listed = catalogue_tool("list_devices", &json!({"query": "minilogue", "limit": 1}), &idx, &|_| Some("unconfirmed".into()))
         .unwrap().unwrap();
@@ -240,7 +240,7 @@ fn tool_failure_is_a_result_and_unknown_tool_a_protocol_error() {
     let idx = fixtures();
     let opts = test_opts();
     let call = |name: &str| handle_request(&json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
-        "params": {"name": name, "arguments": {"slug": "no-such-device"}}}), &opts, &idx, None).unwrap();
+        "params": {"name": name, "arguments": {"device": "no-such-device"}}}), &opts, &idx, None).unwrap();
     let failed = call("list_routes");
     assert_eq!(failed["result"]["isError"], json!(true));
     assert!(failed["result"]["content"][0]["text"].as_str().unwrap().contains("no-such-device"));
@@ -266,17 +266,18 @@ fn port_names_and_identities_resolve_to_their_driver() {
     for (port, want) in [("minilogue MIDI 1", "korg/minilogue"), ("Bass Station II", "novation/bass_station_ii"),
                          ("Electra Controller Electra Port 1", "electra-one/electra-one")] {
         let best = match_port(&cat, port, &[]);
-        assert_eq!(best.first().map(|c| c["id"].clone()), Some(json!(want)), "{port}: {best:?}");
+        assert_eq!(best.first().map(|c| c["device"].clone()), Some(json!(want)), "{port}: {best:?}");
     }
     // An Identity Reply from the maker puts its driver first.
     let acme = crate::detect::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
     let best = match_port(&cat, "Box", &[acme.reply()]);
-    assert_eq!(best[0]["slug"], "box", "{best:?}");
+    assert_eq!(best[0]["osc_prefix"], "box", "{best:?}");
     // Its identity block names the firmware, which picks the variant for it.
-    assert_eq!(best[0]["id"], "acme/box.vendor.fw-2", "{best:?}");
+    assert_eq!(best[0]["device"], "acme/box.vendor.fw-2", "{best:?}");
+    assert!(best[0].get("id").is_none() && best[0].get("slug").is_none(), "one word names the device: {best:?}");
     assert_eq!((best[0]["firmware"].as_str(), &best[0]["recognised_by"]), (Some("2.0.0.0"), &json!(["identity reply"])));
     let nameless = match_port(&cat, "USB MIDI Interface", &[acme.reply()]);
-    assert_eq!(nameless[0]["id"], "acme/box.vendor.fw-2", "behind a port named after nothing: {nameless:?}");
+    assert_eq!(nameless[0]["device"],"acme/box.vendor.fw-2", "behind a port named after nothing: {nameless:?}");
     let other_fw = crate::detect::Identity { version: [3, 0, 0, 0], ..acme.clone() };
     assert!(match_port(&cat, "Box", &[other_fw.reply()])[0]["score"].as_u64() < best[0]["score"].as_u64());
     assert!(best.iter().all(|c| c.get("file").is_none()), "no path of the machine that matched them");
@@ -395,7 +396,9 @@ fn fake_server(root: &Path) -> (String, std::sync::Arc<std::sync::Mutex<Vec<Stri
 fn a_call_names_the_driver_it_needs() {
     let call = |name: &str, args: Value| json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
         "params": {"name": name, "arguments": args}});
-    assert_eq!(driver_wanted(&call("list_routes", json!({"slug": "minilogue"}))), Some("minilogue"));
+    assert_eq!(driver_wanted(&call("list_routes", json!({"device": "minilogue"}))), Some("minilogue"));
+    assert_eq!(driver_wanted(&call("get_device_docs", json!({"device": "korg/minilogue"}))), Some("korg/minilogue"));
+    assert_eq!(driver_wanted(&call("list_routes", json!({"slug": "minilogue"}))), None, "slug no longer names a device");
     assert_eq!(driver_wanted(&call("export_device", json!({"device": "korg/minilogue", "format": "midnam"}))), Some("korg/minilogue"));
     assert_eq!(driver_wanted(&call("report_result", json!({"device": "minilogue", "outcome": "works"}))), Some("minilogue"));
     assert_eq!(driver_wanted(&call("list_devices", json!({"query": "korg"}))), None, "the server lists them");
@@ -424,9 +427,9 @@ fn a_local_copy_fetches_the_drivers_it_needs_and_forwards_reports() {
     let opts = McpOptions { online: true, devices_dir: None, ..test_opts() };
     let index = DeviceIndex::build(&cache);
     let listed = call_tool("list_devices", &json!({"query": "minilogue"}), &opts, &index, Some(&link)).unwrap();
-    assert_eq!(listed["structuredContent"]["devices"][0]["id"], "korg/minilogue", "{listed}");
+    assert_eq!(listed["structuredContent"]["devices"][0]["device"], "korg/minilogue", "{listed}");
     let matched = link.client.detect(&[json!({"port": "minilogue MIDI 1"})]).unwrap();
-    assert_eq!(matched[0]["candidates"][0]["id"], "korg/minilogue", "{matched:?}");
+    assert_eq!(matched[0]["candidates"][0]["device"], "korg/minilogue", "{matched:?}");
     let acme = crate::detect::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
     let matched = link.client.detect(&[json!({"port": "USB MIDI", "replies_hex": [hex_bytes(&acme.reply())]})]).unwrap();
     assert_eq!(matched[0]["candidates"][0]["firmware"], "2.0.0.0", "{matched:?}");
@@ -680,4 +683,94 @@ fn send_says_the_bridge_does_not_answer_at_that_address_when_nothing_replies() {
     };
     assert!(is_error, "silence is not a sent message: {outcome:?}");
     assert!(text.contains(&addr.to_string()), "the address that did not answer: {text}");
+}
+
+#[test]
+fn the_local_tools_that_name_a_device_take_device_and_no_slug() {
+    let schemas = tool_schemas();
+    let tools = schemas["tools"].as_array().unwrap();
+    let tool = |n: &str| tools.iter().find(|t| t["name"] == n).unwrap_or_else(|| panic!("no tool {n}"));
+    for name in ["get_device_docs", "list_routes"] {
+        let t = tool(name);
+        assert!(t["inputSchema"]["properties"]["device"].is_object(), "{name} takes device: {t}");
+        assert_eq!(t["inputSchema"]["required"], json!(["device"]), "{name}");
+    }
+    assert_eq!(tool("get_device_docs")["outputSchema"]["required"], json!(["device", "has_docs", "markdown"]));
+    assert!(tool("get_device_docs")["outputSchema"]["properties"]["device"].is_object());
+    assert!(tool("get_device_docs")["outputSchema"]["properties"].get("slug").is_none());
+    for t in tools {
+        assert!(t["inputSchema"]["properties"].get("slug").is_none(), "{} still takes slug", t["name"]);
+        let described = serde_json::to_string(t).unwrap();
+        assert!(!described.contains("or slug"), "{} says 'or slug': {described}", t["name"]);
+    }
+    let entry = &tool("list_devices")["outputSchema"]["properties"]["devices"]["items"];
+    assert!(entry["properties"]["device"].is_object(), "{entry}");
+    assert!(entry["properties"].get("slug").is_none() && entry["properties"].get("id").is_none(), "{entry}");
+    assert!(entry["properties"]["osc_prefix"].is_object(), "{entry}");
+    let req: Vec<&str> = entry["required"].as_array().unwrap().iter().filter_map(Value::as_str).collect();
+    assert!(req.contains(&"osc_prefix") && !req.contains(&"slug"), "{req:?}");
+}
+
+#[test]
+fn a_call_that_passes_slug_is_refused_with_an_error_naming_device_before_any_device_is_read() {
+    let idx = fixtures();
+    let opts = test_opts();
+    let tools = ["get_device_docs", "list_routes", "export_device", "list_roles", "get_by_role", "set_by_role"];
+    for tool in tools {
+        for args in [json!({"slug": "minilogue", "format": "midnam"}), json!({"slug": "minilogue", "device": "minilogue", "format": "midnam"})] {
+            let err = call_tool(tool, &args, &opts, &idx, None).unwrap_err();
+            assert!(err.contains("slug") && err.contains("device"), "{tool} {args}: {err}");
+            assert!(err.contains("no longer"), "{tool}: {err}");
+        }
+    }
+    // Refused whatever the device is, even one the catalogue does not know.
+    let err = catalogue_tool("list_routes", &json!({"slug": "no-such", "device": "no-such"}), &idx, &|_| None).unwrap().unwrap_err();
+    assert!(err.contains("slug") && err.contains("device") && !err.contains("no device"), "{err}");
+}
+
+#[test]
+fn a_call_without_device_says_device_is_missing() {
+    let idx = fixtures();
+    for tool in ["get_device_docs", "list_routes"] {
+        let err = catalogue_tool(tool, &json!({}), &idx, &|_| None).unwrap().unwrap_err();
+        assert!(err.contains("device") && !err.contains("slug"), "{tool}: {err}");
+    }
+}
+
+#[test]
+fn an_unknown_device_is_named_as_a_device() {
+    let idx = fixtures();
+    let err = list_routes(&idx, "no-such-device").unwrap_err();
+    assert!(err.contains("no-such-device") && err.contains("device") && !err.contains("slug"), "{err}");
+}
+
+#[test]
+fn get_device_docs_gives_back_the_device_as_the_caller_named_it() {
+    let idx = fixtures();
+    let docs = catalogue_tool("get_device_docs", &json!({"device": "electra1"}), &idx, &|_| None).unwrap().unwrap();
+    let sc = &docs["structuredContent"];
+    assert_eq!(sc["device"], "electra1", "{sc}");
+    assert_eq!(sc["has_docs"], json!(true));
+    assert!(sc["markdown"].as_str().is_some_and(|m| !m.is_empty()));
+    assert!(sc.get("slug").is_none(), "{sc}");
+    let none = catalogue_tool("get_device_docs", &json!({"device": "box"}), &idx, &|_| None).unwrap().unwrap();
+    assert_eq!(none["structuredContent"]["device"], "box");
+    assert!(none["structuredContent"]["markdown"].as_str().unwrap().contains("'box'"));
+}
+
+#[test]
+fn list_devices_names_each_device_by_its_catalogue_id_and_its_prefix_by_osc_prefix() {
+    let idx = fixtures();
+    let res = list_devices(&idx, &DeviceFilter::default(), &|_| None).unwrap();
+    let devices = res["structuredContent"]["devices"].as_array().unwrap();
+    assert!(!devices.is_empty());
+    for (d, e) in devices.iter().zip(&idx.entries) {
+        assert_eq!(d["device"], json!(e.id), "{d}");
+        assert_eq!(d["osc_prefix"], json!(e.slug), "{d}");
+        assert!(d.get("id").is_none() && d.get("slug").is_none(), "no second name for the device: {d}");
+    }
+    // What list_devices gives is what list_routes takes back.
+    let first = devices.iter().find(|d| d["device"] == "korg/minilogue").expect("minilogue listed");
+    let back = catalogue_tool("list_routes", &json!({"device": first["osc_prefix"]}), &idx, &|_| None).unwrap();
+    assert!(back.is_ok(), "{back:?}");
 }

@@ -136,9 +136,9 @@ fn a_session_with_two_devices_asks_only_for_those_two_drivers() {
     let server = FakeSynthHub::start(&root, None);
     let session = [
         common::initialize(),
-        tool_call(1, "list_routes", json!({ "slug": "box" })),
-        tool_call(2, "get_device_docs", json!({ "slug": "synth" })),
-        tool_call(3, "list_routes", json!({ "slug": "box" })),
+        tool_call(1, "list_routes", json!({ "device": "box" })),
+        tool_call(2, "get_device_docs", json!({ "device": "synth" })),
+        tool_call(3, "list_routes", json!({ "device": "box" })),
     ];
 
     let replies = mcp_session(&server.base, &cache, &session);

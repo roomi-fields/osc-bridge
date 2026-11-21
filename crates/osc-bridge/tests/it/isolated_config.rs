@@ -13,7 +13,7 @@ fn a_session_keeps_the_account_in_its_own_configuration_folder() {
     catalogue(&root);
     let server = FakeSynthHub::start(&root, None);
     let home = ConfigHome::new();
-    let requests = [initialize(), tool_call(1, "get_device_docs", json!({ "slug": "synth" }))];
+    let requests = [initialize(), tool_call(1, "get_device_docs", json!({ "device": "synth" }))];
 
     let replies = crate::common::mcp_session_in(&home, &server.base, &cache, &requests);
 

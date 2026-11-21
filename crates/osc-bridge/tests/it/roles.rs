@@ -206,7 +206,7 @@ fn a_driver_of_the_earlier_version_loads_and_is_served_as_before() {
     let e = &dev.cc_params.as_ref().unwrap().entries[0];
     assert!(e.role.is_none() && e.default.is_none() && e.priority.is_none() && e.step_count.is_none());
     let bridge = FakeBridge::start(&[]);
-    let routes = call(&root, bridge.addr, "list_routes", json!({"slug": "old"}));
+    let routes = call(&root, bridge.addr, "list_routes", json!({"device": "old"}));
     assert!(!is_error(&routes), "{routes}");
     assert_eq!(routes["structuredContent"]["cc_params"][0]["address"], "/old/filter/cutoff");
 }

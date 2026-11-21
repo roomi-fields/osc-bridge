@@ -11,6 +11,15 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed (breaking) — the local MCP tools name a device by `device`, and `slug` is gone
+- `get_device_docs` and `list_routes` take `device` (a catalogue id or an OSC prefix), as the
+  other tools do. A call that passes `slug`, alone or beside `device`, is refused with an error
+  that says to name the device by `device`; a call with neither says `device` is missing.
+- In a `list_devices` entry and a `detect_hardware` candidate, `device` is the catalogue id
+  (it replaces `id` and `slug`) and the OSC prefix is `osc_prefix`. `get_device_docs` returns
+  `device` as the caller passed it.
+- The unknown-device message and the `match:` line of the command-line detection say `device`.
+
 ## [0.23.1] — 2026-11-20
 
 ### Fixed — the OSCQuery export keeps a command whose address takes a number
