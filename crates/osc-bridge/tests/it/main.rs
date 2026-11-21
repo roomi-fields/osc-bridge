@@ -8,6 +8,7 @@ mod checksum_after_script;
 mod checksum_lenient;
 mod custom_commands;
 mod detect_consent;
+mod detect_probes_wire;
 mod detection_capture;
 mod fingerprint_sharing;
 mod first_driver_path;

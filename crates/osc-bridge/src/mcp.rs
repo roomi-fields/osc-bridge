@@ -1583,7 +1583,17 @@ pub fn fault_blocks(faults: &[crate::device::DeviceFault]) -> Vec<String> {
 
 /// The probes as the hosted server lists them (`GET /v1/detect`).
 pub fn probes_json(probes: &[crate::detect::Probe]) -> Value {
-    json!({ "probes": probes.iter().map(|p| json!({ "request_hex": hex_bytes(&p.request), "ports": p.ports })).collect::<Vec<_>>() })
+    let one = |p: &crate::detect::Probe| {
+        let mut o = json!({ "request_hex": hex_bytes(&p.request), "ports": p.ports });
+        if !p.usb.is_empty() {
+            o["usb"] = p.usb.iter().map(|(v, d)| json!({ "vendor_id": v, "product_id": d })).collect();
+        }
+        if !p.match_ports.is_empty() {
+            o["match_ports"] = json!(p.match_ports);
+        }
+        o
+    };
+    json!({ "probes": probes.iter().map(one).collect::<Vec<_>>() })
 }
 
 /// Bytes as `F0 7E 7F …`.

@@ -11,6 +11,12 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Fixed — the probes the service lists say their maker
+- `probes_json` (the answer to `GET /v1/detect`) now writes, for each probe whose identity has them,
+  `usb` (a list of `{vendor_id, product_id}`) and `match_ports` (the port names of the identity),
+  each key for itself and absent when empty. `Online::probes` reads back the same probes. A linked
+  copy therefore sends a device its maker's requests, not only the universal one.
+
 ### Added — an agent goes from an unknown device to a first driver
 - `detect_hardware` in learn mode gives each device the local catalogue has no driver for a
   `next_step` (in the structured result and in the text): have the person name it, then map its
