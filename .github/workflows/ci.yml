@@ -2,10 +2,10 @@ name: CI
 
 on:
   push:
-    branches: [main, 'agent/**']
+    branches: [ main ]
   pull_request:
   release:
-    types: [published]
+    types: [ published ]
   # Re-publishes the npm wrapper of an existing release (binaries already
   # attached), e.g. when the release's own publish step failed.
   workflow_dispatch:
@@ -20,7 +20,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -63,7 +63,8 @@ jobs:
           fi
           exit $status
       - name: Inspect a test driver
-        run: cargo run --release -- inspect crates/osc-bridge/tests/fixtures/devices/novation/launch-control-xl-3.json
+        run: cargo run --release -- inspect
+          crates/osc-bridge/tests/fixtures/devices/novation/launch-control-xl-3.json
       - name: Version mirrors are in sync with Cargo.toml
         if: runner.os == 'Linux'
         run: python3 scripts/sync_version.py --check
@@ -73,7 +74,7 @@ jobs:
     if: github.event_name == 'release'
     runs-on: ${{ matrix.os }}
     permissions:
-      contents: write   # needed by softprops/action-gh-release to attach assets
+      contents: write # needed by softprops/action-gh-release to attach assets
     strategy:
       matrix:
         include:
@@ -120,8 +121,8 @@ jobs:
     # them from the release. Published by npm trusted publishing (this
     # repository + ci.yml are the package's trusted publisher): no token.
     if: >-
-      !cancelled() && needs.release.result != 'failure' &&
-      (github.event_name == 'release' || github.event_name == 'workflow_dispatch')
+      !cancelled() && needs.release.result != 'failure' && (github.event_name ==
+      'release' || github.event_name == 'workflow_dispatch')
     needs: release
     runs-on: ubuntu-latest
     permissions:
