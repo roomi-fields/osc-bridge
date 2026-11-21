@@ -317,7 +317,7 @@ pub struct SentRequest {
 /// `/<prefix>/identity/reply <firmware> <hex>` when `msg` is the device's
 /// identity reply, as its identity block reads it.
 pub fn identity_reply(dev: &Device, msg: &[u8]) -> Option<OscMessage> {
-    let r = crate::detect::recognise(dev.identity.as_ref()?, "", &[msg.to_vec()]).filter(|r| r.by_reply)?;
+    let r = crate::detect::recognise(dev.identity.as_ref()?, "", None, &[msg.to_vec()]).filter(|r| r.by_reply)?;
     let hex = msg.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ");
     Some(OscMessage { addr: full_osc_path(dev, IDENTITY_REPLY),
                       args: vec![OscType::String(r.firmware.unwrap_or_default()), OscType::String(hex)] })

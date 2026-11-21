@@ -96,7 +96,7 @@ fn detection_returns_the_faults_of_the_identities_it_set_aside() {
 #[test]
 fn recognising_a_broken_identity_says_no_own_request_was_sent() {
     let (_d, dev) = loaded(r#"{"request":[240,65,1,"{checksum:twos7@9}",247],"reply":[240,126,127,6,2]}"#);
-    let r = detect::recognise(dev.identity.as_ref().unwrap(), "x", &[vec![0xF0, 0x7E, 0x7F, 6, 2, 0xF7]]).unwrap();
+    let r = detect::recognise(dev.identity.as_ref().unwrap(), "x", None, &[vec![0xF0, 0x7E, 0x7F, 6, 2, 0xF7]]).unwrap();
     assert!(r.by_reply);
     assert!(!r.own_request);
 }

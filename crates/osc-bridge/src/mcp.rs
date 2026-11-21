@@ -908,7 +908,7 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "detect_hardware",
-                "description": "Find the MIDI devices plugged into this computer and match them to catalogue drivers. Lists MIDI ports, sends the standard MIDI Identity Request, then the makers' own identity requests the drivers name (harmless: they change nothing on the device), and reads each device's manufacturer, model and firmware. A driver whose identity block recognises the reply (or the USB port name) comes first, the variant for the firmware read from it above the others; of drivers matching equally, the one the others share their MIDI with comes first, and each lists the others in equally_matching. Returns, per device, the best matching drivers (with recognised_by and firmware when recognised) and a ready-to-run 'osc-bridge run' command with the right port numbers.",
+                "description": "Find the MIDI devices plugged into this computer and match them to catalogue drivers. Lists MIDI ports, sends the standard MIDI Identity Request, then the makers' own identity requests the drivers name (harmless: they change nothing on the device), and reads each device's manufacturer, model and firmware. Reads the USB ids (vendor_id, product_id) of each USB device's card (Linux; absent for a virtual or DIN port). A driver whose identity block recognises the reply, the USB ids (usb) or the port name comes first, the variant for the firmware read from it above the others; of drivers matching equally, the one the others share their MIDI with comes first, and each lists the others in equally_matching. Returns, per device, the best matching drivers (with recognised_by and firmware when recognised) and a ready-to-run 'osc-bridge run' command with the right port numbers.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -929,6 +929,8 @@ pub fn tool_schemas() -> Value {
                                     "port": { "type": "string" },
                                     "out_port": { "type": ["integer", "null"] },
                                     "in_port": { "type": ["integer", "null"] },
+                                    "usb": { "type": "object", "description": "The USB ids of the device's card (Linux), absent when it has none.",
+                                        "properties": { "vendor_id": { "type": "integer" }, "product_id": { "type": "integer" } } },
                                     "identity": { "type": ["object", "null"], "description": "Identity Reply, when the device answered." },
                                     "candidates": { "type": "array", "items": { "type": "object" } },
                                     "run_command": { "type": ["string", "null"] }
@@ -1564,12 +1566,13 @@ pub fn hex_bytes(bytes: &[u8]) -> String {
 /// score, and, when its identity block recognised the device, how, the
 /// firmware read from the reply and the drivers matching it equally. The hosted server answers
 /// `POST /v1/detect` with them.
-pub fn match_port(catalogue: &[crate::detect::Candidate], port: &str, replies: &[Vec<u8>]) -> Vec<Value> {
-    crate::detect::rank(port, replies, catalogue, 3).iter().map(|r| {
+pub fn match_port(catalogue: &[crate::detect::Candidate], port: &str, usb: Option<(u16, u16)>,
+                  replies: &[Vec<u8>]) -> Vec<Value> {
+    crate::detect::rank(port, usb, replies, catalogue, 3).iter().map(|r| {
         let c = &catalogue[r.index];
         let mut out = json!({ "device": c.id, "osc_prefix": c.slug, "name": c.name, "vendor": c.vendor, "source_tier": c.tier, "score": r.score });
         if let Some(rec) = &r.recognised {
-            let by: Vec<&str> = [(rec.by_reply, "identity reply"), (rec.by_port, "port name")].iter()
+            let by: Vec<&str> = [(rec.by_reply, "identity reply"), (rec.by_port, "port name"), (rec.by_usb, "usb")].iter()
                 .filter(|(on, _)| *on).map(|(_, what)| *what).collect();
             out["recognised_by"] = json!(by);
             if let Some(fw) = &rec.firmware { out["firmware"] = json!(fw); }
@@ -1606,7 +1609,7 @@ fn detect_hardware(index: &DeviceIndex, server: Option<&crate::online::Online>, 
         }
         None => {
             let catalogue = hardware_candidates(index);
-            found.iter().map(|d| match_port(&catalogue, d.label(), &d.replies)).collect()
+            found.iter().map(|d| match_port(&catalogue, d.label(), d.usb, &d.replies)).collect()
         }
     };
     let devices: Vec<Value> = found.iter().zip(matched).map(|(d, mut candidates)| {
@@ -1621,7 +1624,7 @@ fn detect_hardware(index: &DeviceIndex, server: Option<&crate::online::Online>, 
                 d.in_index.map(|n| format!(" --in-port {n}")).unwrap_or_default())),
             _ => None,
         };
-        json!({
+        let mut device = json!({
             "port": d.label(),
             "out_port": d.out_index,
             "in_port": d.in_index,
@@ -1634,7 +1637,11 @@ fn detect_hardware(index: &DeviceIndex, server: Option<&crate::online::Online>, 
             })),
             "candidates": candidates,
             "run_command": run_command,
-        })
+        });
+        if let Some((vendor_id, product_id)) = d.usb {
+            device["usb"] = json!({ "vendor_id": vendor_id, "product_id": product_id });
+        }
+        device
     }).collect();
     let structured = json!({ "probed": probe, "devices": devices });
     let text = serde_json::to_string_pretty(&structured).unwrap_or_default();

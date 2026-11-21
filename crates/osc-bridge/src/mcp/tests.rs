@@ -265,21 +265,21 @@ fn port_names_and_identities_resolve_to_their_driver() {
     let cat = hardware_candidates(&fixtures());
     for (port, want) in [("minilogue MIDI 1", "korg/minilogue"), ("Bass Station II", "novation/bass_station_ii"),
                          ("Electra Controller Electra Port 1", "electra-one/electra-one")] {
-        let best = match_port(&cat, port, &[]);
+        let best = match_port(&cat, port, None, &[]);
         assert_eq!(best.first().map(|c| c["device"].clone()), Some(json!(want)), "{port}: {best:?}");
     }
     // An Identity Reply from the maker puts its driver first.
     let acme = crate::detect::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
-    let best = match_port(&cat, "Box", &[acme.reply()]);
+    let best = match_port(&cat, "Box", None, &[acme.reply()]);
     assert_eq!(best[0]["osc_prefix"], "box", "{best:?}");
     // Its identity block names the firmware, which picks the variant for it.
     assert_eq!(best[0]["device"], "acme/box.vendor.fw-2", "{best:?}");
     assert!(best[0].get("id").is_none() && best[0].get("slug").is_none(), "one word names the device: {best:?}");
     assert_eq!((best[0]["firmware"].as_str(), &best[0]["recognised_by"]), (Some("2.0.0.0"), &json!(["identity reply"])));
-    let nameless = match_port(&cat, "USB MIDI Interface", &[acme.reply()]);
+    let nameless = match_port(&cat, "USB MIDI Interface", None, &[acme.reply()]);
     assert_eq!(nameless[0]["device"],"acme/box.vendor.fw-2", "behind a port named after nothing: {nameless:?}");
     let other_fw = crate::detect::Identity { version: [3, 0, 0, 0], ..acme.clone() };
-    assert!(match_port(&cat, "Box", &[other_fw.reply()])[0]["score"].as_u64() < best[0]["score"].as_u64());
+    assert!(match_port(&cat, "Box", None, &[other_fw.reply()])[0]["score"].as_u64() < best[0]["score"].as_u64());
     assert!(best.iter().all(|c| c.get("file").is_none()), "no path of the machine that matched them");
 }
 
@@ -362,7 +362,7 @@ fn fake_server(root: &Path) -> (String, std::sync::Arc<std::sync::Mutex<Vec<Stri
                     let ports: Vec<Value> = asked["ports"].as_array().unwrap().iter().map(|p| {
                         let replies: Vec<Vec<u8>> = p["replies_hex"].as_array().into_iter().flatten()
                             .map(|h| crate::librarian::parse_hex(h.as_str().unwrap()).unwrap()).collect();
-                        json!({ "port": p["port"], "candidates": match_port(&cat, p["port"].as_str().unwrap(), &replies) })
+                        json!({ "port": p["port"], "candidates": match_port(&cat, p["port"].as_str().unwrap(), None, &replies) })
                     }).collect();
                     (200, json!({ "ports": ports }).to_string())
                 }
@@ -773,4 +773,22 @@ fn list_devices_names_each_device_by_its_catalogue_id_and_its_prefix_by_osc_pref
     let first = devices.iter().find(|d| d["device"] == "korg/minilogue").expect("minilogue listed");
     let back = catalogue_tool("list_routes", &json!({"device": first["osc_prefix"]}), &idx, &|_| None).unwrap();
     assert!(back.is_ok(), "{back:?}");
+}
+
+#[test]
+fn a_port_with_the_usb_ids_of_a_driver_is_recognised_by_usb() {
+    let text = r#"{"$schema":"https://w3id.org/osd/0.5/device.schema.json","device":{"name":"Box","osc_prefix":"/box"},
+        "identity":{"usb":[{"vendor_id":4660,"product_id":22136}]}}"#;
+    let identity = match osd::read(text, osd::Kind::Device).unwrap() {
+        osd::Descriptor::Device(d) => d.identity.unwrap(),
+        _ => unreachable!(),
+    };
+    let cat = vec![crate::detect::Candidate { id: "acme/box".into(), slug: "box".into(), name: "Box".into(),
+        vendor: "Acme".into(), file: "devices/box.json".into(), tier: "pencilresearch".into(),
+        manufacturer_id: vec![], identity: Some(identity), firmware: None, midi_of: None }];
+    let best = match_port(&cat, "USB MIDI Interface", Some((4660, 22136)), &[]);
+    assert_eq!(best[0]["device"], "acme/box", "{best:?}");
+    assert!(best[0]["recognised_by"].as_array().unwrap().contains(&json!("usb")), "{best:?}");
+    assert!(match_port(&cat, "USB MIDI Interface", None, &[]).is_empty());
+    assert!(match_port(&cat, "USB MIDI Interface", Some((1, 2)), &[]).is_empty());
 }

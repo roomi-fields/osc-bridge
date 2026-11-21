@@ -11,6 +11,14 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Added — the detection reads the USB ids of a device (Linux)
+- `detect_hardware` and `osc-bridge detect` give, per device, `usb` with `vendor_id` and
+  `product_id` when its port belongs to a USB card (read from `/proc/asound`); the key is absent
+  for a virtual or DIN port, and on a platform that does not read them yet.
+- The local ranking favours a driver whose `identity.usb` holds the pair (80 points, above the port
+  name's 60), and recognises it without a SysEx reply or a matching port name (`recognised_by`
+  says `usb`). The request sent to the SynthHub service does not carry the pair.
+
 ### Changed (breaking) — the local MCP tools name a device by `device`, and `slug` is gone
 - `get_device_docs` and `list_routes` take `device` (a catalogue id or an OSC prefix), as the
   other tools do. A call that passes `slug`, alone or beside `device`, is refused with an error

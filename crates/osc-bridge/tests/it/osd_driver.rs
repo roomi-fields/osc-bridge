@@ -211,7 +211,7 @@ fn recognising_a_reply_ignores_the_signs_a_device_gives_of_itself() {
     ]);
     let rec = |f: &str| {
         let dev = load(root.path().join(f)).unwrap();
-        osc_bridge::detect::recognise(dev.identity.as_ref().unwrap(), "Pad", &[reply.to_vec()]).is_some()
+        osc_bridge::detect::recognise(dev.identity.as_ref().unwrap(), "Pad", None, &[reply.to_vec()]).is_some()
     };
     assert_eq!(rec("acme/with.json"), rec("acme/without.json"));
 }

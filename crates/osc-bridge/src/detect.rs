@@ -190,14 +190,17 @@ pub struct Recognised {
     pub by_reply: bool,
     /// The port name matched `ports`.
     pub by_port: bool,
+    /// The port's USB ids are among the block's `usb`.
+    pub by_usb: bool,
     /// The reply answered a maker's own request, not the universal one.
     pub own_request: bool,
     /// The firmware version read from the reply.
     pub firmware: Option<String>,
 }
 
-/// Whether `id` recognises the device on `port` that sent `replies`.
-pub fn recognise(id: &osd::Identity, port: &str, replies: &[Vec<u8>]) -> Option<Recognised> {
+/// Whether `id` recognises the device on `port` (whose USB ids are `usb`,
+/// when known) that sent `replies`.
+pub fn recognise(id: &osd::Identity, port: &str, usb: Option<(u16, u16)>, replies: &[Vec<u8>]) -> Option<Recognised> {
     let read: Vec<Vec<u8>> = match kept(&id.unpack) {
         Some(_) => replies.iter().map(|r| unpack_lsb_8to7(r)).collect(),
         None => replies.to_vec(),
@@ -206,12 +209,15 @@ pub fn recognise(id: &osd::Identity, port: &str, replies: &[Vec<u8>]) -> Option<
     let ports = kept_list(&id.ports);
     let matching = (!reply.is_empty() || kept(&id.script).is_some()).then(|| read.iter().find(|r| reply_matches(id, r))).flatten();
     let by_port = !ports.is_empty() && port_matches(ports, port);
-    if matching.is_none() && !by_port {
+    let by_usb = usb.is_some_and(|(vendor, product)| kept_list(&id.usb).iter()
+        .any(|u| u.vendor_id == vendor && u.product_id == product));
+    if matching.is_none() && !by_port && !by_usb {
         return None;
     }
     Some(Recognised {
         by_reply: matching.is_some(),
         by_port,
+        by_usb,
         own_request: matching.is_some() && probe_of(id).ok().flatten().is_some(),
         firmware: matching.and_then(|r| kept(&id.firmware).and_then(|f| decode_firmware(f, r))),
     })
@@ -344,6 +350,55 @@ pub fn output_for(input: &str, outputs: &[String]) -> Option<String> {
         .or_else(|| (outputs.len() == 1).then(|| outputs[0].clone()))
 }
 
+/// The USB cards of an ALSA listing: from the text of `/proc/asound/cards`
+/// and the `usbid` text (`vid:pid`, hex) of each card by its number, the
+/// short name of each card that has a readable one, with its ids. A card
+/// without `usbid` (virtual, DIN) and an unreadable line are left out.
+pub fn usb_cards(cards: &str, usbids: &[(u32, &str)]) -> Vec<(String, u16, u16)> {
+    cards.lines().filter_map(|line| {
+        let line = line.trim_start();
+        let digits = line.find(|c: char| !c.is_ascii_digit())?;
+        let number: u32 = line[..digits].parse().ok()?;
+        let rest = line[digits..].trim_start().strip_prefix('[')?;
+        let name = rest[..rest.find(']')?].trim();
+        let (_, text) = usbids.iter().find(|(n, _)| *n == number)?;
+        let (vendor, product) = text.trim().split_once(':')?;
+        let vendor = u16::from_str_radix(vendor.trim(), 16).ok()?;
+        let product = u16::from_str_radix(product.trim(), 16).ok()?;
+        (!name.is_empty()).then(|| (name.to_string(), vendor, product))
+    }).collect()
+}
+
+/// The USB ids of the cards the ALSA client of `port` (the text before the
+/// first ':') names, once squashed. Several cards of one name give their ids
+/// when all share them; no card, or different ids, give none.
+pub fn usb_of_port(port: &str, cards: &[(String, u16, u16)]) -> Option<(u16, u16)> {
+    let client = squash(port.split(':').next().unwrap_or(port));
+    if client.is_empty() {
+        return None;
+    }
+    let mut ids = cards.iter().filter(|(name, ..)| squash(name) == client).map(|(_, v, p)| (*v, *p));
+    let first = ids.next()?;
+    ids.all(|i| i == first).then_some(first)
+}
+
+/// The USB cards of this machine (`usb_cards`): Linux reads /proc/asound.
+#[cfg(target_os = "linux")]
+fn machine_usb_cards() -> Vec<(String, u16, u16)> {
+    let Ok(cards) = std::fs::read_to_string("/proc/asound/cards") else { return Vec::new() };
+    let ids: Vec<(u32, String)> = (0..32u32)
+        .filter_map(|n| std::fs::read_to_string(format!("/proc/asound/card{n}/usbid")).ok().map(|t| (n, t)))
+        .collect();
+    let refs: Vec<(u32, &str)> = ids.iter().map(|(n, t)| (*n, t.as_str())).collect();
+    usb_cards(&cards, &refs)
+}
+
+/// The USB cards of this machine: not read yet on this platform.
+#[cfg(not(target_os = "linux"))]
+fn machine_usb_cards() -> Vec<(String, u16, u16)> {
+    Vec::new()
+}
+
 /// Collapse "Minilab3", "mini lab 3", "MiniLab-3" to one key.
 fn squash(s: &str) -> String {
     s.to_lowercase().chars().filter(|c| c.is_ascii_alphanumeric()).collect()
@@ -368,7 +423,7 @@ pub struct Ranked {
 /// recognises the device ranks first, the one for the firmware it reported
 /// above the others; drivers matching neither the name nor the identity are
 /// dropped.
-pub fn rank(port_name: &str, replies: &[Vec<u8>], catalogue: &[Candidate], limit: usize) -> Vec<Ranked> {
+pub fn rank(port_name: &str, usb: Option<(u16, u16)>, replies: &[Vec<u8>], catalogue: &[Candidate], limit: usize) -> Vec<Ranked> {
     let port_tokens = tokens(port_name);
     let port_squashed = squash(port_name);
     let identity = replies.iter().find_map(|r| parse_identity_reply(r));
@@ -390,7 +445,7 @@ pub fn rank(port_name: &str, replies: &[Vec<u8>], catalogue: &[Candidate], limit
         {
             score += 10 + 3 * len as u32;
         }
-        let recognised = c.identity.as_ref().and_then(|id| recognise(id, port_name, replies));
+        let recognised = c.identity.as_ref().and_then(|id| recognise(id, port_name, usb, replies));
         if score == 0 && recognised.is_none() {
             return None;
         }
@@ -409,6 +464,7 @@ pub fn rank(port_name: &str, replies: &[Vec<u8>], catalogue: &[Candidate], limit
             if r.by_reply { score += 100; }
             if r.own_request { score += 20; }
             if r.by_port { score += 60; }
+            if r.by_usb { score += 80; }
             match (&r.firmware, &c.firmware) {
                 (Some(got), Some(fw)) if same_version(got, fw) => score += 50,
                 (Some(_), Some(_)) => score = score.saturating_sub(30),
@@ -444,6 +500,8 @@ pub struct Probed {
     pub in_index: Option<usize>,
     pub in_name: Option<String>,
     pub identity: Option<Identity>,
+    /// The USB ids (vendor, product) of the device's card, when it has one.
+    pub usb: Option<(u16, u16)>,
     /// Every SysEx message its input sent while detecting, in order.
     pub replies: Vec<Vec<u8>>,
 }
@@ -493,14 +551,20 @@ pub fn scan(probe: bool, wait: Duration, probes: &[Probe]) -> Result<Vec<Probed>
             in_index,
             in_name: in_index.map(|ii| in_names[ii].clone()),
             identity: None,
+            usb: None,
             replies: Vec::new(),
         });
     }
     for (ii, iname) in in_names.iter().enumerate() {
         if !used_in.contains(&ii) {
             devices.push(Probed { out_index: None, out_name: None, in_index: Some(ii),
-                                  in_name: Some(iname.clone()), identity: None, replies: Vec::new() });
+                                  in_name: Some(iname.clone()), identity: None, usb: None, replies: Vec::new() });
         }
+    }
+    let cards = machine_usb_cards();
+    for d in devices.iter_mut() {
+        d.usb = d.out_name.as_deref().and_then(|n| usb_of_port(n, &cards))
+            .or_else(|| d.in_name.as_deref().and_then(|n| usb_of_port(n, &cards)));
     }
     if !probe {
         return Ok(devices);
