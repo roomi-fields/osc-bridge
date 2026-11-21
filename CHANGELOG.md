@@ -30,6 +30,12 @@ is tracked explicitly under each release.
   user name or serial field is read; a maker's reply may carry a serial number, so read a capture
   before sharing it. A corpus of captures in the crate's test data proves the recognition rules.
 
+### Fixed — a fingerprint keeps every port
+- The learn mode's fingerprint lists one `ports.inputs` / `ports.outputs` entry per port, in the
+  order the system gives them, repeated names included (the Electra One mk2 shows three inputs,
+  the Osmose two) instead of merging and sorting names. So two firmwares of one device that
+  differ only by their number of ports are told apart.
+
 ### Added — a learn mode of the detection
 - `detect_hardware` (`learn`, `listen_ms`) and `osc-bridge detect --learn --listen-ms` listen
   for 1000-30000 ms (default 5000) on each port while the person moves the controls, sending

@@ -369,3 +369,56 @@ fn the_bench_of_the_21st_of_november_2026_learns_one_fingerprint_per_device_with
         assert_eq!(l.fingerprint["ports"]["outputs"], want["outputs"], "{client}");
     }
 }
+
+/// A device built in memory from the port names the system gave, in that order.
+fn unit_of(inputs: &[&str], outputs: &[&str], usb: Option<(u16, u16)>) -> osc_bridge::detect::Unit {
+    osc_bridge::detect::Unit {
+        inputs: inputs.iter().map(|s| s.to_string()).collect(),
+        outputs: outputs.iter().map(|s| s.to_string()).collect(),
+        in_indexes: (0..inputs.len()).collect(),
+        out_indexes: (0..outputs.len()).collect(),
+        usb,
+    }
+}
+
+fn learned_ports(unit: &osc_bridge::detect::Unit) -> Value {
+    let l = osc_bridge::detect::learn(unit, &mut Played(vec![]), std::time::Duration::from_millis(1000), "2026-11-21");
+    osd::read(&l.fingerprint.to_string(), osd::Kind::Fingerprint).unwrap();
+    l.fingerprint["ports"].clone()
+}
+
+#[test]
+fn a_fingerprint_lists_two_ports_of_one_name_as_two_entries() {
+    let osmose = unit_of(&["Osmose:Osmose  48:0", "Osmose:Osmose  48:1"], &["Osmose:Osmose  48:0", "Osmose:Osmose  48:1"], Some((0x2e14, 0x0010)));
+    let ports = learned_ports(&osmose);
+    assert_eq!(ports["inputs"], serde_json::json!(["osmose", "osmose"]));
+    assert_eq!(ports["outputs"], serde_json::json!(["osmose", "osmose"]));
+}
+
+#[test]
+fn a_fingerprint_of_a_one_port_device_lists_one_entry() {
+    let deluge = unit_of(&["Deluge:Deluge OUT 32:0"], &["Deluge:Deluge OUT 32:0"], Some((0x16d0, 0x0ce2)));
+    let ports = learned_ports(&deluge);
+    assert_eq!(ports["inputs"].as_array().unwrap().len(), 1, "{ports}");
+    assert_eq!(ports["outputs"].as_array().unwrap().len(), 1, "{ports}");
+}
+
+#[test]
+fn a_fingerprint_counts_the_ports_of_a_device_with_distinct_and_repeated_names() {
+    let brute = unit_of(
+        &["MatrixBrute:MatrixBrute 36:0", "MatrixBrute:MatrixBrute MIDI Interface 36:1"],
+        &["MatrixBrute:MatrixBrute 36:0", "MatrixBrute:MatrixBrute MIDI Interface 36:1"], None);
+    assert_eq!(learned_ports(&brute)["inputs"].as_array().unwrap().len(), 2);
+    let three = unit_of(&["X:X A 1:0", "X:X A 1:1", "X:X A 1:2"], &["X:X A 1:0"], None);
+    let ports = learned_ports(&three);
+    assert_eq!(ports["inputs"].as_array().unwrap().len(), 3, "{ports}");
+    assert_eq!(ports["outputs"].as_array().unwrap().len(), 1, "{ports}");
+}
+
+#[test]
+fn a_fingerprint_keeps_the_ports_in_the_order_of_the_listing_not_sorted() {
+    let unit = unit_of(&["Z:Z Zulu 5:0", "Z:Z Alpha 5:1", "Z:Z Mike 5:2"], &["Z:Z Mike 5:0", "Z:Z Zulu 5:1", "Z:Z Alpha 5:2"], None);
+    let ports = learned_ports(&unit);
+    assert_eq!(ports["inputs"], serde_json::json!(["z zulu", "z alpha", "z mike"]));
+    assert_eq!(ports["outputs"], serde_json::json!(["z mike", "z zulu", "z alpha"]));
+}

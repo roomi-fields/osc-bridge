@@ -874,8 +874,8 @@ pub fn learn(device: &Unit, wire: &mut dyn Wire, listen: Duration, observed: &st
     fp.insert("$schema".into(), "https://w3id.org/osd/0.6/fingerprint.schema.json".into());
     fp.insert("observed".into(), observed.into());
     fp.insert("via".into(), "native".into());
-    let words = |names: &[String]| names.iter().map(|n| port_words(n)).collect::<std::collections::BTreeSet<_>>()
-        .into_iter().collect::<Vec<_>>();
+    // One entry per port, in the order the system lists them; a name may repeat.
+    let words = |names: &[String]| names.iter().map(|n| port_words(n)).collect::<Vec<_>>();
     let mut ports = serde_json::Map::new();
     if !device.inputs.is_empty() { ports.insert("inputs".into(), words(&device.inputs).into()); }
     if !device.outputs.is_empty() { ports.insert("outputs".into(), words(&device.outputs).into()); }

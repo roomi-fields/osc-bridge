@@ -704,21 +704,49 @@ const MINILAB: [&str; 4] = ["Minilab3:Minilab3 MIDI 40:0", "Minilab3:Minilab3 DI
     "Minilab3:Minilab3 MCU/HUI 40:2", "Minilab3:Minilab3 ALV 40:3"];
 
 #[test]
-fn learn_writes_the_words_of_every_port_of_the_device_sorted_without_the_machine_numbers() {
+fn learn_writes_the_words_of_every_port_of_the_device_in_the_order_of_the_listing_without_the_machine_numbers() {
     let u = unit_of(&MINILAB, &MINILAB, None);
     let l = learn(&u, &mut Script::new(vec![]), Duration::from_millis(1000), "2026-11-21");
     valid_fingerprint(&l.fingerprint);
-    let words = serde_json::json!(["minilab3 alv", "minilab3 din thru", "minilab3 mcu hui", "minilab3 midi"]);
+    let words = serde_json::json!(["minilab3 midi", "minilab3 din thru", "minilab3 mcu hui", "minilab3 alv"]);
     assert_eq!(l.fingerprint["ports"]["inputs"], words);
     assert_eq!(l.fingerprint["ports"]["outputs"], words);
 }
 
 #[test]
-fn learn_writes_ports_of_the_same_words_once() {
+fn learn_writes_one_entry_per_port_when_ports_share_their_words() {
     let u = unit_of(&["Pad:Pad 9:0", "Pad:Pad 9:1"], &["Pad:Pad 9:0"], None);
     let l = learn(&u, &mut Script::new(vec![]), Duration::from_millis(1000), "2026-11-21");
-    assert_eq!(l.fingerprint["ports"]["inputs"], serde_json::json!(["pad"]));
+    assert_eq!(l.fingerprint["ports"]["inputs"], serde_json::json!(["pad", "pad"]));
     assert_eq!(l.fingerprint["ports"]["outputs"], serde_json::json!(["pad"]));
+}
+
+#[test]
+fn learn_writes_two_entries_for_the_two_ports_of_the_osmose() {
+    let p = ["Osmose:Osmose  48:0", "Osmose:Osmose  48:1"];
+    let l = learn(&unit_of(&p, &p, Some((0x2e14, 0x0010))), &mut Script::new(vec![]), Duration::from_millis(1000), "2026-11-21");
+    valid_fingerprint(&l.fingerprint);
+    assert_eq!(l.fingerprint["ports"]["inputs"], serde_json::json!(["osmose", "osmose"]));
+    assert_eq!(l.fingerprint["ports"]["outputs"], serde_json::json!(["osmose", "osmose"]));
+}
+
+#[test]
+fn learn_writes_one_entry_for_the_single_port_of_the_deluge() {
+    let p = ["Deluge:Deluge OUT 32:0"];
+    let l = learn(&unit_of(&p, &p, Some((0x16d0, 0x0ce2))), &mut Script::new(vec![]), Duration::from_millis(1000), "2026-11-21");
+    valid_fingerprint(&l.fingerprint);
+    assert_eq!(l.fingerprint["ports"]["inputs"].as_array().unwrap().len(), 1);
+    assert_eq!(l.fingerprint["ports"]["outputs"].as_array().unwrap().len(), 1);
+}
+
+#[test]
+fn learn_writes_three_entries_for_the_three_ports_of_the_electra_one() {
+    let p = ["Electra Controller:Electra Controller Electra Port 28:0", "Electra Controller:Electra Controller Electra Port 28:1",
+        "Electra Controller:Electra Controller Electra CTRL 28:2"];
+    let l = learn(&unit_of(&p, &p, None), &mut Script::new(vec![]), Duration::from_millis(1000), "2026-11-21");
+    let words = serde_json::json!(["electra controller electra port", "electra controller electra port", "electra controller electra ctrl"]);
+    assert_eq!(l.fingerprint["ports"]["inputs"], words);
+    assert_eq!(l.fingerprint["ports"]["outputs"], words);
 }
 
 #[test]
