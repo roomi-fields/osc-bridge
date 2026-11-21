@@ -33,6 +33,7 @@ mod orchestrator_routing_e2e;
 mod osc_transport_e2e;
 mod relay_frames;
 mod osd_driver;
+mod output_input_pairing;
 mod presets_with_device;
 mod privacy_policy;
 mod published_tool_lists;

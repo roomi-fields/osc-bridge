@@ -524,15 +524,29 @@ fn derive(capture: &Capture) -> Vec<Probed> {
     let (out_names, in_names) = (&capture.outputs, &capture.inputs);
     let mut devices: Vec<Probed> = Vec::new();
     let mut used_in: HashSet<usize> = HashSet::new();
+    // First pass: every output takes the unused input of its full name (lowest index first).
+    let mut paired: Vec<Option<usize>> = out_names.iter().map(|oname| {
+        let ii = in_names.iter().enumerate()
+            .find(|(ii, iname)| *iname == oname && !used_in.contains(ii)).map(|(ii, _)| ii)?;
+        used_in.insert(ii);
+        Some(ii)
+    }).collect();
+    // Second pass: the outputs left take the nearest name; ties go to the lowest input.
     for (oi, oname) in out_names.iter().enumerate() {
+        if paired[oi].is_some() { continue; }
         let ot = tokens(oname);
         let best = in_names.iter().enumerate()
             .filter(|(ii, _)| !used_in.contains(ii))
-            .map(|(ii, iname)| (ot.intersection(&tokens(iname)).count(), ii))
+            .map(|(ii, iname)| (ot.intersection(&tokens(iname)).count(), std::cmp::Reverse(ii)))
             .filter(|(n, _)| *n > 0)
             .max();
-        let in_index = best.map(|(_, ii)| ii);
-        if let Some(ii) = in_index { used_in.insert(ii); }
+        if let Some((_, std::cmp::Reverse(ii))) = best {
+            used_in.insert(ii);
+            paired[oi] = Some(ii);
+        }
+    }
+    for (oi, oname) in out_names.iter().enumerate() {
+        let in_index = paired[oi];
         devices.push(Probed {
             out_index: Some(oi),
             out_name: Some(oname.clone()),
