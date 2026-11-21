@@ -11,6 +11,16 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed — the learn mode's next step is said for a real unknown device only
+- The learn mode (`detect_hardware` with `learn`, `osc-bridge detect --learn`) leaves out the ALSA
+  "Midi Through" kernel client: no fingerprint, no `next_step`. `detect` without `--learn` is unchanged.
+- Linked, it asks SyntHub to match each device; a device a driver recognises carries `driver`
+  (`id`, `name`), the service's first candidate else the local catalogue's, and no `next_step`.
+- An unknown device's `next_step` says what was looked at: neither the local catalogue nor SyntHub
+  when linked and answered, only the local catalogue when offline or unreachable. When the service
+  does not answer, the notice says so and the learn mode still reports.
+- The `next_step` described below as local-catalogue-only is superseded by this entry.
+
 ### Fixed — the probes the service lists say their maker
 - `probes_json` (the answer to `GET /v1/detect`) now writes, for each probe whose identity has them,
   `usb` (a list of `{vendor_id, product_id}`) and `match_ports` (the port names of the identity),

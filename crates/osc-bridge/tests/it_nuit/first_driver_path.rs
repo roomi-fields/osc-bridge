@@ -95,7 +95,8 @@ fn an_agent_goes_from_a_device_with_no_driver_to_a_first_driver_on_a_fake_midi_d
     let controls = fp["controls"].as_array().unwrap_or_else(|| panic!("no controls heard: {fp}"));
     let cc = controls.iter().find(|c| c["number"] == 74).unwrap_or_else(|| panic!("CC 74 not heard: {controls:?}"));
     let empty = tempfile::tempdir().unwrap();
-    let report = osc_bridge::mcp::learn_report(&learned, &osc_bridge::mcp::DeviceIndex::build(empty.path()), Duration::from_millis(1500));
+    let report = osc_bridge::mcp::learn_report(&learned, &osc_bridge::mcp::DeviceIndex::build(empty.path()), Duration::from_millis(1500),
+        &osc_bridge::mcp::ServiceMatches::NotLinked);
     let step = report["structuredContent"]["devices"][0]["next_step"].as_str().unwrap_or_else(|| panic!("{report}"));
     assert!(step.contains("report_mapping"), "{step}");
 

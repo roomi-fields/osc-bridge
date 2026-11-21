@@ -23,6 +23,7 @@ mod identity_request_fault;
 mod install_export_fetch;
 mod isolated_config;
 mod learn_mode;
+mod learn_service_matches;
 mod link_chains;
 mod live_links;
 mod launch_control_xl_3;

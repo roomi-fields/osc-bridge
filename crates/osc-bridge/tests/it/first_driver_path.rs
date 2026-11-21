@@ -132,7 +132,8 @@ fn learned(port: &str) -> Learned {
 
 fn report(ports: &[&str]) -> Value {
     let learned: Vec<(Unit, Learned)> = ports.iter().map(|p| (unit(p), learned(p))).collect();
-    osc_bridge::mcp::learn_report(&learned, &catalogue(), Duration::from_millis(5000))
+    osc_bridge::mcp::learn_report(&learned, &catalogue(), Duration::from_millis(5000),
+        &osc_bridge::mcp::ServiceMatches::NotLinked)
 }
 
 fn device_of(report: &Value, at: usize) -> &Value { &report["structuredContent"]["devices"][at] }

@@ -1421,7 +1421,7 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
                 }),
                 _ => return Err("share_fingerprint and device_name go together: the port, and the name the person gives the device".into()),
             };
-            learn_hardware(index, crate::detect::learn_listen(args.get("listen_ms").and_then(Value::as_u64))?, share)
+            learn_hardware(index, server.map(|l| &l.client), crate::detect::learn_listen(args.get("listen_ms").and_then(Value::as_u64))?, share)
         }
         "detect_hardware" => {
             let probe = args.get("probe").and_then(Value::as_bool).unwrap_or(true);
@@ -1737,10 +1737,11 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>,
 
 /// `detect_hardware` in learn mode: a fingerprint per device, and its measures beside it. The
 /// report's text tells the person how long it listens and to move the controls.
-fn learn_hardware(index: &DeviceIndex, listen: std::time::Duration, share: Option<Share>) -> Result<Value, String> {
+fn learn_hardware(index: &DeviceIndex, server: Option<&crate::online::Online>, listen: std::time::Duration, share: Option<Share>) -> Result<Value, String> {
     let learned = crate::detect::learn_all(listen).map_err(|e| format!("MIDI scan: {e}"))?;
     let sharing = share.map(|s| share_learned(&s, &learned)).transpose()?;
-    let mut report = learn_report(&learned, index, listen);
+    let service = learn_service_matches(server, &learned);
+    let mut report = learn_report(&learned, index, listen, &service);
     if let Some(said) = sharing {
         report["structuredContent"]["sharing"] = json!(said);
         let text = format!("{}\nSharing: {said}", report["content"][0]["text"].as_str().unwrap_or_default());
@@ -1749,21 +1750,73 @@ fn learn_hardware(index: &DeviceIndex, listen: std::time::Duration, share: Optio
     Ok(report)
 }
 
-/// The next step of a device the local catalogue has no driver for: name it, then map its controls.
-const NEXT_STEP: &str = "No driver in the local catalogue matches this device. Ask the person to name it, then map its \
+/// What the service said of the devices of a learn mode.
+#[derive(Debug, Clone)]
+pub enum ServiceMatches {
+    /// The copy is not linked: only the local catalogue is looked at.
+    NotLinked,
+    /// Linked, but the service did not answer.
+    Unreachable,
+    /// The candidates it names for each device, in the order of the devices the learn mode reports.
+    Answered(Vec<Vec<Value>>),
+}
+
+/// The devices the learn mode reports: the ports of the system are no device.
+fn learn_devices(learned: &[(crate::detect::Unit, crate::detect::Learned)]) -> Vec<&(crate::detect::Unit, crate::detect::Learned)> {
+    learned.iter().filter(|(u, _)| !crate::detect::is_system_unit(u)).collect()
+}
+
+/// Asks the service to match the ports and identity reply of each device of `learned` (the
+/// system ports left out). Never fails: an unreachable service is `Unreachable`.
+pub fn learn_service_matches(server: Option<&crate::online::Online>, learned: &[(crate::detect::Unit, crate::detect::Learned)]) -> ServiceMatches {
+    let Some(server) = server else { return ServiceMatches::NotLinked };
+    let devices = learn_devices(learned);
+    if devices.is_empty() { return ServiceMatches::Answered(Vec::new()); }
+    let ports: Vec<Value> = devices.iter().map(|(d, l)| json!({ "port": d.label(),
+        "replies_hex": l.fingerprint["identity_reply"].as_str().into_iter().collect::<Vec<_>>() })).collect();
+    match server.detect(&ports) {
+        Ok(answers) => ServiceMatches::Answered((0..devices.len())
+            .map(|i| answers.get(i).and_then(|a| a["candidates"].as_array().cloned()).unwrap_or_default()).collect()),
+        Err(_) => ServiceMatches::Unreachable,
+    }
+}
+
+/// The ask that ends the next step of a device nobody knows: name it, then map its controls.
+const NEXT_STEP_ASK: &str = "Ask the person to name it, then map its \
     controls with report_mapping (device: the name they gave, as device_name when the fingerprint is shared); \
     a first driver built from the mappings goes to submit_driver.";
 
-/// The learn mode's result for `learned`: the structured devices and their text. A device with no
-/// driver in `catalogue` carries a `next_step`; a recognised one does not. Pure: no MIDI.
-pub fn learn_report(learned: &[(crate::detect::Unit, crate::detect::Learned)], catalogue: &DeviceIndex, listen: std::time::Duration) -> Value {
+/// The next step of an unknown device, worded by what was looked at.
+fn next_step(service: &ServiceMatches) -> String {
+    match service {
+        ServiceMatches::Answered(_) => format!("Neither the local catalogue nor SynthHub knows this device. {NEXT_STEP_ASK}"),
+        _ => format!("Only the local catalogue was looked at, and no driver in it matches this device. {NEXT_STEP_ASK}"),
+    }
+}
+
+/// The learn mode's result for `learned`: the structured devices and their text. A device the
+/// service or `catalogue` recognises carries its `driver` (the service's first) and no
+/// `next_step`; an unknown one carries a `next_step` worded by what was looked at. A port of the
+/// system is left out. Pure: no MIDI.
+pub fn learn_report(learned: &[(crate::detect::Unit, crate::detect::Learned)], catalogue: &DeviceIndex, listen: std::time::Duration,
+                    service: &ServiceMatches) -> Value {
     let candidates = hardware_candidates(catalogue);
-    let devices: Vec<Value> = learned.iter().map(|(d, l)| {
+    let devices: Vec<Value> = learn_devices(learned).into_iter().enumerate().map(|(at, (d, l))| {
         let replies: Vec<Vec<u8>> = l.fingerprint["identity_reply"].as_str().map(|h| {
             h.split_whitespace().filter_map(|b| u8::from_str_radix(b, 16).ok()).collect()
         }).into_iter().collect();
-        let known = d.inputs.iter().chain(&d.outputs)
-            .any(|p| !crate::detect::rank(p, d.usb, &replies, &candidates, 1).is_empty());
+        let local = d.inputs.iter().chain(&d.outputs)
+            .find_map(|p| crate::detect::rank(p, d.usb, &replies, &candidates, 1).first().map(|r| &candidates[r.index]));
+        let remote = match service {
+            ServiceMatches::Answered(all) => all.get(at).and_then(|c| c.first())
+                .and_then(|c| Some((c["device"].as_str()?.to_string(), c["name"].as_str().unwrap_or_default().to_string()))),
+            _ => None,
+        };
+        // The local driver is the one its slug resolves to (the most trustworthy file of the
+        // device), not a firmware variant that only ranked higher by recognising the port.
+        let local = local.map(|c| catalogue.find(&c.slug).map(|e| (e.id.clone(), e.name.clone()))
+            .unwrap_or_else(|| (c.id.clone(), c.name.clone())));
+        let driver = remote.or(local);
         let mut out = json!({
             "port": d.label(),
             "inputs": d.inputs,
@@ -1771,10 +1824,16 @@ pub fn learn_report(learned: &[(crate::detect::Unit, crate::detect::Learned)], c
             "fingerprint": l.fingerprint,
             "measured": l.measured,
         });
-        if !known { out["next_step"] = json!(NEXT_STEP); }
+        match driver {
+            Some((id, name)) => out["driver"] = json!({ "id": id, "name": name }),
+            None => out["next_step"] = json!(next_step(service)),
+        }
         out
     }).collect();
-    let notice = crate::detect::learn_notice(listen);
+    let mut notice = crate::detect::learn_notice(listen);
+    if matches!(service, ServiceMatches::Unreachable) {
+        notice.push_str(" The SynthHub service did not answer: only the local catalogue was looked at.");
+    }
     let structured = json!({ "probed": true, "learn": true, "listen_ms": listen.as_millis() as u64,
         "notice": notice, "devices": devices });
     let text = format!("{notice}\n{}", serde_json::to_string_pretty(&structured).unwrap_or_default());
@@ -2006,11 +2065,11 @@ fn load_preset(args: &Value, link: &Link) -> Result<Value, String> {
 pub fn print_learning(listen_ms: Option<u64>, share: Option<(&str, &str)>) -> Result<()> {
     let listen = crate::detect::learn_listen(listen_ms).map_err(|e| anyhow::anyhow!(e))?;
     println!("{}", crate::detect::learn_notice(listen));
-    let client = share.and(crate::online::linked().then(|| crate::online::Online::new(crate::online::SERVER)));
+    let client = crate::online::linked().then(|| crate::online::Online::new(crate::online::SERVER));
     let private = crate::online::settings_file().and_then(|f| crate::online::Settings::load(Some(&f)).ok()).map(|s| s.private).unwrap_or_default();
     let share = share.map(|(port, name)| Share { port, name, client: client.as_ref(), private: &private });
     let catalogue = DeviceIndex::build(&crate::online::cache_dir().unwrap_or_default());
-    let report = learn_hardware(&catalogue, listen, share).map_err(|e| anyhow::anyhow!(e))?;
+    let report = learn_hardware(&catalogue, client.as_ref(), listen, share).map_err(|e| anyhow::anyhow!(e))?;
     if let Some(said) = report["structuredContent"]["sharing"].as_str() { println!("Sharing: {said}"); }
     let devices = report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default();
     if devices.is_empty() {

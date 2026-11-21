@@ -1026,8 +1026,25 @@ pub fn learn_all(listen: Duration) -> Result<Vec<(Unit, Learned)>> {
     learn_units(&units(&observe(false, Duration::ZERO, &[], &[])?), listen)
 }
 
-/// The learn mode on the `devices` given and no other: the same listening as `learn_all`.
+/// Whether a port label is a port of the system and no device: the ALSA "Midi Through" kernel
+/// client, recognised by its client name (the label before the colon, or all of it), compared
+/// case-insensitively whatever numbers follow.
+pub fn is_system_port(label: &str) -> bool {
+    let client = label.split(':').next().unwrap_or(label);
+    client.trim().eq_ignore_ascii_case("midi through")
+}
+
+/// A unit whose every port is a port of the system.
+pub fn is_system_unit(unit: &Unit) -> bool {
+    let mut ports = unit.inputs.iter().chain(&unit.outputs).peekable();
+    ports.peek().is_some() && ports.all(|p| is_system_port(p))
+}
+
+/// The learn mode on the `devices` given and no other, the ports of the system left out: the
+/// same listening as `learn_all`.
 pub fn learn_units(devices: &[Unit], listen: Duration) -> Result<Vec<(Unit, Learned)>> {
+    let devices: Vec<Unit> = devices.iter().filter(|d| !is_system_unit(d)).cloned().collect();
+    let devices = devices.as_slice();
     let observed = today();
     std::thread::scope(|s| {
         let tasks: Vec<_> = devices.iter().map(|d| {
