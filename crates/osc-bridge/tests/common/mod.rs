@@ -248,6 +248,22 @@ impl ConfigHome {
 impl Drop for ConfigHome {
     fn drop(&mut self) {
         self.give_back();
+        let path = self.dir.path().to_path_buf();
+        let mut last = None;
+        for _ in 0..10 {
+            match std::fs::remove_dir_all(&path) {
+                Ok(()) => return,
+                Err(e) if e.kind() == std::io::ErrorKind::NotFound => return,
+                Err(e) => last = Some(e),
+            }
+            std::thread::sleep(std::time::Duration::from_millis(50));
+        }
+        let message = format!("the configuration folder {} could not be removed: {}", path.display(), last.unwrap());
+        if std::thread::panicking() {
+            eprintln!("{message}");
+        } else {
+            panic!("{message}");
+        }
     }
 }
 

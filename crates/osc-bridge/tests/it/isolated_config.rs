@@ -43,6 +43,60 @@ fn the_folder_is_removed_and_the_environment_given_back_when_the_guard_drops() {
     assert!(!path.exists(), "the folder is removed");
 }
 
+/// A configuration folder that cannot be emptied (a read-only subfolder with a file in it), its
+/// stuck subfolder, and its path; `None` where permissions do not stop the person (root, non-unix).
+#[cfg(unix)]
+fn stuck_home() -> Option<(ConfigHome, std::path::PathBuf)> {
+    use std::os::unix::fs::PermissionsExt;
+    let home = ConfigHome::new();
+    let sub = home.path().join("stuck");
+    std::fs::create_dir(&sub).unwrap();
+    std::fs::write(sub.join("file"), "x").unwrap();
+    std::fs::set_permissions(&sub, std::fs::Permissions::from_mode(0o555)).unwrap();
+    if std::fs::write(sub.join("other"), "x").is_ok() {
+        std::fs::set_permissions(&sub, std::fs::Permissions::from_mode(0o755)).unwrap();
+        return None;
+    }
+    Some((home, sub))
+}
+
+#[cfg(unix)]
+fn release(sub: &Path) {
+    use std::os::unix::fs::PermissionsExt;
+    std::fs::set_permissions(sub, std::fs::Permissions::from_mode(0o755)).unwrap();
+}
+
+#[cfg(unix)]
+use std::path::Path;
+
+#[cfg(unix)]
+#[test]
+fn a_folder_that_cannot_be_removed_fails_the_test_naming_it() {
+    let Some((home, sub)) = stuck_home() else { return };
+    let path = home.path().to_path_buf();
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(move || drop(home)));
+    release(&sub);
+    let payload = result.expect_err("a folder left behind fails the test");
+    let message = payload.downcast_ref::<String>().cloned().unwrap_or_default();
+    assert!(message.contains(&path.display().to_string()), "{message}");
+    std::fs::remove_dir_all(&path).unwrap();
+}
+
+#[cfg(unix)]
+#[test]
+fn a_folder_that_cannot_be_removed_during_a_panic_does_not_abort_the_process() {
+    let Some((home, sub)) = stuck_home() else { return };
+    let path = home.path().to_path_buf();
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(move || {
+        let _home = home;
+        panic!("a failed test");
+    }));
+    release(&sub);
+    let payload = result.expect_err("the test's own panic goes on");
+    assert_eq!(payload.downcast_ref::<&str>().copied(), Some("a failed test"));
+    std::fs::remove_dir_all(&path).unwrap();
+}
+
 #[test]
 fn the_folder_is_removed_when_the_test_panics() {
     let path = std::sync::Mutex::new(None);

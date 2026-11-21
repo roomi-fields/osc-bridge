@@ -6,7 +6,7 @@
 //!
 //! No network: the server is a fake one on a local port (`common`).
 
-use crate::common::{catalogue, temp, tool_call, FakeSynthHub};
+use crate::common::{catalogue, temp, tool_call, ConfigHome, FakeSynthHub};
 use serde_json::{json, Value};
 
 /// The `.json` descriptors the server was asked for, sorted (the maker profile and the notes aside).
@@ -21,6 +21,7 @@ fn asked(server: &FakeSynthHub) -> Vec<String> {
 /// One linked session (empty cache, the given private devices) that makes one `install_export`
 /// call; the server it asked, and the call's result.
 fn install(private: &[&str], args: Value) -> (FakeSynthHub, Value, tempfile::TempDir) {
+    let _home = ConfigHome::new();
     let dir = temp("install-export-fetch");
     catalogue(&dir.path().join("server"));
     let server = FakeSynthHub::start(&dir.path().join("server"), None);

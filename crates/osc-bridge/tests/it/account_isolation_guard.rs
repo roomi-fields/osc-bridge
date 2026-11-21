@@ -138,6 +138,7 @@ fn faults(src: &str) -> Vec<(usize, String)> {
     let ident = |k: usize, name: &str| matches!(toks.get(k), Some((_, Tok::Ident(s))) if s == name);
     let punct = |k: usize, p: char| matches!(toks.get(k), Some((_, Tok::Punct(q))) if *q == p);
     let isolated = (0..toks.len()).any(|k| ident(k, ISOLATION));
+    let serves = (0..toks.len()).any(|k| ident(k, "serve") && punct(k + 1, '('));
     let mut found = Vec::new();
     for (k, (line, tok)) in toks.iter().enumerate() {
         let Tok::Ident(name) = tok else { continue };
@@ -148,6 +149,9 @@ fn faults(src: &str) -> Vec<(usize, String)> {
         }
         if name == GUARDED_TYPE && ident(k + 1, "as") {
             found.push((*line, format!("{GUARDED_TYPE} renamed by `as`: cannot be followed")));
+        }
+        if name == "online" && punct(k + 1, ':') && ident(k + 2, "true") && serves && !isolated {
+            found.push((*line, format!("a linked `serve` session (online: true) without a {ISOLATION} in the same file")));
         }
         if CONFIG_PATH_FNS.contains(&name.as_str()) && punct(k + 1, '(') && !isolated {
             found.push((*line, format!("{name}() without a {ISOLATION} in the same file")));
@@ -209,6 +213,24 @@ fn guard_refuses_config_file_calls_without_a_config_home_in_the_file() {
 fn guard_accepts_config_file_calls_when_the_file_sets_a_config_home() {
     let src = "fn t() {\n    let home = ConfigHome::new();\n    assert_eq!(account_file().unwrap(), home.account());\n    let _ = settings_file();\n}";
     assert!(faults(src).is_empty());
+}
+
+#[test]
+fn guard_refuses_a_linked_serve_session_without_a_config_home_in_the_file() {
+    let src = "fn t() {\n    let opts = McpOptions {\n        online: true,\n    };\n    osc_bridge::mcp::serve(opts, b, None, i, &mut o);\n}";
+    assert_eq!(lines(src), vec![3]);
+    assert_eq!(lines("let o = McpOptions { online:true };\nserve (o, b);"), vec![1]);
+}
+
+#[test]
+fn guard_accepts_a_linked_serve_session_under_a_config_home() {
+    let src = "fn t() {\n    let _home = ConfigHome::new();\n    let o = McpOptions { online: true };\n    serve(o, b, None, i, &mut out);\n}";
+    assert!(faults(src).is_empty());
+}
+
+#[test]
+fn guard_accepts_an_unlinked_serve_session() {
+    assert!(faults("let o = McpOptions { online: false };\nserve(o, b, None, i, &mut out);").is_empty());
 }
 
 #[test]
