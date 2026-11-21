@@ -19,7 +19,7 @@
 use anyhow::{anyhow, bail, Context, Result};
 use mlua::{Lua, LuaOptions, StdLib, Table, Value};
 use serde_json::Value as JsonValue;
-use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
@@ -100,7 +100,10 @@ pub enum EmitOscArg {
 /// Sandboxed Lua interpreter with injected `ob.*` helpers. One per device.
 pub struct ScriptEngine {
     lua: Lua,
-    deadline_flag: Arc<AtomicBool>,
+    /// Nanoseconds since `epoch` at which the current run must stop; read by
+    /// the instruction hook, set at the start of each run.
+    deadline_nanos: Arc<AtomicU64>,
+    epoch: Instant,
     /// Instructions consumed by the current call, and the profile's budget.
     instructions_used: Arc<AtomicU64>,
     instruction_budget: Arc<AtomicU64>,
@@ -249,8 +252,9 @@ impl ScriptEngine {
         let values: Arc<Mutex<HashMap<String, i64>>> = Arc::new(Mutex::new(HashMap::new()));
         if let Some(dev) = dev { install_electra_api(&lua, dev, values.clone())?; }
 
-        let deadline_flag = Arc::new(AtomicBool::new(false));
-        let flag_hook = deadline_flag.clone();
+        let epoch = Instant::now();
+        let deadline_nanos = Arc::new(AtomicU64::new(u64::MAX));
+        let deadline_hook = deadline_nanos.clone();
         let triggers = mlua::HookTriggers::new().every_nth_instruction(INSTRUCTION_INTERVAL);
         let used = Arc::new(AtomicU64::new(0));
         let budget = Arc::new(AtomicU64::new(DEFAULT_INSTRUCTION_BUDGET));
@@ -258,14 +262,15 @@ impl ScriptEngine {
         lua.set_hook(triggers, move |_, _| {
             let n = used_hook.fetch_add(INSTRUCTION_INTERVAL as u64, Ordering::Relaxed)
                 + INSTRUCTION_INTERVAL as u64;
-            if flag_hook.load(Ordering::Relaxed) || n > budget_hook.load(Ordering::Relaxed) {
+            let now = epoch.elapsed().as_nanos() as u64;
+            if now > deadline_hook.load(Ordering::Relaxed) || n > budget_hook.load(Ordering::Relaxed) {
                 Err(mlua::Error::RuntimeError("script timeout".into()))
             } else {
                 Ok(mlua::VmState::Continue)
             }
         });
 
-        Ok(Self { lua, deadline_flag, instructions_used: used, instruction_budget: budget, emit_queue, osc_queue, values })
+        Ok(Self { lua, deadline_nanos, epoch, instructions_used: used, instruction_budget: budget, emit_queue, osc_queue, values })
     }
 
     /// Drain SysEx blocks emitted during the last script call. The runtime
@@ -287,8 +292,8 @@ impl ScriptEngine {
         }
     }
 
-    /// Arm a timeout + memory cap for a single run. The flag is set by a
-    /// watchdog thread after `dur`; the next hook firing aborts the script.
+    /// Arm a timeout + memory cap for a single run. The deadline is read by
+    /// the instruction hook, which aborts the script once it passes.
     fn with_profile<T>(&self, profile: Profile, f: impl FnOnce() -> Result<T>) -> Result<T> {
         let dur = profile.timeout();
         let new_mem = profile.memory();
@@ -298,25 +303,16 @@ impl ScriptEngine {
 
         self.instructions_used.store(0, Ordering::Relaxed);
         self.instruction_budget.store(profile.instructions(), Ordering::Relaxed);
-        self.deadline_flag.store(false, Ordering::Relaxed);
-        let flag = self.deadline_flag.clone();
-        let start = Instant::now();
-        let _watchdog = std::thread::spawn(move || {
-            std::thread::sleep(dur);
-            flag.store(true, Ordering::Relaxed);
-        });
+        let deadline = self.epoch.elapsed().as_nanos() as u64 + dur.as_nanos() as u64;
+        self.deadline_nanos.store(deadline, Ordering::Relaxed);
         let result = f();
-        self.deadline_flag.store(true, Ordering::Relaxed);
+        self.deadline_nanos.store(u64::MAX, Ordering::Relaxed);
         let _ = self.lua.set_memory_limit(prev_mem);
 
         match result {
-            Ok(v) => {
-                // If f() returned Ok, the script actually finished — wall-clock
-                // overshoot (e.g. under test parallelism on slow hosts) is not
-                // a bug. The hook-driven timeout handles real runaways.
-                let _ = start;
-                Ok(v)
-            }
+            // A script that finished is not an error, whatever the wall clock
+            // says; the hook-driven deadline stops real runaways.
+            Ok(v) => Ok(v),
             Err(e) => {
                 let chain_msg = format!("{e:#}");
                 if chain_msg.contains("script timeout") {

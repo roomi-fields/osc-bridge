@@ -199,13 +199,45 @@ fn preset_ingest_profile_widens_instruction_budget() {
     // about 2 Lua VM instructions per iteration, so 200_000 iterations are
     // ~400k instructions. That must exceed the Default profile's instruction
     // budget (< 400k) and fit the PresetIngest budget (> 400k, with margin).
-    let e = ScriptEngine::new().unwrap();
+    // Separate engines: the verdict of one run cannot depend on the other.
     let busy = "local x=0; for i=1,200000 do x=x+i end; return x % 127";
-    let err = e.eval_transform_with(Profile::Default, busy, 0)
+    let default_engine = ScriptEngine::new().unwrap();
+    let err = default_engine.eval_transform_with(Profile::Default, busy, 0)
         .expect_err("Default instruction budget must be exceeded");
     assert!(format!("{err:#}").contains("Timeout"), "got: {err:#}");
-    let v = e.eval_transform_with(Profile::PresetIngest, busy, 0).unwrap();
+    let ingest_engine = ScriptEngine::new().unwrap();
+    let v = ingest_engine.eval_transform_with(Profile::PresetIngest, busy, 0).unwrap();
     assert!((0..127).contains(&v));
+}
+
+#[test]
+fn run_is_not_stopped_by_the_deadline_of_a_previous_run_of_the_same_engine() {
+    // A single native call (no VM instruction while it runs) that lasts well
+    // over the Default 10 ms deadline (quadratic pattern match: ~85 ms here,
+    // far under the 500 ms deadline of the profile even on a machine several
+    // times slower), then a short loop so the instruction hook fires after it.
+    // Instruction count stays far under 20M. The Lua sandbox has no clock.
+    let slow = "local s = string.rep('a', 5000); local _ = s:find('.-b'); \
+                local x=0; for i=1,100000 do x=x+i end; return x % 127";
+    let e = ScriptEngine::new().unwrap();
+    assert_eq!(e.eval_transform_with(Profile::Default, "return 7", 0).unwrap(), 7);
+    let start = Instant::now();
+    let v = e.eval_transform_with(Profile::PresetIngest, slow, 0)
+        .expect("a run must not suffer the deadline of the run before it");
+    assert!(start.elapsed().as_millis() > 10, "script too fast to prove anything");
+    assert!((0..127).contains(&v));
+}
+
+#[test]
+fn run_longer_than_its_own_deadline_under_the_instruction_budget_times_out() {
+    // The native call outlasts the 10 ms Default deadline of its own run;
+    // the following loop gives the hook a chance to see the deadline.
+    let slow = "local s = string.rep('a', 12000); local _ = s:find('.-b'); \
+                local x=0; for i=1,20000 do x=x+i end; return x % 127";
+    let e = ScriptEngine::new().unwrap();
+    let err = e.eval_transform_with(Profile::Default, slow, 0)
+        .expect_err("a run past its own deadline must be stopped");
+    assert!(format!("{err:#}").contains("Timeout"), "got: {err:#}");
 }
 
 #[test]
