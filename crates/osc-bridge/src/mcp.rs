@@ -1848,31 +1848,46 @@ pub fn print_detection(devices_dir: Option<&Path>, probe: bool) -> Result<()> {
     let report = detect_hardware(&index, server.as_ref(), devices_dir.is_some(), probe, std::time::Duration::from_millis(800))
         .map_err(|e| anyhow::anyhow!(e))?;
     let devices = report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default();
+    print!("{}", format_detection(&devices, probe));
+    Ok(())
+}
+
+/// The text of a detection report: one block per port, `usb: vvvv:pppp`
+/// (as `lsusb` writes it) right under the port when its ids are known.
+fn format_detection(devices: &[Value], probe: bool) -> String {
+    use std::fmt::Write as _;
+    let mut out = String::new();
     if devices.is_empty() {
-        println!("No MIDI port found.");
+        out.push_str("No MIDI port found.\n");
     }
     for d in devices {
-        println!("{}  (out {}, in {})", d["port"].as_str().unwrap_or("?"),
+        let _ = writeln!(out, "{}  (out {}, in {})", d["port"].as_str().unwrap_or("?"),
             d["out_port"].as_u64().map(|n| n.to_string()).unwrap_or("-".into()),
             d["in_port"].as_u64().map(|n| n.to_string()).unwrap_or("-".into()));
+        let id16 = |k: &str| d["usb"][k].as_u64().and_then(|n| u16::try_from(n).ok());
+        if let (Some(v), Some(p)) = (id16("vendor_id"), id16("product_id")) {
+            let _ = writeln!(out, "  usb: {v:04x}:{p:04x}");
+        }
         match d["identity"].as_object() {
-            Some(id) => println!("  identity: {} [{}], family {}, model {}, firmware {}",
-                id["manufacturer"].as_str().unwrap_or("unknown manufacturer"),
-                id["manufacturer_id"].as_str().unwrap_or(""), id["family"], id["model"],
-                id["firmware"].as_str().unwrap_or("")),
-            None if probe => println!("  identity: no reply"),
+            Some(id) => {
+                let _ = writeln!(out, "  identity: {} [{}], family {}, model {}, firmware {}",
+                    id["manufacturer"].as_str().unwrap_or("unknown manufacturer"),
+                    id["manufacturer_id"].as_str().unwrap_or(""), id["family"], id["model"],
+                    id["firmware"].as_str().unwrap_or(""));
+            }
+            None if probe => out.push_str("  identity: no reply\n"),
             None => {}
         }
         for c in d["candidates"].as_array().into_iter().flatten() {
             let fw = c["firmware"].as_str().map(|f| format!(", firmware {f}")).unwrap_or_default();
-            println!("  match: {} — {} ({}, score {}{fw})", c["device"].as_str().unwrap_or(""),
+            let _ = writeln!(out, "  match: {} — {} ({}, score {}{fw})", c["device"].as_str().unwrap_or(""),
                 c["file"].as_str().or(c["device"].as_str()).unwrap_or(""), c["source_tier"].as_str().unwrap_or(""), c["score"]);
         }
         if let Some(cmd) = d["run_command"].as_str() {
-            println!("  run:   {cmd}");
+            let _ = writeln!(out, "  run:   {cmd}");
         }
     }
-    Ok(())
+    out
 }
 
 /// The `list_devices` arguments. Everything is optional; nothing given

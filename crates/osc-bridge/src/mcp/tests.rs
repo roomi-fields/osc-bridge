@@ -792,3 +792,73 @@ fn a_port_with_the_usb_ids_of_a_driver_is_recognised_by_usb() {
     assert!(match_port(&cat, "USB MIDI Interface", None, &[]).is_empty());
     assert!(match_port(&cat, "USB MIDI Interface", Some((1, 2)), &[]).is_empty());
 }
+
+fn usb_lines(text: &str) -> Vec<&str> {
+    text.lines().filter(|l| l.trim_start().starts_with("usb:")).collect()
+}
+
+#[test]
+fn detect_prints_the_usb_ids_under_the_port_before_the_identity() {
+    let devices = [json!({
+        "port": "Minilab3 MIDI", "out_port": 1, "in_port": 2,
+        "usb": { "vendor_id": 0x1c75, "product_id": 0x020b },
+        "identity": { "manufacturer": "Arturia", "manufacturer_id": "00 20 6B", "family": 1, "model": 2, "firmware": "1.0" },
+        "candidates": [{ "device": "arturia-minilab-3", "file": "arturia/minilab-3.json", "source_tier": "official", "score": 9 }]
+    })];
+    let lines: Vec<String> = format_detection(&devices, true).lines().map(String::from).collect();
+    assert!(lines[0].starts_with("Minilab3 MIDI"), "{lines:?}");
+    assert_eq!(lines[1], "  usb: 1c75:020b");
+    assert!(lines[2].starts_with("  identity:"), "{lines:?}");
+}
+
+#[test]
+fn detect_pads_the_usb_ids_to_four_lower_case_hex_digits() {
+    let devices = [
+        json!({ "port": "A", "usb": { "vendor_id": 0x1397, "product_id": 0x12cf } }),
+        json!({ "port": "B", "usb": { "vendor_id": 0x1fc9, "product_id": 0x82cf } }),
+        json!({ "port": "C", "usb": { "vendor_id": 0x0a, "product_id": 0xABC } }),
+        json!({ "port": "D", "usb": { "vendor_id": 0, "product_id": 0xffff } }),
+    ];
+    let text = format_detection(&devices, false);
+    assert_eq!(usb_lines(&text), ["  usb: 1397:12cf", "  usb: 1fc9:82cf", "  usb: 000a:0abc", "  usb: 0000:ffff"]);
+}
+
+#[test]
+fn detect_prints_the_usb_ids_of_a_port_with_no_identity_and_no_match() {
+    let devices = [json!({ "port": "Mystery", "out_port": 0, "in_port": 0, "usb": { "vendor_id": 0x1234, "product_id": 0x5678 } })];
+    for probe in [false, true] {
+        let text = format_detection(&devices, probe);
+        assert_eq!(usb_lines(&text), ["  usb: 1234:5678"], "probe={probe}");
+        assert!(!text.contains("match:"));
+    }
+    let probed = format_detection(&devices, true);
+    let lines: Vec<&str> = probed.lines().collect();
+    assert_eq!(lines[1], "  usb: 1234:5678");
+    assert_eq!(lines[2], "  identity: no reply");
+}
+
+#[test]
+fn detect_prints_no_usb_line_for_a_port_without_usb_ids() {
+    let devices = [json!({ "port": "Virtual", "out_port": 3, "in_port": 3 })];
+    assert!(usb_lines(&format_detection(&devices, true)).is_empty());
+}
+
+#[test]
+fn detect_prints_no_usb_line_and_does_not_panic_on_malformed_usb_ids() {
+    let bad = [
+        json!({ "port": "a", "usb": { "vendor_id": 0x10000, "product_id": 1 } }),
+        json!({ "port": "b", "usb": { "vendor_id": 1, "product_id": 65536 } }),
+        json!({ "port": "c", "usb": { "vendor_id": -1, "product_id": 1 } }),
+        json!({ "port": "d", "usb": { "vendor_id": "1c75", "product_id": 1 } }),
+        json!({ "port": "e", "usb": { "vendor_id": 1.5, "product_id": 1 } }),
+        json!({ "port": "f", "usb": { "vendor_id": 1 } }),
+        json!({ "port": "g", "usb": {} }),
+        json!({ "port": "h", "usb": null }),
+        json!({ "port": "i", "usb": "1c75:020b" }),
+    ];
+    let text = format_detection(&bad, true);
+    assert!(usb_lines(&text).is_empty(), "{text}");
+    for p in ["a", "b", "c", "d", "e", "f", "g", "h", "i"] {
+        assert!(text.lines().any(|l| l.starts_with(p)), "port {p} missing");
+    }
+}
