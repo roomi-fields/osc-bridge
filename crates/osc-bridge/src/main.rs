@@ -115,6 +115,15 @@ enum Cmd {
         /// With --learn: how long to listen, 1000-30000 ms (default 5000).
         #[arg(long, requires = "learn")]
         listen_ms: Option<u64>,
+        /// Write what the detection observed, raw, to this capture file (JSON). Works with
+        /// --no-probe and --devices-dir. Read the file before sharing it: a maker's reply may
+        /// carry a serial number.
+        #[arg(long, value_name = "FILE", conflicts_with = "learn")]
+        write: Option<PathBuf>,
+        /// Replay this capture file with no device plugged in and nothing sent. Matches against
+        /// --devices-dir; refuses --no-probe and --write.
+        #[arg(long, value_name = "FILE", conflicts_with = "learn")]
+        read: Option<PathBuf>,
     },
     /// Print summary of a device JSON spec without starting the bridge.
     Inspect {
@@ -259,7 +268,9 @@ fn main() -> Result<()> {
             Ok(())
         }
         Cmd::Detect { learn: true, listen_ms, .. } => osc_bridge::mcp::print_learning(listen_ms),
-        Cmd::Detect { no_probe, devices_dir, .. } => osc_bridge::mcp::print_detection(devices_dir.as_deref(), !no_probe),
+        Cmd::Detect { no_probe, devices_dir, write, read, .. } => {
+            osc_bridge::mcp::print_detection(devices_dir.as_deref(), !no_probe, write.as_deref(), read.as_deref())
+        }
         Cmd::Inspect { device } => cmd_inspect(device),
         Cmd::Run(args) => cmd_run(args),
         Cmd::Export { device, on: Some(on), yes, .. } => {

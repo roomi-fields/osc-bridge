@@ -11,6 +11,7 @@
 //! "who are you?" every editor sends on connection.
 
 use anyhow::{anyhow, Result};
+use crate::capture::{Asound, Capture, Received, Request};
 use crate::device::{kept, kept_list};
 use osd::{FirmwareRule, FrameToken};
 use midir::{Ignore, MidiInput, MidiInputConnection, MidiOutput};
@@ -384,23 +385,6 @@ pub fn usb_of_port(port: &str, cards: &[(String, u16, u16)]) -> Option<(u16, u16
     ids.all(|i| i == first).then_some(first)
 }
 
-/// The USB cards of this machine (`usb_cards`): Linux reads /proc/asound.
-#[cfg(target_os = "linux")]
-fn machine_usb_cards() -> Vec<(String, u16, u16)> {
-    let Ok(cards) = std::fs::read_to_string("/proc/asound/cards") else { return Vec::new() };
-    let ids: Vec<(u32, String)> = (0..32u32)
-        .filter_map(|n| std::fs::read_to_string(format!("/proc/asound/card{n}/usbid")).ok().map(|t| (n, t)))
-        .collect();
-    let refs: Vec<(u32, &str)> = ids.iter().map(|(n, t)| (*n, t.as_str())).collect();
-    usb_cards(&cards, &refs)
-}
-
-/// The USB cards of this machine: not read yet on this platform.
-#[cfg(not(target_os = "linux"))]
-fn machine_usb_cards() -> Vec<(String, u16, u16)> {
-    Vec::new()
-}
-
 /// Collapse "Minilab3", "mini lab 3", "MiniLab-3" to one key.
 fn squash(s: &str) -> String {
     s.to_lowercase().chars().filter(|c| c.is_ascii_alphanumeric()).collect()
@@ -516,8 +500,6 @@ impl Probed {
 
 /// SysEx messages kept per input while detecting.
 const REPLIES_KEPT: usize = 32;
-/// The SysEx messages heard while detecting, each with the index of its input.
-type Replies = Arc<Mutex<Vec<(usize, Vec<u8>)>>>;
 /// Gap between two requests on one port.
 const PROBE_GAP: Duration = Duration::from_millis(10);
 
@@ -526,16 +508,20 @@ const PROBE_GAP: Duration = Duration::from_millis(10);
 /// requests the catalogue's identity blocks name, each to its ports), on
 /// every output and collect the SysEx that comes back for `wait`.
 pub fn scan(probe: bool, wait: Duration, probes: &[Probe]) -> Result<Vec<Probed>> {
-    let output = MidiOutput::new("osc-bridge-detect")?;
-    let out_ports = output.ports();
-    let out_names: Vec<String> = out_ports.iter()
-        .map(|p| output.port_name(p).unwrap_or_else(|_| "?".into())).collect();
-    let input = MidiInput::new("osc-bridge-detect")?;
-    let in_ports = input.ports();
-    let in_names: Vec<String> = in_ports.iter()
-        .map(|p| input.port_name(p).unwrap_or_else(|_| "?".into())).collect();
+    Ok(replay(&observe(probe, wait, probes)?))
+}
 
-    // Pair each output with the input of the same (or most similar) name.
+/// Replay a capture: the derivation `scan` runs over what it observed, with no device and no
+/// read of the system.
+pub fn replay(capture: &Capture) -> Vec<Probed> {
+    derive(capture)
+}
+
+/// The derivation, pure: pair each output with the input of the same (or most similar) name,
+/// read the USB ids of the cards, and give each port the SysEx it received, with the identity
+/// it carries.
+fn derive(capture: &Capture) -> Vec<Probed> {
+    let (out_names, in_names) = (&capture.outputs, &capture.inputs);
     let mut devices: Vec<Probed> = Vec::new();
     let mut used_in: HashSet<usize> = HashSet::new();
     for (oi, oname) in out_names.iter().enumerate() {
@@ -563,26 +549,56 @@ pub fn scan(probe: bool, wait: Duration, probes: &[Probe]) -> Result<Vec<Probed>
                                   in_name: Some(iname.clone()), identity: None, usb: None, replies: Vec::new() });
         }
     }
-    let cards = machine_usb_cards();
+    let ids: Vec<(u32, &str)> = capture.usbids.iter().map(|u| (u.card, u.text.as_str())).collect();
+    let cards = usb_cards(&capture.cards, &ids);
     for d in devices.iter_mut() {
         d.usb = d.out_name.as_deref().and_then(|n| usb_of_port(n, &cards))
             .or_else(|| d.in_name.as_deref().and_then(|n| usb_of_port(n, &cards)));
     }
+    for r in &capture.received {
+        if r.bytes.first() != Some(&0xF0) { continue; }
+        let Some(ii) = in_names.iter().position(|n| *n == r.port) else { continue };
+        if let Some(d) = devices.iter_mut().find(|d| d.in_index == Some(ii)) {
+            if d.replies.len() >= REPLIES_KEPT { continue; }
+            if d.identity.is_none() { d.identity = parse_identity_reply(&r.bytes); }
+            if !d.replies.contains(&r.bytes) { d.replies.push(r.bytes.clone()); }
+        }
+    }
+    devices
+}
+
+/// Observe the system, raw: the ports, the listing of its cards and, when `probe` is true, the
+/// requests sent (the Identity Request, then each of `probes` to its ports) with the SysEx
+/// received for `wait`.
+pub fn observe(probe: bool, wait: Duration, probes: &[Probe]) -> Result<Capture> {
+    let output = MidiOutput::new("osc-bridge-detect")?;
+    let out_ports = output.ports();
+    let out_names: Vec<String> = out_ports.iter()
+        .map(|p| output.port_name(p).unwrap_or_else(|_| "?".into())).collect();
+    let input = MidiInput::new("osc-bridge-detect")?;
+    let in_ports = input.ports();
+    let in_names: Vec<String> = in_ports.iter()
+        .map(|p| input.port_name(p).unwrap_or_else(|_| "?".into())).collect();
+    let mut capture = Capture::new(out_names.clone(), in_names.clone(), Asound::machine());
     if !probe {
-        return Ok(devices);
+        return Ok(capture);
     }
 
     // Listen on every input, then ask every output who it is.
-    let replies: Replies = Arc::new(Mutex::new(Vec::new()));
+    let start = std::time::Instant::now();
+    let heard: Arc<Mutex<Vec<Received>>> = Arc::new(Mutex::new(Vec::new()));
     let mut listeners: Vec<MidiInputConnection<()>> = Vec::new();
     for (ii, port) in in_ports.iter().enumerate() {
         let mut inp = MidiInput::new("osc-bridge-detect-in")?;
         inp.ignore(Ignore::None);
-        let sink = replies.clone();
+        let sink = heard.clone();
+        let name = in_names[ii].clone();
         if let Ok(conn) = inp.connect(port, "osc-bridge-detect-in", move |_, msg, _| {
             if msg.first() == Some(&0xF0) {
                 if let Ok(mut g) = sink.lock() {
-                    if g.iter().filter(|(i, _)| *i == ii).count() < REPLIES_KEPT { g.push((ii, msg.to_vec())); }
+                    if g.iter().filter(|r| r.port == name).count() < REPLIES_KEPT {
+                        g.push(Received { port: name.clone(), bytes: msg.to_vec(), ms: start.elapsed().as_millis() as u64 });
+                    }
                 }
             }
         }, ()) {
@@ -599,8 +615,8 @@ pub fn scan(probe: bool, wait: Duration, probes: &[Probe]) -> Result<Vec<Probed>
     let universal = Probe { request: IDENTITY_REQUEST.to_vec(), ports: vec![] };
     for p in std::iter::once(&universal).chain(probes) {
         for (oi, conn) in conns.iter_mut() {
-            if p.goes_to(&out_names[*oi]) {
-                let _ = conn.send(&p.request);
+            if p.goes_to(&out_names[*oi]) && conn.send(&p.request).is_ok() {
+                capture.requests.push(Request { port: out_names[*oi].clone(), bytes: p.request.clone() });
             }
         }
         std::thread::sleep(PROBE_GAP);
@@ -608,14 +624,8 @@ pub fn scan(probe: bool, wait: Duration, probes: &[Probe]) -> Result<Vec<Probed>
     std::thread::sleep(wait);
     drop(listeners);
 
-    let got = replies.lock().map_err(|_| anyhow!("detect replies lock poisoned"))?.clone();
-    for (ii, msg) in got {
-        if let Some(d) = devices.iter_mut().find(|d| d.in_index == Some(ii)) {
-            if d.identity.is_none() { d.identity = parse_identity_reply(&msg); }
-            if !d.replies.contains(&msg) { d.replies.push(msg); }
-        }
-    }
-    Ok(devices)
+    capture.received = heard.lock().map_err(|_| anyhow!("detect replies lock poisoned"))?.clone();
+    Ok(capture)
 }
 
 // ---- the learn mode: a fingerprint of a device that may not say who it is ----

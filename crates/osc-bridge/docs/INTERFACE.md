@@ -9,7 +9,7 @@ The application offers three published surfaces: its command line, its MCP tools
 | Command | Receives | Returns |
 |---|---|---|
 | `list` | — | the MIDI ports |
-| `detect` | `--no-probe`; `--learn` and `--listen-ms` (1000-30000, default 5000, only with `--learn`) | the devices recognised on the ports; with `--learn`, the notice (it listens N seconds, move the controls), then per port its fingerprint and the measures beside it |
+| `detect` | `--no-probe`; `--devices-dir`; `--learn` and `--listen-ms` (1000-30000, default 5000, only with `--learn`); `--write <file>`; `--read <file>` | the devices recognised on the ports; with `--learn`, the notice (it listens N seconds, move the controls), then per port its fingerprint and the measures beside it; with `--write`, the same report and a capture file; with `--read`, the report over a capture, with no device and nothing sent (it refuses `--no-probe` and `--write`) |
 | `run` | a driver, ports, OSC and WebSocket addresses, OSCQuery | a bridge for one device |
 | `orchestrate` | a `bridge.toml` | several devices with routes between them |
 | `mcp` | `--offline`, `--devices-dir` | the MCP server |
@@ -19,6 +19,10 @@ The application offers three published surfaces: its command line, its MCP tools
 | `privacy` | `--offline`, `--private`, `--public` | the installation's settings |
 | `inspect`, `lint` | a driver | its summary, its warnings |
 | `osc-send`, `osc-listen` | an address and arguments, a bind address | one OSC message, the messages received |
+
+### The detection capture
+
+`detect --write <file>` writes what the detection observed, raw, as JSON (`format_version` 1; a capture of another version is refused with an error naming it): `outputs` and `inputs` (the port names as the system gave them, in order), `cards` (the text of `/proc/asound/cards`), `usbids` (`card`, `text` of each card's `usbid`), `requests` (`port`, `bytes`) and `received` (`port`, `bytes`, `ms` since the first request). The pairing of inputs with outputs and the USB ids are never written: `--read` derives them again, through the derivation the scan uses. Only `/proc/asound/cards` and each card's `usbid` (maker:product) are read; every other file of a card, the USB serial field, the host name and the user name are left out. The messages received are kept raw, not redacted, because the replay depends on them: a maker's reply may carry a serial number, so the person reads a capture before sharing it. The option writes a local file and sends nothing more than the detection does. The corpus of captures is `crates/osc-bridge/tests/fixtures/captures/`: one capture per bench session named by day, beside `<day>.expected.json` (port → device id, written by a person).
 
 ## The relay frames
 

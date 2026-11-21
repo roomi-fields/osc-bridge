@@ -11,6 +11,14 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Added — a capture of the detection
+- `osc-bridge detect --write <file>` writes what the detection observed, raw (port names, the
+  text of `/proc/asound/cards` and each card's `usbid`, the requests sent, the messages received
+  with their delay), and `detect --read <file>` replays it with no device and nothing sent,
+  through the same derivation as the scan (it refuses `--no-probe` and `--write`). No host name,
+  user name or serial field is read; a maker's reply may carry a serial number, so read a capture
+  before sharing it. A corpus of captures in the crate's test data proves the recognition rules.
+
 ### Added — a learn mode of the detection
 - `detect_hardware` (`learn`, `listen_ms`) and `osc-bridge detect --learn --listen-ms` listen
   for 1000-30000 ms (default 5000) on each port while the person moves the controls, sending

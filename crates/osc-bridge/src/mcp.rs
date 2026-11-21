@@ -1413,7 +1413,7 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
         "detect_hardware" => {
             let probe = args.get("probe").and_then(Value::as_bool).unwrap_or(true);
             let wait = args.get("timeout_ms").and_then(Value::as_u64).unwrap_or(800).clamp(100, 5000);
-            detect_hardware(index, server.map(|l| &l.client), opts.devices_dir.is_some(), probe, std::time::Duration::from_millis(wait))
+            detect_hardware(index, server.map(|l| &l.client), opts.devices_dir.is_some(), probe, std::time::Duration::from_millis(wait), None)
         }
         other => Err(format!("unknown tool: {other}")),
     }
@@ -1596,14 +1596,31 @@ pub fn match_port(catalogue: &[crate::detect::Candidate], port: &str, usb: Optio
 /// matches the ports against. The command to run names the driver by its
 /// file when `by_file` (a folder the user keeps), else by its id.
 fn detect_hardware(index: &DeviceIndex, server: Option<&crate::online::Online>, by_file: bool, probe: bool,
-                   wait: std::time::Duration) -> Result<Value, String> {
+                   wait: std::time::Duration, write: Option<&Path>) -> Result<Value, String> {
     let mut faults = Vec::new();
     let probes = match server {
         Some(server) if probe => server.probes().map_err(|e| format!("detect_hardware asks the SynthHub server which \
             requests recognise devices, and it could not be reached: {e}. Offline, the ports are matched against the drivers cached here."))?,
         _ => { let plan = detect_plan(index); faults = plan.faults; plan.probes }
     };
-    let found = crate::detect::scan(probe, wait, &probes).map_err(|e| format!("MIDI scan: {e}"))?;
+    let capture = crate::detect::observe(probe, wait, &probes).map_err(|e| format!("MIDI scan: {e}"))?;
+    if let Some(path) = write {
+        capture.write(path).map_err(|e| e.to_string())?;
+    }
+    detection_report(index, server, by_file, probe, crate::detect::replay(&capture), faults)
+}
+
+/// The devices a capture shows, matched against the drivers of `devices_dir`: the report of
+/// `detect_hardware`, with no device plugged in and nothing sent.
+pub fn detect_capture(devices_dir: &Path, capture: &crate::capture::Capture) -> Result<Vec<Value>, String> {
+    let index = DeviceIndex::build(devices_dir);
+    let report = detection_report(&index, None, true, false, crate::detect::replay(capture), Vec::new())?;
+    Ok(report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default())
+}
+
+/// The report of `detect_hardware` over the devices `found`.
+fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>, by_file: bool, probe: bool,
+                    found: Vec<crate::detect::Probed>, faults: Vec<crate::device::DeviceFault>) -> Result<Value, String> {
     let matched: Vec<Vec<Value>> = match server {
         Some(server) => {
             let ports: Vec<Value> = found.iter().map(|d| json!({ "port": d.label(),
@@ -1886,13 +1903,24 @@ pub fn print_learning(listen_ms: Option<u64>) -> Result<()> {
 /// `osc-bridge detect`: the same report as the `detect_hardware` tool, for a
 /// terminal: drivers of `devices_dir`, else of the SynthHub catalogue when
 /// linked, else those cached on this machine.
-pub fn print_detection(devices_dir: Option<&Path>, probe: bool) -> Result<()> {
+///
+/// With `write`, the observation is also written to that file as a capture. With `read`, the
+/// capture of that file is replayed instead of scanning: no device, nothing sent; it refuses
+/// `probe` off and `write`, a replay sending and writing nothing.
+pub fn print_detection(devices_dir: Option<&Path>, probe: bool, write: Option<&Path>, read: Option<&Path>) -> Result<()> {
     let root = devices_dir.map(Path::to_path_buf).or_else(crate::online::cache_dir).unwrap_or_default();
-    let index = DeviceIndex::build(&root);
-    let server = (devices_dir.is_none() && crate::online::linked()).then(|| crate::online::Online::new(crate::online::SERVER));
-    let report = detect_hardware(&index, server.as_ref(), devices_dir.is_some(), probe, std::time::Duration::from_millis(800))
-        .map_err(|e| anyhow::anyhow!(e))?;
-    let devices = report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default();
+    let devices = if let Some(read) = read {
+        if !probe { anyhow::bail!("--read cannot be used with --no-probe: a replay sends nothing"); }
+        if write.is_some() { anyhow::bail!("--read cannot be used with --write: a replay writes no capture"); }
+        let capture = crate::capture::Capture::read(read)?;
+        detect_capture(&root, &capture).map_err(|e| anyhow::anyhow!(e))?
+    } else {
+        let index = DeviceIndex::build(&root);
+        let server = (devices_dir.is_none() && crate::online::linked()).then(|| crate::online::Online::new(crate::online::SERVER));
+        let report = detect_hardware(&index, server.as_ref(), devices_dir.is_some(), probe, std::time::Duration::from_millis(800), write)
+            .map_err(|e| anyhow::anyhow!(e))?;
+        report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default()
+    };
     print!("{}", format_detection(&devices, probe));
     Ok(())
 }
