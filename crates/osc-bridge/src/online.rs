@@ -694,20 +694,25 @@ impl Online {
         Ok(out)
     }
 
-    /// Shares a device fingerprint the person named (`POST /v1/fingerprints`). Nothing goes
-    /// out for a private device (by the id or the slug of `name`), when offline, : naming
-    /// the device is the person's act of sending. A failure leaves the fingerprint here, with
-    /// no retry.
-    pub fn share_fingerprint(&self, settings_file: &Path, name: &str, fp: &Value) -> Sharing {
+    /// Shares a device fingerprint with its vendor, model and firmware (`POST /v1/fingerprints`).
+    /// A field left empty is refused here, before anything is sent. Nothing goes out for a
+    /// private device (by its `vendor/model` id), when offline: naming the device is the
+    /// person's act of sending. A failure leaves the fingerprint here, with no retry.
+    pub fn share_fingerprint(&self, settings_file: &Path, vendor: &str, model: &str, firmware: &str, fp: &Value) -> Sharing {
+        let missing: Vec<&str> = [("vendor", vendor), ("model", model), ("firmware", firmware)]
+            .into_iter().filter(|(_, v)| v.trim().is_empty()).map(|(k, _)| k).collect();
+        if !missing.is_empty() {
+            return Sharing::Failed(format!("device: missing {}", missing.join(", ")));
+        }
         let settings = match Settings::load(Some(settings_file)) {
             Ok(s) => s,
             Err(e) => return Sharing::Failed(format!("settings: {e:#}")),
         };
-        let slug = crate::mcp::slugify(name, '-');
-        if settings.offline || Settings::covers(&settings.private, name, &slug) {
-            return Sharing::Withheld(format!("{name} is private or the link is cut: nothing is sent"));
+        let id = crate::mcp::device_id(vendor, model);
+        if settings.offline || Settings::covers(&settings.private, &id, &id) {
+            return Sharing::Withheld(format!("{vendor} {model} is private or the link is cut: nothing is sent"));
         }
-        let body = serde_json::to_value(FingerprintBody::new(name, fp)).unwrap_or(Value::Null);
+        let body = serde_json::to_value(FingerprintBody::new(vendor, model, firmware, fp)).unwrap_or(Value::Null);
         match self.post("/v1/fingerprints", &body) {
             Ok((200..=299, _)) => Sharing::Sent,
             Ok((status, v)) => Sharing::Failed(v["error"].as_str().map(|e| format!("HTTP {status}: {e}")).unwrap_or_else(|| format!("HTTP {status}"))),
@@ -737,6 +742,14 @@ pub enum Sharing {
     Failed(String),
 }
 
+/// The device a fingerprint belongs to: its maker, its model and its firmware version.
+#[derive(serde::Serialize)]
+pub struct DeviceIds {
+    vendor: String,
+    model: String,
+    firmware: String,
+}
+
 #[derive(serde::Serialize)]
 pub struct UsbIds {
     vendor_id: Value,
@@ -744,11 +757,11 @@ pub struct UsbIds {
 }
 
 /// The body of `POST /v1/fingerprints`, as the service reads it today (a mirror until
-/// synthhub-protocol holds the type): the name the person gave and the identification fields
-/// of the fingerprint. The serial number, the host name and everything local are left out.
+/// synthhub-protocol holds the type): the device (vendor, model, firmware) and the
+/// identification fields of the fingerprint. The serial number, the host name and everything local are left out.
 #[derive(serde::Serialize)]
 pub struct FingerprintBody {
-    name: String,
+    device: DeviceIds,
     #[serde(skip_serializing_if = "Option::is_none")]
     usb: Option<UsbIds>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -762,13 +775,14 @@ pub struct FingerprintBody {
 }
 
 impl FingerprintBody {
-    pub fn new(name: &str, fp: &Value) -> Self {
+    pub fn new(vendor: &str, model: &str, firmware: &str, fp: &Value) -> Self {
         let given = |k: &str| fp.get(k).filter(|v| !v.is_null()).cloned();
         let usb = fp.get("usb").filter(|u| u.is_object()).map(|u| UsbIds {
             vendor_id: u.get("vendor_id").cloned().unwrap_or(Value::Null),
             product_id: u.get("product_id").cloned().unwrap_or(Value::Null),
         });
-        Self { name: name.to_string(), usb, identity_reply: given("identity_reply"), ports: given("ports"), sends: given("sends"), controls: given("controls") }
+        let device = DeviceIds { vendor: vendor.trim().into(), model: model.trim().into(), firmware: firmware.trim().into() };
+        Self { device, usb, identity_reply: given("identity_reply"), ports: given("ports"), sends: given("sends"), controls: given("controls") }
     }
 }
 

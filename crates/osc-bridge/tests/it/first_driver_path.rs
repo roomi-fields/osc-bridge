@@ -66,7 +66,8 @@ fn description_of(tool: &str) -> String {
 fn report_mapping_describes_mapping_the_controls_of_a_device_with_no_driver_by_its_fingerprint_name() {
     let d = description_of("report_mapping");
     assert!(d.contains("no driver"), "{d}");
-    assert!(d.contains("fingerprint") && d.contains("device_name"), "the device is named as its fingerprint was shared: {d}");
+    assert!(d.contains("fingerprint") && d.contains("vendor/model"), "the device is named by its maker and model as its fingerprint was shared: {d}");
+    assert!(!d.contains("device_name"), "{d}");
     assert!(d.contains("submit_driver"), "the next step is the first driver: {d}");
 }
 
@@ -144,7 +145,57 @@ fn a_device_the_catalogue_does_not_recognise_carries_a_next_step_naming_it_then_
     let step = device_of(&r, 0)["next_step"].as_str().unwrap_or_else(|| panic!("no next_step: {r}")).to_lowercase();
     assert!(step.contains("name"), "{step}");
     assert!(step.contains("report_mapping"), "{step}");
-    assert!(step.contains("device_name") && step.contains("device"), "{step}");
+    assert!(!step.contains("device_name"), "{step}");
+}
+
+#[test]
+fn the_next_step_of_an_unknown_device_names_the_three_things_the_sharing_needs() {
+    for ports in [&["Zork Thing 1"][..]] {
+        let r = report(ports);
+        let step = device_of(&r, 0)["next_step"].as_str().unwrap().to_lowercase();
+        for word in ["vendor", "model", "firmware"] {
+            assert!(step.contains(word), "{word} in {step}");
+        }
+        assert!(step.contains("share_fingerprint"), "{step}");
+    }
+}
+
+const REPLY_WITH_VERSION: &str = "F0 7E 00 06 02 00 20 6B 04 00 02 00 01 00 02 03 F7";
+
+fn report_with_reply(port: &str, reply: Option<&str>) -> Value {
+    let mut l = learned(port);
+    if let Some(r) = reply { l.fingerprint["identity_reply"] = json!(r); }
+    osc_bridge::mcp::learn_report(&[(unit(port), l)], &catalogue(), Duration::from_millis(5000),
+        &osc_bridge::mcp::ServiceMatches::NotLinked)
+}
+
+#[test]
+fn the_firmware_of_the_identity_reply_is_proposed_for_the_person_to_confirm() {
+    let r = report_with_reply("Zork Thing 1", Some(REPLY_WITH_VERSION));
+    let d = device_of(&r, 0);
+    assert_eq!(d["proposed_firmware"], "1.0.2.3", "{r}");
+    let step = d["next_step"].as_str().unwrap();
+    assert!(step.contains("1.0.2.3"), "the step proposes it: {step}");
+    assert!(r["content"][0]["text"].as_str().unwrap().contains("1.0.2.3"));
+}
+
+#[test]
+fn a_device_with_no_identity_reply_has_no_proposed_firmware_and_its_step_asks_the_person() {
+    let r = report_with_reply("BCR-32 CTRL", None);
+    let d = device_of(&r, 0);
+    assert!(d.get("proposed_firmware").is_none(), "{r}");
+    let step = d["next_step"].as_str().unwrap().to_lowercase();
+    assert!(step.contains("firmware") && step.contains("ask"), "{step}");
+}
+
+#[test]
+fn after_a_share_the_next_step_gives_report_mapping_the_maker_slash_model_id_and_not_the_firmware() {
+    let step = osc_bridge::mcp::shared_next_step("Behringer", "BCR-32");
+    assert!(step.contains("report_mapping") && step.contains("device"), "{step}");
+    assert!(step.contains("behringer/bcr-32"), "{step}");
+    assert!(!step.contains("device_name"), "{step}");
+    let step = osc_bridge::mcp::shared_next_step("Arturia", "MiniLab 3");
+    assert!(step.contains("arturia/minilab-3"), "{step}");
 }
 
 #[test]
@@ -178,4 +229,10 @@ fn the_report_keeps_what_it_gave_before_the_next_step() {
     assert!(d.get("fingerprint").is_some() && d.get("measured").is_some() && d["port"] == "Zork Thing 1", "{r}");
     assert_eq!(r["structuredContent"]["learn"], true);
     assert_eq!(r["structuredContent"]["listen_ms"], 5000);
+}
+
+#[test]
+fn no_tool_description_or_schema_speaks_of_a_free_device_name() {
+    let (reply, _) = linked(json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" }));
+    assert!(!reply.to_string().contains("device_name"), "a published tool still names device_name");
 }

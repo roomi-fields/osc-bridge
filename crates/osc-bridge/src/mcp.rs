@@ -917,8 +917,10 @@ pub fn tool_schemas() -> Value {
                         "consent_ports": { "type": "array", "items": { "type": "string" }, "description": "Ports (a part of the name, or the exact out_port index) that receive every maker request, the held back ones too. Ask the person first and pass a port only with their explicit agreement for that port: a request meant for another maker's device may overwrite its memory. A fragment naming several ports or none is refused, and nothing is sent." },
                         "learn": { "type": "boolean", "description": "Learn mode: instead of matching drivers, listen to each device and return its fingerprint (an OSD 0.6 fingerprint: usb, ports, identity_reply, sends, controls) with the measured delay of the identity reply and the period of what it sends alone, beside it. Sends nothing but the universal Identity Request; tell the person to move the device's controls while it listens." },
                         "listen_ms": { "type": "integer", "description": "Learn mode only: how long to listen, 1000-30000 ms (default 5000)." },
-                        "share_fingerprint": { "type": "string", "description": "Learn mode only: the port (a part of its name) whose fingerprint is sent to SynthHub, so that everyone recognises this device. Giving it, with device_name, sends that device's fingerprint to SynthHub (POST /v1/fingerprints): the name, the USB vendor and product ids, the identity_reply, the ports (names without machine numbers), what the device sends and its controls; never a serial number, a host name, a measure or anything about the person. Nothing is sent for a private device or when offline. Ask the person first. Needs device_name." },
-                        "device_name": { "type": "string", "description": "Learn mode only: the name the person gives the device whose fingerprint is shared (share_fingerprint)." }
+                        "share_fingerprint": { "type": "string", "description": "Learn mode only: the port (a part of its name) whose fingerprint is sent to SynthHub, so that everyone recognises this device. Giving it, with vendor, model and firmware, sends that device's fingerprint to SynthHub (POST /v1/fingerprints): the vendor, model and firmware, the USB vendor and product ids, the identity_reply, the ports (names without machine numbers), what the device sends and its controls; never a serial number, a host name, a measure or anything about the person. Nothing is sent for a private device or when offline. Ask the person first. Needs vendor, model and firmware, none empty." },
+                        "vendor": { "type": "string", "description": "Learn mode only, with share_fingerprint: the maker of the device, as the person names it (60 characters at most). Required." },
+                        "model": { "type": "string", "description": "Learn mode only, with share_fingerprint: the model of the device, as the person names it (60 characters at most). Required." },
+                        "firmware": { "type": "string", "description": "Learn mode only, with share_fingerprint: the firmware version of the device (40 characters at most). Required: when the identity reply carries one, the report proposes it as proposed_firmware and the person confirms it; otherwise ask the person." }
                     }
                 },
                 "outputSchema": {
@@ -1021,11 +1023,11 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "report_mapping",
-                "description": "Teach the catalogue which MIDI message a control really sends: after the user moved one control on the device (see relay_listen), give the driver address it is (from list_routes) — or, for a control the driver lacks, its panel label — and the CC, NRPN or note it sent, with the firmware and the device's Identity Reply when you have them. When several accounts observe the same thing on one firmware the mapping is learned; get_trust shows learned mappings and where they differ from the driver. For a device with no driver, the first step of its first driver: after detect_hardware in learn mode (its next_step), the person names the device (the name they give as device_name when sharing its fingerprint), and you map its controls one by one with device set to that name; the mappings then make the first driver you send with submit_driver.",
+                "description": "Teach the catalogue which MIDI message a control really sends: after the user moved one control on the device (see relay_listen), give the driver address it is (from list_routes) — or, for a control the driver lacks, its panel label — and the CC, NRPN or note it sent, with the firmware and the device's Identity Reply when you have them. When several accounts observe the same thing on one firmware the mapping is learned; get_trust shows learned mappings and where they differ from the driver. For a device with no driver, the first step of its first driver: after detect_hardware in learn mode (its next_step), the person gives its vendor, model and firmware (share_fingerprint), and you map its controls one by one with device set to its vendor/model id (the slugs of the vendor and the model, e.g. behringer/bcr-32); the mappings then make the first driver you send with submit_driver.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
-                        "device": { "type": "string", "description": "Driver id or OSC prefix; for a device with no driver yet, the name the person gave its fingerprint (device_name)." },
+                        "device": { "type": "string", "description": "Driver id or OSC prefix; for a device with no driver yet, its vendor/model id as its fingerprint was shared (e.g. behringer/bcr-32)." },
                         "address": { "type": "string", "description": "The driver's OSC address for the control." },
                         "label": { "type": "string", "description": "The control's panel label, when the driver has no address for it." },
                         "cc": { "type": "integer", "minimum": 0, "maximum": 127 },
@@ -1043,7 +1045,7 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "submit_driver",
-                "description": "Contribute a driver for a device the catalogue lacks (or a better one): the full driver file as a JSON object, in the Open Synth Descriptors format (device.name, device.vendor, device.osc_prefix, and cc_params / params / commands / triggers — see https://synthhub.roomi-fields.com/osd/). It is checked, then merged into the SynthHub catalogue by the merge job if it parses, lints and passes the tests, as its own file of source 'agent-contributed'. Say where the data comes from (manual page, tested on the device). A first driver for a device with no driver: build it from the mappings sent with report_mapping, naming the device as its fingerprint was shared (device_name), and give its source and its licence (e.g. 'mapped on the device by report_mapping; license CC0-1.0').",
+                "description": "Contribute a driver for a device the catalogue lacks (or a better one): the full driver file as a JSON object, in the Open Synth Descriptors format (device.name, device.vendor, device.osc_prefix, and cc_params / params / commands / triggers — see https://synthhub.roomi-fields.com/osd/). It is checked, then merged into the SynthHub catalogue by the merge job if it parses, lints and passes the tests, as its own file of source 'agent-contributed'. Say where the data comes from (manual page, tested on the device). A first driver for a device with no driver: build it from the mappings sent with report_mapping, naming the device by the vendor and model its fingerprint was shared with, and give its source and its licence (e.g. 'mapped on the device by report_mapping; license CC0-1.0').",
                 "inputSchema": { "type": "object", "properties": {
                     "driver": { "type": "object", "description": "The driver file." },
                     "firmware": { "type": "string", "description": "Firmware the driver was written or tested for." },
@@ -1414,12 +1416,15 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
             install_export(&preset_device(index, wanted)?, &preset_device(index, on)?, wanted, on, confirm)
         }
         "detect_hardware" if args.get("learn").and_then(Value::as_bool) == Some(true) => {
-            let share = match (args.get("share_fingerprint").and_then(Value::as_str), args.get("device_name").and_then(Value::as_str)) {
-                (None, None) => None,
-                (Some(port), Some(name)) if !name.trim().is_empty() => Some(Share {
-                    port, name: name.trim(), client: link.map(|l| &l.client), private: &opts.private,
-                }),
-                _ => return Err("share_fingerprint and device_name go together: the port, and the name the person gives the device".into()),
+            let text = |k: &str| args.get(k).and_then(Value::as_str);
+            let share = match text("share_fingerprint") {
+                None if ["vendor", "model", "firmware"].iter().any(|k| text(k).is_some()) =>
+                    return Err("vendor, model and firmware go with share_fingerprint: the port whose fingerprint is shared".into()),
+                None => None,
+                Some(port) => {
+                    let (vendor, model, firmware) = share_fields(text("vendor"), text("model"), text("firmware"), false)?;
+                    Some(Share { port, vendor, model, firmware, command: false, client: link.map(|l| &l.client), private: &opts.private })
+                }
             };
             learn_hardware(index, server.map(|l| &l.client), crate::detect::learn_listen(args.get("listen_ms").and_then(Value::as_u64))?, share)
         }
@@ -1782,16 +1787,73 @@ pub fn learn_service_matches(server: Option<&crate::online::Online>, learned: &[
 }
 
 /// The ask that ends the next step of a device nobody knows: name it, then map its controls.
-const NEXT_STEP_ASK: &str = "Ask the person to name it, then map its \
-    controls with report_mapping (device: the name they gave, as device_name when the fingerprint is shared); \
-    a first driver built from the mappings goes to submit_driver.";
+const NEXT_STEP_ASK: &str = "Ask the person to name it: its vendor (the maker), its model and its firmware version; \
+    share_fingerprint needs the three, none empty.";
+
+/// What the person is asked for the firmware: the version the identity reply carries, to
+/// confirm, or nothing to propose.
+fn firmware_ask(proposed: Option<&str>) -> String {
+    match proposed {
+        Some(v) => format!(" The identity reply carries the firmware version {v}: propose it and have the person confirm it as the firmware."),
+        None => " The device sent no firmware version: ask the person for the firmware.".into(),
+    }
+}
 
 /// The next step of an unknown device, worded by what was looked at.
-fn next_step(service: &ServiceMatches) -> String {
+fn next_step(service: &ServiceMatches, proposed_firmware: Option<&str>) -> String {
+    let ask = format!("{NEXT_STEP_ASK}{} Then map its controls one by one with report_mapping, device being its vendor/model id; a first driver built from the mappings goes to submit_driver.",
+        firmware_ask(proposed_firmware));
     match service {
-        ServiceMatches::Answered(_) => format!("Neither the local catalogue nor SynthHub knows this device. {NEXT_STEP_ASK}"),
-        _ => format!("Only the local catalogue was looked at, and no driver in it matches this device. {NEXT_STEP_ASK}"),
+        ServiceMatches::Answered(_) => format!("Neither the local catalogue nor SynthHub knows this device. {ask}"),
+        _ => format!("Only the local catalogue was looked at, and no driver in it matches this device. {ask}"),
     }
+}
+
+/// The next step once a fingerprint is shared: the mappings go to `report_mapping` under the
+/// device id `vendor/model`, the firmware not being part of it.
+pub fn shared_next_step(vendor: &str, model: &str) -> String {
+    format!("Map its controls one by one with report_mapping (device: {}); a first driver built from the mappings goes to submit_driver.",
+        device_id(vendor, model))
+}
+
+/// The id of a device the catalogue does not describe: its vendor and model, slugged.
+pub fn device_id(vendor: &str, model: &str) -> String {
+    format!("{}/{}", slugify(vendor, '-'), slugify(model, '-'))
+}
+
+/// The firmware version of a universal Identity Reply (`F0 7E id 06 02 maker family model
+/// version F7`: a one- or three-byte maker, two bytes of family, two of model, four of version),
+/// as its bytes joined by dots; none when the reply is too short.
+fn identity_firmware(hex: &str) -> Option<String> {
+    let bytes: Vec<u8> = hex.split_whitespace().map(|b| u8::from_str_radix(b, 16).ok()).collect::<Option<_>>()?;
+    if bytes.len() < 6 || bytes[..2] != [0xF0, 0x7E] || bytes[3..5] != [0x06, 0x02] { return None; }
+    let body = bytes[5..].strip_suffix(&[0xF7]).unwrap_or(&bytes[5..]);
+    let maker = if body.first() == Some(&0) { 3 } else { 1 };
+    let version = body.get(maker + 4..maker + 8)?;
+    Some(version.iter().map(u8::to_string).collect::<Vec<_>>().join("."))
+}
+
+/// The vendor, model and firmware of a sharing, none empty, as the person gave them; the
+/// refusal names every missing one in the words of the command (`--vendor`) or the tool (`vendor`).
+fn share_fields<'a>(vendor: Option<&'a str>, model: Option<&'a str>, firmware: Option<&'a str>, command: bool)
+    -> Result<(&'a str, &'a str, &'a str), String> {
+    let given = |v: Option<&'a str>| v.map(str::trim).filter(|v| !v.is_empty());
+    let (v, m, f) = (given(vendor), given(model), given(firmware));
+    if let (Some(v), Some(m), Some(f)) = (v, m, f) { return Ok((v, m, f)); }
+    let missing: Vec<String> = [("vendor", v), ("model", m), ("firmware", f)].into_iter()
+        .filter(|(_, x)| x.is_none()).map(|(k, _)| if command { format!("--{k}") } else { k.to_string() }).collect();
+    Err(format!("nothing is sent: a fingerprint is shared with three fields, none empty; missing: {}. Ask the person.", missing.join(", ")))
+}
+
+/// A refusal of the service that names the vendor, model or firmware, in the words of the
+/// command typed (`--vendor`) when `command`, else as it is (the tool's parameters are named
+/// so); any other text is returned as it is.
+pub fn refusal_in_words(said: &str, command: bool) -> String {
+    if !command || !said.contains("device:") { return said.to_string(); }
+    said.split(' ').map(|w| {
+        let bare = w.trim_matches(|c: char| !c.is_ascii_alphabetic());
+        if ["vendor", "model", "firmware"].contains(&bare) { w.replacen(bare, &format!("--{bare}"), 1) } else { w.to_string() }
+    }).collect::<Vec<_>>().join(" ")
 }
 
 /// The learn mode's result for `learned`: the structured devices and their text. A device the
@@ -1826,7 +1888,11 @@ pub fn learn_report(learned: &[(crate::detect::Unit, crate::detect::Learned)], c
         });
         match driver {
             Some((id, name)) => out["driver"] = json!({ "id": id, "name": name }),
-            None => out["next_step"] = json!(next_step(service)),
+            None => {
+                let proposed = l.fingerprint["identity_reply"].as_str().and_then(identity_firmware);
+                if let Some(v) = &proposed { out["proposed_firmware"] = json!(v); }
+                out["next_step"] = json!(next_step(service, proposed.as_deref()));
+            }
         }
         out
     }).collect();
@@ -1842,11 +1908,15 @@ pub fn learn_report(learned: &[(crate::detect::Unit, crate::detect::Learned)], c
 
 /// The fingerprint to share, as `detect_hardware` is told: the port, the name the person gave
 /// and the link and private list that decide whether anything goes out.
-const SENT_FIELDS: &str = "sent: the name, USB vendor and product ids, identity_reply, ports, what it sends, its controls; no serial number, host name or measure";
+const SENT_FIELDS: &str = "sent: the vendor, model and firmware, USB vendor and product ids, identity_reply, ports, what it sends, its controls; no serial number, host name or measure";
 
 struct Share<'a> {
     port: &'a str,
-    name: &'a str,
+    vendor: &'a str,
+    model: &'a str,
+    firmware: &'a str,
+    /// Typed on the command line: a refusal is worded with its flags.
+    command: bool,
     client: Option<&'a crate::online::Online>,
     private: &'a [String],
 }
@@ -1859,18 +1929,21 @@ fn share_learned(share: &Share, learned: &[(crate::detect::Unit, crate::detect::
     let [(unit, one)] = found.as_slice() else {
         return Err(format!("share_fingerprint {:?} names {} device(s): name exactly one port", share.port, found.len()));
     };
-    let slug = slugify(share.name, '-');
-    if crate::online::Settings::covers(share.private, share.name, &slug) {
-        return Ok(format!("not sent: {} is private on this machine", share.name));
+    let name = format!("{} {}", share.vendor, share.model);
+    let id = device_id(share.vendor, share.model);
+    if crate::online::Settings::covers(share.private, &id, &id) {
+        return Ok(format!("not sent: {name} is private on this machine"));
     }
     let (Some(client), Some(file)) = (share.client, crate::online::settings_file()) else {
         return Ok("not sent: this copy is not linked to the SynthHub server".into());
     };
-    Ok(match client.share_fingerprint(&file, share.name, &one.fingerprint) {
-        crate::online::Sharing::Sent => format!("the fingerprint of {} ({}) was sent to SynthHub ({})", share.name, unit.label(), SENT_FIELDS),
+    Ok(match client.share_fingerprint(&file, share.vendor, share.model, share.firmware, &one.fingerprint) {
+        crate::online::Sharing::Sent => format!("the fingerprint of {name} (firmware {}, {}) was sent to SynthHub ({}). {}",
+            share.firmware, unit.label(), SENT_FIELDS, shared_next_step(share.vendor, share.model)),
         crate::online::Sharing::Withheld(why) => format!("not sent: {why}"),
         crate::online::Sharing::Failed(why) => {
-            eprintln!("osc-bridge: the fingerprint of {} was not sent, it stays on this machine: {why}", share.name);
+            let why = refusal_in_words(&why, share.command);
+            eprintln!("osc-bridge: the fingerprint of {name} was not sent, it stays on this machine: {why}");
             format!("not sent, it stays on this machine: {why}")
         }
     })
@@ -2060,14 +2133,18 @@ fn load_preset(args: &Value, link: &Link) -> Result<Value, String> {
 
 /// `osc-bridge detect --learn`: the notice first (the person moves the controls while it
 /// listens), then the fingerprint of each port and its measures.
-/// With `share` (the port, the name the person gives), that fingerprint is sent to SynthHub when
-/// linked and not private; naming the port is the person's agreement.
-pub fn print_learning(listen_ms: Option<u64>, share: Option<(&str, &str)>) -> Result<()> {
+/// With `share` (the port, then the vendor, model and firmware the person gives), that
+/// fingerprint is sent to SynthHub when linked and not private; naming the port is the person's
+/// agreement. A missing vendor, model or firmware is refused before anything is listened to.
+pub fn print_learning(listen_ms: Option<u64>, share: Option<(&str, [Option<&str>; 3])>) -> Result<()> {
+    let share = share.map(|(port, [vendor, model, firmware])| {
+        share_fields(vendor, model, firmware, true).map(|(vendor, model, firmware)| (port, vendor, model, firmware))
+    }).transpose().map_err(|e| anyhow::anyhow!(e))?;
     let listen = crate::detect::learn_listen(listen_ms).map_err(|e| anyhow::anyhow!(e))?;
     println!("{}", crate::detect::learn_notice(listen));
     let client = crate::online::linked().then(|| crate::online::Online::new(crate::online::SERVER));
     let private = crate::online::settings_file().and_then(|f| crate::online::Settings::load(Some(&f)).ok()).map(|s| s.private).unwrap_or_default();
-    let share = share.map(|(port, name)| Share { port, name, client: client.as_ref(), private: &private });
+    let share = share.map(|(port, vendor, model, firmware)| Share { port, vendor, model, firmware, command: true, client: client.as_ref(), private: &private });
     let catalogue = DeviceIndex::build(&crate::online::cache_dir().unwrap_or_default());
     let report = learn_hardware(&catalogue, client.as_ref(), listen, share).map_err(|e| anyhow::anyhow!(e))?;
     if let Some(said) = report["structuredContent"]["sharing"].as_str() { println!("Sharing: {said}"); }

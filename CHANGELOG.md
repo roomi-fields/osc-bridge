@@ -36,8 +36,11 @@ is tracked explicitly under each release.
   as they are for a device with no local driver.
 
 ### Added — a named device fingerprint is shared with SynthHub when the person names it
-- `detect_hardware` (learn mode) takes `share_fingerprint` (the port) and `device_name`; `osc-bridge
-  detect --learn` takes `--share-fingerprint` and `--device-name`. The fingerprint is sent to
+- `detect_hardware` (learn mode) takes `share_fingerprint` (the port) with `vendor`, `model` and
+  `firmware`; `osc-bridge detect --learn` takes `--share-fingerprint` with `--vendor`, `--model` and
+  `--firmware`. The free name (`device_name`, `--device-name`) is removed: the service reads a maker
+  and a model, and the firmware changes the fingerprint. A share missing one of the three is refused
+  before anything is sent, naming each missing one. The fingerprint is sent to
   `POST /v1/fingerprints` so that everyone recognises the device.
 - Naming the device is the act that sends it: no consent is asked or kept, nothing is written to
   `settings.toml`. Nothing is sent for a private device or offline. No serial number, host name or

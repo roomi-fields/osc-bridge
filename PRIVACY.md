@@ -76,8 +76,10 @@ private = [
 
 - A device fingerprint (what a device answers and sends, learned with
   `detect_hardware` in learn mode or `osc-bridge detect --learn`) is sent to
-  the server only when you name the device (`share_fingerprint` and `device_name`, `--share-fingerprint` and
-  `--device-name`). It carries the USB vendor and product ids, the identity
+  the server only when you name the device by its vendor, its model and its firmware version
+  (`share_fingerprint` with `vendor`, `model` and `firmware`; `--share-fingerprint` with `--vendor`,
+  `--model` and `--firmware`), none empty. The vendor, model and firmware you give are sent. It
+  carries the USB vendor and product ids, the identity
   reply, the port names (without machine numbers), what the device sends and
   its controls — never a serial number, a host name, a path, a measure or
   anything about you. Naming the device is what sends it, and the
