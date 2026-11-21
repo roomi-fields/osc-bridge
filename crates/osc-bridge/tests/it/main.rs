@@ -15,6 +15,7 @@ mod electra_lua_runtime;
 mod electra_one;
 mod electra_one_driver;
 mod identity_request_fault;
+mod install_export_fetch;
 mod isolated_config;
 mod link_chains;
 mod live_links;

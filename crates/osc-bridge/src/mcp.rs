@@ -259,6 +259,16 @@ fn driver_wanted(req: &Value) -> Option<&str> {
     }
 }
 
+/// Every driver a tool call needs: `driver_wanted`, and for `install_export` both
+/// its `device` and its `on`.
+fn drivers_wanted(req: &Value) -> Vec<&str> {
+    if req["method"] == "tools/call" && req["params"]["name"] == "install_export" {
+        let args = &req["params"]["arguments"];
+        return [args["device"].as_str(), args["on"].as_str()].into_iter().flatten().collect();
+    }
+    driver_wanted(req).into_iter().collect()
+}
+
 /// The MCP server over stdio, linked to `online::SERVER`, its drivers kept
 /// in `online::cache_dir`.
 pub fn run(opts: McpOptions) -> Result<()> {
@@ -297,8 +307,8 @@ pub fn serve(opts: McpOptions, base: &str, cache: Option<PathBuf>, input: impl B
         // Once a session, the driver a call needs comes from the server; a
         // device the user keeps private by that very name is not asked for.
         if let (Some(link), Some(cache)) = (&link, &cache) {
-            let wanted = driver_wanted(&req).filter(|n| !crate::online::Settings::covers(&opts.private, n, n));
-            if let Some(name) = wanted.filter(|n| fetched.insert(n.to_string())) {
+            for name in drivers_wanted(&req) {
+                if crate::online::Settings::covers(&opts.private, name, name) || !fetched.insert(name.to_string()) { continue; }
                 match crate::catalogue::fetch(&link.client, name, cache) {
                     Ok(_) => if let Ok(mut g) = index.write() { *g = Arc::new(DeviceIndex::build(cache)) },
                     Err(e) => eprintln!("{name}: {e:#}"),
