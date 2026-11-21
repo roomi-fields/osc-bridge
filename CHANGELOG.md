@@ -11,6 +11,14 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Added — a learn mode of the detection
+- `detect_hardware` (`learn`, `listen_ms`) and `osc-bridge detect --learn --listen-ms` listen
+  for 1000-30000 ms (default 5000) on each port while the person moves the controls, sending
+  nothing but the universal Identity Request, and return per port an OSD 0.6 fingerprint
+  (`usb`, `ports`, `identity_reply`, `sends`, up to 32 `controls`; absent fields are never
+  guessed) with the measured delays beside it in `measured`. So a device that does not say who
+  it is still gives what is needed to learn it. Without `learn`, the report is unchanged.
+
 ### Added — the detection reads the USB ids of a device (Linux)
 - `detect_hardware` and `osc-bridge detect` give, per device, `usb` with `vendor_id` and
   `product_id` when its port belongs to a USB card (read from `/proc/asound`); the key is absent

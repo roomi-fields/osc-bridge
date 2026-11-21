@@ -108,6 +108,13 @@ enum Cmd {
         /// catalogue (offline: the drivers cached on this machine).
         #[arg(long)]
         devices_dir: Option<PathBuf>,
+        /// Learn mode: listen to each device and print its fingerprint. Move the device's
+        /// controls while it listens. Sends only the universal Identity Request.
+        #[arg(long)]
+        learn: bool,
+        /// With --learn: how long to listen, 1000-30000 ms (default 5000).
+        #[arg(long, requires = "learn")]
+        listen_ms: Option<u64>,
     },
     /// Print summary of a device JSON spec without starting the bridge.
     Inspect {
@@ -251,7 +258,8 @@ fn main() -> Result<()> {
             print!("{}", osc_bridge::mcp::privacy(&path, &cached, server.as_ref(), offline, &private, &public)?);
             Ok(())
         }
-        Cmd::Detect { no_probe, devices_dir } => osc_bridge::mcp::print_detection(devices_dir.as_deref(), !no_probe),
+        Cmd::Detect { learn: true, listen_ms, .. } => osc_bridge::mcp::print_learning(listen_ms),
+        Cmd::Detect { no_probe, devices_dir, .. } => osc_bridge::mcp::print_detection(devices_dir.as_deref(), !no_probe),
         Cmd::Inspect { device } => cmd_inspect(device),
         Cmd::Run(args) => cmd_run(args),
         Cmd::Export { device, on: Some(on), yes, .. } => {

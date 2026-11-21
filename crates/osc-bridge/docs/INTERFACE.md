@@ -9,7 +9,7 @@ The application offers three published surfaces: its command line, its MCP tools
 | Command | Receives | Returns |
 |---|---|---|
 | `list` | — | the MIDI ports |
-| `detect` | `--no-probe` | the devices recognised on the ports |
+| `detect` | `--no-probe`; `--learn` and `--listen-ms` (1000-30000, default 5000, only with `--learn`) | the devices recognised on the ports; with `--learn`, the notice (it listens N seconds, move the controls), then per port its fingerprint and the measures beside it |
 | `run` | a driver, ports, OSC and WebSocket addresses, OSCQuery | a bridge for one device |
 | `orchestrate` | a `bridge.toml` | several devices with routes between them |
 | `mcp` | `--offline`, `--devices-dir` | the MCP server |
@@ -33,6 +33,8 @@ The application offers three published surfaces: its command line, its MCP tools
 `send` always asks for the acknowledgement and hands back at the first answer: `/bridge/done` gives `sent: true`; `/bridge/fault` gives `isError: true` with the address and the reason, in text and in `structuredContent` (`sent: false`, `address`, `reason`); when nothing answers within 3 s (a guard, not a delay) it gives an error saying osc-bridge does not answer at that address.
 
 The tools are described once, from Rust types; the list the server offers is generated from them and compared, at each change, with the published list. Local tools work offline; the others are the service's, forwarded through `synthhub-protocol`.
+
+`detect_hardware` takes `learn` (boolean) and `listen_ms` (1000-30000, default 5000; a value outside is refused with an error naming the range). In learn mode it matches no driver: it listens for that time on each port, sends nothing but the universal Identity Request, says in its text that it listens N seconds and that the person can move the controls, and returns per port `fingerprint`, exactly an OSD 0.6 fingerprint (`via: native`; `usb`, `ports`, `identity_reply`, `sends`, `controls` of 32 distinct entries at most, a field the device does not give being absent), and `measured`, a sibling object holding the local measures (`identity_reply_ms`, `periods_ms`), never inside the fingerprint. The `detect` command's `--learn` returns the same, printed for the terminal. Without `learn`, the report is unchanged.
 
 `export_device` writes one driver in a format of `osd-formats` and only reads. `install_export` (`device`, `on`, `confirm_overwrite`) is the tool that puts an export on a plugged device, the only one of the two that writes: the format, the path and the way come from the target's descriptor, nothing names a device, and without `confirm_overwrite: true` nothing is sent and the preview (format, way, path, size, losses) is returned. The library publishes `osc_bridge::install::install` (the gesture) and `osc_bridge::export::Format`, which wraps the `osd-formats` format.
 

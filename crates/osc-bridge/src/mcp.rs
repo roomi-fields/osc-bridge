@@ -913,7 +913,9 @@ pub fn tool_schemas() -> Value {
                     "type": "object",
                     "properties": {
                         "probe": { "type": "boolean", "description": "Send the Identity Request (default true). False only lists ports and matches by port name." },
-                        "timeout_ms": { "type": "integer", "description": "How long to wait for identity replies, 100-5000 ms (default 800)." }
+                        "timeout_ms": { "type": "integer", "description": "How long to wait for identity replies, 100-5000 ms (default 800)." },
+                        "learn": { "type": "boolean", "description": "Learn mode: instead of matching drivers, listen to each device and return its fingerprint (an OSD 0.6 fingerprint: usb, ports, identity_reply, sends, controls) with the measured delay of the identity reply and the period of what it sends alone, beside it. Sends nothing but the universal Identity Request; tell the person to move the device's controls while it listens." },
+                        "listen_ms": { "type": "integer", "description": "Learn mode only: how long to listen, 1000-30000 ms (default 5000)." }
                     }
                 },
                 "outputSchema": {
@@ -933,9 +935,11 @@ pub fn tool_schemas() -> Value {
                                         "properties": { "vendor_id": { "type": "integer" }, "product_id": { "type": "integer" } } },
                                     "identity": { "type": ["object", "null"], "description": "Identity Reply, when the device answered." },
                                     "candidates": { "type": "array", "items": { "type": "object" } },
-                                    "run_command": { "type": ["string", "null"] }
+                                    "run_command": { "type": ["string", "null"] },
+                                    "fingerprint": { "type": "object", "description": "Learn mode: the OSD 0.6 fingerprint of the device; a field it did not give is absent." },
+                                    "measured": { "type": "object", "description": "Learn mode: local measures beside the fingerprint: identity_reply_ms, periods_ms (clock, active_sensing); absent when not observed." }
                                 },
-                                "required": ["port", "candidates"]
+                                "required": ["port"]
                             }
                         }
                     },
@@ -1403,6 +1407,9 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
             let confirm = args.get("confirm_overwrite").and_then(Value::as_bool) == Some(true);
             install_export(&preset_device(index, wanted)?, &preset_device(index, on)?, wanted, on, confirm)
         }
+        "detect_hardware" if args.get("learn").and_then(Value::as_bool) == Some(true) => {
+            learn_hardware(crate::detect::learn_listen(args.get("listen_ms").and_then(Value::as_u64))?)
+        }
         "detect_hardware" => {
             let probe = args.get("probe").and_then(Value::as_bool).unwrap_or(true);
             let wait = args.get("timeout_ms").and_then(Value::as_u64).unwrap_or(800).clamp(100, 5000);
@@ -1656,6 +1663,24 @@ fn detect_hardware(index: &DeviceIndex, server: Option<&crate::online::Online>, 
     Ok(out)
 }
 
+/// `detect_hardware` in learn mode: a fingerprint per port, and its measures beside it. The
+/// report's text tells the person how long it listens and to move the controls.
+fn learn_hardware(listen: std::time::Duration) -> Result<Value, String> {
+    let learned = crate::detect::learn_all(listen).map_err(|e| format!("MIDI scan: {e}"))?;
+    let devices: Vec<Value> = learned.iter().map(|(d, l)| json!({
+        "port": d.label(),
+        "out_port": d.out_index,
+        "in_port": d.in_index,
+        "fingerprint": l.fingerprint,
+        "measured": l.measured,
+    })).collect();
+    let notice = crate::detect::learn_notice(listen);
+    let structured = json!({ "probed": true, "learn": true, "listen_ms": listen.as_millis() as u64,
+        "notice": notice, "devices": devices });
+    let text = format!("{notice}\n{}", serde_json::to_string_pretty(&structured).unwrap_or_default());
+    Ok(content_structured(&text, structured))
+}
+
 /// The driver of the device a preset tool is told to talk to; a device the
 /// catalogue does not know is refused, with the invitation to describe it.
 fn preset_device(index: &DeviceIndex, wanted: &str) -> Result<Device, String> {
@@ -1836,6 +1861,26 @@ fn load_preset(args: &Value, link: &Link) -> Result<Value, String> {
         "attribution": preset["attribution"], "note": note });
     Ok(content_structured(&format!("Loaded {} ({} message(s)) on {out_port}.{} Tell SynthHub how it went with report_preset.",
         preset["name"].as_str().unwrap_or(id), messages.len(), note.map(|n| format!(" Note: {n}")).unwrap_or_default()), structured))
+}
+
+/// `osc-bridge detect --learn`: the notice first (the person moves the controls while it
+/// listens), then the fingerprint of each port and its measures.
+pub fn print_learning(listen_ms: Option<u64>) -> Result<()> {
+    let listen = crate::detect::learn_listen(listen_ms).map_err(|e| anyhow::anyhow!(e))?;
+    println!("{}", crate::detect::learn_notice(listen));
+    let report = learn_hardware(listen).map_err(|e| anyhow::anyhow!(e))?;
+    let devices = report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default();
+    if devices.is_empty() {
+        println!("No MIDI port found.");
+    }
+    for d in devices {
+        println!("{}  (out {}, in {})", d["port"].as_str().unwrap_or("?"),
+            d["out_port"].as_u64().map(|n| n.to_string()).unwrap_or("-".into()),
+            d["in_port"].as_u64().map(|n| n.to_string()).unwrap_or("-".into()));
+        println!("  fingerprint: {}", serde_json::to_string_pretty(&d["fingerprint"]).unwrap_or_default().replace('\n', "\n  "));
+        println!("  measured: {}", d["measured"]);
+    }
+    Ok(())
 }
 
 /// `osc-bridge detect`: the same report as the `detect_hardware` tool, for a

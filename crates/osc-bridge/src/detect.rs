@@ -616,5 +616,218 @@ pub fn scan(probe: bool, wait: Duration, probes: &[Probe]) -> Result<Vec<Probed>
     Ok(devices)
 }
 
+// ---- the learn mode: a fingerprint of a device that may not say who it is ----
+
+/// Listening time of the learn mode, in ms: default, and the interval accepted. Wider than
+/// `timeout_ms` (100-5000) because a person needs the time to move controls.
+const LEARN_DEFAULT_MS: u64 = 5000;
+const LEARN_MIN_MS: u64 = 1000;
+const LEARN_MAX_MS: u64 = 30000;
+/// Distinct controls a fingerprint keeps (the schema's `maxItems`).
+const CONTROLS_KEPT: usize = 32;
+
+/// One message a device sent, with the time since the request went out.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Heard {
+    pub at: Duration,
+    pub msg: Vec<u8>,
+}
+
+/// What the learn mode reads and writes of one device: the universal identity request goes
+/// out, then everything the input sends is heard for the time given.
+pub trait Wire {
+    fn send(&mut self, msg: &[u8]);
+    fn heard(&mut self, listen: Duration) -> Vec<Heard>;
+}
+
+/// The fingerprint of a device (a valid OSD 0.6 fingerprint) and, beside it, what was measured.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Learned {
+    pub fingerprint: serde_json::Value,
+    /// `identity_reply_ms` and `periods_ms` (`clock`, `active_sensing`): local measures, absent when not observed.
+    pub measured: serde_json::Value,
+}
+
+/// The listening time asked (ms), or the default; refused outside 1000-30000 ms.
+pub fn learn_listen(ms: Option<u64>) -> Result<Duration, String> {
+    let ms = ms.unwrap_or(LEARN_DEFAULT_MS);
+    if (LEARN_MIN_MS..=LEARN_MAX_MS).contains(&ms) {
+        Ok(Duration::from_millis(ms))
+    } else {
+        Err(format!("listen_ms {ms} is out of range: the learn mode listens {LEARN_MIN_MS}-{LEARN_MAX_MS} ms (default {LEARN_DEFAULT_MS})."))
+    }
+}
+
+/// What the person is told before the listening starts.
+pub fn learn_notice(listen: Duration) -> String {
+    let ms = listen.as_millis();
+    let secs = if ms.is_multiple_of(1000) { (ms / 1000).to_string() } else { format!("{}", ms as f64 / 1000.0) };
+    format!("Learn mode: listening for {secs} seconds. You can move the controls of the device now (knobs, keys, sliders). \
+        Nothing triggers the device for you: only the universal identity request is sent.")
+}
+
+fn hex_spaced(bytes: &[u8]) -> String {
+    bytes.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ")
+}
+
+/// The mean gap between the messages of one kind (ms); none under two messages.
+fn period_ms(times: &[Duration]) -> Option<f64> {
+    if times.len() < 2 { return None; }
+    let span = *times.last()? - *times.first()?;
+    Some(span.as_secs_f64() * 1000.0 / (times.len() - 1) as f64)
+}
+
+/// Send the universal identity request to a device, listen for `listen`, and write down what
+/// was heard: only what was heard, never a guess.
+pub fn learn(device: &Probed, wire: &mut dyn Wire, listen: Duration, observed: &str) -> Learned {
+    wire.send(&IDENTITY_REQUEST);
+    let heard = wire.heard(listen);
+
+    let mut fp = serde_json::Map::new();
+    fp.insert("$schema".into(), "https://w3id.org/osd/0.6/fingerprint.schema.json".into());
+    fp.insert("observed".into(), observed.into());
+    fp.insert("via".into(), "native".into());
+    let words = |n: &Option<String>| n.iter().map(|n| n.to_lowercase()).collect::<Vec<_>>();
+    let mut ports = serde_json::Map::new();
+    if device.in_name.is_some() { ports.insert("inputs".into(), words(&device.in_name).into()); }
+    if device.out_name.is_some() { ports.insert("outputs".into(), words(&device.out_name).into()); }
+    fp.insert("ports".into(), ports.into());
+    if let Some((vendor_id, product_id)) = device.usb {
+        fp.insert("usb".into(), serde_json::json!({ "vendor_id": vendor_id, "product_id": product_id }));
+    }
+
+    let mut measured = serde_json::Map::new();
+    if let Some(h) = heard.iter().find(|h| parse_identity_reply(&h.msg).is_some()) {
+        fp.insert("identity_reply".into(), hex_spaced(&h.msg).into());
+        measured.insert("identity_reply_ms".into(), (h.at.as_secs_f64() * 1000.0).into());
+    }
+
+    let times = |status: u8| -> Vec<Duration> {
+        heard.iter().filter(|h| h.msg.as_slice() == [status]).map(|h| h.at).collect()
+    };
+    let (clock, sensing) = (times(0xF8), times(0xFE));
+    let mut sends = serde_json::Map::new();
+    if !clock.is_empty() { sends.insert("clock".into(), true.into()); }
+    if !sensing.is_empty() { sends.insert("active_sensing".into(), true.into()); }
+    let note_end = heard.iter().find_map(|h| match h.msg.as_slice() {
+        [s, _, _] if s & 0xF0 == 0x80 => Some("note_off"),
+        [s, _, 0] if s & 0xF0 == 0x90 => Some("note_on_velocity_0"),
+        _ => None,
+    });
+    if let Some(end) = note_end { sends.insert("note_off".into(), end.into()); }
+    if !sends.is_empty() { fp.insert("sends".into(), sends.into()); }
+
+    let controls = controls_heard(&heard);
+    if !controls.is_empty() { fp.insert("controls".into(), controls.into()); }
+
+    let mut periods = serde_json::Map::new();
+    if let Some(p) = period_ms(&clock) { periods.insert("clock".into(), p.into()); }
+    if let Some(p) = period_ms(&sensing) { periods.insert("active_sensing".into(), p.into()); }
+    if !periods.is_empty() { measured.insert("periods_ms".into(), periods.into()); }
+
+    Learned { fingerprint: fp.into(), measured: measured.into() }
+}
+
+/// The controls moved, by type, channel and number (no value), each once, the first 32 in
+/// arrival order: a controller, or a parameter (NRPN) once its value was sent.
+fn controls_heard(heard: &[Heard]) -> Vec<serde_json::Value> {
+    let mut found: Vec<serde_json::Value> = Vec::new();
+    let mut selected: [(Option<u8>, Option<u8>); 16] = [(None, None); 16];
+    for h in heard {
+        let [status, number, value] = h.msg.as_slice() else { continue };
+        if status & 0xF0 != 0xB0 { continue; }
+        let ch = (status & 0x0F) as usize;
+        let control = match *number {
+            99 => { selected[ch].0 = Some(*value); continue; }
+            98 => { selected[ch].1 = Some(*value); continue; }
+            6 | 38 if selected[ch].0.is_some() && selected[ch].1.is_some() => {
+                let (msb, lsb) = (selected[ch].0, selected[ch].1);
+                serde_json::json!({ "nrpn_msb": msb, "nrpn_lsb": lsb, "channel": ch })
+            }
+            100 | 101 | 120..=127 => continue,
+            cc => serde_json::json!({ "cc": cc, "channel": ch }),
+        };
+        if found.len() < CONTROLS_KEPT && !found.contains(&control) { found.push(control); }
+    }
+    found
+}
+
+/// A device's ports on the machine: its input listened to, its output asked.
+struct MidiWire {
+    out: Option<midir::MidiOutputConnection>,
+    _input: Option<MidiInputConnection<()>>,
+    got: Arc<Mutex<Vec<Heard>>>,
+    since: Arc<Mutex<std::time::Instant>>,
+}
+
+impl MidiWire {
+    fn open(device: &Probed) -> Result<Self> {
+        let got: Arc<Mutex<Vec<Heard>>> = Arc::new(Mutex::new(Vec::new()));
+        let since = Arc::new(Mutex::new(std::time::Instant::now()));
+        let mut input = None;
+        if let Some(ii) = device.in_index {
+            let mut inp = MidiInput::new("osc-bridge-learn-in")?;
+            inp.ignore(Ignore::None);
+            if let Some(port) = inp.ports().get(ii).cloned() {
+                let (sink, t0) = (got.clone(), since.clone());
+                input = inp.connect(&port, "osc-bridge-learn-in", move |_, msg, _| {
+                    let at = t0.lock().map(|t| t.elapsed()).unwrap_or_default();
+                    if let Ok(mut g) = sink.lock() { g.push(Heard { at, msg: msg.to_vec() }); }
+                }, ()).ok();
+            }
+        }
+        let mut out = None;
+        if let Some(oi) = device.out_index {
+            let o = MidiOutput::new("osc-bridge-learn-out")?;
+            if let Some(port) = o.ports().get(oi) { out = o.connect(port, "osc-bridge-learn-out").ok(); }
+        }
+        Ok(MidiWire { out, _input: input, got, since })
+    }
+}
+
+impl Wire for MidiWire {
+    fn send(&mut self, msg: &[u8]) {
+        if let Ok(mut t) = self.since.lock() { *t = std::time::Instant::now(); }
+        if let Some(out) = self.out.as_mut() { let _ = out.send(msg); }
+    }
+    fn heard(&mut self, listen: Duration) -> Vec<Heard> {
+        std::thread::sleep(listen);
+        self.got.lock().map(|mut g| std::mem::take(&mut *g)).unwrap_or_default()
+    }
+}
+
+/// Today as `YYYY-MM-DD` (UTC).
+fn today() -> String {
+    let days = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)
+        .map(|d| (d.as_secs() / 86400) as i64).unwrap_or(0);
+    let z = days + 719468;
+    let era = z.div_euclid(146097);
+    let doe = z.rem_euclid(146097);
+    let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let day = doy - (153 * mp + 2) / 5 + 1;
+    let month = if mp < 10 { mp + 3 } else { mp - 9 };
+    let year = yoe + era * 400 + i64::from(month <= 2);
+    format!("{year:04}-{month:02}-{day:02}")
+}
+
+/// The learn mode on every device plugged in: each is asked the universal identity request and
+/// heard for `listen`, all at the same time.
+pub fn learn_all(listen: Duration) -> Result<Vec<(Probed, Learned)>> {
+    let devices = scan(false, Duration::ZERO, &[])?;
+    let observed = today();
+    std::thread::scope(|s| {
+        let tasks: Vec<_> = devices.iter().map(|d| {
+            let observed = observed.as_str();
+            s.spawn(move || MidiWire::open(d).map(|mut w| learn(d, &mut w, listen, observed)))
+        }).collect();
+        devices.iter().zip(tasks).map(|(d, t)| {
+            let learned = t.join().map_err(|_| anyhow!("learn thread panicked"))??;
+            Ok((d.clone(), learned))
+        }).collect()
+    })
+}
+
 #[cfg(test)]
 mod tests;

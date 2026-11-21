@@ -365,3 +365,188 @@ fn the_usb_ids_recognise_a_device_that_answers_nothing_on_a_port_named_after_not
     let r = recognise(&id, "Pad", Some((4660, 22136)), &[]).unwrap();
     assert!(r.by_usb && r.by_port);
 }
+
+// ---- the learn mode: a fingerprint of a device that may not say who it is ----
+
+/// A scripted device: records what is sent to it, answers with what it was given.
+struct Script { sent: Vec<Vec<u8>>, heard: Vec<Heard>, listened: Vec<Duration> }
+
+impl Script {
+    fn new(heard: Vec<Heard>) -> Self { Script { sent: vec![], heard, listened: vec![] } }
+}
+
+impl Wire for Script {
+    fn send(&mut self, msg: &[u8]) { self.sent.push(msg.to_vec()); }
+    fn heard(&mut self, listen: Duration) -> Vec<Heard> { self.listened.push(listen); self.heard.clone() }
+}
+
+fn at(ms: u64, msg: &[u8]) -> Heard { Heard { at: Duration::from_millis(ms), msg: msg.to_vec() } }
+
+fn device(usb: Option<(u16, u16)>) -> Probed {
+    Probed { out_index: Some(1), out_name: Some("Test Synth MIDI 1".into()), in_index: Some(2),
+             in_name: Some("Test Synth MIDI 1".into()), identity: None, usb, replies: vec![] }
+}
+
+const REPLY: [u8; 17] = [0xF0, 0x7E, 0x7F, 0x06, 0x02, 0x00, 0x20, 0x6B, 0x02, 0x00, 0x04, 0x00, 0x01, 0x00, 0x04, 0x00, 0xF7];
+
+fn learn_on(heard: Vec<Heard>, usb: Option<(u16, u16)>) -> (Learned, Script) {
+    let mut wire = Script::new(heard);
+    let learned = learn(&device(usb), &mut wire, Duration::from_millis(5000), "2026-11-21");
+    (learned, wire)
+}
+
+/// The fingerprint read back by `osd` as a 0.6 fingerprint: its schema's own check.
+fn valid_fingerprint(fp: &serde_json::Value) {
+    let text = fp.to_string();
+    osd::read(&text, osd::Kind::Fingerprint).unwrap_or_else(|e| panic!("{e}\n{text}"));
+}
+
+fn synth_heard() -> Vec<Heard> {
+    let mut h = vec![at(12, &REPLY)];
+    for i in 0..5 { h.push(at(100 + i * 20, &[0xF8])); }
+    for i in 0..3 { h.push(at(200 + i * 300, &[0xFE])); }
+    h.push(at(900, &[0xB0, 74, 10]));
+    h.push(at(910, &[0xB0, 74, 99]));
+    h.push(at(920, &[0xB1, 7, 5]));
+    h.push(at(930, &[0x90, 60, 100]));
+    h.push(at(940, &[0x90, 60, 0]));
+    h
+}
+
+#[test]
+fn learn_sends_only_the_universal_identity_request_and_listens_for_the_time_given() {
+    let (_, wire) = learn_on(synth_heard(), None);
+    assert_eq!(wire.sent, vec![IDENTITY_REQUEST.to_vec()]);
+    assert_eq!(wire.listened, vec![Duration::from_millis(5000)]);
+}
+
+#[test]
+fn learn_sends_the_identity_request_even_to_a_silent_device() {
+    let (_, wire) = learn_on(vec![], None);
+    assert_eq!(wire.sent, vec![IDENTITY_REQUEST.to_vec()]);
+}
+
+#[test]
+fn learn_returns_a_valid_fingerprint_of_a_test_synth_with_its_usb_ports_and_identity() {
+    let (l, _) = learn_on(synth_heard(), Some((0x1234, 0x5678)));
+    valid_fingerprint(&l.fingerprint);
+    let fp = &l.fingerprint;
+    assert_eq!(fp["$schema"], "https://w3id.org/osd/0.6/fingerprint.schema.json");
+    assert_eq!(fp["observed"], "2026-11-21");
+    assert_eq!(fp["via"], "native");
+    assert_eq!(fp["usb"], serde_json::json!({ "vendor_id": 0x1234, "product_id": 0x5678 }));
+    assert_eq!(fp["ports"]["inputs"], serde_json::json!(["test synth midi 1"]));
+    assert_eq!(fp["ports"]["outputs"], serde_json::json!(["test synth midi 1"]));
+    assert_eq!(fp["identity_reply"], "F0 7E 7F 06 02 00 20 6B 02 00 04 00 01 00 04 00 F7");
+}
+
+#[test]
+fn learn_records_clock_active_sensing_and_how_a_note_ends_in_sends() {
+    let (l, _) = learn_on(synth_heard(), None);
+    assert_eq!(l.fingerprint["sends"], serde_json::json!({
+        "clock": true, "active_sensing": true, "note_off": "note_on_velocity_0" }));
+    let (l, _) = learn_on(vec![at(5, &[0x80, 60, 0])], None);
+    assert_eq!(l.fingerprint["sends"], serde_json::json!({ "note_off": "note_off" }));
+    valid_fingerprint(&l.fingerprint);
+}
+
+#[test]
+fn learn_puts_a_clock_heard_alone_in_sends_without_any_identity() {
+    let (l, _) = learn_on(vec![at(10, &[0xF8]), at(30, &[0xF8])], None);
+    assert_eq!(l.fingerprint["sends"], serde_json::json!({ "clock": true }));
+    assert!(l.fingerprint.get("identity_reply").is_none());
+    assert!(l.measured.get("identity_reply_ms").is_none());
+    valid_fingerprint(&l.fingerprint);
+}
+
+#[test]
+fn learn_puts_an_active_sensing_heard_alone_in_sends() {
+    let (l, _) = learn_on(vec![at(10, &[0xFE])], None);
+    assert_eq!(l.fingerprint["sends"], serde_json::json!({ "active_sensing": true }));
+}
+
+#[test]
+fn learn_on_a_silent_device_gives_only_what_is_known_never_a_guess() {
+    let (l, _) = learn_on(vec![], None);
+    valid_fingerprint(&l.fingerprint);
+    let fp = l.fingerprint.as_object().unwrap();
+    for absent in ["identity_reply", "sends", "controls", "usb", "maker_replies", "device", "names"] {
+        assert!(!fp.contains_key(absent), "{absent} guessed: {fp:?}");
+    }
+    assert!(fp.contains_key("ports"));
+    assert_eq!(l.measured, serde_json::json!({}));
+}
+
+#[test]
+fn learn_keeps_the_measures_beside_the_fingerprint_never_inside() {
+    let (l, _) = learn_on(synth_heard(), None);
+    let fp = l.fingerprint.as_object().unwrap();
+    assert!(!fp.contains_key("measured"));
+    assert_eq!(l.measured["identity_reply_ms"].as_f64(), Some(12.0));
+    assert_eq!(l.measured["periods_ms"]["clock"].as_f64(), Some(20.0));
+    assert_eq!(l.measured["periods_ms"]["active_sensing"].as_f64(), Some(300.0));
+}
+
+#[test]
+fn learn_gives_no_period_for_a_message_heard_once() {
+    let (l, _) = learn_on(vec![at(10, &[0xF8]), at(50, &[0xFE])], None);
+    assert!(l.measured.get("periods_ms").is_none(), "{:?}", l.measured);
+}
+
+#[test]
+fn learn_controls_have_type_channel_and_number_without_value_once_each() {
+    let (l, _) = learn_on(synth_heard(), None);
+    assert_eq!(l.fingerprint["controls"], serde_json::json!([
+        { "cc": 74, "channel": 0 }, { "cc": 7, "channel": 1 }]));
+    valid_fingerprint(&l.fingerprint);
+}
+
+#[test]
+fn learn_controls_name_a_parameter_by_its_nrpn_selectors() {
+    let h = vec![at(1, &[0xB2, 99, 1]), at(2, &[0xB2, 98, 2]), at(3, &[0xB2, 6, 64]), at(4, &[0xB2, 38, 3])];
+    let (l, _) = learn_on(h, None);
+    assert_eq!(l.fingerprint["controls"], serde_json::json!([{ "nrpn_msb": 1, "nrpn_lsb": 2, "channel": 2 }]));
+    valid_fingerprint(&l.fingerprint);
+}
+
+#[test]
+fn learn_controls_keep_32_distinct_in_arrival_order_and_drop_the_33rd() {
+    let mut h: Vec<Heard> = (1..=33u8).map(|cc| at(cc as u64, &[0xB0, cc, 1])).collect();
+    h.push(at(40, &[0xB0, 1, 2]));
+    let (l, _) = learn_on(h, None);
+    let controls = l.fingerprint["controls"].as_array().unwrap();
+    assert_eq!(controls.len(), 32);
+    assert_eq!(controls[0]["cc"], 1);
+    assert_eq!(controls[31]["cc"], 32);
+    assert!(controls.iter().all(|c| c["cc"] != 33));
+    valid_fingerprint(&l.fingerprint);
+}
+
+#[test]
+fn learn_controls_count_a_control_moved_twice_once() {
+    let (l, _) = learn_on(vec![at(1, &[0xB0, 1, 5]), at(2, &[0xB0, 1, 6])], None);
+    assert_eq!(l.fingerprint["controls"].as_array().unwrap().len(), 1);
+}
+
+#[test]
+fn learn_listen_time_defaults_to_5000_ms_and_accepts_1000_to_30000() {
+    assert_eq!(learn_listen(None), Ok(Duration::from_millis(5000)));
+    assert_eq!(learn_listen(Some(1000)), Ok(Duration::from_millis(1000)));
+    assert_eq!(learn_listen(Some(30000)), Ok(Duration::from_millis(30000)));
+}
+
+#[test]
+fn learn_listen_time_outside_the_interval_is_refused_naming_it() {
+    for bad in [0, 999, 30001, 100000] {
+        let e = learn_listen(Some(bad)).unwrap_err();
+        assert!(e.contains("1000") && e.contains("30000"), "{e}");
+    }
+}
+
+#[test]
+fn learn_notice_tells_the_person_the_time_and_to_move_the_controls() {
+    let n = learn_notice(Duration::from_millis(5000));
+    assert!(n.contains("5 seconds"), "{n}");
+    assert!(n.contains("move"), "{n}");
+    assert!(learn_notice(Duration::from_millis(12000)).contains("12 seconds"));
+}
