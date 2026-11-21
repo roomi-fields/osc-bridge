@@ -124,6 +124,11 @@ enum Cmd {
         /// --devices-dir; refuses --no-probe and --write.
         #[arg(long, value_name = "FILE", conflicts_with = "learn")]
         read: Option<PathBuf>,
+        /// A port (a part of its name, or its out port index) that may receive every maker request,
+        /// the held back ones too (repeatable). Without it a port gets the universal request and the
+        /// requests of its own maker. Give it only for a device you agree to ask about.
+        #[arg(long, value_name = "PORT", conflicts_with = "learn")]
+        consent: Vec<String>,
     },
     /// Print summary of a device JSON spec without starting the bridge.
     Inspect {
@@ -268,8 +273,8 @@ fn main() -> Result<()> {
             Ok(())
         }
         Cmd::Detect { learn: true, listen_ms, .. } => osc_bridge::mcp::print_learning(listen_ms),
-        Cmd::Detect { no_probe, devices_dir, write, read, .. } => {
-            osc_bridge::mcp::print_detection(devices_dir.as_deref(), !no_probe, write.as_deref(), read.as_deref())
+        Cmd::Detect { no_probe, devices_dir, write, read, consent, .. } => {
+            osc_bridge::mcp::print_detection(devices_dir.as_deref(), !no_probe, write.as_deref(), read.as_deref(), &consent)
         }
         Cmd::Inspect { device } => cmd_inspect(device),
         Cmd::Run(args) => cmd_run(args),

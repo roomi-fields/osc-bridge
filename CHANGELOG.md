@@ -11,6 +11,17 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed — the detection holds back the maker requests of other makers
+- `detect_hardware` and `osc-bridge detect` send each port the universal Identity Request and only
+  the maker requests of the maker its USB id names (or, with no USB id read, of the drivers whose
+  identity names its port name); a request of another maker may be a load, so it is held back and
+  each device lists `held_back`. A device nobody recognised gets the universal request alone.
+  Consent adds the rest, per port: `consent_ports` (names or indexes; the agent must have asked
+  the person) and `detect --consent <port>` (repeatable). A fragment naming several ports or none
+  is refused and nothing is sent. A linked copy holds back every probe the service gives without
+  `usb` and `match_ports`, so without consent only the universal request goes out until the
+  service gives them.
+
 ### Added — a capture of the detection
 - `osc-bridge detect --write <file>` writes what the detection observed, raw (port names, the
   text of `/proc/asound/cards` and each card's `usbid`, the requests sent, the messages received

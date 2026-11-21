@@ -7,6 +7,7 @@ mod checksum;
 mod checksum_after_script;
 mod checksum_lenient;
 mod custom_commands;
+mod detect_consent;
 mod detection_capture;
 mod driver_download;
 mod driver_freshness;

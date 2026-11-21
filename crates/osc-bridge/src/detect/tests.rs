@@ -1,5 +1,7 @@
 use super::*;
 
+mod consent;
+
 fn cand(slug: &str, name: &str, vendor: &str, mfr: &[u8]) -> Candidate {
     Candidate { id: format!("acme/{slug}"), slug: slug.into(), name: name.into(), vendor: vendor.into(),
                 file: format!("devices/{slug}.json"), tier: "pencilresearch".into(),
@@ -150,8 +152,9 @@ fn a_maker_request_and_its_text_tell_a_firmware_apart() {
     let all = probes(cat.iter().filter_map(|c| c.identity.as_ref().map(|i| (c.slug.as_str(), i)))).probes;
     assert_eq!(all.len(), 2, "the universal request is not a probe: {all:?}");
     let felucca = all.iter().find(|p| p.request[1] == 0x7D).unwrap();
-    assert!(felucca.goes_to("FM-1 Midi") && !felucca.goes_to("Digitakt"), "sent only where it is safe");
-    assert!(all.iter().find(|p| p.request[1] == 0x00).unwrap().goes_to("anything"));
+    assert!(felucca.safe_for("FM-1 Midi", None) && !felucca.safe_for("Digitakt", None), "sent only where it is safe");
+    assert!(!all.iter().find(|p| p.request[1] == 0x00).unwrap().safe_for("anything", None),
+        "a request that names no usb id and no port name is held back");
 }
 
 #[test]

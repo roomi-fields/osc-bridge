@@ -671,7 +671,12 @@ impl Online {
             let request = crate::librarian::parse_hex(p["request_hex"].as_str().unwrap_or_default())?;
             if request.first() != Some(&0xF0) || request.last() != Some(&0xF7) { bail!("a detect probe is not one SysEx message"); }
             let ports = p["ports"].as_array().into_iter().flatten().filter_map(Value::as_str).map(str::to_string).collect();
-            Ok(crate::detect::Probe { request, ports })
+            // `usb` and `match_ports` are optional: a probe without them is held back without consent.
+            let usb = p["usb"].as_array().into_iter().flatten().filter_map(|u| {
+                Some((u16::try_from(u["vendor_id"].as_u64()?).ok()?, u16::try_from(u["product_id"].as_u64()?).ok()?))
+            }).collect();
+            let match_ports = p["match_ports"].as_array().into_iter().flatten().filter_map(Value::as_str).map(str::to_string).collect();
+            Ok(crate::detect::Probe { request, ports, usb, match_ports })
         }).collect()
     }
 

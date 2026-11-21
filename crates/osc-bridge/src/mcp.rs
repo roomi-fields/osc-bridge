@@ -908,12 +908,13 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "detect_hardware",
-                "description": "Find the MIDI devices plugged into this computer and match them to catalogue drivers. Lists MIDI ports, sends the standard MIDI Identity Request, then the makers' own identity requests the drivers name (harmless: they change nothing on the device), and reads each device's manufacturer, model and firmware. Reads the USB ids (vendor_id, product_id) of each USB device's card (Linux; absent for a virtual or DIN port). A driver whose identity block recognises the reply, the USB ids (usb) or the port name comes first, the variant for the firmware read from it above the others; of drivers matching equally, the one the others share their MIDI with comes first, and each lists the others in equally_matching. Returns, per device, the best matching drivers (with recognised_by and firmware when recognised) and a ready-to-run 'osc-bridge run' command with the right port numbers.",
+                "description": "Find the MIDI devices plugged into this computer and match them to catalogue drivers. Lists MIDI ports and sends each port the standard MIDI Identity Request (universal, read-only by the norm), then only the maker requests of the maker its USB id names (or, with no USB id read, of the drivers whose identity names its port name). A maker request may be a load for another maker's device, so every other one is held back, port by port: for a device nobody recognised only the universal request goes out, and each device lists held_back, the requests not sent. Consent adds them: pass consent_ports, the ports that may receive every maker request; the person must have been asked and agreed for that port (never pass it on your own). Reads each device's manufacturer, model and firmware. Reads the USB ids (vendor_id, product_id) of each USB device's card (Linux; absent for a virtual or DIN port). A driver whose identity block recognises the reply, the USB ids (usb) or the port name comes first, the variant for the firmware read from it above the others; of drivers matching equally, the one the others share their MIDI with comes first, and each lists the others in equally_matching. Returns, per device, the best matching drivers (with recognised_by and firmware when recognised) and a ready-to-run 'osc-bridge run' command with the right port numbers.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
                         "probe": { "type": "boolean", "description": "Send the Identity Request (default true). False only lists ports and matches by port name." },
                         "timeout_ms": { "type": "integer", "description": "How long to wait for identity replies, 100-5000 ms (default 800)." },
+                        "consent_ports": { "type": "array", "items": { "type": "string" }, "description": "Ports (a part of the name, or the exact out_port index) that receive every maker request, the held back ones too. Ask the person first and pass a port only with their explicit agreement for that port: a request meant for another maker's device may overwrite its memory. A fragment naming several ports or none is refused, and nothing is sent." },
                         "learn": { "type": "boolean", "description": "Learn mode: instead of matching drivers, listen to each device and return its fingerprint (an OSD 0.6 fingerprint: usb, ports, identity_reply, sends, controls) with the measured delay of the identity reply and the period of what it sends alone, beside it. Sends nothing but the universal Identity Request; tell the person to move the device's controls while it listens." },
                         "listen_ms": { "type": "integer", "description": "Learn mode only: how long to listen, 1000-30000 ms (default 5000)." }
                     }
@@ -930,6 +931,7 @@ pub fn tool_schemas() -> Value {
                                 "properties": {
                                     "port": { "type": "string" },
                                     "out_port": { "type": ["integer", "null"] },
+                                    "held_back": { "type": "array", "items": { "type": "string" }, "description": "The maker requests (hex) not sent to this port for want of the person's consent." },
                                     "in_port": { "type": ["integer", "null"] },
                                     "inputs": { "type": "array", "items": { "type": "string" }, "description": "Learn mode: the raw names of all the input ports of the device." },
                                     "outputs": { "type": "array", "items": { "type": "string" }, "description": "Learn mode: the raw names of all the output ports of the device." },
@@ -1415,9 +1417,20 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
         "detect_hardware" => {
             let probe = args.get("probe").and_then(Value::as_bool).unwrap_or(true);
             let wait = args.get("timeout_ms").and_then(Value::as_u64).unwrap_or(800).clamp(100, 5000);
-            detect_hardware(index, server.map(|l| &l.client), opts.devices_dir.is_some(), probe, std::time::Duration::from_millis(wait), None)
+            let consent = consent_arg(args)?;
+            detect_hardware(index, server.map(|l| &l.client), opts.devices_dir.is_some(), probe, std::time::Duration::from_millis(wait), None, &consent)
         }
         other => Err(format!("unknown tool: {other}")),
+    }
+}
+
+/// `consent_ports`: the ports the person agreed to send every maker request to, read like `out_port`.
+fn consent_arg(args: &Value) -> Result<Vec<String>, String> {
+    match args.get("consent_ports") {
+        None | Some(Value::Null) => Ok(Vec::new()),
+        Some(Value::Array(a)) => a.iter().map(|v| v.as_str().map(str::to_string)
+            .or_else(|| v.as_u64().map(|n| n.to_string())).ok_or_else(|| "consent_ports: each entry is a port name or index".to_string())).collect(),
+        Some(_) => Err("consent_ports: a list of port names or indexes".into()),
     }
 }
 
@@ -1598,31 +1611,49 @@ pub fn match_port(catalogue: &[crate::detect::Candidate], port: &str, usb: Optio
 /// matches the ports against. The command to run names the driver by its
 /// file when `by_file` (a folder the user keeps), else by its id.
 fn detect_hardware(index: &DeviceIndex, server: Option<&crate::online::Online>, by_file: bool, probe: bool,
-                   wait: std::time::Duration, write: Option<&Path>) -> Result<Value, String> {
+                   wait: std::time::Duration, write: Option<&Path>, consent: &[String]) -> Result<Value, String> {
     let mut faults = Vec::new();
     let probes = match server {
         Some(server) if probe => server.probes().map_err(|e| format!("detect_hardware asks the SynthHub server which \
             requests recognise devices, and it could not be reached: {e}. Offline, the ports are matched against the drivers cached here."))?,
         _ => { let plan = detect_plan(index); faults = plan.faults; plan.probes }
     };
-    let capture = crate::detect::observe(probe, wait, &probes).map_err(|e| format!("MIDI scan: {e}"))?;
+    let capture = crate::detect::observe(probe, wait, &probes, consent).map_err(|e| format!("MIDI scan: {e}"))?;
     if let Some(path) = write {
         capture.write(path).map_err(|e| e.to_string())?;
     }
-    detection_report(index, server, by_file, probe, crate::detect::replay(&capture), faults)
+    let plan = if probe { held_plan(&capture, &probes, consent)? } else { Vec::new() };
+    detection_report(index, server, by_file, probe, crate::detect::replay(&capture), faults, &plan)
+}
+
+/// What each output port of `capture` received of `probes`, and what was held back.
+fn held_plan(capture: &crate::capture::Capture, probes: &[crate::detect::Probe], consent: &[String]) -> Result<Vec<crate::detect::PortSends>, String> {
+    let consented = crate::detect::consent_indexes(&capture.outputs, consent)?;
+    Ok(crate::detect::send_plan(&crate::detect::output_usbs(capture), probes, &consented))
 }
 
 /// The devices a capture shows, matched against the drivers of `devices_dir`: the report of
 /// `detect_hardware`, with no device plugged in and nothing sent.
 pub fn detect_capture(devices_dir: &Path, capture: &crate::capture::Capture) -> Result<Vec<Value>, String> {
     let index = DeviceIndex::build(devices_dir);
-    let report = detection_report(&index, None, true, false, crate::detect::replay(capture), Vec::new())?;
+    let report = detection_report(&index, None, true, false, crate::detect::replay(capture), Vec::new(), &[])?;
+    Ok(report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default())
+}
+
+/// `detect_capture` with the requests `probes` would go out as, given the `consent` of the person:
+/// each device lists the maker requests held back for its output port.
+pub fn detect_capture_held(devices_dir: &Path, capture: &crate::capture::Capture, probes: &[crate::detect::Probe],
+                           consent: &[String]) -> Result<Vec<Value>, String> {
+    let index = DeviceIndex::build(devices_dir);
+    let plan = held_plan(capture, probes, consent)?;
+    let report = detection_report(&index, None, true, true, crate::detect::replay(capture), Vec::new(), &plan)?;
     Ok(report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default())
 }
 
 /// The report of `detect_hardware` over the devices `found`.
 fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>, by_file: bool, probe: bool,
-                    found: Vec<crate::detect::Probed>, faults: Vec<crate::device::DeviceFault>) -> Result<Value, String> {
+                    found: Vec<crate::detect::Probed>, faults: Vec<crate::device::DeviceFault>,
+                    plan: &[crate::detect::PortSends]) -> Result<Value, String> {
     let matched: Vec<Vec<Value>> = match server {
         Some(server) => {
             let ports: Vec<Value> = found.iter().map(|d| json!({ "port": d.label(),
@@ -1664,6 +1695,9 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>,
             "candidates": candidates,
             "run_command": run_command,
         });
+        if let Some(sends) = d.out_index.and_then(|o| plan.get(o)) {
+            device["held_back"] = json!(sends.held.iter().map(|h| hex_bytes(h)).collect::<Vec<_>>());
+        }
         if let Some((vendor_id, product_id)) = d.usb {
             device["usb"] = json!({ "vendor_id": vendor_id, "product_id": product_id });
         }
@@ -1909,17 +1943,18 @@ pub fn print_learning(listen_ms: Option<u64>) -> Result<()> {
 /// With `write`, the observation is also written to that file as a capture. With `read`, the
 /// capture of that file is replayed instead of scanning: no device, nothing sent; it refuses
 /// `probe` off and `write`, a replay sending and writing nothing.
-pub fn print_detection(devices_dir: Option<&Path>, probe: bool, write: Option<&Path>, read: Option<&Path>) -> Result<()> {
+pub fn print_detection(devices_dir: Option<&Path>, probe: bool, write: Option<&Path>, read: Option<&Path>, consent: &[String]) -> Result<()> {
     let root = devices_dir.map(Path::to_path_buf).or_else(crate::online::cache_dir).unwrap_or_default();
     let devices = if let Some(read) = read {
         if !probe { anyhow::bail!("--read cannot be used with --no-probe: a replay sends nothing"); }
         if write.is_some() { anyhow::bail!("--read cannot be used with --write: a replay writes no capture"); }
+        if !consent.is_empty() { anyhow::bail!("--read cannot be used with --consent: a replay sends nothing"); }
         let capture = crate::capture::Capture::read(read)?;
         detect_capture(&root, &capture).map_err(|e| anyhow::anyhow!(e))?
     } else {
         let index = DeviceIndex::build(&root);
         let server = (devices_dir.is_none() && crate::online::linked()).then(|| crate::online::Online::new(crate::online::SERVER));
-        let report = detect_hardware(&index, server.as_ref(), devices_dir.is_some(), probe, std::time::Duration::from_millis(800), write)
+        let report = detect_hardware(&index, server.as_ref(), devices_dir.is_some(), probe, std::time::Duration::from_millis(800), write, consent)
             .map_err(|e| anyhow::anyhow!(e))?;
         report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default()
     };
@@ -1942,6 +1977,9 @@ fn format_detection(devices: &[Value], probe: bool) -> String {
         let id16 = |k: &str| d["usb"][k].as_u64().and_then(|n| u16::try_from(n).ok());
         if let (Some(v), Some(p)) = (id16("vendor_id"), id16("product_id")) {
             let _ = writeln!(out, "  usb: {v:04x}:{p:04x}");
+        }
+        if let Some(held) = d["held_back"].as_array().filter(|h| !h.is_empty()) {
+            let _ = writeln!(out, "  held back (no consent, see --consent): {} maker request(s)", held.len());
         }
         match d["identity"].as_object() {
             Some(id) => {

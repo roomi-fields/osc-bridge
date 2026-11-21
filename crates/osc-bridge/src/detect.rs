@@ -123,18 +123,85 @@ pub struct Candidate {
     pub midi_of: Option<String>,
 }
 
-/// One message sent while detecting, and the ports it goes to (all of them
-/// when `ports` is empty).
+/// One maker request sent while detecting: the ports its identity names (`ports`, empty for
+/// all), and what says a port is its maker's: the USB ids and the port names of the identity.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Probe {
     pub request: Vec<u8>,
     pub ports: Vec<String>,
+    /// The (vendor, product) USB ids of the identity.
+    pub usb: Vec<(u16, u16)>,
+    /// The port names of the identity, compared to a port's name whatever its `to`.
+    pub match_ports: Vec<String>,
 }
 
 impl Probe {
-    pub fn goes_to(&self, port: &str) -> bool {
-        self.ports.is_empty() || port_matches(&self.ports, port)
+    /// The request goes to `port` without the person's consent: a port whose USB ids were read
+    /// is matched by them alone; a port with none, by its name. A probe with neither is never safe.
+    pub fn safe_for(&self, port: &str, usb: Option<(u16, u16)>) -> bool {
+        match usb {
+            Some(ids) => self.usb.contains(&ids),
+            None => port_matches(&self.match_ports, port),
+        }
     }
+}
+
+/// What one output port receives while detecting: the requests sent (the universal one first)
+/// and the maker requests held back for want of the person's consent.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PortSends {
+    pub port: String,
+    pub sent: Vec<Vec<u8>>,
+    pub held: Vec<Vec<u8>>,
+}
+
+/// The requests each of `ports` (name, USB ids read) receives: the universal request, the maker
+/// requests safe for it, and every other one when its index is in `consent`. Computed once,
+/// before any send.
+pub fn send_plan(ports: &[(String, Option<(u16, u16)>)], probes: &[Probe], consent: &[usize]) -> Vec<PortSends> {
+    ports.iter().enumerate().map(|(i, (port, usb))| {
+        let mut sent = vec![IDENTITY_REQUEST.to_vec()];
+        let mut held: Vec<Vec<u8>> = Vec::new();
+        for p in probes {
+            if p.safe_for(port, *usb) || consent.contains(&i) {
+                if !sent.contains(&p.request) { sent.push(p.request.clone()); }
+            } else if !held.contains(&p.request) {
+                held.push(p.request.clone());
+            }
+        }
+        held.retain(|h| !sent.contains(h));
+        PortSends { port: port.clone(), sent, held }
+    }).collect()
+}
+
+/// The ports a consent names, by index: each fragment is an exact index, else a part of one
+/// port's name, any case. A fragment naming several ports or none is refused, naming them.
+pub fn consent_indexes(names: &[String], fragments: &[String]) -> Result<Vec<usize>, String> {
+    let mut out = Vec::new();
+    for f in fragments {
+        let at = match f.trim().parse::<usize>() {
+            Ok(n) if n < names.len() => vec![n],
+            _ => {
+                let low = f.to_lowercase();
+                names.iter().enumerate().filter(|(_, n)| !low.is_empty() && n.to_lowercase().contains(&low)).map(|(i, _)| i).collect()
+            }
+        };
+        match at.as_slice() {
+            [one] => if !out.contains(one) { out.push(*one) },
+            [] => return Err(format!("consent {f:?} names no port; the output ports are: {}",
+                names.iter().enumerate().map(|(i, n)| format!("{i}: {n}")).collect::<Vec<_>>().join(", "))),
+            many => return Err(format!("consent {f:?} names several ports ({}); name one, or give its index",
+                many.iter().map(|&i| format!("{i}: {}", names[i])).collect::<Vec<_>>().join(", "))),
+        }
+    }
+    Ok(out)
+}
+
+/// The USB ids read for each output port of `capture`, once.
+pub fn output_usbs(capture: &Capture) -> Vec<(String, Option<(u16, u16)>)> {
+    let ids: Vec<(u32, &str)> = capture.usbids.iter().map(|u| (u.card, u.text.as_str())).collect();
+    let cards = usb_cards(&capture.cards, &ids);
+    capture.outputs.iter().map(|n| (n.clone(), usb_of_port(n, &cards))).collect()
 }
 
 /// The request `id` names, its `{dev}` set to the device-id rule's default;
@@ -150,7 +217,8 @@ pub fn probe_of(id: &osd::Identity) -> Result<Option<Probe>> {
         return Ok(None);
     }
     let ports = if kept(&id.to) == Some(&osd::IdentityTo::NamedPorts) { kept_list(&id.ports).to_vec() } else { vec![] };
-    Ok(Some(Probe { request: bytes, ports }))
+    let usb = kept_list(&id.usb).iter().map(|u| (u.vendor_id, u.product_id)).collect();
+    Ok(Some(Probe { request: bytes, ports, usb, match_ports: kept_list(&id.ports).to_vec() }))
 }
 
 /// Every distinct request the identities name, in a stable order.
@@ -166,7 +234,7 @@ pub fn probes<'a>(identities: impl IntoIterator<Item = (&'a str, &'a osd::Identi
                 device: name.to_string(), field: "identity.request".into(), cause: e.to_string() }),
         }
     }
-    out.probes.sort_by(|a, b| (&a.request, &a.ports).cmp(&(&b.request, &b.ports)));
+    out.probes.sort_by(|a, b| (&a.request, &a.ports, &a.usb, &a.match_ports).cmp(&(&b.request, &b.ports, &b.usb, &b.match_ports)));
     out.probes.dedup();
     out
 }
@@ -508,7 +576,7 @@ const PROBE_GAP: Duration = Duration::from_millis(10);
 /// requests the catalogue's identity blocks name, each to its ports), on
 /// every output and collect the SysEx that comes back for `wait`.
 pub fn scan(probe: bool, wait: Duration, probes: &[Probe]) -> Result<Vec<Probed>> {
-    Ok(replay(&observe(probe, wait, probes)?))
+    Ok(replay(&observe(probe, wait, probes, &[])?))
 }
 
 /// Replay a capture: the derivation `scan` runs over what it observed, with no device and no
@@ -584,7 +652,7 @@ fn derive(capture: &Capture) -> Vec<Probed> {
 /// Observe the system, raw: the ports, the listing of its cards and, when `probe` is true, the
 /// requests sent (the Identity Request, then each of `probes` to its ports) with the SysEx
 /// received for `wait`.
-pub fn observe(probe: bool, wait: Duration, probes: &[Probe]) -> Result<Capture> {
+pub fn observe(probe: bool, wait: Duration, probes: &[Probe], consent: &[String]) -> Result<Capture> {
     let output = MidiOutput::new("osc-bridge-detect")?;
     let out_ports = output.ports();
     let out_names: Vec<String> = out_ports.iter()
@@ -597,6 +665,8 @@ pub fn observe(probe: bool, wait: Duration, probes: &[Probe]) -> Result<Capture>
     if !probe {
         return Ok(capture);
     }
+    // The split of the requests per port, before anything is sent: a bad consent stops here.
+    let plan = send_plan(&output_usbs(&capture), probes, &consent_indexes(&out_names, consent).map_err(|e| anyhow!(e))?);
 
     // Listen on every input, then ask every output who it is.
     let start = std::time::Instant::now();
@@ -626,11 +696,13 @@ pub fn observe(probe: bool, wait: Duration, probes: &[Probe]) -> Result<Capture>
             conns.push((oi, conn));
         }
     }
-    let universal = Probe { request: IDENTITY_REQUEST.to_vec(), ports: vec![] };
-    for p in std::iter::once(&universal).chain(probes) {
+    let rounds = plan.iter().map(|p| p.sent.len()).max().unwrap_or(0);
+    for round in 0..rounds {
         for (oi, conn) in conns.iter_mut() {
-            if p.goes_to(&out_names[*oi]) && conn.send(&p.request).is_ok() {
-                capture.requests.push(Request { port: out_names[*oi].clone(), bytes: p.request.clone() });
+            if let Some(bytes) = plan[*oi].sent.get(round) {
+                if conn.send(bytes).is_ok() {
+                    capture.requests.push(Request { port: out_names[*oi].clone(), bytes: bytes.clone() });
+                }
             }
         }
         std::thread::sleep(PROBE_GAP);
@@ -951,7 +1023,7 @@ fn today() -> String {
 /// The learn mode on every device plugged in: each is asked the universal identity request on
 /// each of its outputs and heard on each of its inputs for `listen`, all at the same time.
 pub fn learn_all(listen: Duration) -> Result<Vec<(Unit, Learned)>> {
-    let devices = units(&observe(false, Duration::ZERO, &[])?);
+    let devices = units(&observe(false, Duration::ZERO, &[], &[])?);
     let observed = today();
     std::thread::scope(|s| {
         let tasks: Vec<_> = devices.iter().map(|d| {

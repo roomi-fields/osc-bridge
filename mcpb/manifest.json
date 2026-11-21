@@ -465,7 +465,7 @@
     },
     {
       "name": "detect_hardware",
-      "description": "Find the MIDI devices plugged into this computer and match them to catalogue drivers. Lists MIDI ports, sends the standard MIDI Identity Request, then the makers' own identity requests the drivers name (harmless: they change nothing on the device), and reads each device's manufacturer, model and firmware. Reads the USB ids (vendor_id, product_id) of each USB device's card (Linux; absent for a virtual or DIN port). A driver whose identity block recognises the reply, the USB ids (usb) or the port name comes first, the variant for the firmware read from it above the others; of drivers matching equally, the one the others share their MIDI with comes first, and each lists the others in equally_matching. Returns, per device, the best matching drivers (with recognised_by and firmware when recognised) and a ready-to-run 'osc-bridge run' command with the right port numbers.",
+      "description": "Find the MIDI devices plugged into this computer and match them to catalogue drivers. Lists MIDI ports and sends each port the standard MIDI Identity Request (universal, read-only by the norm), then only the maker requests of the maker its USB id names (or, with no USB id read, of the drivers whose identity names its port name). A maker request may be a load for another maker's device, so every other one is held back, port by port: for a device nobody recognised only the universal request goes out, and each device lists held_back, the requests not sent. Consent adds them: pass consent_ports, the ports that may receive every maker request; the person must have been asked and agreed for that port (never pass it on your own). Reads each device's manufacturer, model and firmware. Reads the USB ids (vendor_id, product_id) of each USB device's card (Linux; absent for a virtual or DIN port). A driver whose identity block recognises the reply, the USB ids (usb) or the port name comes first, the variant for the firmware read from it above the others; of drivers matching equally, the one the others share their MIDI with comes first, and each lists the others in equally_matching. Returns, per device, the best matching drivers (with recognised_by and firmware when recognised) and a ready-to-run 'osc-bridge run' command with the right port numbers.",
       "inputSchema": {
         "properties": {
           "probe": {
@@ -475,6 +475,11 @@
           "timeout_ms": {
             "description": "How long to wait for identity replies, 100-5000 ms (default 800).",
             "type": "integer"
+          },
+          "consent_ports": {
+            "description": "Ports (a part of the name, or the exact out_port index) that receive every maker request, the held back ones too. Ask the person first and pass a port only with their explicit agreement for that port: a request meant for another maker's device may overwrite its memory. A fragment naming several ports or none is refused, and nothing is sent.",
+            "items": { "type": "string" },
+            "type": "array"
           }
         },
         "type": "object"
