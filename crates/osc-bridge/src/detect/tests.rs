@@ -405,24 +405,33 @@ fn the_usb_ids_recognise_a_device_that_answers_nothing_on_a_port_named_after_not
 
 // ---- the learn mode: a fingerprint of a device that may not say who it is ----
 
-/// A scripted device: records what is sent to it, answers with what it was given.
-struct Script { sent: Vec<Vec<u8>>, heard: Vec<Heard>, listened: Vec<Duration> }
+/// A scripted unit: records what is sent to it (port, bytes), answers with what it was given.
+struct Script { sent: Vec<(String, Vec<u8>)>, heard: Vec<Heard>, listened: Vec<Duration> }
 
 impl Script {
     fn new(heard: Vec<Heard>) -> Self { Script { sent: vec![], heard, listened: vec![] } }
+    fn sent_bytes(&self) -> Vec<Vec<u8>> { self.sent.iter().map(|(_, m)| m.clone()).collect() }
 }
 
 impl Wire for Script {
-    fn send(&mut self, msg: &[u8]) { self.sent.push(msg.to_vec()); }
+    fn send(&mut self, port: &str, msg: &[u8]) { self.sent.push((port.to_string(), msg.to_vec())); }
     fn heard(&mut self, listen: Duration) -> Vec<Heard> { self.listened.push(listen); self.heard.clone() }
 }
 
-fn at(ms: u64, msg: &[u8]) -> Heard { Heard { at: Duration::from_millis(ms), msg: msg.to_vec() } }
+const SYNTH: &str = "Test Synth:Test Synth MIDI 1 20:0";
 
-fn device(usb: Option<(u16, u16)>) -> Probed {
-    Probed { out_index: Some(1), out_name: Some("Test Synth MIDI 1".into()), in_index: Some(2),
-             in_name: Some("Test Synth MIDI 1".into()), identity: None, usb, replies: vec![] }
+fn at_on(port: &str, ms: u64, msg: &[u8]) -> Heard {
+    Heard { port: port.to_string(), at: Duration::from_millis(ms), msg: msg.to_vec() }
 }
+fn at(ms: u64, msg: &[u8]) -> Heard { at_on(SYNTH, ms, msg) }
+
+fn unit_of(inputs: &[&str], outputs: &[&str], usb: Option<(u16, u16)>) -> Unit {
+    Unit { in_indexes: (0..inputs.len()).collect(), out_indexes: (0..outputs.len()).collect(),
+           inputs: inputs.iter().map(|s| s.to_string()).collect(),
+           outputs: outputs.iter().map(|s| s.to_string()).collect(), usb }
+}
+
+fn device(usb: Option<(u16, u16)>) -> Unit { unit_of(&[SYNTH], &[SYNTH], usb) }
 
 const REPLY: [u8; 17] = [0xF0, 0x7E, 0x7F, 0x06, 0x02, 0x00, 0x20, 0x6B, 0x02, 0x00, 0x04, 0x00, 0x01, 0x00, 0x04, 0x00, 0xF7];
 
@@ -453,14 +462,14 @@ fn synth_heard() -> Vec<Heard> {
 #[test]
 fn learn_sends_only_the_universal_identity_request_and_listens_for_the_time_given() {
     let (_, wire) = learn_on(synth_heard(), None);
-    assert_eq!(wire.sent, vec![IDENTITY_REQUEST.to_vec()]);
+    assert_eq!(wire.sent_bytes(), vec![IDENTITY_REQUEST.to_vec()]);
     assert_eq!(wire.listened, vec![Duration::from_millis(5000)]);
 }
 
 #[test]
 fn learn_sends_the_identity_request_even_to_a_silent_device() {
     let (_, wire) = learn_on(vec![], None);
-    assert_eq!(wire.sent, vec![IDENTITY_REQUEST.to_vec()]);
+    assert_eq!(wire.sent_bytes(), vec![IDENTITY_REQUEST.to_vec()]);
 }
 
 #[test]
@@ -586,4 +595,189 @@ fn learn_notice_tells_the_person_the_time_and_to_move_the_controls() {
     assert!(n.contains("5 seconds"), "{n}");
     assert!(n.contains("move"), "{n}");
     assert!(learn_notice(Duration::from_millis(12000)).contains("12 seconds"));
+}
+
+// ---- the words of a port name -------------------------------------------------
+
+#[test]
+fn port_words_keep_what_follows_the_first_colon_in_lower_case_without_the_final_numbers() {
+    assert_eq!(port_words("Minilab3:Minilab3 MIDI 40:0"), "minilab3 midi");
+    assert_eq!(port_words("Minilab3:Minilab3 MIDI 7:12"), "minilab3 midi");
+}
+
+#[test]
+fn port_words_cut_between_words_on_any_punctuation() {
+    assert_eq!(port_words("Minilab3:Minilab3 MCU/HUI 40:2"), "minilab3 mcu hui");
+    assert_eq!(port_words("Midi Through:Midi Through Port-0 14:0"), "midi through port 0");
+    assert_eq!(port_words("Box:Box_In  (A)   9:1"), "box in a");
+}
+
+#[test]
+fn port_words_keep_the_digits_of_a_word() {
+    assert_eq!(port_words("Minilab3:Minilab3 DIN THRU 40:1"), "minilab3 din thru");
+    assert_eq!(port_words("Behringer BCR-32:Behringer BCR-32 BCR-32 ZAQ 24:1"), "behringer bcr 32 zaq");
+}
+
+#[test]
+fn port_words_write_a_repeated_run_of_words_once() {
+    assert_eq!(port_words("Behringer BCR-32:Behringer BCR-32 BCR-32 CTRL 24:0"), "behringer bcr 32 ctrl");
+    assert_eq!(port_words("Electra Controller:Electra Controller Electra Port 28:0"), "electra controller electra port");
+    assert_eq!(port_words("Electra Controller:Electra Controller Electra CTRL 28:2"), "electra controller electra ctrl");
+    assert_eq!(port_words("A:Beat Beat 3:0"), "beat");
+}
+
+#[test]
+fn port_words_of_a_name_without_colon_or_numbers_are_the_whole_name_lower_cased() {
+    assert_eq!(port_words("USB MIDI Interface"), "usb midi interface");
+}
+
+// ---- one unit per device ------------------------------------------------------
+
+fn capture_of(ports: &[&str], cards: &str) -> Capture {
+    let v = serde_json::json!({ "format_version": crate::capture::FORMAT_VERSION,
+        "outputs": ports, "inputs": ports, "cards": cards, "usbids": [], "requests": [], "received": [] });
+    Capture::parse(&v.to_string()).unwrap()
+}
+
+#[test]
+fn units_group_the_ports_of_one_alsa_client_number_into_one_device() {
+    let c = capture_of(&["Minilab3:Minilab3 MIDI 40:0", "Minilab3:Minilab3 DIN THRU 40:1",
+        "Minilab3:Minilab3 MCU/HUI 40:2", "Minilab3:Minilab3 ALV 40:3", "Other:Other 41:0"], "");
+    let u = units(&c);
+    assert_eq!(u.len(), 2, "{u:?}");
+    assert_eq!(u[0].inputs.len(), 4);
+    assert_eq!(u[0].outputs.len(), 4);
+    assert_eq!(u[0].in_indexes, vec![0, 1, 2, 3]);
+    assert_eq!(u[1].inputs, vec!["Other:Other 41:0".to_string()]);
+}
+
+#[test]
+fn units_keep_two_devices_of_the_same_client_name_and_different_numbers_apart() {
+    let c = capture_of(&["Pad:Pad 20:0", "Pad:Pad 21:0"], "");
+    assert_eq!(units(&c).len(), 2);
+}
+
+#[test]
+fn units_join_two_ports_of_one_client_number_even_when_their_client_names_differ() {
+    let c = capture_of(&["Alpha:Alpha MIDI 30:0", "Beta:Beta MIDI 30:1"], "");
+    let u = units(&c);
+    assert_eq!(u.len(), 1, "{u:?}");
+    assert_eq!(u[0].inputs.len(), 2);
+}
+
+#[test]
+fn units_group_by_client_name_when_the_names_carry_no_number() {
+    let c = capture_of(&["Synth:Synth In", "Synth:Synth Thru", "Drum:Drum In"], "");
+    let u = units(&c);
+    assert_eq!(u.len(), 2, "{u:?}");
+    assert_eq!(u[0].inputs.len(), 2);
+}
+
+#[test]
+fn units_keep_an_input_only_port_and_an_output_only_port_in_their_device() {
+    let v = serde_json::json!({ "format_version": crate::capture::FORMAT_VERSION,
+        "outputs": ["Box:Box Out 50:0"], "inputs": ["Box:Box In 50:1", "Pad:Pad 51:0"],
+        "cards": "", "usbids": [], "requests": [], "received": [] });
+    let u = units(&Capture::parse(&v.to_string()).unwrap());
+    assert_eq!(u.len(), 2);
+    assert_eq!((u[0].inputs.len(), u[0].outputs.len()), (1, 1));
+    assert_eq!((u[1].inputs.len(), u[1].outputs.len()), (1, 0));
+}
+
+#[test]
+fn units_read_the_usb_ids_of_the_card_of_the_device() {
+    let v = serde_json::json!({ "format_version": crate::capture::FORMAT_VERSION,
+        "outputs": ["Minilab3:Minilab3 MIDI 40:0", "Minilab3:Minilab3 ALV 40:3"],
+        "inputs": ["Minilab3:Minilab3 MIDI 40:0", "Minilab3:Minilab3 ALV 40:3"],
+        "cards": " 6 [Minilab3       ]: USB-Audio - Minilab3\n",
+        "usbids": [{"card": 6, "text": "1c75:020b\n"}], "requests": [], "received": [] });
+    let u = units(&Capture::parse(&v.to_string()).unwrap());
+    assert_eq!(u[0].usb, Some((0x1c75, 0x020b)));
+}
+
+// ---- one fingerprint per device -----------------------------------------------
+
+const MINILAB: [&str; 4] = ["Minilab3:Minilab3 MIDI 40:0", "Minilab3:Minilab3 DIN THRU 40:1",
+    "Minilab3:Minilab3 MCU/HUI 40:2", "Minilab3:Minilab3 ALV 40:3"];
+
+#[test]
+fn learn_writes_the_words_of_every_port_of_the_device_sorted_without_the_machine_numbers() {
+    let u = unit_of(&MINILAB, &MINILAB, None);
+    let l = learn(&u, &mut Script::new(vec![]), Duration::from_millis(1000), "2026-11-21");
+    valid_fingerprint(&l.fingerprint);
+    let words = serde_json::json!(["minilab3 alv", "minilab3 din thru", "minilab3 mcu hui", "minilab3 midi"]);
+    assert_eq!(l.fingerprint["ports"]["inputs"], words);
+    assert_eq!(l.fingerprint["ports"]["outputs"], words);
+}
+
+#[test]
+fn learn_writes_ports_of_the_same_words_once() {
+    let u = unit_of(&["Pad:Pad 9:0", "Pad:Pad 9:1"], &["Pad:Pad 9:0"], None);
+    let l = learn(&u, &mut Script::new(vec![]), Duration::from_millis(1000), "2026-11-21");
+    assert_eq!(l.fingerprint["ports"]["inputs"], serde_json::json!(["pad"]));
+    assert_eq!(l.fingerprint["ports"]["outputs"], serde_json::json!(["pad"]));
+}
+
+#[test]
+fn learn_leaves_out_the_outputs_key_of_a_device_without_output_and_the_inputs_key_of_one_without_input() {
+    let l = learn(&unit_of(&["Pad:Pad 9:0"], &[], None), &mut Script::new(vec![]), Duration::from_millis(1000), "2026-11-21");
+    valid_fingerprint(&l.fingerprint);
+    assert!(l.fingerprint["ports"].get("outputs").is_none(), "{}", l.fingerprint);
+    assert_eq!(l.fingerprint["ports"]["inputs"], serde_json::json!(["pad"]));
+    let l = learn(&unit_of(&[], &["Pad:Pad 9:0"], None), &mut Script::new(vec![]), Duration::from_millis(1000), "2026-11-21");
+    valid_fingerprint(&l.fingerprint);
+    assert!(l.fingerprint["ports"].get("inputs").is_none(), "{}", l.fingerprint);
+    assert_eq!(l.fingerprint["ports"]["outputs"], serde_json::json!(["pad"]));
+}
+
+#[test]
+fn learn_sends_the_identity_request_on_every_output_of_the_device() {
+    let u = unit_of(&MINILAB, &MINILAB, None);
+    let mut wire = Script::new(vec![]);
+    learn(&u, &mut wire, Duration::from_millis(1000), "2026-11-21");
+    let ports: Vec<&str> = wire.sent.iter().map(|(p, _)| p.as_str()).collect();
+    assert_eq!(ports, MINILAB.to_vec());
+    assert!(wire.sent.iter().all(|(_, m)| m == &IDENTITY_REQUEST.to_vec()));
+    assert_eq!(wire.listened.len(), 1, "one listening for the whole device");
+}
+
+#[test]
+fn learn_puts_what_any_input_of_the_device_sent_in_its_one_fingerprint() {
+    let u = unit_of(&MINILAB, &MINILAB, None);
+    let heard = vec![
+        at_on(MINILAB[2], 12, &REPLY),
+        at_on(MINILAB[0], 100, &[0xF8]), at_on(MINILAB[0], 120, &[0xF8]),
+        at_on(MINILAB[1], 150, &[0xFE]),
+        at_on(MINILAB[3], 200, &[0xB0, 74, 10]),
+        at_on(MINILAB[0], 210, &[0x90, 60, 0]),
+    ];
+    let l = learn(&u, &mut Script::new(heard), Duration::from_millis(1000), "2026-11-21");
+    valid_fingerprint(&l.fingerprint);
+    assert_eq!(l.fingerprint["identity_reply"], "F0 7E 7F 06 02 00 20 6B 02 00 04 00 01 00 04 00 F7");
+    assert_eq!(l.fingerprint["sends"], serde_json::json!({ "clock": true, "active_sensing": true, "note_off": "note_on_velocity_0" }));
+    assert_eq!(l.fingerprint["controls"], serde_json::json!([{ "cc": 74, "channel": 0 }]));
+}
+
+#[test]
+fn learn_measures_name_the_port_where_the_reply_and_each_period_were_measured() {
+    let u = unit_of(&MINILAB, &MINILAB, None);
+    let heard = vec![
+        at_on(MINILAB[2], 12, &REPLY),
+        at_on(MINILAB[0], 100, &[0xF8]), at_on(MINILAB[0], 120, &[0xF8]),
+        at_on(MINILAB[1], 200, &[0xFE]), at_on(MINILAB[1], 500, &[0xFE]),
+    ];
+    let l = learn(&u, &mut Script::new(heard), Duration::from_millis(1000), "2026-11-21");
+    assert_eq!(l.measured["identity_reply_ms"].as_f64(), Some(12.0));
+    assert_eq!(l.measured["identity_reply_port"], MINILAB[2]);
+    assert_eq!(l.measured["periods_ms"]["clock"].as_f64(), Some(20.0));
+    assert_eq!(l.measured["periods_ms"]["active_sensing"].as_f64(), Some(300.0));
+    assert_eq!(l.measured["periods_port"], serde_json::json!({ "clock": MINILAB[0], "active_sensing": MINILAB[1] }));
+}
+
+#[test]
+fn learn_measures_a_period_on_one_port_never_across_two_ports() {
+    let u = unit_of(&MINILAB, &MINILAB, None);
+    let heard = vec![at_on(MINILAB[0], 100, &[0xF8]), at_on(MINILAB[1], 120, &[0xF8])];
+    let l = learn(&u, &mut Script::new(heard), Duration::from_millis(1000), "2026-11-21");
+    assert!(l.measured.get("periods_ms").is_none(), "{:?}", l.measured);
 }

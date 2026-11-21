@@ -31,6 +31,10 @@ fn detect_hardware_publishes_the_learn_mode_and_its_listening_time() {
     assert!(listen.contains("1000") && listen.contains("30000") && listen.contains("5000"), "{listen}");
     let device = &tool["outputSchema"]["properties"]["devices"]["items"]["properties"];
     assert!(device.get("fingerprint").is_some() && device.get("measured").is_some(), "{device}");
+    assert_eq!(device["inputs"]["type"], "array", "one element per device lists all its input names: {device}");
+    assert_eq!(device["outputs"]["type"], "array", "one element per device lists all its output names: {device}");
+    let measured = device["measured"]["description"].as_str().unwrap();
+    assert!(measured.contains("identity_reply_port") && measured.contains("periods_port"), "{measured}");
 }
 
 #[test]

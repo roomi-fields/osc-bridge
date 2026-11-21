@@ -652,17 +652,105 @@ const LEARN_MAX_MS: u64 = 30000;
 /// Distinct controls a fingerprint keeps (the schema's `maxItems`).
 const CONTROLS_KEPT: usize = 32;
 
-/// One message a device sent, with the time since the request went out.
+/// The ALSA client number of a raw port name: the `N` of its final `N:M`.
+fn client_number(name: &str) -> Option<u32> {
+    let last = name.split_whitespace().next_back()?;
+    let (n, m) = last.split_once(':')?;
+    let digits = |s: &str| !s.is_empty() && s.bytes().all(|b| b.is_ascii_digit());
+    (digits(n) && digits(m)).then(|| n.parse().ok()).flatten()
+}
+
+/// The words of a raw port name, the only writer of them: what follows the first `:`, without the
+/// final `N:M`, cut into words on every character that is neither a letter nor a digit, lower
+/// case, joined by a space; a run of words repeated at once is kept once.
+pub fn port_words(name: &str) -> String {
+    let trimmed = name.trim_end();
+    let body = match (client_number(trimmed), trimmed.rfind(char::is_whitespace)) {
+        (Some(_), Some(i)) => &trimmed[..i],
+        (Some(_), None) => "",
+        _ => trimmed,
+    };
+    let body = body.split_once(':').map_or(body, |(_, rest)| rest);
+    let mut words: Vec<String> = body.split(|c: char| !c.is_alphanumeric())
+        .filter(|w| !w.is_empty()).map(str::to_lowercase).collect();
+    'again: loop {
+        for k in 1..=words.len() / 2 {
+            for i in 0..=words.len() - 2 * k {
+                if words[i..i + k] == words[i + k..i + 2 * k] {
+                    words.drain(i + k..i + 2 * k);
+                    continue 'again;
+                }
+            }
+        }
+        break;
+    }
+    words.join(" ")
+}
+
+/// One physical device as its ports show it: all its inputs and outputs (raw names, with their
+/// indexes in the capture) and the USB ids of its card, when it has one.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Unit {
+    pub inputs: Vec<String>,
+    pub outputs: Vec<String>,
+    pub in_indexes: Vec<usize>,
+    pub out_indexes: Vec<usize>,
+    pub usb: Option<(u16, u16)>,
+}
+
+impl Unit {
+    /// A name for the device: its first output, else its first input.
+    pub fn label(&self) -> &str {
+        self.outputs.first().or(self.inputs.first()).map(String::as_str).unwrap_or("?")
+    }
+}
+
+/// The devices of a capture, pure: the ports of one ALSA client number are one device; a name
+/// without number groups by its client name (the text before the first `:`, squashed). The card
+/// only gives the USB ids.
+pub fn units(capture: &Capture) -> Vec<Unit> {
+    #[derive(PartialEq)]
+    enum Key { Number(u32), Name(String) }
+    let key = |n: &str| match client_number(n) {
+        Some(c) => Key::Number(c),
+        None => Key::Name(squash(n.split(':').next().unwrap_or(n))),
+    };
+    let ids: Vec<(u32, &str)> = capture.usbids.iter().map(|u| (u.card, u.text.as_str())).collect();
+    let cards = usb_cards(&capture.cards, &ids);
+    let mut found: Vec<(Key, Unit)> = Vec::new();
+    let all = capture.outputs.iter().enumerate().map(|(i, n)| (true, i, n))
+        .chain(capture.inputs.iter().enumerate().map(|(i, n)| (false, i, n)));
+    for (is_out, index, name) in all {
+        let k = key(name);
+        let at = match found.iter().position(|(f, _)| *f == k) {
+            Some(at) => at,
+            None => {
+                found.push((k, Unit { inputs: vec![], outputs: vec![], in_indexes: vec![], out_indexes: vec![], usb: None }));
+                found.len() - 1
+            }
+        };
+        let u = &mut found[at].1;
+        if is_out { u.outputs.push(name.clone()); u.out_indexes.push(index); }
+        else { u.inputs.push(name.clone()); u.in_indexes.push(index); }
+    }
+    found.into_iter().map(|(_, mut u)| {
+        u.usb = u.outputs.iter().chain(&u.inputs).find_map(|n| usb_of_port(n, &cards));
+        u
+    }).collect()
+}
+
+/// One message a device sent on one of its inputs, with the time since the request went out.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Heard {
+    pub port: String,
     pub at: Duration,
     pub msg: Vec<u8>,
 }
 
 /// What the learn mode reads and writes of one device: the universal identity request goes
-/// out, then everything the input sends is heard for the time given.
+/// out on each output, then everything every input sends is heard for the time given.
 pub trait Wire {
-    fn send(&mut self, msg: &[u8]);
+    fn send(&mut self, port: &str, msg: &[u8]);
     fn heard(&mut self, listen: Duration) -> Vec<Heard>;
 }
 
@@ -670,7 +758,8 @@ pub trait Wire {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Learned {
     pub fingerprint: serde_json::Value,
-    /// `identity_reply_ms` and `periods_ms` (`clock`, `active_sensing`): local measures, absent when not observed.
+    /// `identity_reply_ms` with `identity_reply_port`, and `periods_ms` (`clock`, `active_sensing`)
+    /// with `periods_port`: local measures, absent when not observed.
     pub measured: serde_json::Value,
 }
 
@@ -705,18 +794,19 @@ fn period_ms(times: &[Duration]) -> Option<f64> {
 
 /// Send the universal identity request to a device, listen for `listen`, and write down what
 /// was heard: only what was heard, never a guess.
-pub fn learn(device: &Probed, wire: &mut dyn Wire, listen: Duration, observed: &str) -> Learned {
-    wire.send(&IDENTITY_REQUEST);
+pub fn learn(device: &Unit, wire: &mut dyn Wire, listen: Duration, observed: &str) -> Learned {
+    for out in &device.outputs { wire.send(out, &IDENTITY_REQUEST); }
     let heard = wire.heard(listen);
 
     let mut fp = serde_json::Map::new();
     fp.insert("$schema".into(), "https://w3id.org/osd/0.6/fingerprint.schema.json".into());
     fp.insert("observed".into(), observed.into());
     fp.insert("via".into(), "native".into());
-    let words = |n: &Option<String>| n.iter().map(|n| n.to_lowercase()).collect::<Vec<_>>();
+    let words = |names: &[String]| names.iter().map(|n| port_words(n)).collect::<std::collections::BTreeSet<_>>()
+        .into_iter().collect::<Vec<_>>();
     let mut ports = serde_json::Map::new();
-    if device.in_name.is_some() { ports.insert("inputs".into(), words(&device.in_name).into()); }
-    if device.out_name.is_some() { ports.insert("outputs".into(), words(&device.out_name).into()); }
+    if !device.inputs.is_empty() { ports.insert("inputs".into(), words(&device.inputs).into()); }
+    if !device.outputs.is_empty() { ports.insert("outputs".into(), words(&device.outputs).into()); }
     fp.insert("ports".into(), ports.into());
     if let Some((vendor_id, product_id)) = device.usb {
         fp.insert("usb".into(), serde_json::json!({ "vendor_id": vendor_id, "product_id": product_id }));
@@ -726,10 +816,18 @@ pub fn learn(device: &Probed, wire: &mut dyn Wire, listen: Duration, observed: &
     if let Some(h) = heard.iter().find(|h| parse_identity_reply(&h.msg).is_some()) {
         fp.insert("identity_reply".into(), hex_spaced(&h.msg).into());
         measured.insert("identity_reply_ms".into(), (h.at.as_secs_f64() * 1000.0).into());
+        measured.insert("identity_reply_port".into(), h.port.clone().into());
     }
 
     let times = |status: u8| -> Vec<Duration> {
         heard.iter().filter(|h| h.msg.as_slice() == [status]).map(|h| h.at).collect()
+    };
+    // A period is measured on one port: the first input of the device that sent the status twice.
+    let period_on = |status: u8| -> Option<(f64, String)> {
+        device.inputs.iter().find_map(|port| {
+            let t: Vec<Duration> = heard.iter().filter(|h| &h.port == port && h.msg.as_slice() == [status]).map(|h| h.at).collect();
+            period_ms(&t).map(|p| (p, port.clone()))
+        })
     };
     let (clock, sensing) = (times(0xF8), times(0xFE));
     let mut sends = serde_json::Map::new();
@@ -747,9 +845,17 @@ pub fn learn(device: &Probed, wire: &mut dyn Wire, listen: Duration, observed: &
     if !controls.is_empty() { fp.insert("controls".into(), controls.into()); }
 
     let mut periods = serde_json::Map::new();
-    if let Some(p) = period_ms(&clock) { periods.insert("clock".into(), p.into()); }
-    if let Some(p) = period_ms(&sensing) { periods.insert("active_sensing".into(), p.into()); }
-    if !periods.is_empty() { measured.insert("periods_ms".into(), periods.into()); }
+    let mut periods_port = serde_json::Map::new();
+    for (key, status) in [("clock", 0xF8), ("active_sensing", 0xFE)] {
+        if let Some((p, port)) = period_on(status) {
+            periods.insert(key.into(), p.into());
+            periods_port.insert(key.into(), port.into());
+        }
+    }
+    if !periods.is_empty() {
+        measured.insert("periods_ms".into(), periods.into());
+        measured.insert("periods_port".into(), periods_port.into());
+    }
 
     Learned { fingerprint: fp.into(), measured: measured.into() }
 }
@@ -778,43 +884,47 @@ fn controls_heard(heard: &[Heard]) -> Vec<serde_json::Value> {
     found
 }
 
-/// A device's ports on the machine: its input listened to, its output asked.
+/// A device's ports on the machine: every input listened to, every output asked.
 struct MidiWire {
-    out: Option<midir::MidiOutputConnection>,
-    _input: Option<MidiInputConnection<()>>,
+    outs: Vec<(String, midir::MidiOutputConnection)>,
+    _inputs: Vec<MidiInputConnection<()>>,
     got: Arc<Mutex<Vec<Heard>>>,
-    since: Arc<Mutex<std::time::Instant>>,
+    since: Arc<Mutex<Option<std::time::Instant>>>,
 }
 
 impl MidiWire {
-    fn open(device: &Probed) -> Result<Self> {
+    fn open(device: &Unit) -> Result<Self> {
         let got: Arc<Mutex<Vec<Heard>>> = Arc::new(Mutex::new(Vec::new()));
-        let since = Arc::new(Mutex::new(std::time::Instant::now()));
-        let mut input = None;
-        if let Some(ii) = device.in_index {
+        let since: Arc<Mutex<Option<std::time::Instant>>> = Arc::new(Mutex::new(None));
+        let mut inputs = Vec::new();
+        for (ii, name) in device.in_indexes.iter().zip(&device.inputs) {
             let mut inp = MidiInput::new("osc-bridge-learn-in")?;
             inp.ignore(Ignore::None);
-            if let Some(port) = inp.ports().get(ii).cloned() {
-                let (sink, t0) = (got.clone(), since.clone());
-                input = inp.connect(&port, "osc-bridge-learn-in", move |_, msg, _| {
-                    let at = t0.lock().map(|t| t.elapsed()).unwrap_or_default();
-                    if let Ok(mut g) = sink.lock() { g.push(Heard { at, msg: msg.to_vec() }); }
-                }, ()).ok();
+            if let Some(port) = inp.ports().get(*ii).cloned() {
+                let (sink, t0, port_name) = (got.clone(), since.clone(), name.clone());
+                if let Ok(conn) = inp.connect(&port, "osc-bridge-learn-in", move |_, msg, _| {
+                    let at = t0.lock().ok().and_then(|t| t.map(|t| t.elapsed())).unwrap_or_default();
+                    if let Ok(mut g) = sink.lock() { g.push(Heard { port: port_name.clone(), at, msg: msg.to_vec() }); }
+                }, ()) {
+                    inputs.push(conn);
+                }
             }
         }
-        let mut out = None;
-        if let Some(oi) = device.out_index {
+        let mut outs = Vec::new();
+        for (oi, name) in device.out_indexes.iter().zip(&device.outputs) {
             let o = MidiOutput::new("osc-bridge-learn-out")?;
-            if let Some(port) = o.ports().get(oi) { out = o.connect(port, "osc-bridge-learn-out").ok(); }
+            if let Some(port) = o.ports().get(*oi) {
+                if let Ok(conn) = o.connect(port, "osc-bridge-learn-out") { outs.push((name.clone(), conn)); }
+            }
         }
-        Ok(MidiWire { out, _input: input, got, since })
+        Ok(MidiWire { outs, _inputs: inputs, got, since })
     }
 }
 
 impl Wire for MidiWire {
-    fn send(&mut self, msg: &[u8]) {
-        if let Ok(mut t) = self.since.lock() { *t = std::time::Instant::now(); }
-        if let Some(out) = self.out.as_mut() { let _ = out.send(msg); }
+    fn send(&mut self, port: &str, msg: &[u8]) {
+        if let Ok(mut t) = self.since.lock() { t.get_or_insert_with(std::time::Instant::now); }
+        if let Some((_, out)) = self.outs.iter_mut().find(|(n, _)| n == port) { let _ = out.send(msg); }
     }
     fn heard(&mut self, listen: Duration) -> Vec<Heard> {
         std::thread::sleep(listen);
@@ -838,10 +948,10 @@ fn today() -> String {
     format!("{year:04}-{month:02}-{day:02}")
 }
 
-/// The learn mode on every device plugged in: each is asked the universal identity request and
-/// heard for `listen`, all at the same time.
-pub fn learn_all(listen: Duration) -> Result<Vec<(Probed, Learned)>> {
-    let devices = scan(false, Duration::ZERO, &[])?;
+/// The learn mode on every device plugged in: each is asked the universal identity request on
+/// each of its outputs and heard on each of its inputs for `listen`, all at the same time.
+pub fn learn_all(listen: Duration) -> Result<Vec<(Unit, Learned)>> {
+    let devices = units(&observe(false, Duration::ZERO, &[])?);
     let observed = today();
     std::thread::scope(|s| {
         let tasks: Vec<_> = devices.iter().map(|d| {

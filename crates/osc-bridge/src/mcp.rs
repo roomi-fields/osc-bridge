@@ -924,20 +924,22 @@ pub fn tool_schemas() -> Value {
                         "probed": { "type": "boolean" },
                         "devices": {
                             "type": "array",
-                            "description": "One entry per physical device (an output port paired with its input port by name).",
+                            "description": "One entry per physical device (an output port paired with its input port by name); in learn mode, one entry per device with all its input and output ports.",
                             "items": {
                                 "type": "object",
                                 "properties": {
                                     "port": { "type": "string" },
                                     "out_port": { "type": ["integer", "null"] },
                                     "in_port": { "type": ["integer", "null"] },
+                                    "inputs": { "type": "array", "items": { "type": "string" }, "description": "Learn mode: the raw names of all the input ports of the device." },
+                                    "outputs": { "type": "array", "items": { "type": "string" }, "description": "Learn mode: the raw names of all the output ports of the device." },
                                     "usb": { "type": "object", "description": "The USB ids of the device's card (Linux), absent when it has none.",
                                         "properties": { "vendor_id": { "type": "integer" }, "product_id": { "type": "integer" } } },
                                     "identity": { "type": ["object", "null"], "description": "Identity Reply, when the device answered." },
                                     "candidates": { "type": "array", "items": { "type": "object" } },
                                     "run_command": { "type": ["string", "null"] },
                                     "fingerprint": { "type": "object", "description": "Learn mode: the OSD 0.6 fingerprint of the device; a field it did not give is absent." },
-                                    "measured": { "type": "object", "description": "Learn mode: local measures beside the fingerprint: identity_reply_ms, periods_ms (clock, active_sensing); absent when not observed." }
+                                    "measured": { "type": "object", "description": "Learn mode: local measures beside the fingerprint: identity_reply_ms with identity_reply_port, periods_ms (clock, active_sensing) with periods_port (the port each was measured on); absent when not observed." }
                                 },
                                 "required": ["port"]
                             }
@@ -1680,14 +1682,14 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>,
     Ok(out)
 }
 
-/// `detect_hardware` in learn mode: a fingerprint per port, and its measures beside it. The
+/// `detect_hardware` in learn mode: a fingerprint per device, and its measures beside it. The
 /// report's text tells the person how long it listens and to move the controls.
 fn learn_hardware(listen: std::time::Duration) -> Result<Value, String> {
     let learned = crate::detect::learn_all(listen).map_err(|e| format!("MIDI scan: {e}"))?;
     let devices: Vec<Value> = learned.iter().map(|(d, l)| json!({
         "port": d.label(),
-        "out_port": d.out_index,
-        "in_port": d.in_index,
+        "inputs": d.inputs,
+        "outputs": d.outputs,
         "fingerprint": l.fingerprint,
         "measured": l.measured,
     })).collect();
@@ -1891,9 +1893,9 @@ pub fn print_learning(listen_ms: Option<u64>) -> Result<()> {
         println!("No MIDI port found.");
     }
     for d in devices {
-        println!("{}  (out {}, in {})", d["port"].as_str().unwrap_or("?"),
-            d["out_port"].as_u64().map(|n| n.to_string()).unwrap_or("-".into()),
-            d["in_port"].as_u64().map(|n| n.to_string()).unwrap_or("-".into()));
+        let names = |k: &str| d[k].as_array().map(|a| a.iter().filter_map(Value::as_str).collect::<Vec<_>>().join(", "))
+            .filter(|s| !s.is_empty()).unwrap_or("-".into());
+        println!("{}  (out {}; in {})", d["port"].as_str().unwrap_or("?"), names("outputs"), names("inputs"));
         println!("  fingerprint: {}", serde_json::to_string_pretty(&d["fingerprint"]).unwrap_or_default().replace('\n', "\n  "));
         println!("  measured: {}", d["measured"]);
     }

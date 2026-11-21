@@ -201,8 +201,11 @@ fn check_corpus(dir: &Path, catalogue: &Path) -> Result<usize, Vec<String>> {
         v.sort();
         v
     };
-    let expected_names = names(".expected.json");
-    let captures: Vec<String> = names(".json").into_iter().filter(|n| !n.ends_with(".expected")).collect();
+    // `<name>.fingerprints.expected.json` is the neighbour of the learn mode, not of detection.
+    let expected_names: Vec<String> =
+        names(".expected.json").into_iter().filter(|n| !n.ends_with(".fingerprints")).collect();
+    let captures: Vec<String> =
+        names(".json").into_iter().filter(|n| !n.ends_with(".expected") && !n.ends_with(".fingerprints")).collect();
     for n in &expected_names {
         if !captures.contains(n) { errors.push(format!("{n}.expected.json has no capture {n}.json")); }
     }
@@ -331,5 +334,38 @@ fn detect_accepts_write_with_no_probe_and_devices_dir() {
         let c = Capture::parse(&std::fs::read_to_string(&w).unwrap()).unwrap();
         let v: Value = serde_json::from_str(&c.to_json()).unwrap();
         assert_eq!(v["requests"], json!([]), "no request without a probe");
+    }
+}
+
+// ---- the fingerprints of the corpus -----------------------------------------------
+
+/// A wire that plays back what a capture received.
+struct Played(Vec<osc_bridge::detect::Heard>);
+
+impl osc_bridge::detect::Wire for Played {
+    fn send(&mut self, _port: &str, _msg: &[u8]) {}
+    fn heard(&mut self, _listen: std::time::Duration) -> Vec<osc_bridge::detect::Heard> { self.0.clone() }
+}
+
+#[test]
+fn the_bench_of_the_21st_of_november_2026_learns_one_fingerprint_per_device_with_the_words_of_its_ports() {
+    use osc_bridge::detect::{learn, units, Heard};
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/captures");
+    let capture = Capture::parse(&std::fs::read_to_string(dir.join("2026-11-21.json")).unwrap()).unwrap();
+    let expected: Value = serde_json::from_str(
+        &std::fs::read_to_string(dir.join("2026-11-21.fingerprints.expected.json")).unwrap()).unwrap();
+    let all = units(&capture);
+    assert_eq!(all.len(), expected.as_object().unwrap().len(), "one device per expected entry: {all:?}");
+    for unit in &all {
+        let client = unit.inputs.first().or(unit.outputs.first()).unwrap().split(':').next().unwrap().to_string();
+        let want = expected.get(&client).unwrap_or_else(|| panic!("{client} is not in the expected file"));
+        let heard: Vec<Heard> = capture.received.iter()
+            .filter(|r| unit.inputs.contains(&r.port))
+            .map(|r| Heard { port: r.port.clone(), at: std::time::Duration::from_millis(r.ms), msg: r.bytes.clone() })
+            .collect();
+        let l = learn(unit, &mut Played(heard), std::time::Duration::from_millis(5000), "2026-11-21");
+        osd::read(&l.fingerprint.to_string(), osd::Kind::Fingerprint).unwrap_or_else(|e| panic!("{client}: {e}"));
+        assert_eq!(l.fingerprint["ports"]["inputs"], want["inputs"], "{client}");
+        assert_eq!(l.fingerprint["ports"]["outputs"], want["outputs"], "{client}");
     }
 }
