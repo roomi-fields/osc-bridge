@@ -22,7 +22,7 @@ The same text comes from three places:
 | Where | How |
 |---|---|
 | Command line | `osc-bridge export --device korg/minilogue --format oscquery` (any format of `osd-formats`, for example `midnam` or `deluge`; an unknown name lists them): the document on the standard output, what the format could not carry on the error output, one line each (`not carried: <place>: <reason>`) |
-| MCP server | tool `export_device` with `device` (id or slug) and `format`; the document is the text content, the list `lost` (`place`, `reason`) is beside it in the structured result |
+| MCP server | tool `export_device` with `device` (id or OSC prefix) and `format`; the document is the text content, the list `lost` (`place`, `reason`) is beside it in the structured result |
 | Running bridge | `osc-bridge run … --oscquery-bind 127.0.0.1:7891`, or `oscquery_bind` in the `[osc]` section of `bridge.toml` |
 
 ## Putting an export on a device

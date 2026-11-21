@@ -198,10 +198,13 @@ the JSON→routes parsing to your device's preset format, done.
 Every piece of device-specific knowledge is exposed over OSC — clients never
 hardcode slugification rules, page indexing, or SysEx opcodes:
 
+In `/bridge/status/device` and `/bridge/docs/device`, the first argument is the OSC prefix of the
+device, without its leading slash (a device is named by its id or OSC prefix).
+
 | Send | Receive |
 |---|---|
-| `/bridge/status` | One `/bridge/status/device <slug> <status>` per connected device |
-| `/bridge/docs` | `/bridge/docs/device <slug> <markdown>` — full integration guide (the device's companion `.md`, loaded automatically) |
+| `/bridge/status` | One `/bridge/status/device <osc-prefix> <status>` per connected device |
+| `/bridge/docs` | `/bridge/docs/device <osc-prefix> <markdown>` — full integration guide (the device's companion `.md`, loaded automatically) |
 | `/electra1/routes/list` | N× `/electra1/routes/entry <addr> <ch> <cc> <page> <min> <max>` then `/electra1/routes/done` |
 | `/electra1/preset/current` | `/electra1/preset/current <name>` |
 | `/electra1/page/current` | `/electra1/page/current <n>` |
