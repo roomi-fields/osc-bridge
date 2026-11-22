@@ -266,18 +266,18 @@ fn port_names_and_identities_resolve_to_their_driver() {
     for (port, want) in [("minilogue MIDI 1", "korg/minilogue"), ("Bass Station II", "novation/bass_station_ii"),
                          ("Electra Controller Electra Port 1", "electra-one/electra-one")] {
         let best = match_port(&cat, port, None, &[]);
-        assert_eq!(best.first().map(|c| c["device"].clone()), Some(json!(want)), "{port}: {best:?}");
+        assert_eq!(best.first().map(|c| c["id"].clone()), Some(json!(want)), "{port}: {best:?}");
     }
     // An Identity Reply from the maker puts its driver first.
     let acme = crate::detect::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
     let best = match_port(&cat, "Box", None, &[acme.reply()]);
-    assert_eq!(best[0]["osc_prefix"], "box", "{best:?}");
+    assert_eq!(best[0]["slug"], "box", "{best:?}");
     // Its identity block names the firmware, which picks the variant for it.
-    assert_eq!(best[0]["device"], "acme/box.vendor.fw-2", "{best:?}");
-    assert!(best[0].get("id").is_none() && best[0].get("slug").is_none(), "one word names the device: {best:?}");
+    assert_eq!(best[0]["id"], "acme/box.vendor.fw-2", "{best:?}");
+    assert!(best[0].get("device").is_none() && best[0].get("osc_prefix").is_none(), "the published form of a candidate: {best:?}");
     assert_eq!((best[0]["firmware"].as_str(), &best[0]["recognised_by"]), (Some("2.0.0.0"), &json!(["identity reply"])));
     let nameless = match_port(&cat, "USB MIDI Interface", None, &[acme.reply()]);
-    assert_eq!(nameless[0]["device"],"acme/box.vendor.fw-2", "behind a port named after nothing: {nameless:?}");
+    assert_eq!(nameless[0]["id"],"acme/box.vendor.fw-2", "behind a port named after nothing: {nameless:?}");
     let other_fw = crate::detect::Identity { version: [3, 0, 0, 0], ..acme.clone() };
     assert!(match_port(&cat, "Box", None, &[other_fw.reply()])[0]["score"].as_u64() < best[0]["score"].as_u64());
     assert!(best.iter().all(|c| c.get("file").is_none()), "no path of the machine that matched them");
@@ -429,7 +429,7 @@ fn a_local_copy_fetches_the_drivers_it_needs_and_forwards_reports() {
     let listed = call_tool("list_devices", &json!({"query": "minilogue"}), &opts, &index, Some(&link)).unwrap();
     assert_eq!(listed["structuredContent"]["devices"][0]["device"], "korg/minilogue", "{listed}");
     let matched = link.client.detect(&[json!({"port": "minilogue MIDI 1"})]).unwrap();
-    assert_eq!(matched[0]["candidates"][0]["device"], "korg/minilogue", "{matched:?}");
+    assert_eq!(matched[0]["candidates"][0]["id"], "korg/minilogue", "{matched:?}");
     let acme = crate::detect::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
     let matched = link.client.detect(&[json!({"port": "USB MIDI", "replies_hex": [hex_bytes(&acme.reply())]})]).unwrap();
     assert_eq!(matched[0]["candidates"][0]["firmware"], "2.0.0.0", "{matched:?}");
@@ -787,7 +787,7 @@ fn a_port_with_the_usb_ids_of_a_driver_is_recognised_by_usb() {
         vendor: "Acme".into(), file: "devices/box.json".into(), tier: "pencilresearch".into(),
         manufacturer_id: vec![], identity: Some(identity), firmware: None, midi_of: None }];
     let best = match_port(&cat, "USB MIDI Interface", Some((4660, 22136)), &[]);
-    assert_eq!(best[0]["device"], "acme/box", "{best:?}");
+    assert_eq!(best[0]["id"], "acme/box", "{best:?}");
     assert!(best[0]["recognised_by"].as_array().unwrap().contains(&json!("usb")), "{best:?}");
     assert!(match_port(&cat, "USB MIDI Interface", None, &[]).is_empty());
     assert!(match_port(&cat, "USB MIDI Interface", Some((1, 2)), &[]).is_empty());
@@ -946,17 +946,66 @@ fn the_detection_returns_every_device_without_a_card_and_their_dispute() {
 #[test]
 fn the_detection_reports_catalogue_candidates_and_never_also_a_device_without_a_card() {
     let (client, _bodies, _dir) = detect_service(|_| json!({
-        "candidates": [{ "device": "acme/box", "name": "Box", "score": 90 }],
+        "candidates": [{ "id": "acme/box", "slug": "box", "name": "Box", "vendor": "Acme", "source_tier": "official", "score": 90 }],
         "unlisted": [{ "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3", "confirmations": 1, "disputed": false }] }));
     let devices = report_devices(&client, vec![probed("Box", None)]);
     assert_eq!(devices[0]["candidates"][0]["device"], "acme/box", "{devices:?}");
     assert!(devices[0].get("unlisted").is_none(), "{devices:?}");
 }
 
+const POLYSYNTH: fn(&Value) -> Value = |_| json!({ "candidates": [
+    { "id": "polyend/synth", "slug": "polysynth", "name": "Synth", "vendor": "Polyend", "source_tier": "vendor-doc", "score": 35 }],
+    "devices": [] });
+
+#[test]
+fn a_catalogue_candidate_of_the_service_is_reported_as_a_candidate_under_its_catalogue_id_and_never_as_a_device_without_a_card() {
+    let (client, _bodies, _dir) = detect_service(POLYSYNTH);
+    let devices = report_devices(&client, vec![probed("FLUID Synth", None)]);
+    let cands = devices[0]["candidates"].as_array().unwrap();
+    assert_eq!(cands.len(), 1, "{devices:?}");
+    assert_eq!(cands[0]["device"], "polyend/synth", "{devices:?}");
+    assert_eq!(cands[0]["name"], "Synth", "{devices:?}");
+    assert!(devices[0].get("unlisted").is_none(), "{devices:?}");
+}
+
+#[test]
+fn the_command_prints_a_catalogue_candidate_of_the_service_by_its_name_and_id_with_no_empty_field() {
+    let (client, _bodies, _dir) = detect_service(POLYSYNTH);
+    let devices = report_devices(&client, vec![probed("FLUID Synth", None)]);
+    let text = format_detection(&devices, false);
+    assert!(text.contains("polyend/synth") && text.contains("Synth"), "{text}");
+    assert!(!text.contains("unlisted") && !text.contains('?') && !text.contains("null"), "{text}");
+}
+
+#[test]
+fn the_command_prints_a_device_without_a_card_without_the_field_it_lacks() {
+    let devices = [json!({ "port": "P", "out_port": 0, "in_port": 0, "candidates": [],
+        "unlisted": [{ "vendor": "Arturia" }, { "model": "Thing", "firmware": "2", "confirmations": 3 }] })];
+    let text = format_detection(&devices, false);
+    assert!(text.contains("Arturia") && text.contains("Thing"), "{text}");
+    assert!(!text.contains('?') && !text.contains("null"), "{text}");
+}
+
+#[test]
+fn the_command_does_not_print_an_entry_without_vendor_or_model_as_a_device() {
+    let devices = [json!({ "port": "P", "out_port": 0, "in_port": 0, "candidates": [],
+        "unlisted": [{ "firmware": "2", "confirmations": 3 }] })];
+    let text = format_detection(&devices, false);
+    assert!(!text.contains("unlisted") && !text.contains("firmware 2"), "{text}");
+}
+
+#[test]
+fn the_command_prints_the_bcr_32_with_its_maker_model_firmware_confirmations_and_state_label() {
+    let (client, _bodies, _dir) = detect_service(bcr_unlisted);
+    let devices = report_devices(&client, vec![probed("BCR32", None)]);
+    let text = format_detection(&devices, false);
+    assert!(text.contains("Behringer BCR32, firmware 1.0.3, 1 confirmation(s)") && text.contains(BEING_CONFIRMED), "{text}");
+}
+
 #[test]
 fn the_detection_reports_a_catalogue_candidate_the_service_gives_as_being_confirmed_so() {
     let (client, _bodies, _dir) = detect_service(|_| json!({
-        "candidates": [{ "device": "acme/box", "name": "Box", "score": 90 }],
+        "candidates": [{ "id": "acme/box", "slug": "box", "name": "Box", "vendor": "Acme", "source_tier": "official", "score": 90 }],
         "learned": [{ "id": "acme/box", "confirmations": 2, "disputed": false, "state": "confirming", "state_label": BEING_CONFIRMED }] }));
     let devices = report_devices(&client, vec![probed("Box", None)]);
     let c = &devices[0]["candidates"][0];

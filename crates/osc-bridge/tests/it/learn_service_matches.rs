@@ -36,7 +36,9 @@ fn device(r: &Value, at: usize) -> &Value { &r["structuredContent"]["devices"][a
 
 fn count(r: &Value) -> usize { r["structuredContent"]["devices"].as_array().unwrap().len() }
 
-fn candidate(id: &str, name: &str) -> Value { json!({ "device": id, "name": name, "score": 90 }) }
+fn candidate(id: &str, name: &str) -> Value {
+    json!({ "id": id, "slug": id.rsplit('/').next().unwrap_or(id), "name": name, "vendor": "Vendor", "source_tier": "official", "score": 90 })
+}
 
 const UNKNOWN: &str = "Zork Thing 1";
 const KNOWN_LOCALLY: &str = "Acme Box 1";
@@ -211,8 +213,8 @@ fn a_service_that_answers_is_asked_each_device_and_its_candidates_come_back_in_o
 
     let ServiceMatches::Answered(candidates) = got else { panic!("{got:?}") };
     assert_eq!(candidates.len(), 2, "{candidates:?}");
-    assert_eq!(candidates[0][0]["device"], "arturia/minilab3");
-    assert_eq!(candidates[0][1]["device"], "a/other");
+    assert_eq!(candidates[0][0]["id"], "arturia/minilab3");
+    assert_eq!(candidates[0][1]["id"], "a/other");
     assert!(candidates[1].is_empty());
 
     let got = bodies.lock().unwrap().clone();
@@ -352,6 +354,41 @@ fn a_catalogue_device_the_service_gives_as_being_confirmed_is_reported_so() {
     assert_eq!(driver["state"], "confirming", "{r}");
     assert_eq!(driver["state_label"], BEING_CONFIRMED, "{r}");
     assert_eq!(driver["confirmations"], 1, "{r}");
+}
+
+#[test]
+fn a_catalogue_candidate_with_a_vendor_is_the_driver_and_never_a_device_without_a_card() {
+    let r = learn_with(json!({ "candidates": [candidate("polyend/synth", "Synth")], "devices": [] }));
+    assert_eq!(device(&r, 0)["driver"]["id"], "polyend/synth", "{r}");
+    assert_eq!(device(&r, 0)["driver"]["name"], "Synth", "{r}");
+    assert!(device(&r, 0).get("unlisted").is_none() && device(&r, 0).get("next_step").is_none(), "{r}");
+    assert!(!r.to_string().contains("without a card") && !r.to_string().contains('?'), "{r}");
+}
+
+#[test]
+fn the_next_step_names_a_device_without_a_card_only_when_the_service_lists_one_and_no_candidate_exists() {
+    let r = learn_with(json!({ "candidates": [], "unlisted": [unlisted(1, Some("confirming"), Some(BEING_CONFIRMED), false)] }));
+    assert!(device(&r, 0)["next_step"].as_str().unwrap_or_else(|| panic!("{r}")).contains("names this device without a card"), "{r}");
+    let r = learn_with(json!({ "candidates": [], "unlisted": [] }));
+    assert!(!r.to_string().contains("without a card"), "{r}");
+    let r = learn_with(json!({ "candidates": [candidate("polyend/synth", "Synth")],
+        "unlisted": [unlisted(1, Some("confirming"), Some(BEING_CONFIRMED), false)] }));
+    assert!(!r.to_string().contains("without a card"), "{r}");
+}
+
+#[test]
+fn a_device_without_a_card_missing_a_field_is_named_without_it_and_never_with_a_question_mark_or_null() {
+    let r = learn_with(json!({ "candidates": [], "unlisted": [{ "model": "Thing", "firmware": "2" }, { "vendor": "Zork" }] }));
+    let step = device(&r, 0)["next_step"].as_str().unwrap_or_else(|| panic!("{r}"));
+    assert!(step.contains("Thing") && step.contains("Zork"), "{step}");
+    assert!(!step.contains('?') && !step.contains("null"), "{step}");
+}
+
+#[test]
+fn an_entry_of_the_unlisted_list_with_neither_vendor_nor_model_is_not_a_device() {
+    let r = learn_with(json!({ "candidates": [], "unlisted": [{ "firmware": "2", "confirmations": 1 }] }));
+    assert!(device(&r, 0).get("unlisted").is_none(), "{r}");
+    assert!(!device(&r, 0)["next_step"].as_str().unwrap_or_else(|| panic!("{r}")).contains("without a card"), "{r}");
 }
 
 #[test]

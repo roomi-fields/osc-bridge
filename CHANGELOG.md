@@ -11,6 +11,17 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Fixed — a catalogue candidate is shown as a candidate, never as a device without a card
+- The detection answer of SyntHub is read by its lists: each entry of `candidates` is a catalogue
+  candidate (`id`, `slug`, `name`, `vendor`, `source_tier`, `score`), each entry of `unlisted` a
+  device without a card. No entry's kind is guessed from its fields.
+- `osc-bridge detect`, the learn mode and `detect_hardware` show a candidate with its name and its
+  catalogue id (the published `device` field of the report is filled from the service's `id`), and
+  no longer print "unlisted: Arturia ?, firmware ?, null confirmation(s)".
+- A device without a card is shown with the fields the service gave only, never with "?" or "null";
+  an entry with neither vendor nor model is not shown as a device. The learn mode says "names this
+  device without a card" only when `unlisted` names one and there is no candidate.
+
 ### Changed — the detection sends the USB ids and shows a device being confirmed
 - The detection request to SyntHub (`detect`, `detect_hardware`, the learn mode) carries, per port,
   `usb: {vendor_id, product_id}` (numbers) when the ids were read, and no `usb` field otherwise.
