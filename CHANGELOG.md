@@ -11,6 +11,8 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+## [0.24.0] — 2026-11-22
+
 ### Fixed — a software port gets no hardware card from the service either
 - A port whose client is a program (`[User Legacy]` in the list of clients, found by its client
   number and its name, with one final ` (digits)` of the port name ignored) keeps a candidate of
@@ -18,7 +20,7 @@ is tracked explicitly under each release.
   any unlisted one, is not shown, not counted, not proposed. The port is then unknown, with the
   learn mode as its next step. `detect`, the learn mode and `detect_hardware` give the same answer.
 
-### Changed — the ports of one device receive one answer
+### Changed — breaking: the ports of one device receive one answer
 - The `detect` report and `detect_hardware` return one entry per device, not one per port: the
   ports sharing an ALSA client number (else a client name) are one device. The entry lists its
   `ports` (`port`, `out_port`, `in_port`), and the command prints "port N of <client>".
@@ -28,7 +30,7 @@ is tracked explicitly under each release.
 - Replayed on the corpus: the MiniLab 3 (four ports), the Electra One and the BCR-32 (two ports)
   are one device each; two devices of one model stay two.
 
-### Changed — a software port is not a device; the capture file is in format version 2
+### Changed — breaking: a software port is not a device; the capture file is in format version 2
 - The detection reads, on Linux, whether the client of each port is a device of the system
   (`kernel`) or a program (`user`), from `/proc/asound/seq/clients`; where this is not readable
   (Windows, macOS today) the kind is `unknown` and the port is matched as before. Each device of
@@ -39,7 +41,7 @@ is tracked explicitly under each release.
   replay. A version 1 capture is refused with an error naming the version, asking to capture
   again. The captures of the corpus are in version 2.
 
-### Changed — the name alone never designates a device
+### Changed — breaking: the name alone never designates a device
 - A candidate of `detect`, of the learn mode and of `detect_hardware` carries `proofs`, each with a
   nature (strong: identity reply recognised by the card, USB id the card declares; medium: the maker
   of the identity reply; weak: the name), shown as "because: …". `proofs` replaces `recognised_by`,
