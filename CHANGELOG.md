@@ -11,6 +11,8 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+## [0.24.1] — 2026-11-22
+
 ### Fixed
 
 - After a fingerprint is shared, the next step gives `report_mapping` the device as the person declared
@@ -18,6 +20,10 @@ is tracked explicitly under each release.
   the service accepts for a device without a card, instead of the slugged `vendor/model` id. The learn
   report and the `device` description of `report_mapping` say the same, and the private-device guard
   covers a call named so.
+- When the MIDI system cannot be opened (the MIDI library panics when ALSA cannot allocate a queue,
+  a failure the program cannot prevent), the program ends with an error that names the MIDI system and
+  the cause, with a non-zero code, instead of a panic. The opening is guarded in one place, shared by
+  the detection, the learn mode, `export --on` and the MCP tools that take or install.
 
 ### Changed — without consent only the universal Identity Request leaves
 - A maker request no longer leaves without the person's consent, whatever designates the port: a
