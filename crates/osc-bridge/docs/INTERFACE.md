@@ -52,9 +52,13 @@ Three tools link devices of a running orchestrator, reached by its UDP address (
 | `remove_link` | removes the link from `from` to `to`; refused, naming it, when it does not exist | `/bridge/link/remove` |
 | `list_links` | lists the links of the configuration file and those added live, each with source, target, origin (`file` or `live`) and scaling | `/bridge/link/list` |
 
+### One answer per device
+
+The `detect` report and `detect_hardware` (without `learn`) return one element per device: the ports sharing an ALSA client number (else a client name) are one device, as in the learn mode. An element lists `ports`, each `{port, out_port, in_port}` in the order of the system; its `port`, `out_port`, `in_port` and `run_command` (`--out-port`, `--in-port`) are those of the port that gave the strong proof, else the first. The candidates are computed over all the ports by one formula: a strong proof on one port beats the name alone of the others, and a device with a strong proof lists no candidate resting on a name only. The command prints `port N of <client>` for a device of several ports. `detect::group_probed(found)` is the grouping.
+
 ### The proofs of a detection
 
-A candidate of `detect`, of the learn mode and of `detect_hardware` carries `proofs`, a list of `{nature, kind}` (it replaces `recognised_by`, removed), also printed as "because: …". The library publishes `detect::Nature` (`Strong`, `Medium`, `Weak`) and `detect::Proof` (`nature`, `kind`). `score` stays the ranking weight of a candidate; it is no probability.
+A candidate of `detect`, of the learn mode and of `detect_hardware` carries `proofs`, a list of `{nature, kind}` (in `detect` each also names the `port` that gave it) (it replaces `recognised_by`, removed), also printed as "because: …". The library publishes `detect::Nature` (`Strong`, `Medium`, `Weak`) and `detect::Proof` (`nature`, `kind`). `score` stays the ranking weight of a candidate; it is no probability.
 
 | Nature | Kinds | What it allows |
 |---|---|---|

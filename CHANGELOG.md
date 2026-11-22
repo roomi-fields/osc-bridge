@@ -11,6 +11,16 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed — the ports of one device receive one answer
+- The `detect` report and `detect_hardware` return one entry per device, not one per port: the
+  ports sharing an ALSA client number (else a client name) are one device. The entry lists its
+  `ports` (`port`, `out_port`, `in_port`), and the command prints "port N of <client>".
+- The candidates are computed over all the ports by one formula: a strong proof (identity reply,
+  declared USB id) on one port beats the name alone of the others. Each proof names the port that
+  gave it, and `run_command` names that port (`--out-port`, `--in-port`).
+- Replayed on the corpus: the MiniLab 3 (four ports), the Electra One and the BCR-32 (two ports)
+  are one device each; two devices of one model stay two.
+
 ### Changed — a software port is not a device; the capture file is in format version 2
 - The detection reads, on Linux, whether the client of each port is a device of the system
   (`kernel`) or a program (`user`), from `/proc/asound/seq/clients`; where this is not readable

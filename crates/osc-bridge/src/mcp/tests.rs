@@ -1134,3 +1134,20 @@ fn a_device_the_service_names_as_being_confirmed_still_proposes_no_run_command()
     let devices = report_devices(&client, vec![probed("BCR32", None)]);
     assert!(devices[0]["run_command"].is_null(), "{devices:?}");
 }
+
+#[test]
+fn the_command_prints_one_device_with_its_other_ports_as_ports_of_it() {
+    use crate::capture::{Capture, FORMAT_VERSION};
+    let reply = crate::detect::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] }.reply();
+    let ports = ["Box:Box A 20:0", "Box:Box B 20:1"];
+    let capture = Capture::parse(&json!({
+        "format_version": FORMAT_VERSION, "outputs": ports, "inputs": ports, "cards": "", "usbids": [], "clients": "",
+        "requests": [], "received": [{ "port": ports[1], "bytes": reply, "ms": 5 }],
+    }).to_string()).unwrap();
+    let devices = detect_capture(Path::new(FIXTURES), &capture).unwrap();
+    assert_eq!(devices.len(), 1, "{devices:?}");
+    let text = format_detection(&devices, true);
+    assert!(text.contains("port 2 of Box"), "{text}");
+    assert!(!text.contains("port 1 of") && !text.contains("port 3 of"), "{text}");
+    assert_eq!(text.matches("match:").count(), 1, "one answer for the two ports: {text}");
+}

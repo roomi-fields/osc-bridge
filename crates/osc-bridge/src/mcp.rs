@@ -1688,11 +1688,47 @@ pub fn detect_capture_held(devices_dir: &Path, capture: &crate::capture::Capture
     Ok(report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default())
 }
 
+/// The candidates of the ports of one device as one list: a driver named on several ports is one
+/// candidate, scored at its best port, with the proofs of every port (each nature and kind once,
+/// naming the port that gave it); the entry of a port with a strong proof leads, so it beats the
+/// name alone of the others. Best score first.
+fn merge_candidates(found: &[crate::detect::Probed], per_port: Vec<(usize, Vec<Value>)>) -> Vec<Value> {
+    let mut merged: Vec<Value> = Vec::new();
+    for (i, candidates) in per_port {
+        let port = found[i].label();
+        for mut c in candidates {
+            let proofs: Vec<Value> = c["proofs"].as_array().cloned().unwrap_or_default().into_iter()
+                .map(|mut p| { p["port"] = json!(port); p }).collect();
+            c["proofs"] = json!(proofs);
+            let Some(at) = merged.iter().position(|m| m["id"] == c["id"]) else { merged.push(c); continue };
+            let mut base = std::mem::replace(&mut merged[at], Value::Null);
+            let mut all = base["proofs"].as_array().cloned().unwrap_or_default();
+            let score = base["score"].as_u64().max(c["score"].as_u64());
+            for p in c["proofs"].as_array().cloned().unwrap_or_default() {
+                if !all.iter().any(|q| q["nature"] == p["nature"] && q["kind"] == p["kind"]) { all.push(p); }
+            }
+            if has_strong(&c) && !has_strong(&base) { std::mem::swap(&mut base, &mut c); }
+            base["proofs"] = json!(all);
+            base["score"] = json!(score);
+            if has_strong(&base) && base["state"] == "possible" {
+                if let Some(o) = base.as_object_mut() { o.remove("state"); o.remove("state_label"); }
+            }
+            merged[at] = base;
+        }
+    }
+    // A device recognised by a strong proof is not also offered as a guess on a name.
+    if merged.iter().any(has_strong) {
+        merged.retain(has_strong);
+    }
+    merged.sort_by(|a, b| b["score"].as_u64().cmp(&a["score"].as_u64()));
+    merged
+}
+
 /// The report of `detect_hardware` over the devices `found`.
 fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>, by_file: bool, probe: bool,
                     found: Vec<crate::detect::Probed>, faults: Vec<crate::device::DeviceFault>,
                     plan: &[crate::detect::PortSends]) -> Result<Value, String> {
-    let matched: Vec<Vec<Value>> = match server {
+    let mut matched: Vec<Vec<Value>> = match server {
         Some(server) => {
             let ports: Vec<Value> = found.iter().map(|d| detect_port(d.label(),
                 d.replies.iter().map(|r| hex_bytes(r)).collect(), d.usb)).collect();
@@ -1705,19 +1741,35 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>,
             found.iter().map(|d| match_port(&catalogue, d.label(), d.usb, &d.replies).into_iter().map(|mut c| { c["kind"] = json!("candidate"); c }).collect()).collect()
         }
     };
-    let devices: Vec<Value> = found.iter().zip(matched).map(|(d, answer)| {
-        let (mut candidates, mut unlisted): (Vec<Value>, Vec<Value>) = answer.into_iter().partition(|c| c["kind"] == "candidate");
-        // A port of a program is no device: whatever the catalogue or the service answers, it gets none.
-        if d.client_kind == crate::detect::ClientKind::User {
-            candidates.clear();
-            unlisted.clear();
+    // One answer per device: the ports of a device are judged together, a candidate keeping the
+    // proofs of every port, each naming the port that gave it.
+    let devices: Vec<Value> = crate::detect::group_probed(&found).into_iter().map(|group| {
+        let mut per_port: Vec<(usize, Vec<Value>)> = Vec::new();
+        let mut unlisted: Vec<Value> = Vec::new();
+        for &i in &group {
+            let (mut candidates, mut more): (Vec<Value>, Vec<Value>) =
+                std::mem::take(&mut matched[i]).into_iter().partition(|c| c["kind"] == "candidate");
+            // A port of a program is no device: whatever the catalogue or the service answers, it gets none.
+            if found[i].client_kind == crate::detect::ClientKind::User {
+                candidates.clear();
+                more.clear();
+            }
+            for u in more { if !unlisted.contains(&u) { unlisted.push(u); } }
+            per_port.push((i, candidates));
         }
+        let mut candidates = merge_candidates(&found, per_port);
         for c in candidates.iter_mut() {
             c["device"] = c["id"].clone();
             if let Some(e) = c["device"].as_str().and_then(|id| index.find(id)) {
                 c["file"] = json!(e.path.display().to_string());
             }
         }
+        // The port that carries the answer: the one of the first strong proof of the first
+        // candidate, else the first port of the device.
+        let proof_port = candidates.first().and_then(|c| c["proofs"].as_array()
+            .and_then(|ps| ps.iter().find(|p| p["nature"] == "strong").and_then(|p| p["port"].as_str())));
+        let main = proof_port.and_then(|n| group.iter().copied().find(|&i| found[i].label() == n)).unwrap_or(group[0]);
+        let d = &found[main];
         // A run command needs a strong proof, and no other candidate of equal weight holding one.
         let driver = candidates.first().filter(|first| has_strong(first)
             && !candidates[1..].iter().any(|o| has_strong(o) && o["score"] == first["score"]))
@@ -1727,12 +1779,19 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>,
                 d.in_index.map(|n| format!(" --in-port {n}")).unwrap_or_default())),
             _ => None,
         };
+        let identity = d.identity.as_ref().or_else(|| group.iter().find_map(|&i| found[i].identity.as_ref()));
+        let kind = if group.iter().any(|&i| found[i].client_kind == crate::detect::ClientKind::Kernel) {
+            crate::detect::ClientKind::Kernel
+        } else { d.client_kind };
         let mut device = json!({
             "port": d.label(),
             "out_port": d.out_index,
             "in_port": d.in_index,
-            "client_kind": d.client_kind.word(),
-            "identity": d.identity.as_ref().map(|id| json!({
+            "ports": group.iter().map(|&i| json!({
+                "port": found[i].label(), "out_port": found[i].out_index, "in_port": found[i].in_index,
+            })).collect::<Vec<_>>(),
+            "client_kind": kind.word(),
+            "identity": identity.map(|id| json!({
                 "manufacturer_id": id.manufacturer_hex(),
                 "manufacturer": crate::detect::manufacturer_name(&id.manufacturer),
                 "family": id.family,
@@ -1745,10 +1804,15 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>,
         if !unlisted.is_empty() {
             device["unlisted"] = json!(unlisted);
         }
-        if let Some(sends) = d.out_index.and_then(|o| plan.get(o)) {
-            device["held_back"] = json!(sends.held.iter().map(|h| hex_bytes(h)).collect::<Vec<_>>());
+        let mut held: Option<Vec<String>> = None;
+        for sends in group.iter().filter_map(|&i| found[i].out_index.and_then(|o| plan.get(o))) {
+            let h = held.get_or_insert_with(Vec::new);
+            for m in sends.held.iter().map(|m| hex_bytes(m)) { if !h.contains(&m) { h.push(m); } }
         }
-        if let Some((vendor_id, product_id)) = d.usb {
+        if let Some(held) = held {
+            device["held_back"] = json!(held);
+        }
+        if let Some((vendor_id, product_id)) = group.iter().find_map(|&i| found[i].usb) {
             device["usb"] = json!({ "vendor_id": vendor_id, "product_id": product_id });
         }
         device
@@ -2292,6 +2356,13 @@ fn format_detection(devices: &[Value], probe: bool) -> String {
         let _ = writeln!(out, "{}  (out {}, in {})", d["port"].as_str().unwrap_or("?"),
             d["out_port"].as_u64().map(|n| n.to_string()).unwrap_or("-".into()),
             d["in_port"].as_u64().map(|n| n.to_string()).unwrap_or("-".into()));
+        // A device of several ports says which of them this block names.
+        if let Some(ports) = d["ports"].as_array().filter(|p| p.len() > 1) {
+            let name = d["port"].as_str().unwrap_or("?");
+            if let Some(n) = ports.iter().position(|p| p["port"] == d["port"]) {
+                let _ = writeln!(out, "  port {} of {}", n + 1, name.split(':').next().unwrap_or(name));
+            }
+        }
         let id16 = |k: &str| d["usb"][k].as_u64().and_then(|n| u16::try_from(n).ok());
         if let (Some(v), Some(p)) = (id16("vendor_id"), id16("product_id")) {
             let _ = writeln!(out, "  usb: {v:04x}:{p:04x}");

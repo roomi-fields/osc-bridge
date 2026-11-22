@@ -234,8 +234,10 @@ fn check_corpus(dir: &Path, catalogue: &Path) -> Result<usize, Vec<String>> {
             .unwrap_or_else(|e| panic!("{n}.json: {e}"));
         let expected: Value = serde_json::from_str(&std::fs::read_to_string(dir.join(format!("{n}.expected.json"))).unwrap()).unwrap();
         let devices = osc_bridge::mcp::detect_capture(catalogue, &capture).unwrap();
-        for d in &devices {
-            let port = d["port"].as_str().unwrap();
+        // One answer per device: each of its ports is judged on it.
+        for (d, port) in devices.iter().flat_map(|d| {
+            d["ports"].as_array().unwrap_or_else(|| panic!("no ports: {d}")).iter().map(move |p| (d, p["port"].as_str().unwrap()))
+        }) {
             let got = d["candidates"][0]["device"].as_str();
             let Some(truth) = expected.get(port) else {
                 errors.push(format!("{n}.json: port {port}: not in {n}.expected.json"));

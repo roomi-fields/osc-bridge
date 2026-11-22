@@ -851,6 +851,31 @@ pub fn port_words(name: &str) -> String {
     words.join(" ")
 }
 
+/// What groups the ports of one device: the client number, else the squashed client name.
+#[derive(PartialEq)]
+enum ClientKey { Number(u32), Name(String) }
+
+fn client_key(name: &str) -> ClientKey {
+    match client_number(name) {
+        Some(c) => ClientKey::Number(c),
+        None => ClientKey::Name(squash(name.split(':').next().unwrap_or(name))),
+    }
+}
+
+/// The ports of `found` grouped by device (the grouping of `units`), as indexes into `found`,
+/// devices and ports in the order the system gave them.
+pub fn group_probed(found: &[Probed]) -> Vec<Vec<usize>> {
+    let mut groups: Vec<(ClientKey, Vec<usize>)> = Vec::new();
+    for (i, p) in found.iter().enumerate() {
+        let k = client_key(p.label());
+        match groups.iter_mut().find(|(g, _)| *g == k) {
+            Some((_, ix)) => ix.push(i),
+            None => groups.push((k, vec![i])),
+        }
+    }
+    groups.into_iter().map(|(_, ix)| ix).collect()
+}
+
 /// One physical device as its ports show it: all its inputs and outputs (raw names, with their
 /// indexes in the capture) and the USB ids of its card, when it has one.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -873,15 +898,10 @@ impl Unit {
 /// without number groups by its client name (the text before the first `:`, squashed). The card
 /// only gives the USB ids.
 pub fn units(capture: &Capture) -> Vec<Unit> {
-    #[derive(PartialEq)]
-    enum Key { Number(u32), Name(String) }
-    let key = |n: &str| match client_number(n) {
-        Some(c) => Key::Number(c),
-        None => Key::Name(squash(n.split(':').next().unwrap_or(n))),
-    };
+    let key = client_key;
     let ids: Vec<(u32, &str)> = capture.usbids.iter().map(|u| (u.card, u.text.as_str())).collect();
     let cards = usb_cards(&capture.cards, &ids);
-    let mut found: Vec<(Key, Unit)> = Vec::new();
+    let mut found: Vec<(ClientKey, Unit)> = Vec::new();
     let all = capture.outputs.iter().enumerate().map(|(i, n)| (true, i, n))
         .chain(capture.inputs.iter().enumerate().map(|(i, n)| (false, i, n)));
     for (is_out, index, name) in all {
