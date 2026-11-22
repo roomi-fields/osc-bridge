@@ -52,6 +52,18 @@ Three tools link devices of a running orchestrator, reached by its UDP address (
 | `remove_link` | removes the link from `from` to `to`; refused, naming it, when it does not exist | `/bridge/link/remove` |
 | `list_links` | lists the links of the configuration file and those added live, each with source, target, origin (`file` or `live`) and scaling | `/bridge/link/list` |
 
+### The proofs of a detection
+
+A candidate of `detect`, of the learn mode and of `detect_hardware` carries `proofs`, a list of `{nature, kind}` (it replaces `recognised_by`, removed), also printed as "because: …". The library publishes `detect::Nature` (`Strong`, `Medium`, `Weak`) and `detect::Proof` (`nature`, `kind`). `score` stays the ranking weight of a candidate; it is no probability.
+
+| Nature | Kinds | What it allows |
+|---|---|---|
+| strong | `identity reply` (recognised by the card), `usb id` (declared by the card); the service's confirmed fingerprint | the device is "recognised"; a run command is proposed when no rival holds a strong proof too (two rivals: no command, both shown with their proofs) |
+| medium | `maker` (the maker of the identity reply) | the candidate is shown with its proof; no recognition by itself |
+| weak | `name` | at most "possible, to confirm" (`state: "possible"`), no run command, never the answer of a port |
+
+A name made only of common words (synth, control, controller, audio, midi, mini, interface, port, input, output) is no proof. A port with no proof other than the name and no candidate left is "unknown": the next step is the learn mode's. A software port never receives the card of a real device. A device the service names "being confirmed" is printed as the service's answer, "to confirm", with no run command.
+
 ## The OSC addresses
 
 Each device's addresses come from its driver, under its prefix; the uniform addresses (`/identity`, `/program/recall`, `/program/dump`) are the same on every device; `/bridge/status` and `/bridge/docs` describe the bridge itself. An orchestrator also answers, to any client (UDP or WebSocket), `/bridge/link/add <from> <to> [in_lo in_hi out_lo out_hi]` (`/bridge/link/added`, or `/bridge/link/error <text>`), `/bridge/link/remove <from> <to>` (`/bridge/link/removed`, or `/bridge/link/error <text>`) and `/bridge/link/list` (one `/bridge/link/list/item <from> <to> <origin> [scaling]` per link, then `/bridge/link/list/end <count>`). A link follows the output of another link: with a→b and b→c, a message received at a reaches c, once per device address. A chain is followed for four links; a matching fifth link is not followed, and the cut is said by `/bridge/link/error` naming the chain followed. OSCQuery publishes the whole namespace.

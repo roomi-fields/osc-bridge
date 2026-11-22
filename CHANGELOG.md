@@ -11,6 +11,18 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed — the name alone never designates a device
+- A candidate of `detect`, of the learn mode and of `detect_hardware` carries `proofs`, each with a
+  nature (strong: identity reply recognised by the card, USB id the card declares; medium: the maker
+  of the identity reply; weak: the name), shown as "because: …". `proofs` replaces `recognised_by`,
+  removed. `score` is unchanged.
+- A candidate whose only proof is the name is "possible, to confirm": no run command, never the
+  answer of a port. A name made only of common words (synth, control, controller, audio, midi, mini,
+  interface, port, input, output) is no proof, so FLUID Synth or GS Wavetable Synth get no candidate.
+- A port with no proof other than the name and no candidate left is "unknown": the next step is the
+  learn mode. The run command goes only to a candidate with a strong proof and no rival of equal
+  weight. A software port never receives the card of a real device.
+
 ### Fixed — a catalogue candidate is shown as a candidate, never as a device without a card
 - The detection answer of SyntHub is read by its lists: each entry of `candidates` is a catalogue
   candidate (`id`, `slug`, `name`, `vendor`, `source_tier`, `score`), each entry of `unlisted` a

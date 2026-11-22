@@ -275,7 +275,9 @@ fn port_names_and_identities_resolve_to_their_driver() {
     // Its identity block names the firmware, which picks the variant for it.
     assert_eq!(best[0]["id"], "acme/box.vendor.fw-2", "{best:?}");
     assert!(best[0].get("device").is_none() && best[0].get("osc_prefix").is_none(), "the published form of a candidate: {best:?}");
-    assert_eq!((best[0]["firmware"].as_str(), &best[0]["recognised_by"]), (Some("2.0.0.0"), &json!(["identity reply"])));
+    assert_eq!(best[0]["firmware"].as_str(), Some("2.0.0.0"));
+    assert!(best[0]["proofs"].as_array().unwrap().contains(&json!({ "nature": "strong", "kind": "identity reply" })), "{best:?}");
+    assert!(best[0].get("recognised_by").is_none(), "{best:?}");
     let nameless = match_port(&cat, "USB MIDI Interface", None, &[acme.reply()]);
     assert_eq!(nameless[0]["id"],"acme/box.vendor.fw-2", "behind a port named after nothing: {nameless:?}");
     let other_fw = crate::detect::Identity { version: [3, 0, 0, 0], ..acme.clone() };
@@ -788,7 +790,7 @@ fn a_port_with_the_usb_ids_of_a_driver_is_recognised_by_usb() {
         manufacturer_id: vec![], identity: Some(identity), firmware: None, midi_of: None }];
     let best = match_port(&cat, "USB MIDI Interface", Some((4660, 22136)), &[]);
     assert_eq!(best[0]["id"], "acme/box", "{best:?}");
-    assert!(best[0]["recognised_by"].as_array().unwrap().contains(&json!("usb")), "{best:?}");
+    assert!(best[0]["proofs"].as_array().unwrap().contains(&json!({ "nature": "strong", "kind": "usb id" })), "{best:?}");
     assert!(match_port(&cat, "USB MIDI Interface", None, &[]).is_empty());
     assert!(match_port(&cat, "USB MIDI Interface", Some((1, 2)), &[]).is_empty());
 }
@@ -1074,4 +1076,59 @@ fn the_command_prints_nothing_being_confirmed_for_a_device_without_it() {
     let devices = [json!({ "port": "Box", "out_port": 0, "in_port": 0, "candidates": [] })];
     let text = format_detection(&devices, false);
     assert!(!text.contains("confirm"), "{text}");
+}
+
+#[test]
+fn the_command_says_the_proofs_of_a_candidate_after_because_each_with_its_nature() {
+    let devices = [json!({ "port": "Box", "out_port": 0, "in_port": 0, "candidates": [{
+        "device": "acme/box", "file": "acme/box.json", "source_tier": "official", "score": 150,
+        "proofs": [{ "nature": "strong", "kind": "identity reply" }, { "nature": "weak", "kind": "name" }] }] })];
+    let text = format_detection(&devices, false);
+    assert!(text.contains("because: identity reply (strong), name (weak)"), "{text}");
+}
+
+#[test]
+fn the_command_prints_a_candidate_of_a_name_alone_as_possible_to_confirm_with_no_run_command() {
+    let devices = [json!({ "port": "Osmose", "out_port": 0, "in_port": 0, "run_command": null, "candidates": [{
+        "device": "acme/osmose", "file": "acme/osmose.json", "source_tier": "official", "score": 38,
+        "state": "possible", "state_label": "possible, to confirm",
+        "proofs": [{ "nature": "weak", "kind": "name" }] }] })];
+    let text = format_detection(&devices, false);
+    assert!(text.contains("possible, to confirm") && text.contains("because: name (weak)"), "{text}");
+    assert!(!text.contains("run:"), "{text}");
+}
+
+#[test]
+fn the_command_prints_a_port_with_no_candidate_and_nothing_named_as_unknown_and_points_to_the_learn_mode() {
+    // No word "confirm" in it: nothing is being confirmed for such a port.
+    let devices = [json!({ "port": "Zork", "out_port": 0, "in_port": 0, "candidates": [] })];
+    let text = format_detection(&devices, false);
+    assert!(text.contains("unknown") && text.contains("--learn"), "{text}");
+}
+
+#[test]
+fn a_name_alone_never_proposes_a_run_command_in_the_detection_of_a_port() {
+    let r = detection_report(&fixtures(), None, true, true, vec![probed("minilogue MIDI 1", None)], Vec::new(), &[]).unwrap();
+    let d = &r["structuredContent"]["devices"][0];
+    assert_eq!(d["candidates"][0]["device"], "korg/minilogue", "{r}");
+    assert_eq!(d["candidates"][0]["state_label"], "possible, to confirm", "{r}");
+    assert!(d["run_command"].is_null(), "{r}");
+}
+
+#[test]
+fn an_identity_reply_the_card_recognises_proposes_the_run_command_in_the_detection_of_a_port() {
+    let acme = crate::detect::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
+    let mut port = probed("Box", None);
+    port.replies = vec![acme.reply()];
+    let r = detection_report(&fixtures(), None, true, true, vec![port], Vec::new(), &[]).unwrap();
+    let d = &r["structuredContent"]["devices"][0];
+    assert!(d["run_command"].as_str().unwrap().contains("acme/box"), "{r}");
+    assert!(format_detection(std::slice::from_ref(d), true).contains("because: identity reply (strong)"), "{r}");
+}
+
+#[test]
+fn a_device_the_service_names_as_being_confirmed_still_proposes_no_run_command() {
+    let (client, _bodies, _dir) = detect_service(bcr_unlisted);
+    let devices = report_devices(&client, vec![probed("BCR32", None)]);
+    assert!(devices[0]["run_command"].is_null(), "{devices:?}");
 }

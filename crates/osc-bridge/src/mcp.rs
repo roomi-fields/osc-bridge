@@ -908,7 +908,7 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "detect_hardware",
-                "description": "Find the MIDI devices plugged into this computer and match them to catalogue drivers. Lists MIDI ports and sends each port the standard MIDI Identity Request (universal, read-only by the norm), then only the maker requests of the maker its USB id names (or, with no USB id read, of the drivers whose identity names its port name). A maker request may be a load for another maker's device, so every other one is held back, port by port: for a device nobody recognised only the universal request goes out, and each device lists held_back, the requests not sent. Consent adds them: pass consent_ports, the ports that may receive every maker request; the person must have been asked and agreed for that port (never pass it on your own). Reads each device's manufacturer, model and firmware. Reads the USB ids (vendor_id, product_id) of each USB device's card (Linux; absent for a virtual or DIN port). A driver whose identity block recognises the reply, the USB ids (usb) or the port name comes first, the variant for the firmware read from it above the others; of drivers matching equally, the one the others share their MIDI with comes first, and each lists the others in equally_matching. Returns, per device, the best matching drivers (with recognised_by and firmware when recognised) and a ready-to-run 'osc-bridge run' command with the right port numbers.",
+                "description": "Find the MIDI devices plugged into this computer and match them to catalogue drivers. Lists MIDI ports and sends each port the standard MIDI Identity Request (universal, read-only by the norm), then only the maker requests of the maker its USB id names (or, with no USB id read, of the drivers whose identity names its port name). A maker request may be a load for another maker's device, so every other one is held back, port by port: for a device nobody recognised only the universal request goes out, and each device lists held_back, the requests not sent. Consent adds them: pass consent_ports, the ports that may receive every maker request; the person must have been asked and agreed for that port (never pass it on your own). Reads each device's manufacturer, model and firmware. Reads the USB ids (vendor_id, product_id) of each USB device's card (Linux; absent for a virtual or DIN port). A driver whose identity block recognises the reply, the USB ids (usb) or the port name comes first, the variant for the firmware read from it above the others; of drivers matching equally, the one the others share their MIDI with comes first, and each lists the others in equally_matching. Returns, per device, the best matching drivers, each with its proofs (each proof has a nature, strong, medium or weak, and a kind: identity reply, usb id, maker, name) and its firmware when recognised. A candidate whose only proof is the name is 'possible, to confirm' and gets no command; a port with no other proof is 'unknown' and the learn mode takes over. A ready-to-run 'osc-bridge run' command with the right port numbers is given only for a candidate with a strong proof and no rival of equal weight.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -1607,6 +1607,19 @@ pub fn hex_bytes(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ")
 }
 
+/// What a candidate resting on a name alone is called.
+const POSSIBLE_LABEL: &str = "possible, to confirm";
+
+/// The proofs of a candidate as published: `{nature, kind}` each.
+fn proofs_json(proofs: &[crate::detect::Proof]) -> Value {
+    json!(proofs.iter().map(|p| json!({ "nature": p.nature.as_str(), "kind": p.kind })).collect::<Vec<_>>())
+}
+
+/// Whether a published candidate holds a strong proof.
+fn has_strong(c: &Value) -> bool {
+    c["proofs"].as_array().is_some_and(|ps| ps.iter().any(|p| p["nature"] == "strong"))
+}
+
 /// The drivers of `catalogue` (`hardware_candidates`) that best match a MIDI
 /// port, by its name and the SysEx the device sent back while detected
 /// (`detect::rank`), best first: id, slug, name, vendor, source tier,
@@ -1618,12 +1631,12 @@ pub fn match_port(catalogue: &[crate::detect::Candidate], port: &str, usb: Optio
     crate::detect::rank(port, usb, replies, catalogue, 3).iter().map(|r| {
         let c = &catalogue[r.index];
         let mut out = json!({ "id": c.id, "slug": c.slug, "name": c.name, "vendor": c.vendor, "source_tier": c.tier, "score": r.score });
-        if let Some(rec) = &r.recognised {
-            let by: Vec<&str> = [(rec.by_reply, "identity reply"), (rec.by_port, "port name"), (rec.by_usb, "usb")].iter()
-                .filter(|(on, _)| *on).map(|(_, what)| *what).collect();
-            out["recognised_by"] = json!(by);
-            if let Some(fw) = &rec.firmware { out["firmware"] = json!(fw); }
+        out["proofs"] = proofs_json(&r.proofs);
+        if !r.is_strong() {
+            out["state"] = json!("possible");
+            out["state_label"] = json!(POSSIBLE_LABEL);
         }
+        if let Some(fw) = r.recognised.as_ref().and_then(|rec| rec.firmware.as_ref()) { out["firmware"] = json!(fw); }
         if !r.equally.is_empty() {
             out["equally_matching"] = json!(r.equally.iter().map(|&i| &catalogue[i].id).collect::<Vec<_>>());
         }
@@ -1700,7 +1713,10 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>,
                 c["file"] = json!(e.path.display().to_string());
             }
         }
-        let driver = candidates.first().and_then(|c| if by_file { c["file"].as_str() } else { c["device"].as_str() });
+        // A run command needs a strong proof, and no other candidate of equal weight holding one.
+        let driver = candidates.first().filter(|first| has_strong(first)
+            && !candidates[1..].iter().any(|o| has_strong(o) && o["score"] == first["score"]))
+            .and_then(|c| if by_file { c["file"].as_str() } else { c["device"].as_str() });
         let run_command = match (driver, d.out_index) {
             (Some(driver), Some(out)) => Some(format!("osc-bridge run --device {driver} --out-port {out}{}",
                 d.in_index.map(|n| format!(" --in-port {n}")).unwrap_or_default())),
@@ -1922,8 +1938,10 @@ pub fn learn_report(learned: &[(crate::detect::Unit, crate::detect::Learned)], c
         let replies: Vec<Vec<u8>> = l.fingerprint["identity_reply"].as_str().map(|h| {
             h.split_whitespace().filter_map(|b| u8::from_str_radix(b, 16).ok()).collect()
         }).into_iter().collect();
+        // Only a strong proof names a driver; a name alone leaves the device unknown.
         let local = d.inputs.iter().chain(&d.outputs)
-            .find_map(|p| crate::detect::rank(p, d.usb, &replies, &candidates, 1).first().map(|r| &candidates[r.index]));
+            .find_map(|p| crate::detect::rank(p, d.usb, &replies, &candidates, 1).into_iter().find(|r| r.is_strong()))
+            .map(|r| (&candidates[r.index], proofs_json(&r.proofs)));
         let named: &[Value] = match service {
             ServiceMatches::Answered(all) => all.get(at).map(Vec::as_slice).unwrap_or_default(),
             _ => &[],
@@ -1939,8 +1957,8 @@ pub fn learn_report(learned: &[(crate::detect::Unit, crate::detect::Learned)], c
         let unlisted: Vec<Value> = if remote.is_none() { named.iter().filter(|u| u["kind"] == "unlisted").cloned().collect() } else { Vec::new() };
         // The local driver is the one its slug resolves to (the most trustworthy file of the
         // device), not a firmware variant that only ranked higher by recognising the port.
-        let local = local.map(|c| catalogue.find(&c.slug).map(|e| json!({ "id": e.id, "name": e.name }))
-            .unwrap_or_else(|| json!({ "id": c.id, "name": c.name })));
+        let local = local.map(|(c, proofs)| catalogue.find(&c.slug).map(|e| json!({ "id": e.id, "name": e.name, "proofs": proofs }))
+            .unwrap_or_else(|| json!({ "id": c.id, "name": c.name, "proofs": proofs })));
         let driver = remote.or(local);
         let mut out = json!({
             "port": d.label(),
@@ -2292,6 +2310,14 @@ fn format_detection(devices: &[Value], probe: bool) -> String {
             let name = c["name"].as_str().map(|n| format!("{n} — ")).unwrap_or_default();
             let _ = writeln!(out, "  match: {name}{id} — {} ({}, score {}{fw}){state}",
                 c["file"].as_str().unwrap_or(id), c["source_tier"].as_str().unwrap_or(""), c["score"]);
+            let because: Vec<String> = c["proofs"].as_array().into_iter().flatten()
+                .map(|p| format!("{} ({})", p["kind"].as_str().unwrap_or("?"), p["nature"].as_str().unwrap_or("?"))).collect();
+            if !because.is_empty() {
+                let _ = writeln!(out, "    because: {}", because.join(", "));
+            }
+        }
+        if d["candidates"].as_array().is_none_or(|c| c.is_empty()) && d["unlisted"].as_array().is_none_or(|u| u.is_empty()) {
+            out.push_str("  unknown: nothing proves which device it is; `osc-bridge detect --learn` learns it\n");
         }
         for u in d["unlisted"].as_array().into_iter().flatten() {
             let said = u["state_label"].as_str().map(str::to_string)

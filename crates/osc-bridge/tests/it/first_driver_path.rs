@@ -162,6 +162,12 @@ fn the_next_step_of_an_unknown_device_names_the_three_things_the_sharing_needs()
 
 const REPLY_WITH_VERSION: &str = "F0 7E 00 06 02 00 20 6B 04 00 02 00 01 00 02 03 F7";
 
+fn learned_with_reply(port: &str, reply: &str) -> Learned {
+    let mut l = learned(port);
+    l.fingerprint["identity_reply"] = json!(reply);
+    l
+}
+
 fn report_with_reply(port: &str, reply: Option<&str>) -> Value {
     let mut l = learned(port);
     if let Some(r) = reply { l.fingerprint["identity_reply"] = json!(r); }
@@ -208,16 +214,23 @@ fn the_text_of_the_report_carries_the_next_step_of_each_unrecognised_device() {
     }
 }
 
+/// The identity reply of the Acme Box card: Acme's id, the family and member the card declares.
+const ACME_BOX_REPLY: &str = "F0 7E 00 06 02 00 21 09 01 00 01 00 00 00 00 00 F7";
+
 #[test]
-fn a_device_whose_driver_matches_carries_no_next_step() {
-    let r = report(&["Acme Box 1"]);
+fn a_device_whose_driver_matches_by_a_strong_proof_carries_no_next_step() {
+    let r = report_with_reply("Acme Box 1", Some(ACME_BOX_REPLY));
+    assert!(device_of(&r, 0).get("driver").is_some(), "{r}");
     assert!(device_of(&r, 0).get("next_step").is_none(), "{r}");
     assert!(!r["content"][0]["text"].as_str().unwrap().contains("next_step"), "{r}");
 }
 
 #[test]
 fn a_recognised_and_an_unrecognised_device_side_by_side_only_the_second_has_a_next_step() {
-    let r = report(&["Acme Box 1", "Zork Thing 1"]);
+    let known = learned_with_reply("Acme Box 1", ACME_BOX_REPLY);
+    let other = learned("Zork Thing 1");
+    let r = osc_bridge::mcp::learn_report(&[(unit("Acme Box 1"), known), (unit("Zork Thing 1"), other)],
+        &catalogue(), Duration::from_millis(5000), &osc_bridge::mcp::ServiceMatches::NotLinked);
     assert!(device_of(&r, 0).get("next_step").is_none(), "{r}");
     assert!(device_of(&r, 1).get("next_step").is_some(), "{r}");
 }

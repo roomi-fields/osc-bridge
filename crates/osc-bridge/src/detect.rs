@@ -458,16 +458,51 @@ fn squash(s: &str) -> String {
     s.to_lowercase().chars().filter(|c| c.is_ascii_alphanumeric()).collect()
 }
 
+/// Words too common to name a device: with the `NOISE` words, a name made only of them is no proof.
+const COMMON: &[&str] = &["synth", "control", "controller", "mini"];
+
+/// Like `tokens`, without the common words.
+fn name_tokens(s: &str) -> HashSet<String> {
+    tokens(s).into_iter().filter(|t| !COMMON.contains(&t.as_str())).collect()
+}
+
+/// What a proof is worth: a strong proof recognises the device, a medium one points at its
+/// maker, a weak one (the name) only suggests it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Nature { Strong, Medium, Weak }
+
+impl Nature {
+    pub fn as_str(self) -> &'static str {
+        match self { Nature::Strong => "strong", Nature::Medium => "medium", Nature::Weak => "weak" }
+    }
+}
+
+/// One proof that a candidate is the device of a port: its nature and what it is
+/// (`identity reply`, `usb id`, `maker`, `name`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Proof {
+    pub nature: Nature,
+    pub kind: &'static str,
+}
+
 /// A candidate driver for a port: its score, its place in the catalogue,
-/// and what recognised it.
+/// what recognised it and the proofs it rests on.
 #[derive(Debug, Clone)]
 pub struct Ranked {
     pub score: u32,
     pub index: usize,
     pub recognised: Option<Recognised>,
+    pub proofs: Vec<Proof>,
     /// The other recognised candidates with the same score (indexes in the
     /// catalogue), which the device's replies match as well.
     pub equally: Vec<usize>,
+}
+
+impl Ranked {
+    /// Whether one of its proofs is strong.
+    pub fn is_strong(&self) -> bool {
+        self.proofs.iter().any(|p| p.nature == Nature::Strong)
+    }
 }
 
 /// Score every candidate against a port name and the SysEx the device sent
@@ -478,41 +513,55 @@ pub struct Ranked {
 /// above the others; drivers matching neither the name nor the identity are
 /// dropped.
 pub fn rank(port_name: &str, usb: Option<(u16, u16)>, replies: &[Vec<u8>], catalogue: &[Candidate], limit: usize) -> Vec<Ranked> {
-    let port_tokens = tokens(port_name);
+    let port_tokens = name_tokens(port_name);
     let port_squashed = squash(port_name);
     let identity = replies.iter().find_map(|r| parse_identity_reply(r));
     let id_vendor = identity.as_ref().and_then(|i| manufacturer_name(&i.manufacturer)).map(squash);
     let mut scored: Vec<Ranked> = catalogue.iter().enumerate().filter_map(|(i, c)| {
         let mut score = 0u32;
-        let name_tokens = tokens(&c.name);
-        score += 10 * name_tokens.intersection(&port_tokens).count() as u32;
+        let card_tokens = name_tokens(&c.name);
+        score += 10 * card_tokens.intersection(&port_tokens).count() as u32;
         // The model name, with or without the vendor in front ("Arturia
-        // MiniLab 3" vs port "Minilab3 MIDI"), or the driver slug.
+        // MiniLab 3" vs port "Minilab3 MIDI"), or the driver slug. A key made only of
+        // common words names nothing.
         let vendor_sq = squash(&c.vendor);
         let full = squash(&c.name);
         let model = full.strip_prefix(vendor_sq.as_str()).filter(|m| !m.is_empty()).unwrap_or(&full).to_string();
         let slug = squash(&c.slug);
+        let name_names = !card_tokens.is_empty();
+        let slug_names = !name_tokens(&c.slug).is_empty();
         // A longer match is a more specific one: "minilab3" beats "mini".
-        if let Some(len) = [full, model, slug].iter()
-            .filter(|k| k.len() >= 3 && port_squashed.contains(k.as_str()))
-            .map(String::len).max()
+        if let Some(len) = [(full, name_names), (model, name_names), (slug, slug_names)].iter()
+            .filter(|(k, names)| *names && k.len() >= 3 && port_squashed.contains(k.as_str()))
+            .map(|(k, _)| k.len()).max()
         {
             score += 10 + 3 * len as u32;
         }
+        let by_name = score > 0;
         let recognised = c.identity.as_ref().and_then(|id| recognise(id, port_name, usb, replies));
-        if score == 0 && recognised.is_none() {
+        if !by_name && recognised.is_none() {
             return None;
         }
         let vendor = vendor_sq;
         if !vendor.is_empty() && port_squashed.contains(&vendor) {
             score += 5;
         }
+        let mut proofs = Vec::new();
+        if let Some(r) = &recognised {
+            if r.by_reply { proofs.push(Proof { nature: Nature::Strong, kind: "identity reply" }); }
+            if r.by_usb { proofs.push(Proof { nature: Nature::Strong, kind: "usb id" }); }
+        }
         if let Some(id) = &identity {
             if !c.manufacturer_id.is_empty() && c.manufacturer_id.starts_with(&id.manufacturer) {
                 score += 40;
+                proofs.push(Proof { nature: Nature::Medium, kind: "maker" });
             } else if id_vendor.as_deref().is_some_and(|v| vendor.contains(v) || v.contains(&vendor)) {
                 score += 20;
+                proofs.push(Proof { nature: Nature::Medium, kind: "maker" });
             }
+        }
+        if by_name || recognised.as_ref().is_some_and(|r| r.by_port) {
+            proofs.push(Proof { nature: Nature::Weak, kind: "name" });
         }
         if let Some(r) = &recognised {
             if r.by_reply { score += 100; }
@@ -525,7 +574,7 @@ pub fn rank(port_name: &str, usb: Option<(u16, u16)>, replies: &[Vec<u8>], catal
                 _ => {}
             }
         }
-        Some(Ranked { score, index: i, recognised, equally: vec![] })
+        Some(Ranked { score, index: i, recognised, proofs, equally: vec![] })
     }).collect();
     // Equal scores: the driver the others share their MIDI with first (they
     // are built on it), then the most trustworthy source, as a slug resolves.

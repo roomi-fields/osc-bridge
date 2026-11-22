@@ -118,15 +118,11 @@ fn the_service_driver_wins_over_the_local_one_when_both_recognise_the_device() {
 // ---- the local catalogue names a driver ----
 
 #[test]
-fn a_device_the_local_catalogue_recognises_carries_its_local_driver_linked_or_not() {
-    let index = catalogue();
-    // The port name also matches the vendor-doc variant, which the local ranking puts first
-    // (the same choice `detect_hardware` makes).
-    let entry = index.find("acme/box.vendor.fw-2").expect("fixture driver acme/box.vendor.fw-2");
+fn a_device_the_local_catalogue_names_only_by_its_port_name_is_unknown_and_the_learn_mode_goes_on() {
     for service in [ServiceMatches::NotLinked, ServiceMatches::Unreachable, ServiceMatches::Answered(vec![vec![]])] {
         let r = report(&[KNOWN_LOCALLY], &service);
-        assert_eq!(device(&r, 0)["driver"], json!({ "id": entry.id, "name": entry.name }), "{r}");
-        assert!(device(&r, 0).get("next_step").is_none(), "{r}");
+        assert!(device(&r, 0).get("driver").is_none(), "{r}");
+        assert!(device(&r, 0)["next_step"].as_str().is_some(), "{r}");
     }
 }
 

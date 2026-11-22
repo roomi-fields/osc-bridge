@@ -10,6 +10,7 @@ mod custom_commands;
 mod detect_consent;
 mod detect_probes_wire;
 mod detection_capture;
+mod detection_proofs;
 mod fingerprint_sharing;
 mod first_driver_path;
 mod driver_download;
