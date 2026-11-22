@@ -16,7 +16,6 @@
 //! forward reaching the synth's target proves every message sent before it has
 //! been handled, so an absence is judged without guessing a delay.
 
-use osc_bridge::orchestrator::Orchestrator;
 use rosc::{OscMessage, OscPacket, OscType};
 use std::net::{SocketAddr, TcpListener, TcpStream, UdpSocket};
 use std::time::{Duration, Instant};
@@ -28,11 +27,7 @@ const DEADLINE: Duration = Duration::from_secs(10);
 struct Rig {
     orch: SocketAddr,
     synth_target: UdpSocket,
-    _dir: tempfile::TempDir,
-}
-
-fn free_udp() -> u16 {
-    UdpSocket::bind("127.0.0.1:0").unwrap().local_addr().unwrap().port()
+    _started: crate::common::orchestrator_rig::Started,
 }
 
 fn free_tcp() -> u16 {
@@ -65,19 +60,14 @@ fn start_with(extra_routes: &str, ws_port: Option<u16>, synth_sourced: bool) -> 
     let synth_port = synth_target.local_addr().unwrap().port();
     let ctl_target = UdpSocket::bind("127.0.0.1:0").unwrap();
     let ctl_port = ctl_target.local_addr().unwrap().port();
-    let orch_port = free_udp();
-    let dir = crate::common::temp("live-links");
-    let synth = dir.path().join("synth.json");
-    let ctl = dir.path().join("ctl.json");
-    std::fs::write(&synth, device_json("/synth", synth_port,
-        &["vol", "sentinel", "cutoff", "a", "b", "c", "d", "e", "f"], synth_sourced)).unwrap();
-    std::fs::write(&ctl, device_json("/ctl", ctl_port, &["knob", "sentinel", "wheel"], true)).unwrap();
-    let ws_line = ws_port.map(|p| format!("ws_bind = \"127.0.0.1:{p}\"\n")).unwrap_or_default();
-    let toml = dir.path().join("bridge.toml");
-    std::fs::write(&toml, format!(r#"
-[osc]
-bind = "127.0.0.1:{orch_port}"
-{ws_line}
+    let started = crate::common::orchestrator_rig::start_orchestrator("live-links", |_osc_port, dir| {
+        let synth = dir.join("synth.json");
+        let ctl = dir.join("ctl.json");
+        std::fs::write(&synth, device_json("/synth", synth_port,
+            &["vol", "sentinel", "cutoff", "a", "b", "c", "d", "e", "f"], synth_sourced)).unwrap();
+        std::fs::write(&ctl, device_json("/ctl", ctl_port, &["knob", "sentinel", "wheel"], true)).unwrap();
+        let ws_line = ws_port.map(|p| format!("ws_bind = \"127.0.0.1:{p}\"")).unwrap_or_default();
+        (ws_line, format!(r#"
 [[devices]]
 spec = "{}"
 
@@ -92,27 +82,11 @@ to = "/synth/vol"
 from = "/ctl/sentinel"
 to = "/synth/sentinel"
 {extra_routes}
-"#, ctl.display().to_string().replace('\\', "\\\\"), synth.display().to_string().replace('\\', "\\\\"))).unwrap();
-    let t = toml.clone();
-    std::thread::spawn(move || { let _ = Orchestrator::run(&t); });
+"#, ctl.display().to_string().replace('\\', "\\\\"), synth.display().to_string().replace('\\', "\\\\")))
+    });
     // Keep the ctl target alive for the test's length without reading it.
     std::mem::forget(ctl_target);
-    let rig = Rig { orch: format!("127.0.0.1:{orch_port}").parse().unwrap(), synth_target, _dir: dir };
-    wait_ready(&rig);
-    rig
-}
-
-fn wait_ready(rig: &Rig) {
-    let client = UdpSocket::bind("127.0.0.1:0").unwrap();
-    client.set_read_timeout(Some(Duration::from_millis(100))).unwrap();
-    let bytes = encode("/bridge/status", vec![]);
-    let end = Instant::now() + DEADLINE;
-    let mut buf = [0u8; 65536];
-    while Instant::now() < end {
-        client.send_to(&bytes, rig.orch).unwrap();
-        if client.recv_from(&mut buf).is_ok() { return; }
-    }
-    panic!("orchestrator never answered /bridge/status");
+    Rig { orch: started.orch, synth_target, _started: started }
 }
 
 fn encode(addr: &str, args: Vec<OscType>) -> Vec<u8> {

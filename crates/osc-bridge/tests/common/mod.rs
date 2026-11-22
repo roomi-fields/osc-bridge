@@ -10,6 +10,8 @@
 
 #![allow(dead_code)]
 
+pub mod orchestrator_rig;
+
 use serde_json::Value;
 use std::path::Path;
 

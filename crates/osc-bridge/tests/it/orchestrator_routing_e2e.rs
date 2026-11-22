@@ -13,35 +13,19 @@
 //!
 //! Asserts the fake target receives `/fx/cutoff 0.63` (80/127 ≈ 0.6299).
 
-use osc_bridge::orchestrator::Orchestrator;
 use rosc::{OscMessage, OscPacket, OscType};
 use std::net::{SocketAddr, UdpSocket};
 use std::time::Duration;
 
-fn pick_free_port() -> u16 {
-    UdpSocket::bind("127.0.0.1:0").unwrap().local_addr().unwrap().port()
-}
-
-fn unique_tmp_dir(tag: &str) -> tempfile::TempDir {
-    tempfile::Builder::new().prefix(&format!("osc-bridge-test-{tag}-")).tempdir().unwrap()
-}
-
-/// Sends `msg` to the orchestrator until the forward reaches `target`: the
-/// orchestrator is ready when it answers, so no fixed pause guesses its start.
-/// The deadline weighs only on a failure.
-fn send_until_forwarded(target: &UdpSocket, orch: SocketAddr, msg: &OscPacket) -> Vec<u8> {
+/// Sends `msg` to the started orchestrator, which the rig has judged ready,
+/// and reads the forward that reaches `target`. The timeout weighs only on a failure.
+fn send_and_read_forward(target: &UdpSocket, orch: SocketAddr, msg: &OscPacket) -> Vec<u8> {
     let client = UdpSocket::bind("127.0.0.1:0").unwrap();
-    let bytes = rosc::encoder::encode(msg).unwrap();
-    target.set_read_timeout(Some(Duration::from_millis(100))).unwrap();
-    let end = std::time::Instant::now() + Duration::from_secs(10);
+    client.send_to(&rosc::encoder::encode(msg).unwrap(), orch).unwrap();
+    target.set_read_timeout(Some(Duration::from_secs(10))).unwrap();
     let mut buf = [0u8; 65536];
-    while std::time::Instant::now() < end {
-        client.send_to(&bytes, orch).unwrap();
-        if let Ok((n, _)) = target.recv_from(&mut buf) {
-            return buf[..n].to_vec();
-        }
-    }
-    panic!("routed forward should arrive");
+    let (n, _) = target.recv_from(&mut buf).expect("routed forward should arrive");
+    buf[..n].to_vec()
 }
 
 #[test]
@@ -51,33 +35,25 @@ fn inter_device_route_remaps_and_forwards() {
     fake_synth.set_read_timeout(Some(Duration::from_secs(2))).unwrap();
     let synth_port = fake_synth.local_addr().unwrap().port();
 
-    let orch_bind_port = pick_free_port();
-
-    // Temp device JSON: a /synth OSC device whose /cutoff command forwards
-    // to /fx/cutoff on the fake target.
-    let dir = unique_tmp_dir("routing");
-    let synth_json = dir.path().join("synth.json");
-    std::fs::write(&synth_json, format!(r#"{{
-        "device": {{
-            "name": "Test Synth", "vendor": "Test",
-            "osc_prefix": "/synth", "kind": "software",
-            "transport": {{ "kind": "osc", "host": "127.0.0.1", "port": {synth_port} }}
-        }},
-        "commands": [
-            {{
-                "osc": "/cutoff",
-                "args": [{{ "name": "v", "type": "float" }}],
-                "forward": {{ "path": "/fx/cutoff", "args": ["{{v}}"] }}
-            }}
-        ]
-    }}"#)).unwrap();
-
-    // Temp bridge.toml: the /synth device + a route from /ctrl/knob/1.
-    let bridge_toml = dir.path().join("bridge.toml");
-    std::fs::write(&bridge_toml, format!(r#"
-[osc]
-bind = "127.0.0.1:{orch_bind_port}"
-
+    // A /synth OSC device whose /cutoff command forwards to /fx/cutoff on the
+    // fake target, and a route from /ctrl/knob/1, started by the shared rig.
+    let started = crate::common::orchestrator_rig::start_orchestrator("routing", |_port, dir| {
+        let synth_json = dir.join("synth.json");
+        std::fs::write(&synth_json, format!(r#"{{
+            "device": {{
+                "name": "Test Synth", "vendor": "Test",
+                "osc_prefix": "/synth", "kind": "software",
+                "transport": {{ "kind": "osc", "host": "127.0.0.1", "port": {synth_port} }}
+            }},
+            "commands": [
+                {{
+                    "osc": "/cutoff",
+                    "args": [{{ "name": "v", "type": "float" }}],
+                    "forward": {{ "path": "/fx/cutoff", "args": ["{{v}}"] }}
+                }}
+            ]
+        }}"#)).unwrap();
+        (String::new(), format!(r#"
 [[devices]]
 spec = "{}"
 
@@ -86,15 +62,12 @@ from = "/ctrl/knob/1"
 to = "/synth/cutoff"
 map.from = [0, 127]
 map.to = [0, 1]
-"#, synth_json.display().to_string().replace('\\', "\\\\"))).unwrap();
-
-    // Spawn the orchestrator.
-    let toml_path = bridge_toml.clone();
-    std::thread::spawn(move || { let _ = Orchestrator::run(&toml_path); });
+"#, synth_json.display().to_string().replace('\\', "\\\\")))
+    });
 
     // Send /ctrl/knob/1 80 to the orchestrator. There is no device owning
     // /ctrl — the message exists purely as a route source.
-    let orch_addr: SocketAddr = format!("127.0.0.1:{orch_bind_port}").parse().unwrap();
+    let orch_addr: SocketAddr = started.orch;
     let msg = OscPacket::Message(OscMessage {
         addr: "/ctrl/knob/1".into(),
         args: vec![OscType::Int(80)],
@@ -102,7 +75,7 @@ map.to = [0, 1]
 
     // The route should remap 80 (of 0..127) to ~0.63, dispatch into /synth,
     // whose /cutoff command forwards /fx/cutoff <v> to the fake target.
-    let bytes = send_until_forwarded(&fake_synth, orch_addr, &msg);
+    let bytes = send_and_read_forward(&fake_synth, orch_addr, &msg);
     let (_, pkt) = rosc::decoder::decode_udp(&bytes).unwrap();
     match pkt {
         OscPacket::Message(m) => {
@@ -126,49 +99,40 @@ fn route_without_map_passes_args_through() {
     let fake_synth = UdpSocket::bind("127.0.0.1:0").unwrap();
     fake_synth.set_read_timeout(Some(Duration::from_secs(2))).unwrap();
     let synth_port = fake_synth.local_addr().unwrap().port();
-    let orch_bind_port = pick_free_port();
-
-    let dir = unique_tmp_dir("routing-nomap");
-    let synth_json = dir.path().join("synth.json");
-    std::fs::write(&synth_json, format!(r#"{{
-        "device": {{
-            "name": "Test Synth", "vendor": "Test",
-            "osc_prefix": "/synth", "kind": "software",
-            "transport": {{ "kind": "osc", "host": "127.0.0.1", "port": {synth_port} }}
-        }},
-        "commands": [
-            {{
-                "osc": "/gate",
-                "args": [{{ "name": "on", "type": "int" }}],
-                "forward": {{ "path": "/fx/gate", "args": ["{{on}}"] }}
-            }}
-        ]
-    }}"#)).unwrap();
-
-    let bridge_toml = dir.path().join("bridge.toml");
-    std::fs::write(&bridge_toml, format!(r#"
-[osc]
-bind = "127.0.0.1:{orch_bind_port}"
-
+    let started = crate::common::orchestrator_rig::start_orchestrator("routing-nomap", |_port, dir| {
+        let synth_json = dir.join("synth.json");
+        std::fs::write(&synth_json, format!(r#"{{
+            "device": {{
+                "name": "Test Synth", "vendor": "Test",
+                "osc_prefix": "/synth", "kind": "software",
+                "transport": {{ "kind": "osc", "host": "127.0.0.1", "port": {synth_port} }}
+            }},
+            "commands": [
+                {{
+                    "osc": "/gate",
+                    "args": [{{ "name": "on", "type": "int" }}],
+                    "forward": {{ "path": "/fx/gate", "args": ["{{on}}"] }}
+                }}
+            ]
+        }}"#)).unwrap();
+        (String::new(), format!(r#"
 [[devices]]
 spec = "{}"
 
 [[routes]]
 from = "/pad/{{n}}/hit"
 to = "/synth/gate"
-"#, synth_json.display().to_string().replace('\\', "\\\\"))).unwrap();
+"#, synth_json.display().to_string().replace('\\', "\\\\")))
+    });
 
-    let toml_path = bridge_toml.clone();
-    std::thread::spawn(move || { let _ = Orchestrator::run(&toml_path); });
-
-    let orch_addr: SocketAddr = format!("127.0.0.1:{orch_bind_port}").parse().unwrap();
+    let orch_addr: SocketAddr = started.orch;
     // /pad/3/hit 1 — the {n} capture is consumed by the route pattern, the
     // arg (1) passes through unchanged since there is no `map`.
     let msg = OscPacket::Message(OscMessage {
         addr: "/pad/3/hit".into(),
         args: vec![OscType::Int(1)],
     });
-    let bytes = send_until_forwarded(&fake_synth, orch_addr, &msg);
+    let bytes = send_and_read_forward(&fake_synth, orch_addr, &msg);
     let (_, pkt) = rosc::decoder::decode_udp(&bytes).unwrap();
     match pkt {
         OscPacket::Message(m) => {
