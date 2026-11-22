@@ -11,6 +11,13 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Fixed — a software port gets no hardware card from the service either
+- A port whose client is a program (`[User Legacy]` in the list of clients, found by its client
+  number and its name, with one final ` (digits)` of the port name ignored) keeps a candidate of
+  the service only if the local catalogue knows its card as a software; any other candidate, and
+  any unlisted one, is not shown, not counted, not proposed. The port is then unknown, with the
+  learn mode as its next step. `detect`, the learn mode and `detect_hardware` give the same answer.
+
 ### Changed — the ports of one device receive one answer
 - The `detect` report and `detect_hardware` return one entry per device, not one per port: the
   ports sharing an ALSA client number (else a client name) are one device. The entry lists its

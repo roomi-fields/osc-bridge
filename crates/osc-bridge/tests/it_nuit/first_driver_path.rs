@@ -38,7 +38,8 @@ fn fake_device(marker: &str) -> (Unit, Arc<Mutex<bool>>) {
     std::thread::sleep(Duration::from_millis(300));
     // The ports the bridge lists for it, and only them.
     let seen = osc_bridge::detect::units(&osc_bridge::detect::observe(false, Duration::ZERO, &[], &[]).unwrap());
-    let mut mine = Unit { inputs: vec![], outputs: vec![], in_indexes: vec![], out_indexes: vec![], usb: None };
+    let mut mine = Unit { inputs: vec![], outputs: vec![], in_indexes: vec![], out_indexes: vec![], usb: None,
+        client_kind: osc_bridge::detect::ClientKind::Unknown };
     for u in seen {
         for (n, i) in u.inputs.iter().zip(&u.in_indexes).filter(|(n, _)| n.contains(marker)) {
             mine.inputs.push(n.clone());

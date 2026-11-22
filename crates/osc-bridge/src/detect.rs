@@ -635,13 +635,16 @@ impl ClientKind {
 pub fn client_kind(clients: &str, port: &str) -> ClientKind {
     let Some(number) = client_number(port) else { return ClientKind::Unknown };
     let name = port.split(':').next().unwrap_or(port);
+    // The port's name may carry one final " (digits)" the entry's name does not.
+    let stripped = name.strip_suffix(')').and_then(|s| s.rsplit_once(" (")).filter(|(_, d)| !d.is_empty() && d.bytes().all(|b| b.is_ascii_digit())).map(|(base, _)| base);
     let mut found = clients.lines().filter_map(|line| {
         let rest = line.strip_prefix("Client")?;
         let (n, rest) = rest.split_once(':')?;
         if n.trim().parse::<u32>().ok()? != number { return None; }
         let (quoted, tail) = rest.trim().strip_prefix('"')?.rsplit_once('"')?;
-        if quoted != name { return None; }
-        Some(tail.trim().trim_start_matches('[').trim_end_matches(']').to_ascii_lowercase())
+        if quoted != name && Some(quoted) != stripped { return None; }
+        let inside = tail.trim().strip_prefix('[')?;
+        Some(inside.split(|c: char| c.is_whitespace() || c == ']').next().unwrap_or("").to_ascii_lowercase())
     });
     match (found.next(), found.next()) {
         (Some(kind), None) if kind == "kernel" => ClientKind::Kernel,
@@ -885,6 +888,8 @@ pub struct Unit {
     pub in_indexes: Vec<usize>,
     pub out_indexes: Vec<usize>,
     pub usb: Option<(u16, u16)>,
+    /// Whether its client is a device of the system or a program, as the list of clients says.
+    pub client_kind: ClientKind,
 }
 
 impl Unit {
@@ -909,7 +914,8 @@ pub fn units(capture: &Capture) -> Vec<Unit> {
         let at = match found.iter().position(|(f, _)| *f == k) {
             Some(at) => at,
             None => {
-                found.push((k, Unit { inputs: vec![], outputs: vec![], in_indexes: vec![], out_indexes: vec![], usb: None }));
+                found.push((k, Unit { inputs: vec![], outputs: vec![], in_indexes: vec![], out_indexes: vec![], usb: None,
+                    client_kind: ClientKind::Unknown }));
                 found.len() - 1
             }
         };
@@ -919,6 +925,10 @@ pub fn units(capture: &Capture) -> Vec<Unit> {
     }
     found.into_iter().map(|(_, mut u)| {
         u.usb = u.outputs.iter().chain(&u.inputs).find_map(|n| usb_of_port(n, &cards));
+        // As the detection of a device does: a port of the system makes the unit a device of the system.
+        let kinds: Vec<ClientKind> = u.outputs.iter().chain(&u.inputs).map(|n| client_kind(&capture.clients, n)).collect();
+        u.client_kind = if kinds.contains(&ClientKind::Kernel) { ClientKind::Kernel }
+            else { kinds.first().copied().unwrap_or(ClientKind::Unknown) };
         u
     }).collect()
 }

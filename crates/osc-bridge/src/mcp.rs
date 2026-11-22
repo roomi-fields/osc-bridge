@@ -1724,6 +1724,13 @@ fn merge_candidates(found: &[crate::detect::Probed], per_port: Vec<(usize, Vec<V
     merged
 }
 
+/// What a port of a program keeps of the candidates: those whose card the local catalogue knows,
+/// by id, as a software. A card it does not know, or of another kind, is no candidate for a program.
+fn software_cards_only(index: &DeviceIndex, candidates: Vec<Value>) -> Vec<Value> {
+    candidates.into_iter().filter(|c| c["id"].as_str()
+        .and_then(|id| index.find(id)).is_some_and(|e| e.kind == "software")).collect()
+}
+
 /// The report of `detect_hardware` over the devices `found`.
 fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>, by_file: bool, probe: bool,
                     found: Vec<crate::detect::Probed>, faults: Vec<crate::device::DeviceFault>,
@@ -1749,9 +1756,8 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>,
         for &i in &group {
             let (mut candidates, mut more): (Vec<Value>, Vec<Value>) =
                 std::mem::take(&mut matched[i]).into_iter().partition(|c| c["kind"] == "candidate");
-            // A port of a program is no device: whatever the catalogue or the service answers, it gets none.
             if found[i].client_kind == crate::detect::ClientKind::User {
-                candidates.clear();
+                candidates = software_cards_only(index, candidates);
                 more.clear();
             }
             for u in more { if !unlisted.contains(&u) { unlisted.push(u); } }
@@ -2009,13 +2015,15 @@ pub fn learn_report(learned: &[(crate::detect::Unit, crate::detect::Learned)], c
             h.split_whitespace().filter_map(|b| u8::from_str_radix(b, 16).ok()).collect()
         }).into_iter().collect();
         // Only a strong proof names a driver; a name alone leaves the device unknown.
-        let local = d.inputs.iter().chain(&d.outputs)
+        let program = d.client_kind == crate::detect::ClientKind::User;
+        let local = d.inputs.iter().chain(&d.outputs).filter(|_| !program)
             .find_map(|p| crate::detect::rank(p, d.usb, &replies, &candidates, 1).into_iter().find(|r| r.is_strong()))
             .map(|r| (&candidates[r.index], proofs_json(&r.proofs)));
-        let named: &[Value] = match service {
-            ServiceMatches::Answered(all) => all.get(at).map(Vec::as_slice).unwrap_or_default(),
-            _ => &[],
+        let named: Vec<Value> = match service {
+            ServiceMatches::Answered(all) => all.get(at).cloned().unwrap_or_default(),
+            _ => Vec::new(),
         };
+        let named = if program { software_cards_only(catalogue, named) } else { named };
         let first = named.first();
         let remote = first.and_then(|c| {
             let mut driver = json!({ "id": c["id"].as_str()?, "name": c["name"].as_str().unwrap_or_default() });

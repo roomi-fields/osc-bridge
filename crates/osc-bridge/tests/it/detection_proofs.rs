@@ -238,7 +238,7 @@ fn the_bench_is_recognised_on_the_ports_that_answer_and_midi_through_gets_nothin
 // ---- the learn mode ---------------------------------------------------------------------
 
 fn unit(port: &str, usb: Option<(u16, u16)>) -> Unit {
-    Unit { inputs: vec![port.into()], outputs: vec![port.into()], in_indexes: vec![0], out_indexes: vec![0], usb }
+    Unit { inputs: vec![port.into()], outputs: vec![port.into()], in_indexes: vec![0], out_indexes: vec![0], usb, client_kind: osc_bridge::detect::ClientKind::Unknown }
 }
 
 fn learned(port: &str) -> Learned {

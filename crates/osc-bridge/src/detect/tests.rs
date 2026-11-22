@@ -431,7 +431,7 @@ fn at(ms: u64, msg: &[u8]) -> Heard { at_on(SYNTH, ms, msg) }
 fn unit_of(inputs: &[&str], outputs: &[&str], usb: Option<(u16, u16)>) -> Unit {
     Unit { in_indexes: (0..inputs.len()).collect(), out_indexes: (0..outputs.len()).collect(),
            inputs: inputs.iter().map(|s| s.to_string()).collect(),
-           outputs: outputs.iter().map(|s| s.to_string()).collect(), usb }
+           outputs: outputs.iter().map(|s| s.to_string()).collect(), usb, client_kind: ClientKind::Unknown }
 }
 
 fn device(usb: Option<(u16, u16)>) -> Unit { unit_of(&[SYNTH], &[SYNTH], usb) }
@@ -811,4 +811,63 @@ fn learn_measures_a_period_on_one_port_never_across_two_ports() {
     let heard = vec![at_on(MINILAB[0], 100, &[0xF8]), at_on(MINILAB[1], 120, &[0xF8])];
     let l = learn(&u, &mut Script::new(heard), Duration::from_millis(1000), "2026-11-21");
     assert!(l.measured.get("periods_ms").is_none(), "{:?}", l.measured);
+}
+
+// ---- the kind of the client of a port, read from the list of clients ----
+
+const FLUID_PORT: &str = "FLUID Synth (2267):Synth input port (2267:0) 128:0";
+
+fn clients_with(entry_name: &str, tail: &str) -> String {
+    format!("Client info\n  cur  clients : 2\n\nClient   0 : \"System\" [Kernel]\n  Port   0 : \"Timer\" (Rwe-)\n\
+             Client 128 : \"{entry_name}\" {tail}\n  Port   0 : \"Synth input port (2267:0)\" (RWe-)\n")
+}
+
+#[test]
+fn a_client_whose_first_word_in_brackets_is_user_is_a_program_whatever_follows_or_the_case() {
+    for tail in ["[User Legacy]", "[User]", "[user]", "[USER Legacy]", "[User  Legacy extra]"] {
+        assert_eq!(client_kind(&clients_with("FLUID Synth (2267)", tail), FLUID_PORT), ClientKind::User, "{tail}");
+    }
+}
+
+#[test]
+fn a_client_whose_first_word_in_brackets_is_kernel_is_a_device_of_the_system() {
+    for tail in ["[Kernel]", "[Kernel Legacy]", "[kernel]", "[KERNEL Legacy]"] {
+        assert_eq!(client_kind(&clients_with("FLUID Synth (2267)", tail), FLUID_PORT), ClientKind::Kernel, "{tail}");
+    }
+}
+
+#[test]
+fn a_client_whose_first_word_in_brackets_is_another_word_has_the_kind_unknown() {
+    for tail in ["[Other Legacy]", "[Usermode]", "[Kernelish]", "[]", "[ ]", "no brackets"] {
+        assert_eq!(client_kind(&clients_with("FLUID Synth (2267)", tail), FLUID_PORT), ClientKind::Unknown, "{tail}");
+    }
+}
+
+#[test]
+fn the_port_name_loses_one_final_number_in_parentheses_to_meet_the_name_of_its_client() {
+    let list = clients_with("FLUID Synth", "[User Legacy]");
+    assert_eq!(client_kind(&list, FLUID_PORT), ClientKind::User);
+    assert_eq!(client_kind(&list, "FLUID Synth:Synth input port 128:0"), ClientKind::User, "an exact name meets as before");
+    let kernel = clients_with("Minilab3", "[Kernel]");
+    assert_eq!(client_kind(&kernel, "Minilab3 (7):Minilab3 MIDI 128:0"), ClientKind::Kernel);
+}
+
+#[test]
+fn any_other_gap_between_the_port_name_and_the_name_of_the_client_has_the_kind_unknown() {
+    let list = clients_with("FLUID Synth", "[User Legacy]");
+    for port in ["FLUID Synth (2267) (1):Synth 128:0", "FLUID Synth (abc):Synth 128:0", "FLUID Synth ():Synth 128:0",
+                 "FLUID Synth (22a7):Synth 128:0", "FLUID Synth 2267:Synth 128:0", "FLUID Other (2267):Synth 128:0"] {
+        assert_eq!(client_kind(&list, port), ClientKind::Unknown, "{port}");
+    }
+    // The name of the entry is never stripped: only the port's.
+    assert_eq!(client_kind(&clients_with("FLUID Synth (2267)", "[User Legacy]"), "FLUID Synth:Synth 128:0"), ClientKind::Unknown);
+}
+
+#[test]
+fn a_port_with_no_entry_for_its_client_number_or_two_entries_has_the_kind_unknown() {
+    let list = clients_with("FLUID Synth", "[User Legacy]");
+    assert_eq!(client_kind(&list, "FLUID Synth (2267):Synth input port 129:0"), ClientKind::Unknown);
+    assert_eq!(client_kind("", FLUID_PORT), ClientKind::Unknown);
+    let twice = format!("{list}Client 128 : \"FLUID Synth (2267)\" [Kernel]\n");
+    assert_eq!(client_kind(&twice, FLUID_PORT), ClientKind::Unknown);
 }

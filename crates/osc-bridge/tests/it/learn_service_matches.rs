@@ -1,7 +1,8 @@
 //! The learn mode's report: what it says of a device by what was looked at (the service's
 //! matches, the local catalogue), and the ports of the system it leaves out.
 
-use osc_bridge::detect::{is_system_port, learn_units, Learned, Unit};
+use osc_bridge::capture::{Capture, FORMAT_VERSION};
+use osc_bridge::detect::{is_system_port, learn_units, units, ClientKind, Learned, Unit};
 use osc_bridge::mcp::{learn_report, learn_service_matches, DeviceIndex, ServiceMatches};
 use serde_json::{json, Value};
 use std::time::Duration;
@@ -11,7 +12,8 @@ fn catalogue() -> DeviceIndex {
 }
 
 fn unit(port: &str) -> Unit {
-    Unit { inputs: vec![port.into()], outputs: vec![port.into()], in_indexes: vec![0], out_indexes: vec![0], usb: None }
+    Unit { inputs: vec![port.into()], outputs: vec![port.into()], in_indexes: vec![0], out_indexes: vec![0], usb: None,
+           client_kind: ClientKind::Unknown }
 }
 
 fn learned(port: &str) -> Learned {
@@ -400,4 +402,87 @@ fn an_unreachable_or_unlinked_service_reports_no_device_being_confirmed() {
         assert!(device(&r, 0).get("unlisted").is_none(), "{r}");
         assert!(!r.to_string().contains("confirming"), "{r}");
     }
+}
+
+// ---- a port of a program gets the card of a software only ----
+
+const SOFTWARE_CARD: &str = "bitwig/bitwig-studio.third-party-osc.fw-5";
+const HARDWARE_CARD: &str = "acme/box";
+const NOT_IN_THE_CATALOGUE: &str = "polyend/synth";
+const FLUID_PORT: &str = "FLUID Synth (2267):Synth input port (2267:0) 128:0";
+
+fn of_kind(port: &str, client_kind: ClientKind) -> (Unit, Learned) {
+    (Unit { client_kind, ..unit(port) }, learned(port))
+}
+
+/// The learn mode on one device of `kind`, the service answering `candidates` for it.
+fn learn_of_kind(kind: ClientKind, candidates: &[&str]) -> Value {
+    let answer = json!({ "candidates": candidates.iter().map(|id| candidate(id, "Named by the service")).collect::<Vec<_>>() });
+    let (client, _bodies, _dir) = service_answering(json!({ "ports": [answer] }));
+    let learned = vec![of_kind(FLUID_PORT, kind)];
+    let service = learn_service_matches(Some(&client), &learned);
+    learn_report(&learned, &catalogue(), Duration::from_millis(5000), &service)
+}
+
+#[test]
+fn the_units_of_a_capture_carry_the_kind_of_their_client_read_from_its_list_of_clients() {
+    let capture = Capture::parse(&json!({
+        "format_version": FORMAT_VERSION,
+        "clients": "Client  40 : \"Minilab3\" [Kernel]\n  Port 0 : \"Minilab3 MIDI\" (RWe-)\n\
+                    Client 128 : \"FLUID Synth\" [User Legacy]\n  Port 0 : \"Synth input port (2267:0)\" (RWe-)\n",
+        "outputs": ["Minilab3:Minilab3 MIDI 40:0", FLUID_PORT], "inputs": ["Minilab3:Minilab3 MIDI 40:0", FLUID_PORT],
+        "cards": "", "usbids": [], "requests": [], "received": [],
+    }).to_string()).unwrap();
+    let got = units(&capture);
+    let kind_of = |name: &str| got.iter().find(|u| u.outputs.iter().any(|o| o.starts_with(name))).unwrap().client_kind;
+    assert_eq!(kind_of("Minilab3"), ClientKind::Kernel);
+    assert_eq!(kind_of("FLUID Synth"), ClientKind::User);
+}
+
+#[test]
+fn the_units_of_a_capture_with_no_list_of_clients_have_the_kind_unknown() {
+    let capture = Capture::parse(&json!({
+        "format_version": FORMAT_VERSION, "clients": "", "outputs": [FLUID_PORT], "inputs": [FLUID_PORT],
+        "cards": "", "usbids": [], "requests": [], "received": [],
+    }).to_string()).unwrap();
+    assert!(units(&capture).iter().all(|u| u.client_kind == ClientKind::Unknown));
+}
+
+#[test]
+fn a_port_of_a_program_keeps_only_the_card_the_local_catalogue_knows_as_a_software() {
+    let r = learn_of_kind(ClientKind::User, &[NOT_IN_THE_CATALOGUE, HARDWARE_CARD, SOFTWARE_CARD]);
+    assert_eq!(device(&r, 0)["driver"]["id"], SOFTWARE_CARD, "{r}");
+    assert!(device(&r, 0).get("next_step").is_none(), "{r}");
+}
+
+#[test]
+fn a_port_of_a_program_whose_candidates_are_no_software_card_is_unknown_with_the_learn_mode_next() {
+    for candidates in [vec![HARDWARE_CARD], vec![NOT_IN_THE_CATALOGUE], vec![NOT_IN_THE_CATALOGUE, HARDWARE_CARD]] {
+        let r = learn_of_kind(ClientKind::User, &candidates);
+        assert!(device(&r, 0).get("driver").is_none(), "{candidates:?}: {r}");
+        assert!(device(&r, 0).get("unlisted").is_none(), "{candidates:?}: {r}");
+        assert!(device(&r, 0)["next_step"].as_str().is_some(), "{candidates:?}: {r}");
+        assert!(!r.to_string().contains(NOT_IN_THE_CATALOGUE) && !r.to_string().contains(HARDWARE_CARD), "{candidates:?}: {r}");
+    }
+}
+
+#[test]
+fn a_port_of_the_system_or_of_a_kind_unknown_keeps_every_candidate_of_the_service() {
+    for kind in [ClientKind::Kernel, ClientKind::Unknown] {
+        let r = learn_of_kind(kind, &[NOT_IN_THE_CATALOGUE, HARDWARE_CARD]);
+        assert_eq!(device(&r, 0)["driver"]["id"], NOT_IN_THE_CATALOGUE, "{kind:?}: {r}");
+        assert!(device(&r, 0).get("next_step").is_none(), "{kind:?}: {r}");
+    }
+}
+
+#[test]
+fn the_published_form_of_a_device_of_the_learn_mode_gains_no_field_for_the_kind() {
+    let r = learn_of_kind(ClientKind::User, &[SOFTWARE_CARD]);
+    let mut keys: Vec<&String> = device(&r, 0).as_object().unwrap().keys().collect();
+    keys.sort();
+    let kernel = learn_of_kind(ClientKind::Kernel, &[SOFTWARE_CARD]);
+    let mut kernel_keys: Vec<&String> = device(&kernel, 0).as_object().unwrap().keys().collect();
+    kernel_keys.sort();
+    assert_eq!(keys, kernel_keys, "{r}");
+    assert!(!keys.iter().any(|k| k.contains("kind")), "{keys:?}");
 }

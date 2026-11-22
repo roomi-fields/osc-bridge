@@ -118,7 +118,8 @@ fn catalogue() -> DeviceIndex {
 }
 
 fn unit(port: &str) -> Unit {
-    Unit { inputs: vec![port.into()], outputs: vec![port.into()], in_indexes: vec![0], out_indexes: vec![0], usb: None }
+    Unit { inputs: vec![port.into()], outputs: vec![port.into()], in_indexes: vec![0], out_indexes: vec![0], usb: None,
+           client_kind: osc_bridge::detect::ClientKind::Unknown }
 }
 
 fn learned(port: &str) -> Learned {

@@ -1151,3 +1151,100 @@ fn the_command_prints_one_device_with_its_other_ports_as_ports_of_it() {
     assert!(!text.contains("port 1 of") && !text.contains("port 3 of"), "{text}");
     assert_eq!(text.matches("match:").count(), 1, "one answer for the two ports: {text}");
 }
+
+// ---- a port of a program gets the card of a software only ----
+
+const SOFTWARE_CARD: &str = "bitwig/bitwig-studio.third-party-osc.fw-5";
+const THREE_CARDS: fn(&Value) -> Value = |_| json!({ "candidates": [
+    { "id": "polyend/synth", "slug": "synth", "name": "Synth", "vendor": "Polyend", "source_tier": "vendor-doc", "score": 35 },
+    { "id": "acme/box", "slug": "box", "name": "Box", "vendor": "Acme", "source_tier": "official", "score": 35 },
+    { "id": "bitwig/bitwig-studio.third-party-osc.fw-5", "slug": "bitwig-studio", "name": "Bitwig Studio",
+      "vendor": "Bitwig", "source_tier": "third-party-osc", "score": 10 }] });
+const TWO_HARDWARE_CARDS: fn(&Value) -> Value = |_| json!({ "candidates": [
+    { "id": "polyend/synth", "slug": "synth", "name": "Synth", "vendor": "Polyend", "source_tier": "vendor-doc", "score": 35 },
+    { "id": "acme/box", "slug": "box", "name": "Box", "vendor": "Acme", "source_tier": "official", "score": 35 }],
+    "unlisted": [{ "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3", "confirmations": 1, "disputed": false }] });
+
+fn probed_as(name: &str, kind: crate::detect::ClientKind) -> crate::detect::Probed {
+    crate::detect::Probed { client_kind: kind, ..probed(name, None) }
+}
+
+fn ids(device: &Value) -> Vec<Value> {
+    device["candidates"].as_array().unwrap().iter().map(|c| c["device"].clone()).collect()
+}
+
+#[test]
+fn a_port_of_a_program_keeps_only_the_candidates_whose_card_the_local_catalogue_knows_as_a_software() {
+    let (client, _bodies, _dir) = detect_service(THREE_CARDS);
+    let devices = report_devices(&client, vec![probed_as("FLUID Synth", crate::detect::ClientKind::User)]);
+    assert_eq!(ids(&devices[0]), vec![json!(SOFTWARE_CARD)], "{devices:?}");
+    assert_eq!(devices[0]["client_kind"], "user");
+}
+
+#[test]
+fn a_port_of_a_program_with_no_software_card_among_the_candidates_is_unknown_and_proposes_nothing() {
+    for answer in [TWO_HARDWARE_CARDS, POLYSYNTH] {
+        let (client, _bodies, _dir) = detect_service(answer);
+        let found = vec![probed_as("FLUID Synth", crate::detect::ClientKind::User)];
+        let devices = report_devices(&client, found);
+        assert!(ids(&devices[0]).is_empty(), "{devices:?}");
+        assert!(devices[0]["run_command"].is_null(), "{devices:?}");
+        assert!(devices[0].get("unlisted").is_none(), "{devices:?}");
+        let text = format_detection(&devices, true);
+        assert!(!text.contains("match:") && !text.contains("polyend") && !text.contains("acme/box"), "{text}");
+    }
+}
+
+#[test]
+fn a_port_of_the_system_or_of_a_kind_unknown_gets_every_candidate_of_the_service_as_before() {
+    for kind in [crate::detect::ClientKind::Kernel, crate::detect::ClientKind::Unknown] {
+        let (client, _bodies, _dir) = detect_service(THREE_CARDS);
+        let devices = report_devices(&client, vec![probed_as("FLUID Synth", kind)]);
+        assert_eq!(ids(&devices[0]), vec![json!("polyend/synth"), json!("acme/box"), json!(SOFTWARE_CARD)], "{kind:?}: {devices:?}");
+    }
+}
+
+#[test]
+fn the_service_candidates_of_the_fluid_synth_capture_are_dropped_and_the_port_is_unknown() {
+    use crate::capture::Capture;
+    let text = std::fs::read_to_string("tests/fixtures/captures/2026-11-22-ports-logiciels.json").unwrap();
+    let capture = Capture::parse(&text).unwrap();
+    let (client, _bodies, _dir) = detect_service(|p| if p["port"].as_str().unwrap_or("").starts_with("FLUID Synth") {
+        json!({ "candidates": [
+            { "id": "polyend/synth", "slug": "synth", "name": "Synth", "vendor": "Polyend", "source_tier": "vendor-doc", "score": 35 },
+            { "id": "polyend/synth.pencilresearch.fw-unknown", "slug": "synth.pencilresearch.fw-unknown", "name": "Synth",
+              "vendor": "Polyend", "source_tier": "pencilresearch", "score": 35 },
+            { "id": "electra-community/ay3_synth", "slug": "ay3_synth", "name": "AY3 Synth", "vendor": "Electra",
+              "source_tier": "electra-preset", "score": 10 }] })
+    } else { json!({ "candidates": [] }) });
+    let r = detection_report(&fixtures(), Some(&client), true, false, crate::detect::replay(&capture), Vec::new(), &[]).unwrap();
+    let devices = r["structuredContent"]["devices"].as_array().unwrap();
+    let fluid = devices.iter().find(|d| d["port"].as_str().unwrap().starts_with("FLUID Synth")).unwrap();
+    assert_eq!(fluid["client_kind"], "user", "{fluid}");
+    assert!(ids(fluid).is_empty(), "{fluid}");
+    assert!(fluid["run_command"].is_null() && fluid.get("unlisted").is_none(), "{fluid}");
+    assert!(!format_detection(std::slice::from_ref(fluid), false).contains("match:"));
+}
+
+#[test]
+fn the_service_answers_for_the_minilab_3_and_the_bcr_32_of_the_bench_capture_are_unchanged() {
+    use crate::capture::Capture;
+    let text = std::fs::read_to_string("tests/fixtures/captures/2026-11-21.json").unwrap();
+    let capture = Capture::parse(&text).unwrap();
+    let (client, _bodies, _dir) = detect_service(|p| {
+        let port = p["port"].as_str().unwrap_or("");
+        if port.starts_with("Minilab3") {
+            json!({ "candidates": [{ "id": "arturia/minilab3", "slug": "minilab3", "name": "MiniLab 3", "vendor": "Arturia",
+                "source_tier": "official", "score": 90 }] })
+        } else if port.starts_with("Behringer BCR-32") {
+            json!({ "candidates": [], "unlisted": [{ "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3",
+                "confirmations": 1, "disputed": false }] })
+        } else { json!({ "candidates": [] }) }
+    });
+    let r = detection_report(&fixtures(), Some(&client), true, false, crate::detect::replay(&capture), Vec::new(), &[]).unwrap();
+    let devices = r["structuredContent"]["devices"].as_array().unwrap();
+    let of = |name: &str| devices.iter().find(|d| d["port"].as_str().unwrap().starts_with(name)).unwrap();
+    assert_eq!(of("Minilab3")["client_kind"], "kernel");
+    assert_eq!(ids(of("Minilab3")), vec![json!("arturia/minilab3")], "{devices:?}");
+    assert_eq!(of("Behringer BCR-32")["unlisted"][0]["model"], "BCR32", "{devices:?}");
+}

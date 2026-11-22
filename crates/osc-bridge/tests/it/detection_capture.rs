@@ -612,6 +612,7 @@ fn unit_of(inputs: &[&str], outputs: &[&str], usb: Option<(u16, u16)>) -> osc_br
         in_indexes: (0..inputs.len()).collect(),
         out_indexes: (0..outputs.len()).collect(),
         usb,
+        client_kind: osc_bridge::detect::ClientKind::Unknown,
     }
 }
 
