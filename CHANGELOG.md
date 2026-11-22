@@ -11,6 +11,18 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed — the detection sends the USB ids and shows a device being confirmed
+- The detection request to SyntHub (`detect`, `detect_hardware`, the learn mode) carries, per port,
+  `usb: {vendor_id, product_id}` (numbers) when the ids were read, and no `usb` field otherwise.
+- A device the service names without a card (vendor, model, firmware, confirmations, state) is
+  shown as "being confirmed" (`unlisted`, `state`, `state_label`) by the command and the tool, only
+  when the port has no catalogue candidate; the catalogue candidates carry their `state` too.
+  The learn mode asks the person to confirm it, not to name it again.
+- A device being confirmed is proposed, never imposed: nothing is sent to it without the person's
+  consent (`held_back` is unchanged). When the service does not answer, the reports are unchanged.
+- Why: a device one person shared (the Behringer BCR-32, which answers no identity request) is
+  recognised on the next person's machine even before it has a card.
+
 ### Changed — the learn mode's next step is said for a real unknown device only
 - The learn mode (`detect_hardware` with `learn`, `osc-bridge detect --learn`) leaves out the ALSA
   "Midi Through" kernel client: no fingerprint, no `next_step`. `detect` without `--learn` is unchanged.

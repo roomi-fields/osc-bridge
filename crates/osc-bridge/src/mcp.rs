@@ -942,7 +942,8 @@ pub fn tool_schemas() -> Value {
                                     "usb": { "type": "object", "description": "The USB ids of the device's card (Linux), absent when it has none.",
                                         "properties": { "vendor_id": { "type": "integer" }, "product_id": { "type": "integer" } } },
                                     "identity": { "type": ["object", "null"], "description": "Identity Reply, when the device answered." },
-                                    "candidates": { "type": "array", "items": { "type": "object" } },
+                                    "candidates": { "type": "array", "items": { "type": "object" }, "description": "The catalogue drivers matching the device; one being confirmed carries confirmations, state and state_label." },
+                                    "unlisted": { "type": "array", "items": { "type": "object" }, "description": "Only when no candidate: the devices the service names for it without a card (vendor, model, firmware, confirmations, disputed, state, state_label); proposed to the person, never imposed." },
                                     "run_command": { "type": ["string", "null"] },
                                     "fingerprint": { "type": "object", "description": "Learn mode: the OSD 0.6 fingerprint of the device; a field it did not give is absent." },
                                     "measured": { "type": "object", "description": "Learn mode: local measures beside the fingerprint: identity_reply_ms with identity_reply_port, periods_ms (clock, active_sensing) with periods_port (the port each was measured on); absent when not observed." }
@@ -1680,20 +1681,19 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>,
                     plan: &[crate::detect::PortSends]) -> Result<Value, String> {
     let matched: Vec<Vec<Value>> = match server {
         Some(server) => {
-            let ports: Vec<Value> = found.iter().map(|d| json!({ "port": d.label(),
-                "replies_hex": d.replies.iter().map(|r| hex_bytes(r)).collect::<Vec<_>>() }))
-                .collect();
+            let ports: Vec<Value> = found.iter().map(|d| detect_port(d.label(),
+                d.replies.iter().map(|r| hex_bytes(r)).collect(), d.usb)).collect();
             let answers = server.detect(&ports).map_err(|e| format!("detect_hardware asks the SynthHub server to match \
                 the ports, and it could not be reached: {e}. Offline, the ports are matched against the drivers cached here."))?;
-            (0..found.len()).map(|i| answers.get(i).and_then(|a| a["candidates"].as_array().cloned()).unwrap_or_default())
-                .collect()
+            (0..found.len()).map(|i| answers.get(i).map(port_answer).unwrap_or_default()).collect()
         }
         None => {
             let catalogue = hardware_candidates(index);
             found.iter().map(|d| match_port(&catalogue, d.label(), d.usb, &d.replies)).collect()
         }
     };
-    let devices: Vec<Value> = found.iter().zip(matched).map(|(d, mut candidates)| {
+    let devices: Vec<Value> = found.iter().zip(matched).map(|(d, answer)| {
+        let (mut candidates, unlisted): (Vec<Value>, Vec<Value>) = answer.into_iter().partition(|c| c.get("device").is_some());
         for c in candidates.iter_mut() {
             if let Some(e) = c["device"].as_str().and_then(|id| index.find(id)) {
                 c["file"] = json!(e.path.display().to_string());
@@ -1719,6 +1719,9 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>,
             "candidates": candidates,
             "run_command": run_command,
         });
+        if !unlisted.is_empty() {
+            device["unlisted"] = json!(unlisted);
+        }
         if let Some(sends) = d.out_index.and_then(|o| plan.get(o)) {
             device["held_back"] = json!(sends.held.iter().map(|h| hex_bytes(h)).collect::<Vec<_>>());
         }
@@ -1762,7 +1765,8 @@ pub enum ServiceMatches {
     NotLinked,
     /// Linked, but the service did not answer.
     Unreachable,
-    /// The candidates it names for each device, in the order of the devices the learn mode reports.
+    /// What it names for each device, in the order of the devices the learn mode reports: its
+    /// catalogue candidates, else its devices without a card (see `port_answer`).
     Answered(Vec<Vec<Value>>),
 }
 
@@ -1777,13 +1781,42 @@ pub fn learn_service_matches(server: Option<&crate::online::Online>, learned: &[
     let Some(server) = server else { return ServiceMatches::NotLinked };
     let devices = learn_devices(learned);
     if devices.is_empty() { return ServiceMatches::Answered(Vec::new()); }
-    let ports: Vec<Value> = devices.iter().map(|(d, l)| json!({ "port": d.label(),
-        "replies_hex": l.fingerprint["identity_reply"].as_str().into_iter().collect::<Vec<_>>() })).collect();
+    let ports: Vec<Value> = devices.iter().map(|(d, l)| detect_port(d.label(),
+        l.fingerprint["identity_reply"].as_str().into_iter().map(str::to_string).collect(), d.usb)).collect();
     match server.detect(&ports) {
-        Ok(answers) => ServiceMatches::Answered((0..devices.len())
-            .map(|i| answers.get(i).and_then(|a| a["candidates"].as_array().cloned()).unwrap_or_default()).collect()),
+        Ok(answers) => ServiceMatches::Answered((0..devices.len()).map(|i| answers.get(i).map(port_answer).unwrap_or_default()).collect()),
         Err(_) => ServiceMatches::Unreachable,
     }
+}
+
+/// One port of the detection request: its name, its identity replies and, when read, its USB ids
+/// (`usb: {vendor_id, product_id}`, numbers); a port without ids has no `usb` field.
+fn detect_port(port: &str, replies_hex: Vec<String>, usb: Option<(u16, u16)>) -> Value {
+    let mut p = json!({ "port": port, "replies_hex": replies_hex });
+    if let Some((vendor_id, product_id)) = usb {
+        p["usb"] = json!({ "vendor_id": vendor_id, "product_id": product_id });
+    }
+    p
+}
+
+/// What the service says of one port, as one list: the catalogue candidates (entries with a
+/// `device`), each carrying the confirmations and state the service gives for it in `learned`;
+/// else, when there is no candidate, the devices without a card (`unlisted`, entries with a
+/// `vendor` and no `device`), all of them. A device has one state: a candidate hides them.
+fn port_answer(answer: &Value) -> Vec<Value> {
+    let list = |k: &str| answer[k].as_array().cloned().unwrap_or_default();
+    let mut candidates = list("candidates");
+    if candidates.is_empty() {
+        return list("unlisted").into_iter().filter(|u| u.get("device").is_none()).collect();
+    }
+    let learned = list("learned");
+    for c in candidates.iter_mut() {
+        let Some(l) = learned.iter().find(|l| l["id"] == c["device"]) else { continue };
+        for k in ["confirmations", "disputed", "state", "state_label"] {
+            if let Some(v) = l.get(k) { c[k] = v.clone(); }
+        }
+    }
+    candidates
 }
 
 /// The ask that ends the next step of a device nobody knows: name it, then map its controls.
@@ -1807,6 +1840,16 @@ fn next_step(service: &ServiceMatches, proposed_firmware: Option<&str>) -> Strin
         ServiceMatches::Answered(_) => format!("Neither the local catalogue nor SynthHub knows this device. {ask}"),
         _ => format!("Only the local catalogue was looked at, and no driver in it matches this device. {ask}"),
     }
+}
+
+/// The next step of a device the service names without a card: it is proposed to the person to
+/// confirm, never named again, and nothing is sent to the device on its account without consent.
+fn being_confirmed_step(unlisted: &[Value]) -> String {
+    let named: Vec<String> = unlisted.iter().map(|u| format!("{} {}, firmware {} ({} confirmation(s))",
+        u["vendor"].as_str().unwrap_or("?"), u["model"].as_str().unwrap_or("?"), u["firmware"].as_str().unwrap_or("?"), u["confirmations"])).collect();
+    let said = unlisted.iter().find_map(|u| u["state_label"].as_str()).unwrap_or("being confirmed");
+    format!("SynthHub names this device without a card: {}; {said}. Ask the person to confirm which it is, and do not ask them to name it again. \
+        Nothing is sent to the device on this account without the person's consent.", named.join(" or "))
 }
 
 /// The next step once a fingerprint is shared: the mappings go to `report_mapping` under the
@@ -1869,15 +1912,23 @@ pub fn learn_report(learned: &[(crate::detect::Unit, crate::detect::Learned)], c
         }).into_iter().collect();
         let local = d.inputs.iter().chain(&d.outputs)
             .find_map(|p| crate::detect::rank(p, d.usb, &replies, &candidates, 1).first().map(|r| &candidates[r.index]));
-        let remote = match service {
-            ServiceMatches::Answered(all) => all.get(at).and_then(|c| c.first())
-                .and_then(|c| Some((c["device"].as_str()?.to_string(), c["name"].as_str().unwrap_or_default().to_string()))),
-            _ => None,
+        let named: &[Value] = match service {
+            ServiceMatches::Answered(all) => all.get(at).map(Vec::as_slice).unwrap_or_default(),
+            _ => &[],
         };
+        let first = named.first();
+        let remote = first.and_then(|c| {
+            let mut driver = json!({ "id": c["device"].as_str()?, "name": c["name"].as_str().unwrap_or_default() });
+            for k in ["confirmations", "disputed", "state", "state_label"] {
+                if let Some(v) = c.get(k) { driver[k] = v.clone(); }
+            }
+            Some(driver)
+        });
+        let unlisted: Vec<Value> = if remote.is_none() { named.iter().filter(|u| u.get("vendor").is_some()).cloned().collect() } else { Vec::new() };
         // The local driver is the one its slug resolves to (the most trustworthy file of the
         // device), not a firmware variant that only ranked higher by recognising the port.
-        let local = local.map(|c| catalogue.find(&c.slug).map(|e| (e.id.clone(), e.name.clone()))
-            .unwrap_or_else(|| (c.id.clone(), c.name.clone())));
+        let local = local.map(|c| catalogue.find(&c.slug).map(|e| json!({ "id": e.id, "name": e.name }))
+            .unwrap_or_else(|| json!({ "id": c.id, "name": c.name })));
         let driver = remote.or(local);
         let mut out = json!({
             "port": d.label(),
@@ -1887,7 +1938,11 @@ pub fn learn_report(learned: &[(crate::detect::Unit, crate::detect::Learned)], c
             "measured": l.measured,
         });
         match driver {
-            Some((id, name)) => out["driver"] = json!({ "id": id, "name": name }),
+            Some(driver) => out["driver"] = driver,
+            None if !unlisted.is_empty() => {
+                out["next_step"] = json!(being_confirmed_step(&unlisted));
+                out["unlisted"] = json!(unlisted);
+            }
             None => {
                 let proposed = l.fingerprint["identity_reply"].as_str().and_then(identity_firmware);
                 if let Some(v) = &proposed { out["proposed_firmware"] = json!(v); }
@@ -2220,8 +2275,15 @@ fn format_detection(devices: &[Value], probe: bool) -> String {
         }
         for c in d["candidates"].as_array().into_iter().flatten() {
             let fw = c["firmware"].as_str().map(|f| format!(", firmware {f}")).unwrap_or_default();
-            let _ = writeln!(out, "  match: {} — {} ({}, score {}{fw})", c["device"].as_str().unwrap_or(""),
+            let state = c["state_label"].as_str().map(|l| format!(" — {l}")).unwrap_or_default();
+            let _ = writeln!(out, "  match: {} — {} ({}, score {}{fw}){state}", c["device"].as_str().unwrap_or(""),
                 c["file"].as_str().or(c["device"].as_str()).unwrap_or(""), c["source_tier"].as_str().unwrap_or(""), c["score"]);
+        }
+        for u in d["unlisted"].as_array().into_iter().flatten() {
+            let said = u["state_label"].as_str().map(str::to_string)
+                .unwrap_or_else(|| if u["disputed"] == true { "disputed".into() } else { "named by the service".into() });
+            let _ = writeln!(out, "  unlisted: {} {}, firmware {}, {} confirmation(s) — {said}",
+                u["vendor"].as_str().unwrap_or("?"), u["model"].as_str().unwrap_or("?"), u["firmware"].as_str().unwrap_or("?"), u["confirmations"]);
         }
         if let Some(cmd) = d["run_command"].as_str() {
             let _ = writeln!(out, "  run:   {cmd}");

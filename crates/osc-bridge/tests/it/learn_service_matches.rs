@@ -226,3 +226,145 @@ fn a_service_that_answers_is_asked_each_device_and_its_candidates_come_back_in_o
     assert_eq!(ports[1]["port"], unit(UNKNOWN).label(), "{sent}");
     assert_eq!(ports[1]["replies_hex"], json!([]), "{sent}");
 }
+
+// ---- the USB ids go out, a device without a card comes back being confirmed ----
+
+const BEING_CONFIRMED: &str = "being confirmed: not enough people agree yet, to confirm with the person";
+const IN_DISAGREEMENT: &str = "in disagreement: several devices are named for it, to confirm with the person";
+
+fn unit_with_usb(port: &str, usb: Option<(u16, u16)>) -> Unit {
+    Unit { usb, ..unit(port) }
+}
+
+/// A service that gives `answer` to each detect request and keeps the requests it got.
+fn service_answering(answer: Value) -> (osc_bridge::online::Online, std::sync::Arc<std::sync::Mutex<Vec<Value>>>, tempfile::TempDir) {
+    let server = tiny_http::Server::http("127.0.0.1:0").unwrap();
+    let base = format!("http://{}", server.server_addr());
+    let bodies = std::sync::Arc::new(std::sync::Mutex::new(Vec::<Value>::new()));
+    let seen = bodies.clone();
+    std::thread::spawn(move || {
+        for mut req in server.incoming_requests() {
+            let mut body = String::new();
+            std::io::Read::read_to_string(req.as_reader(), &mut body).unwrap();
+            if req.url() == "/v1/detect" {
+                seen.lock().unwrap().push(serde_json::from_str(&body).unwrap());
+            }
+            let _ = req.respond(tiny_http::Response::from_string(answer.to_string()));
+        }
+    });
+    let dir = crate::common::temp("learn-service-usb");
+    let account = dir.path().join("user");
+    std::fs::write(&account, "0123456789abcdef0123456789abcdef\n").unwrap();
+    (osc_bridge::online::Online::keeping_account_in(&base, Some(account)), bodies, dir)
+}
+
+fn unlisted(confirmations: u64, state: Option<&str>, label: Option<&str>, disputed: bool) -> Value {
+    let mut u = json!({ "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3",
+        "confirmations": confirmations, "disputed": disputed });
+    if let Some(s) = state { u["state"] = json!(s); }
+    if let Some(l) = label { u["state_label"] = json!(l); }
+    u
+}
+
+fn learn_with(answer_port: Value) -> Value {
+    let (client, _bodies, _dir) = service_answering(json!({ "ports": [answer_port] }));
+    let learned = pairs(&[UNKNOWN]);
+    let service = learn_service_matches(Some(&client), &learned);
+    learn_report(&learned, &catalogue(), Duration::from_millis(5000), &service)
+}
+
+#[test]
+fn the_learn_mode_sends_the_usb_ids_of_a_port_that_has_them_as_numbers_and_none_otherwise() {
+    let (client, bodies, _dir) = service_answering(json!({ "ports": [{ "candidates": [] }, { "candidates": [] }] }));
+    let learned = vec![
+        (unit_with_usb("Behringer BCR32:BCR32 MIDI 20:0", Some((0x1397, 0x12cf))), learned("Behringer BCR32:BCR32 MIDI 20:0")),
+        (unit_with_usb(UNKNOWN, None), learned(UNKNOWN)),
+    ];
+    let _ = learn_service_matches(Some(&client), &learned);
+    let sent = bodies.lock().unwrap().clone();
+    let ports = sent[0]["ports"].as_array().unwrap();
+    assert_eq!(ports[0]["usb"], json!({ "vendor_id": 5015, "product_id": 4815 }), "{sent:?}");
+    assert!(ports[1].get("usb").is_none(), "{sent:?}");
+    assert_eq!(ports[0]["replies_hex"], json!([]), "the rest of the request is unchanged");
+}
+
+#[test]
+fn a_device_without_a_card_is_reported_being_confirmed_with_its_maker_model_firmware_and_confirmations() {
+    let r = learn_with(json!({ "candidates": [], "unlisted": [unlisted(1, Some("confirming"), Some(BEING_CONFIRMED), false)] }));
+    let u = &device(&r, 0)["unlisted"][0];
+    assert_eq!(u["vendor"], "Behringer", "{r}");
+    assert_eq!(u["model"], "BCR32", "{r}");
+    assert_eq!(u["firmware"], "1.0.3", "{r}");
+    assert_eq!(u["confirmations"], 1, "{r}");
+    assert_eq!(u["state"], "confirming", "{r}");
+    assert_eq!(u["state_label"], BEING_CONFIRMED, "{r}");
+    assert!(device(&r, 0).get("driver").is_none(), "no card, no driver: {r}");
+}
+
+#[test]
+fn a_device_being_confirmed_is_asked_to_be_confirmed_not_named_again() {
+    let r = learn_with(json!({ "candidates": [], "unlisted": [unlisted(1, Some("confirming"), Some(BEING_CONFIRMED), false)] }));
+    let step = device(&r, 0)["next_step"].as_str().unwrap_or_else(|| panic!("{r}")).to_lowercase();
+    assert!(step.contains("confirm"), "{step}");
+    assert!(step.contains("behringer") && step.contains("bcr32") && step.contains("1.0.3"), "{step}");
+    assert!(!step.contains("ask the person to name it"), "{step}");
+}
+
+#[test]
+fn a_disputed_device_is_shown_as_disputed_with_every_device_named_and_none_given_as_sure() {
+    let other = json!({ "vendor": "Behringer", "model": "BCR2000", "firmware": "1.0.3", "confirmations": 1,
+        "disputed": true, "state": "confirming", "state_label": IN_DISAGREEMENT });
+    let first = unlisted(1, Some("confirming"), Some(IN_DISAGREEMENT), true);
+    let r = learn_with(json!({ "candidates": [], "unlisted": [first, other] }));
+    let all = device(&r, 0)["unlisted"].as_array().unwrap_or_else(|| panic!("{r}"));
+    assert_eq!(all.len(), 2, "{r}");
+    assert!(all.iter().all(|u| u["disputed"] == true && u["state_label"] == IN_DISAGREEMENT), "{r}");
+    assert_eq!(all[1]["model"], "BCR2000", "{r}");
+    assert_eq!(all[1]["confirmations"], 1, "{r}");
+}
+
+#[test]
+fn several_devices_without_a_card_are_all_reported_with_their_confirmations() {
+    let a = unlisted(3, Some("confirming"), Some(BEING_CONFIRMED), false);
+    let b = json!({ "vendor": "Zork", "model": "Thing", "firmware": "2", "confirmations": 7, "disputed": false });
+    let r = learn_with(json!({ "candidates": [], "unlisted": [a, b] }));
+    let all = device(&r, 0)["unlisted"].as_array().unwrap_or_else(|| panic!("{r}"));
+    assert_eq!(all.len(), 2, "{r}");
+    assert_eq!((all[0]["confirmations"].clone(), all[1]["confirmations"].clone()), (json!(3), json!(7)), "{r}");
+    assert!(all[1].get("state").is_none(), "no state: confirmed: {r}");
+}
+
+#[test]
+fn a_device_with_catalogue_candidates_is_never_also_reported_without_a_card() {
+    let r = learn_with(json!({ "candidates": [candidate("arturia/minilab3", "Arturia MiniLab 3")],
+        "unlisted": [unlisted(1, Some("confirming"), Some(BEING_CONFIRMED), false)] }));
+    assert_eq!(device(&r, 0)["driver"]["id"], "arturia/minilab3", "{r}");
+    assert!(device(&r, 0).get("unlisted").is_none(), "{r}");
+}
+
+#[test]
+fn a_catalogue_device_the_service_gives_as_being_confirmed_is_reported_so() {
+    let r = learn_with(json!({ "candidates": [candidate("arturia/minilab3", "Arturia MiniLab 3")],
+        "learned": [{ "id": "arturia/minilab3", "confirmations": 1, "disputed": false,
+            "state": "confirming", "state_label": BEING_CONFIRMED }] }));
+    let driver = &device(&r, 0)["driver"];
+    assert_eq!(driver["id"], "arturia/minilab3", "{r}");
+    assert_eq!(driver["state"], "confirming", "{r}");
+    assert_eq!(driver["state_label"], BEING_CONFIRMED, "{r}");
+    assert_eq!(driver["confirmations"], 1, "{r}");
+}
+
+#[test]
+fn a_catalogue_device_the_service_does_not_list_as_learned_carries_no_state() {
+    let r = learn_with(json!({ "candidates": [candidate("arturia/minilab3", "Arturia MiniLab 3")] }));
+    assert!(device(&r, 0)["driver"].get("state").is_none(), "{r}");
+}
+
+#[test]
+fn an_unreachable_or_unlinked_service_reports_no_device_being_confirmed() {
+    for service in [ServiceMatches::NotLinked, ServiceMatches::Unreachable] {
+        let r = report(&[UNKNOWN], &service);
+        assert!(device(&r, 0).get("unlisted").is_none(), "{r}");
+        assert!(!r.to_string().contains("confirming"), "{r}");
+    }
+}

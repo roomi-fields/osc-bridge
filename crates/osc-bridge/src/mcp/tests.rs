@@ -862,3 +862,167 @@ fn detect_prints_no_usb_line_and_does_not_panic_on_malformed_usb_ids() {
         assert!(text.lines().any(|l| l.starts_with(p)), "port {p} missing");
     }
 }
+
+// ---- detect_hardware: the USB ids go out, a device without a card comes back being confirmed ----
+
+const BEING_CONFIRMED: &str = "being confirmed: not enough people agree yet, to confirm with the person";
+const IN_DISAGREEMENT: &str = "in disagreement: several devices are named for it, to confirm with the person";
+
+/// A service that answers each detect request with `answer(port)` and keeps the requests.
+fn detect_service(answer: fn(&Value) -> Value) -> (crate::online::Online, std::sync::Arc<std::sync::Mutex<Vec<Value>>>, tempfile::TempDir) {
+    let server = tiny_http::Server::http("127.0.0.1:0").unwrap();
+    let base = format!("http://{}", server.server_addr());
+    let bodies = std::sync::Arc::new(std::sync::Mutex::new(Vec::<Value>::new()));
+    let seen = bodies.clone();
+    std::thread::spawn(move || {
+        for mut req in server.incoming_requests() {
+            let mut body = String::new();
+            let _ = std::io::Read::read_to_string(req.as_reader(), &mut body);
+            let asked: Value = serde_json::from_str(&body).unwrap_or(Value::Null);
+            seen.lock().unwrap().push(asked.clone());
+            let ports: Vec<Value> = asked["ports"].as_array().into_iter().flatten().map(answer).collect();
+            let _ = req.respond(tiny_http::Response::from_string(json!({ "ports": ports }).to_string()));
+        }
+    });
+    let dir = tempfile::Builder::new().prefix("osc-bridge-detect-").tempdir().unwrap();
+    let account = dir.path().join("user");
+    std::fs::write(&account, "0123456789abcdef0123456789abcdef\n").unwrap();
+    (crate::online::Online::keeping_account_in(&base, Some(account)), bodies, dir)
+}
+
+fn probed(name: &str, usb: Option<(u16, u16)>) -> crate::detect::Probed {
+    crate::detect::Probed { out_index: Some(0), out_name: Some(name.into()), in_index: Some(0), in_name: Some(name.into()),
+        identity: None, usb, replies: Vec::new() }
+}
+
+fn report_devices(server: &crate::online::Online, found: Vec<crate::detect::Probed>) -> Vec<Value> {
+    let r = detection_report(&fixtures(), Some(server), true, true, found, Vec::new(), &[]).unwrap();
+    r["structuredContent"]["devices"].as_array().unwrap().clone()
+}
+
+fn bcr_unlisted(_: &Value) -> Value {
+    json!({ "candidates": [], "unlisted": [{ "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3",
+        "confirmations": 1, "disputed": false, "state": "confirming", "state_label": BEING_CONFIRMED }] })
+}
+
+#[test]
+fn the_detection_sends_the_usb_ids_of_a_port_that_has_them_as_numbers_and_none_otherwise() {
+    let (client, bodies, _dir) = detect_service(|_| json!({ "candidates": [] }));
+    report_devices(&client, vec![probed("BCR32", Some((0x1397, 0x12cf))), probed("Virtual", None)]);
+    let sent = bodies.lock().unwrap().clone();
+    let ports = sent[0]["ports"].as_array().unwrap();
+    assert_eq!(ports[0]["usb"], json!({ "vendor_id": 5015, "product_id": 4815 }), "{sent:?}");
+    assert!(ports[1].get("usb").is_none(), "{sent:?}");
+    assert_eq!(ports[0]["replies_hex"], json!([]));
+}
+
+#[test]
+fn the_detection_returns_a_device_without_a_card_being_confirmed_with_all_its_fields() {
+    let (client, _bodies, _dir) = detect_service(bcr_unlisted);
+    let devices = report_devices(&client, vec![probed("BCR32", Some((0x1397, 0x12cf)))]);
+    let u = &devices[0]["unlisted"][0];
+    assert_eq!((u["vendor"].clone(), u["model"].clone(), u["firmware"].clone()), (json!("Behringer"), json!("BCR32"), json!("1.0.3")), "{devices:?}");
+    assert_eq!(u["confirmations"], 1);
+    assert_eq!(u["state"], "confirming");
+    assert_eq!(u["state_label"], BEING_CONFIRMED);
+    assert_eq!(devices[0]["candidates"], json!([]));
+    assert!(devices[0]["run_command"].is_null(), "proposed, never run: {devices:?}");
+}
+
+#[test]
+fn the_detection_returns_every_device_without_a_card_and_their_dispute() {
+    let (client, _bodies, _dir) = detect_service(|_| json!({ "candidates": [], "unlisted": [
+        { "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3", "confirmations": 2, "disputed": true,
+          "state": "confirming", "state_label": IN_DISAGREEMENT },
+        { "vendor": "Behringer", "model": "BCR2000", "firmware": "1.0.3", "confirmations": 1, "disputed": true,
+          "state": "confirming", "state_label": IN_DISAGREEMENT }] }));
+    let devices = report_devices(&client, vec![probed("BCR32", None)]);
+    let all = devices[0]["unlisted"].as_array().unwrap();
+    assert_eq!(all.len(), 2, "{devices:?}");
+    assert!(all.iter().all(|u| u["disputed"] == true && u["state_label"] == IN_DISAGREEMENT));
+    assert_eq!((all[0]["confirmations"].clone(), all[1]["confirmations"].clone()), (json!(2), json!(1)));
+}
+
+#[test]
+fn the_detection_reports_catalogue_candidates_and_never_also_a_device_without_a_card() {
+    let (client, _bodies, _dir) = detect_service(|_| json!({
+        "candidates": [{ "device": "acme/box", "name": "Box", "score": 90 }],
+        "unlisted": [{ "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3", "confirmations": 1, "disputed": false }] }));
+    let devices = report_devices(&client, vec![probed("Box", None)]);
+    assert_eq!(devices[0]["candidates"][0]["device"], "acme/box", "{devices:?}");
+    assert!(devices[0].get("unlisted").is_none(), "{devices:?}");
+}
+
+#[test]
+fn the_detection_reports_a_catalogue_candidate_the_service_gives_as_being_confirmed_so() {
+    let (client, _bodies, _dir) = detect_service(|_| json!({
+        "candidates": [{ "device": "acme/box", "name": "Box", "score": 90 }],
+        "learned": [{ "id": "acme/box", "confirmations": 2, "disputed": false, "state": "confirming", "state_label": BEING_CONFIRMED }] }));
+    let devices = report_devices(&client, vec![probed("Box", None)]);
+    let c = &devices[0]["candidates"][0];
+    assert_eq!(c["state"], "confirming", "{devices:?}");
+    assert_eq!(c["state_label"], BEING_CONFIRMED);
+    assert_eq!(c["confirmations"], 2);
+}
+
+#[test]
+fn the_detection_without_a_service_reports_no_device_being_confirmed() {
+    let r = detection_report(&fixtures(), None, true, true, vec![probed("BCR32", Some((0x1397, 0x12cf)))], Vec::new(), &[]).unwrap();
+    assert!(r["structuredContent"]["devices"][0].get("unlisted").is_none(), "{r}");
+}
+
+#[test]
+fn a_device_being_confirmed_still_has_every_maker_request_held_back_without_consent() {
+    use crate::capture::{Capture, FORMAT_VERSION};
+    const MYSTERY: &str = "Mystery Box:Mystery Box 20:0";
+    let capture = Capture::parse(&json!({
+        "format_version": FORMAT_VERSION, "outputs": [MYSTERY], "inputs": [MYSTERY],
+        "cards": "", "usbids": [], "requests": [], "received": [],
+    }).to_string()).unwrap();
+    let probes = vec![crate::detect::Probe { request: vec![0xF0, 0x11, 0xF7], ports: vec![], usb: vec![(0x1c75, 0x020b)], match_ports: vec![] },
+                      crate::detect::Probe { request: vec![0xF0, 0x12, 0xF7], ports: vec![], usb: vec![], match_ports: vec![] }];
+    let plan = held_plan(&capture, &probes, &[]).unwrap();
+    let (client, _bodies, _dir) = detect_service(bcr_unlisted);
+    let with = detection_report(&fixtures(), Some(&client), true, true, crate::detect::replay(&capture), Vec::new(), &plan).unwrap();
+    let without = detection_report(&fixtures(), None, true, true, crate::detect::replay(&capture), Vec::new(), &plan).unwrap();
+    let held = &with["structuredContent"]["devices"][0]["held_back"];
+    assert_eq!(held, &json!([hex_bytes(&[0xF0, 0x11, 0xF7]), hex_bytes(&[0xF0, 0x12, 0xF7])]), "{with}");
+    assert_eq!(held, &without["structuredContent"]["devices"][0]["held_back"]);
+    assert!(with["structuredContent"]["devices"][0].get("unlisted").is_some(), "{with}");
+}
+
+#[test]
+fn the_command_prints_a_device_being_confirmed_with_its_maker_model_firmware_confirmations_and_state() {
+    let devices = [json!({ "port": "BCR32", "out_port": 0, "in_port": 0, "candidates": [],
+        "unlisted": [{ "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3", "confirmations": 4,
+            "disputed": false, "state": "confirming", "state_label": BEING_CONFIRMED }] })];
+    let text = format_detection(&devices, true);
+    for want in ["Behringer", "BCR32", "1.0.3", "4", BEING_CONFIRMED] {
+        assert!(text.contains(want), "{want} in {text}");
+    }
+}
+
+#[test]
+fn the_command_prints_every_device_without_a_card_and_the_dispute() {
+    let devices = [json!({ "port": "BCR32", "out_port": 0, "in_port": 0, "candidates": [],
+        "unlisted": [
+          { "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3", "confirmations": 2, "disputed": true, "state": "confirming", "state_label": IN_DISAGREEMENT },
+          { "vendor": "Zork", "model": "Thing", "firmware": "9", "confirmations": 3, "disputed": true, "state": "confirming", "state_label": IN_DISAGREEMENT }] })];
+    let text = format_detection(&devices, false);
+    assert!(text.contains("BCR32") && text.contains("Thing") && text.contains("Zork"), "{text}");
+    assert!(text.matches(IN_DISAGREEMENT).count() >= 2, "{text}");
+}
+
+#[test]
+fn the_command_prints_a_catalogue_candidate_being_confirmed_with_its_state() {
+    let devices = [json!({ "port": "Box", "out_port": 0, "in_port": 0,
+        "candidates": [{ "device": "acme/box", "file": "acme/box.json", "score": 9, "state": "confirming", "state_label": BEING_CONFIRMED }] })];
+    assert!(format_detection(&devices, false).contains(BEING_CONFIRMED));
+}
+
+#[test]
+fn the_command_prints_nothing_being_confirmed_for_a_device_without_it() {
+    let devices = [json!({ "port": "Box", "out_port": 0, "in_port": 0, "candidates": [] })];
+    let text = format_detection(&devices, false);
+    assert!(!text.contains("confirm"), "{text}");
+}
