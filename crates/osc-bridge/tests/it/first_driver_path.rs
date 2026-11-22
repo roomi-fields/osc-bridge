@@ -39,6 +39,11 @@ fn fake_service() -> (String, Arc<Mutex<Vec<Value>>>) {
 
 /// One linked session (no driver here) making `request`; the tool calls the service received.
 fn linked(request: Value) -> (Value, Vec<Value>) {
+    linked_private(request, &[])
+}
+
+/// The same session with devices the person keeps private on this machine.
+fn linked_private(request: Value, private: &[&str]) -> (Value, Vec<Value>) {
     let _home = super::common::ConfigHome::new();
     let dir = super::common::temp("first-driver");
     let (base, calls) = fake_service();
@@ -46,7 +51,7 @@ fn linked(request: Value) -> (Value, Vec<Value>) {
         devices_dir: None,
         default_target: "127.0.0.1:9".parse().unwrap(),
         online: true,
-        private: vec![],
+        private: private.iter().map(|p| p.to_string()).collect(),
     };
     let input = format!("{request}\n");
     let mut out = Vec::new();
@@ -66,7 +71,9 @@ fn description_of(tool: &str) -> String {
 fn report_mapping_describes_mapping_the_controls_of_a_device_with_no_driver_by_its_fingerprint_name() {
     let d = description_of("report_mapping");
     assert!(d.contains("no driver"), "{d}");
-    assert!(d.contains("fingerprint") && d.contains("vendor/model"), "the device is named by its maker and model as its fingerprint was shared: {d}");
+    assert!(d.contains("fingerprint") && d.contains("vendor") && d.contains("model"), "the device is named by its maker and model as its fingerprint was shared: {d}");
+    assert!(!d.contains("vendor/model") && !d.contains("slug"), "no slugged id is imposed, the service refuses it: {d}");
+    assert!(d.contains("driver id"), "a device with a card keeps its catalogue id: {d}");
     assert!(!d.contains("device_name"), "{d}");
     assert!(d.contains("submit_driver"), "the next step is the first driver: {d}");
 }
@@ -195,14 +202,98 @@ fn a_device_with_no_identity_reply_has_no_proposed_firmware_and_its_step_asks_th
     assert!(step.contains("firmware") && step.contains("ask"), "{step}");
 }
 
+/// The `device` argument a share's next step gives `report_mapping`.
+fn shared_device(vendor: &str, model: &str) -> String {
+    let step = osc_bridge::mcp::shared_next_step(vendor, model);
+    assert!(step.contains("report_mapping") && !step.contains("device_name"), "{step}");
+    let from = step.find("(device: ").unwrap_or_else(|| panic!("no device in {step}")) + "(device: ".len();
+    let len = step[from..].find("); ").unwrap_or_else(|| panic!("device not closed in {step}"));
+    step[from..from + len].to_string()
+}
+
+/// The service's rule, copied here as the test's own aid: a device without a card is named by its
+/// model, or by its maker and model, case-insensitive, spaces reduced to one.
+fn service_accepts(device: &str, vendor: &str, model: &str) -> bool {
+    let norm = |s: &str| s.split_whitespace().collect::<Vec<_>>().join(" ").to_lowercase();
+    let d = norm(device);
+    d == norm(model) || d == norm(&format!("{vendor} {model}"))
+}
+
 #[test]
-fn after_a_share_the_next_step_gives_report_mapping_the_maker_slash_model_id_and_not_the_firmware() {
-    let step = osc_bridge::mcp::shared_next_step("Behringer", "BCR-32");
-    assert!(step.contains("report_mapping") && step.contains("device"), "{step}");
-    assert!(step.contains("behringer/bcr-32"), "{step}");
-    assert!(!step.contains("device_name"), "{step}");
-    let step = osc_bridge::mcp::shared_next_step("Arturia", "MiniLab 3");
-    assert!(step.contains("arturia/minilab-3"), "{step}");
+fn after_a_share_the_next_step_names_the_device_as_the_person_declared_it() {
+    assert_eq!(shared_device("Sequential", "Prophet Rev2"), "Sequential Prophet Rev2");
+    assert_eq!(shared_device("Behringer", "BCR-32"), "Behringer BCR-32");
+    assert_eq!(shared_device("Black Corporation", "Deckard's Dream"), "Black Corporation Deckard's Dream");
+}
+
+#[test]
+fn after_a_share_the_next_step_carries_no_slug_of_the_name() {
+    for (v, m) in [("Sequential", "Prophet Rev2"), ("Arturia", "MiniLab 3"), ("Black Corporation", "Deckard's Dream")] {
+        let step = osc_bridge::mcp::shared_next_step(v, m);
+        assert!(!step.contains('/') && !step.contains("-rev2") && !step.contains("minilab-3") && !step.contains("black-"), "{step}");
+    }
+}
+
+#[test]
+fn a_model_already_starting_with_the_maker_is_given_alone() {
+    assert_eq!(shared_device("Sequential", "Sequential Prophet Rev2"), "Sequential Prophet Rev2");
+    assert_eq!(shared_device("sequential", "SEQUENTIAL Prophet"), "SEQUENTIAL Prophet");
+    assert_eq!(shared_device("Black Corporation", "black corporation Deckard"), "black corporation Deckard");
+}
+
+#[test]
+fn a_model_only_starting_with_the_letters_of_the_maker_is_not_taken_for_it() {
+    assert_eq!(shared_device("Korg", "Korgasm"), "Korg Korgasm");
+}
+
+#[test]
+fn spaces_around_and_inside_the_maker_and_the_model_are_reduced_to_one() {
+    assert_eq!(shared_device("  Arturia ", "  MiniLab   3 "), "Arturia MiniLab 3");
+    assert_eq!(shared_device(" Black   Corporation", "Deckard\t Dream "), "Black Corporation Deckard Dream");
+    assert_eq!(shared_device(" Sequential", "  Sequential   Prophet  Rev2"), "Sequential Prophet Rev2");
+}
+
+#[test]
+fn the_device_of_the_next_step_is_accepted_by_the_services_rule_for_the_shared_devices() {
+    for (v, m) in [("Sequential", "Prophet Rev2"), ("Sequential", "Sequential Prophet Rev2"), ("Black Corporation", "Deckard's Dream"),
+                   ("Black Corporation", "Black Corporation Deckard"), ("  Arturia ", "  MiniLab   3 "), ("Behringer", "BCR-32"),
+                   ("Korg", "Korgasm")] {
+        let device = shared_device(v, m);
+        assert!(service_accepts(&device, v, m), "{device:?} refused for {v:?} / {m:?}");
+        assert!(!device.contains('/') && !device.starts_with(' ') && !device.ends_with(' ') && !device.contains("  "), "{device:?}");
+    }
+}
+
+#[test]
+fn the_next_step_of_an_unknown_device_before_a_share_does_not_impose_the_slugged_id() {
+    let r = report(&["Zork Thing 1"]);
+    let step = device_of(&r, 0)["next_step"].as_str().unwrap().to_lowercase();
+    assert!(step.contains("report_mapping"), "{step}");
+    assert!(!step.contains("vendor/model") && !step.contains("slug"), "{step}");
+    assert!(step.contains("vendor") && step.contains("model"), "{step}");
+}
+
+fn map_call(device: &str, private: &[&str]) -> (Value, Vec<Value>) {
+    linked_private(json!({ "jsonrpc": "2.0", "id": 7, "method": "tools/call", "params": { "name": "report_mapping",
+        "arguments": { "device": device, "label": "Cutoff", "cc": 74, "channel": 1 } } }), private)
+}
+
+#[test]
+fn a_mapping_named_as_the_next_step_gives_it_is_refused_when_the_private_list_covers_the_device() {
+    for private in ["sequential/prophet-rev2", "sequential/*"] {
+        let (reply, calls) = map_call("Sequential Prophet Rev2", &[private]);
+        assert!(reply.get("error").is_some() || reply["result"]["isError"] == true, "{private}: {reply}");
+        assert!(calls.is_empty(), "{private}: a private device is not sent: {calls:?}");
+    }
+}
+
+#[test]
+fn a_mapping_named_as_the_next_step_gives_it_is_forwarded_when_nothing_is_private() {
+    let (reply, calls) = map_call("Sequential Prophet Rev2", &[]);
+    assert!(reply.get("error").is_none() && reply["result"]["isError"] != true, "{reply}");
+    assert_eq!(calls.len(), 1, "{calls:?}");
+    let (_, calls) = map_call("Sequential Prophet Rev2", &["korg/*", "arturia/minilab-3"]);
+    assert_eq!(calls.len(), 1, "another device's privacy does not stop it: {calls:?}");
 }
 
 #[test]

@@ -1035,11 +1035,11 @@ pub fn tool_schemas() -> Value {
             },
             {
                 "name": "report_mapping",
-                "description": "Teach the catalogue which MIDI message a control really sends: after the user moved one control on the device (see relay_listen), give the driver address it is (from list_routes) — or, for a control the driver lacks, its panel label — and the CC, NRPN or note it sent, with the firmware and the device's Identity Reply when you have them. When several accounts observe the same thing on one firmware the mapping is learned; get_trust shows learned mappings and where they differ from the driver. For a device with no driver, the first step of its first driver: after detect_hardware in learn mode (its next_step), the person gives its vendor, model and firmware (share_fingerprint), and you map its controls one by one with device set to its vendor/model id (the slugs of the vendor and the model, e.g. behringer/bcr-32); the mappings then make the first driver you send with submit_driver.",
+                "description": "Teach the catalogue which MIDI message a control really sends: after the user moved one control on the device (see relay_listen), give the driver address it is (from list_routes) — or, for a control the driver lacks, its panel label — and the CC, NRPN or note it sent, with the firmware and the device's Identity Reply when you have them. When several accounts observe the same thing on one firmware the mapping is learned; get_trust shows learned mappings and where they differ from the driver. For a device with no driver, the first step of its first driver: after detect_hardware in learn mode (its next_step), the person gives its vendor, model and firmware (share_fingerprint), and you map its controls one by one with device set to its vendor and model as its fingerprint was shared (e.g. Behringer BCR-32), a device with a driver keeping its driver id; the mappings then make the first driver you send with submit_driver.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
-                        "device": { "type": "string", "description": "Driver id or OSC prefix; for a device with no driver yet, its vendor/model id as its fingerprint was shared (e.g. behringer/bcr-32)." },
+                        "device": { "type": "string", "description": "Driver id or OSC prefix; for a device with no driver yet, its vendor and model as its fingerprint was shared (e.g. Behringer BCR-32)." },
                         "address": { "type": "string", "description": "The driver's OSC address for the control." },
                         "label": { "type": "string", "description": "The control's panel label, when the driver has no address for it." },
                         "cc": { "type": "integer", "minimum": 0, "maximum": 127 },
@@ -1501,6 +1501,9 @@ fn private_device(index: &DeviceIndex, opts: &McpOptions, args: &Value) -> Optio
         if covers(wanted, wanted) {
             return Some(index.find(wanted).map(|e| e.id.clone()).unwrap_or_else(|| wanted.to_string()));
         }
+        if index.find(wanted).is_none() && covers_declared(private, wanted) {
+            return Some(wanted.to_string());
+        }
         let entry = index.find(wanted)?;
         return covers(&entry.id, &entry.slug).then(|| entry.id.clone());
     }
@@ -1946,7 +1949,7 @@ fn firmware_ask(proposed: Option<&str>) -> String {
 
 /// The next step of an unknown device, worded by what was looked at.
 fn next_step(service: &ServiceMatches, proposed_firmware: Option<&str>) -> String {
-    let ask = format!("{NEXT_STEP_ASK}{} Then map its controls one by one with report_mapping, device being its vendor/model id; a first driver built from the mappings goes to submit_driver.",
+    let ask = format!("{NEXT_STEP_ASK}{} Then map its controls one by one with report_mapping, device being its vendor and model as shared (e.g. Behringer BCR-32); a first driver built from the mappings goes to submit_driver.",
         firmware_ask(proposed_firmware));
     match service {
         ServiceMatches::Answered(_) => format!("Neither the local catalogue nor SynthHub knows this device. {ask}"),
@@ -1974,10 +1977,29 @@ fn being_confirmed_step(unlisted: &[Value]) -> String {
 }
 
 /// The next step once a fingerprint is shared: the mappings go to `report_mapping` under the
-/// device id `vendor/model`, the firmware not being part of it.
+/// device named as the service accepts it, « maker model » as the person declared it, the firmware
+/// not being part of it.
 pub fn shared_next_step(vendor: &str, model: &str) -> String {
     format!("Map its controls one by one with report_mapping (device: {}); a first driver built from the mappings goes to submit_driver.",
-        device_id(vendor, model))
+        declared_name(vendor, model))
+}
+
+/// The name of a device without a card as the service accepts it: the model alone when it already
+/// starts with the maker (whole word, case ignored), else the maker and the model; spaces reduced.
+fn declared_name(vendor: &str, model: &str) -> String {
+    let (v, m): (Vec<&str>, Vec<&str>) = (vendor.split_whitespace().collect(), model.split_whitespace().collect());
+    let starts = !v.is_empty() && m.len() >= v.len() && v.iter().zip(&m).all(|(a, b)| a.eq_ignore_ascii_case(b));
+    if starts { m.join(" ") } else { v.into_iter().chain(m).collect::<Vec<_>>().join(" ") }
+}
+
+/// Whether `private` covers a device named « maker model » without a card: its slug is compared
+/// to the list under each cut of the words into maker and model.
+fn covers_declared(private: &[String], name: &str) -> bool {
+    let words: Vec<&str> = name.split_whitespace().collect();
+    (1..=words.len()).any(|k| {
+        let id = format!("{}/{}", slugify(&words[..k].join(" "), '-'), slugify(&words[k..].join(" "), '-'));
+        crate::online::Settings::covers(private, &id, &id)
+    })
 }
 
 /// The id of a device the catalogue does not describe: its vendor and model, slugged.

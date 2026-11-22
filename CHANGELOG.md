@@ -11,6 +11,14 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Fixed
+
+- After a fingerprint is shared, the next step gives `report_mapping` the device as the person declared
+  it (« maker model », spaces reduced, the model alone when it already starts with the maker), the form
+  the service accepts for a device without a card, instead of the slugged `vendor/model` id. The learn
+  report and the `device` description of `report_mapping` say the same, and the private-device guard
+  covers a call named so.
+
 ## [0.24.0] — 2026-11-22
 
 ### Fixed — a software port gets no hardware card from the service either
