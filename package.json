@@ -11,7 +11,8 @@
     "grillhouse:dette:elaguer": "GRILLHOUSE_DETTE=elaguer npm run --silent grillhouse:gardes",
     "test": "grillhouse tests",
     "test:forcer": "grillhouse tests --force",
-    "verifier": "grillhouse verifier"
+    "verifier": "grillhouse verifier",
+    "ci:preparer": "bash scripts/ci_preparer.sh"
   },
   "devDependencies": {
     "@roomi-fields/grillhouse": "^0.48.0",
@@ -25,6 +26,13 @@
         "osc-bridge"
       ],
       ".github/workflows/cla.yml": [],
+      ".github/workflows/platforms.yml": [
+        "osc-bridge"
+      ],
+      ".github/workflows/release.yml": [
+        "osc-bridge"
+      ],
+      ".github/workflows/version-mirrors.yml": [],
       ".github/workflows/docs.yml": []
     },
     "groupe": [

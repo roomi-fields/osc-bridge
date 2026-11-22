@@ -19,7 +19,7 @@ Legend: ✅ live · ⚠️ submitted, pending · 🔄 auto-indexing in progress 
 
 | Channel | Status | Notes |
 |---|---|---|
-| npm — `@roomi-fields/osc-bridge` | ✅ | v0.16.0 (2026-10-24), catalogue bundled up to 0.16 (later versions fetch each driver from SynthHub), README leads with the hosted endpoint; published by npm trusted publishing from `ci.yml` (no token) |
+| npm — `@roomi-fields/osc-bridge` | ✅ | v0.16.0 (2026-10-24), catalogue bundled up to 0.16 (later versions fetch each driver from SynthHub), README leads with the hosted endpoint; published by npm trusted publishing from `release.yml` (no token) |
 | Official MCP Registry — `io.github.roomi-fields/osc-bridge` | ✅ | v0.16.0 published 2026-10-24 by the release job (OIDC), remote `mcp.synthhub.roomi-fields.com/mcp` |
 | GitHub repo metadata | ✅ | public; About description + homepage (Pages site) set to the 3-strata framing; topics include `mcp`, `mcp-server`, `model-context-protocol`, `midi`, `osc`, `claude`, `ableton`, `bitwig`, `reaper`, `daw`, `live-coding` (20-topic cap reached — dropped the long-tail vendor topics) |
 | `roomi-fields/claude-plugins` marketplace | ✅ | entry added 2026-05-14 |

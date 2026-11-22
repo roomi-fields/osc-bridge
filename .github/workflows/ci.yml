@@ -1,162 +1,190 @@
+# Généré par `npx grillhouse maj` depuis le gabarit du cadre ; ne pas éditer : la mise à jour le réécrit. Un workflow sans cette ligne est au projet, et la mise à jour n'y touche pas.
+#
+# The CI of a lot: the verification of the frame (`npm run verifier`) in tranches, as Grillhouse
+# plays its own (its .github/workflows/ci.yml).
 name: CI
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-  release:
-    types: [ published ]
-  # Re-publishes the npm wrapper of an existing release (binaries already
-  # attached), e.g. when the release's own publish step failed.
+  # The CI plays on main by batches, as Google's TAP plays the whole suite after the submit: once an
+  # hour at most, on the tip of main, which judges every lot entered since its last pass. The queue of
+  # the project starts it after a lot entered (`gh workflow run`, scripts/ci-de-main.mjs): it keeps
+  # no clock of its own. A lot enters main on its final pass and waits for no CI; no push, no pull
+  # request and no branch agent/** starts it.
   workflow_dispatch:
+  # A release plays the CI on the tagged commit before it publishes.
+  workflow_call:
+
+# The pass of the verification in n + 2 jobs per version of Node, as Vitest shards a run
+# (https://vitest.dev/guide/improving-performance#sharding): `gardes` plays every task but the
+# tests (`npm run verifier -- --sans-tests`), each job of `tranches` the tests of its tranche
+# (`npm run verifier -- --tranche i/n`), and `fusion` merges the reports of the n tranches, which it
+# refuses when a file of the pass is missing or played twice. TRANCHES is n, and the matrix of
+# `tranches` lists 1 to n: both change together. The build of the project is proven by `gardes`:
+# its guard tasks wait for the build of every package, so no job builds a second time.
+env:
+  TRANCHES: 3
+
+  # The remote cache of Turborepo (grillhouse-44b.12.6), the server the repository's variables
+  # TURBO_API and TURBO_TEAM name, its token and the key of its signature in the secrets
+  # TURBO_TOKEN and TURBO_REMOTE_CACHE_SIGNATURE_KEY (Settings > Secrets and variables > Actions),
+  # never in this file. The run of main, started by the queue or by hand, writes it; every other run reads it alone. Without TURBO_API the cache is
+  # the runner's local cache, as before. No step of the workflow touches the cache.
+  TURBO_API: ${{ vars.TURBO_API }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY }}
+  TURBO_CACHE: ${{ !vars.TURBO_API && 'local:rw' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && 'local:rw,remote:rw' || 'local:rw,remote:r') }}
+
+# The machine of every job: the repository's variable RUNNER (Settings > Secrets and variables >
+# Actions > Variables), a label in JSON (`"ubuntu-latest"`) or a list of labels
+# (`["self-hosted","linux"]`); GitHub's ubuntu-latest without it. The variable lives in the
+# repository's settings, never in this file.
 
 jobs:
-  test:
-    name: Test on ${{ matrix.os }}
-    # Only run the test suite on push / PR. Releases reuse whatever main-branch
-    # CI previously validated; we don't want a retroactively-tagged historical
-    # commit (with a since-fixed bug) to fail CI here.
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
-    runs-on: ${{ matrix.os }}
+  gardes:
+    runs-on: ${{ fromJSON(vars.RUNNER || '"ubuntu-latest"') }}
+
+    # Node 26 alone, whatever the trigger.
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: clippy
-      - name: Install ALSA dev headers (Linux)
-        if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y libasound2-dev
-      - name: Clippy, warnings denied
-        run: cargo clippy --workspace --all-targets -- -D warnings
-      - name: Build
-        run: cargo build --release --verbose
-      - name: Build the tests
-        run: cargo test --workspace --release --no-run
-      # The tests get a temporary folder of this run only (TMPDIR on Linux and
-      # macOS, TMP and TEMP on Windows), so whatever is left in it is theirs:
-      # the step fails on any entry left behind, failed tests included (they
-      # all run, and the folder is checked whatever their result).
-      - name: Unit tests, leaving no temporary file behind
-        shell: bash
-        env:
-          TESTS_TMP: ${{ runner.temp }}/osc-bridge-tests
-        run: |
-          # On Windows, a path both bash and the tests read (D:/a/_temp/...).
-          if command -v cygpath >/dev/null; then TESTS_TMP=$(cygpath -m "$TESTS_TMP"); fi
-          mkdir -p "$TESTS_TMP"
-          status=0
-          # The day's run plays the libraries, the binaries, the `it` suite and
-          # the doctests; the time benches (`it_budget`) are night benches,
-          # measured at rest, so they are not played on a shared runner.
-          for args in "--lib --bins --test it" "--doc"; do
-            # shellcheck disable=SC2086
-            TMPDIR="$TESTS_TMP" TMP="$TESTS_TMP" TEMP="$TESTS_TMP" cargo test --workspace --release --no-fail-fast --verbose $args || status=$?
-          done
-          left=$(ls -A "$TESTS_TMP")
-          if [ -n "$left" ]; then
-            echo "::error::the tests left these in their temporary folder:"
-            echo "$left"
-            exit 1
-          fi
-          exit $status
-      - name: Inspect a test driver
-        run: cargo run --release -- inspect
-          crates/osc-bridge/tests/fixtures/devices/novation/launch-control-xl-3.json
-      - name: Version mirrors are in sync with Cargo.toml
-        if: runner.os == 'Linux'
-        run: python3 scripts/sync_version.py --check
+        node-version: ['26.x']
 
-  release:
-    name: Release binary on ${{ matrix.target }}
-    if: github.event_name == 'release'
-    runs-on: ${{ matrix.os }}
-    permissions:
-      contents: write # needed by softprops/action-gh-release to attach assets
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          # The submodules of the project, a private one read by the repository's secret SOUS_MODULES
+          # (a token that reads it); without the secret, the workflow's own token.
+          submodules: recursive
+          token: ${{ secrets.SOUS_MODULES || github.token }}
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      # uv, which the frame's module python plays, for a project with packages of Python; a runner
+      # of the repository brings its own.
+      - name: Install uv
+        if: runner.environment == 'github-hosted' && (hashFiles('**/pyproject.toml') != '' || hashFiles('**/CMakeLists.txt') != '')
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies
+        run: npm ci
+
+      # The project's preparation (system packages, toolchains), when its package.json has the
+      # script `ci:preparer`; it may export variables to the next steps through $GITHUB_ENV.
+      - name: Prepare the project
+        run: npm run --if-present ci:preparer
+
+      # The binaries of the project's languages that the verification runs (cargo's sccache,
+      # nextest and cargo-deny, python's uv), each at its version; none for TypeScript alone.
+      - name: Install the binaries of the languages
+        run: npx --no-install grillhouse binaires
+
+      # Build, guards, typing, formatting and lint: every task of the pass but the tests; the guard
+      # tasks wait for the build of every package, which proves the project builds.
+      - name: Verification without the tests
+        run: npm run verifier -- --sans-tests
+
+  tranches:
+    runs-on: ${{ fromJSON(vars.RUNNER || '"ubuntu-latest"') }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['26.x']
+        tranche: [1, 2, 3]
+
+    steps:
+      # The whole history, for the guards that read it.
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          # The submodules of the project, a private one read by the repository's secret SOUS_MODULES
+          # (a token that reads it); without the secret, the workflow's own token.
+          submodules: recursive
+          token: ${{ secrets.SOUS_MODULES || github.token }}
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install uv
+        if: runner.environment == 'github-hosted' && (hashFiles('**/pyproject.toml') != '' || hashFiles('**/CMakeLists.txt') != '')
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies
+        run: npm ci
+
+      # The project's preparation (system packages, toolchains), when its package.json has the
+      # script `ci:preparer`; it may export variables to the next steps through $GITHUB_ENV.
+      - name: Prepare the project
+        run: npm run --if-present ci:preparer
+
+      # The binaries of the project's languages that the verification runs (cargo's sccache,
+      # nextest and cargo-deny, python's uv), each at its version; none for TypeScript alone.
+      - name: Install the binaries of the languages
+        run: npx --no-install grillhouse binaires
+
+      # The tests of the tranche, with the builds they depend on: the complete pass, with no base.
+      - name: Tranche ${{ matrix.tranche }}
+        run: npm run verifier -- ${{ format('--tranche {0}/{1}', matrix.tranche, env.TRANCHES) }}
+
+      # The reports of the tranche (Vitest's blob and the files of its part), red or green, which
+      # the job fusion merges.
+      - name: Reports of the tranche
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: tranche-${{ matrix.node-version }}-${{ matrix.tranche }}
+          path: .vitest-reports/
+          include-hidden-files: true
+          # A pass with no test file writes none.
+          if-no-files-found: warn
+          retention-days: 7
+
+  fusion:
+    needs: tranches
+    if: ${{ !cancelled() }}
+    runs-on: ${{ fromJSON(vars.RUNNER || '"ubuntu-latest"') }}
+
     strategy:
       matrix:
-        include:
-          - target: x86_64-unknown-linux-gnu
-            os: ubuntu-latest
-            suffix: linux-x86_64
-          - target: x86_64-pc-windows-msvc
-            os: windows-latest
-            suffix: windows-x86_64.exe
-          - target: aarch64-apple-darwin
-            os: macos-latest
-            suffix: macos-arm64
-          - target: x86_64-apple-darwin
-            os: macos-latest
-            suffix: macos-x86_64
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-      - name: Install ALSA dev headers (Linux)
-        if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y libasound2-dev
-      - name: Build release
-        run: cargo build --release --target ${{ matrix.target }}
-      - name: Rename artifact
-        shell: bash
-        run: |
-          set -e
-          src=target/${{ matrix.target }}/release/osc-bridge
-          [ -f "${src}.exe" ] && src="${src}.exe"
-          cp "$src" "osc-bridge-${{ matrix.suffix }}"
-      - name: Upload to release
-        uses: softprops/action-gh-release@v2
-        with:
-          # Only upload the binary: the drivers come from the SynthHub server.
-          files: |
-            osc-bridge-${{ matrix.suffix }}
+        node-version: ['26.x']
 
-  npm-publish:
-    name: Publish npm wrapper
-    # Runs after every binary leg of `release` so the prebuilt binaries are
-    # attached before the wrapper goes live — the npm postinstall downloads
-    # them from the release. Published by npm trusted publishing (this
-    # repository + ci.yml are the package's trusted publisher): no token.
-    if: >-
-      !cancelled() && needs.release.result != 'failure' && (github.event_name ==
-      'release' || github.event_name == 'workflow_dispatch')
-    needs: release
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v5
         with:
-          node-version: '26'
-          registry-url: 'https://registry.npmjs.org'
-      - name: Version mirrors are in sync with Cargo.toml
-        run: python3 scripts/sync_version.py --check
-      - name: Publish @roomi-fields/osc-bridge
-        working-directory: npm
-        # Skipped when this version is already on npm (a re-run that only
-        # needs the registry step below).
-        run: |
-          v=$(node -p "require('./package.json').version")
-          if [ "$(npm view "@roomi-fields/osc-bridge@$v" version 2>/dev/null)" = "$v" ]; then
-            echo "$v is already on npm."
-          else
-            npm publish --access public
-          fi
-      - name: Publish to the official MCP Registry
-        # server.json names the npm package just published; the registry
-        # checks it, so this runs after npm. Authenticated through OIDC.
-        run: |
-          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/download/v1.7.9/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
-          v=$(node -p "require('./npm/package.json').version")
-          # npm can take a minute to show a version it just accepted.
-          for i in $(seq 1 30); do
-            [ "$(npm view "@roomi-fields/osc-bridge@$v" version 2>/dev/null)" = "$v" ] && break
-            sleep 10
-          done
-          ./mcp-publisher login github-oidc
-          ./mcp-publisher publish
+          # The submodules of the project, a private one read by the repository's secret SOUS_MODULES
+          # (a token that reads it); without the secret, the workflow's own token.
+          submodules: recursive
+          token: ${{ secrets.SOUS_MODULES || github.token }}
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Reports of the tranches
+        uses: actions/download-artifact@v4
+        with:
+          pattern: tranche-${{ matrix.node-version }}-*
+          path: .vitest-reports
+          merge-multiple: true
+
+      # Each file of Vitest's pass played by one tranche exactly, then one report of the n tranches.
+      # The tests of Rust (nextest's `--partition hash:i/n`) and of Python (the first tranche alone)
+      # have no report to merge: the job of their tranche is red on their red.
+      - name: Merge of the tranches
+        run: npx --no-install grillhouse fusion-des-tranches

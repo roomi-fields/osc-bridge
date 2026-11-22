@@ -1122,7 +1122,9 @@ fn an_identity_reply_the_card_recognises_proposes_the_run_command_in_the_detecti
     port.replies = vec![acme.reply()];
     let r = detection_report(&fixtures(), None, true, true, vec![port], Vec::new(), &[]).unwrap();
     let d = &r["structuredContent"]["devices"][0];
-    assert!(d["run_command"].as_str().unwrap().contains("acme/box"), "{r}");
+    let file = d["candidates"][0]["file"].as_str().unwrap();
+    assert!(file.contains("box.vendor.fw-2"), "{r}");
+    assert!(d["run_command"].as_str().unwrap().contains(&format!("--device {file} ")), "{r}");
     assert!(format_detection(std::slice::from_ref(d), true).contains("because: identity reply (strong)"), "{r}");
 }
 

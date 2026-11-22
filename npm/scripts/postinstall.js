@@ -3,7 +3,7 @@
 // matching this package's version, into vendor/. Runs automatically on
 // `npm install`.
 //
-// Asset names must stay in sync with .github/workflows/ci.yml (the release job).
+// Asset names must stay in sync with .github/workflows/release.yml (the release job).
 "use strict";
 
 const { createWriteStream, mkdirSync, chmodSync, existsSync, unlinkSync } = require("node:fs");

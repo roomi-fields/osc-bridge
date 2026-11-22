@@ -1,0 +1,108 @@
+# The tests the frame's ci.yml does not play. It runs on the project's Linux machine, on main, by hand
+# or when called: so macOS and Windows are played here on each push to main and each pull request, and
+# Linux on pull requests only (the repository is public and receives outside pull requests, which the
+# frame's file does not play).
+name: Platforms
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macos-latest, windows-latest ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - name: Clippy, warnings denied
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Build
+        run: cargo build --release --verbose
+      - name: Build the tests
+        run: cargo test --workspace --release --no-run
+      # The tests get a temporary folder of this run only (TMPDIR on Linux and
+      # macOS, TMP and TEMP on Windows), so whatever is left in it is theirs:
+      # the step fails on any entry left behind, failed tests included (they
+      # all run, and the folder is checked whatever their result).
+      - name: Unit tests, leaving no temporary file behind
+        shell: bash
+        env:
+          TESTS_TMP: ${{ runner.temp }}/osc-bridge-tests
+        run: |
+          # On Windows, a path both bash and the tests read (D:/a/_temp/...).
+          if command -v cygpath >/dev/null; then TESTS_TMP=$(cygpath -m "$TESTS_TMP"); fi
+          mkdir -p "$TESTS_TMP"
+          status=0
+          # The day's run plays the libraries, the binaries, the `it` suite and
+          # the doctests; the time benches (`it_budget`) are night benches,
+          # measured at rest, so they are not played on a shared runner.
+          for args in "--lib --bins --test it" "--doc"; do
+            # shellcheck disable=SC2086
+            TMPDIR="$TESTS_TMP" TMP="$TESTS_TMP" TEMP="$TESTS_TMP" cargo test --workspace --release --no-fail-fast --verbose $args || status=$?
+          done
+          left=$(ls -A "$TESTS_TMP")
+          if [ -n "$left" ]; then
+            echo "::error::the tests left these in their temporary folder:"
+            echo "$left"
+            exit 1
+          fi
+          exit $status
+      - name: Inspect a test driver
+        run: cargo run --release -- inspect
+          crates/osc-bridge/tests/fixtures/devices/novation/launch-control-xl-3.json
+
+  test-linux:
+    name: Test on ubuntu-latest
+    # Pull requests only: the frame's ci.yml plays Linux on main, and does not play pull requests.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - name: Install ALSA dev headers
+        run: sudo apt-get update && sudo apt-get install -y libasound2-dev
+      - name: Clippy, warnings denied
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Build
+        run: cargo build --release --verbose
+      - name: Build the tests
+        run: cargo test --workspace --release --no-run
+      # The tests get a temporary folder of this run only (TMPDIR on Linux and
+      # macOS, TMP and TEMP on Windows), so whatever is left in it is theirs:
+      # the step fails on any entry left behind, failed tests included (they
+      # all run, and the folder is checked whatever their result).
+      - name: Unit tests, leaving no temporary file behind
+        shell: bash
+        env:
+          TESTS_TMP: ${{ runner.temp }}/osc-bridge-tests
+        run: |
+          # On Windows, a path both bash and the tests read (D:/a/_temp/...).
+          if command -v cygpath >/dev/null; then TESTS_TMP=$(cygpath -m "$TESTS_TMP"); fi
+          mkdir -p "$TESTS_TMP"
+          status=0
+          # The day's run plays the libraries, the binaries, the `it` suite and
+          # the doctests; the time benches (`it_budget`) are night benches,
+          # measured at rest, so they are not played on a shared runner.
+          for args in "--lib --bins --test it" "--doc"; do
+            # shellcheck disable=SC2086
+            TMPDIR="$TESTS_TMP" TMP="$TESTS_TMP" TEMP="$TESTS_TMP" cargo test --workspace --release --no-fail-fast --verbose $args || status=$?
+          done
+          left=$(ls -A "$TESTS_TMP")
+          if [ -n "$left" ]; then
+            echo "::error::the tests left these in their temporary folder:"
+            echo "$left"
+            exit 1
+          fi
+          exit $status
+      - name: Inspect a test driver
+        run: cargo run --release -- inspect
+          crates/osc-bridge/tests/fixtures/devices/novation/launch-control-xl-3.json
