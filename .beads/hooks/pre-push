@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# Night branch guard (Grillhouse): only the night pushes the branch of grillhouse.poussee.nuit, after its green. Without the package @roomi-fields/grillhouse installed, nothing.
+# Judged main guard (Grillhouse): main receives only a tree a final pass or a verification judged green; a project that carries the retired grillhouse.poussee is refused. Without the package @roomi-fields/grillhouse installed, nothing.
 _gh_commande="$(git rev-parse --show-toplevel)/node_modules/.bin/grillhouse"
 if [ -x "$_gh_commande" ]; then _gh_entree=$(mktemp) && cat > "$_gh_entree" && "$_gh_commande" hook pre-push "$@" < "$_gh_entree" || { rm -f "$_gh_entree"; exit 1; }; exec < "$_gh_entree"; rm -f "$_gh_entree"; fi
 
