@@ -45,5 +45,5 @@ A run started by hand republishes the npm package of an existing release, and do
 
 ## Risks
 
-- The installer's file names and the CI's are written in two places (`npm/scripts/postinstall.js`, `.github/workflows/ci.yml`); a platform added in one and not the other fails only at install.
+- The installer's file names and the CI's are written in two places (`npm/scripts/postinstall.js`, `.github/workflows/release.yml`); a platform added in one and not the other fails only at install.
 - No program is built for Linux ARM or Windows ARM; a person there builds from source.

@@ -1,0 +1,17 @@
+# The version mirrors (npm/, server.json, ...) equal the version of Cargo.toml: the check that the
+# project's former ci.yml ran on Linux at each push and pull request.
+name: Version mirrors
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  mirrors:
+    name: Version mirrors are in sync with Cargo.toml
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Version mirrors are in sync with Cargo.toml
+        run: python3 scripts/sync_version.py --check
