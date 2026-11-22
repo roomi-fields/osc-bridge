@@ -669,7 +669,7 @@ impl Online {
         if status != 200 { bail!("detect probes: HTTP {status}"); }
         v["probes"].as_array().into_iter().flatten().map(|p| {
             let request = crate::librarian::parse_hex(p["request_hex"].as_str().unwrap_or_default())?;
-            if request.first() != Some(&0xF0) || request.last() != Some(&0xF7) { bail!("a detect probe is not one SysEx message"); }
+            if let Some(fault) = crate::detect::maker_request_fault(&request) { bail!("a detect probe of the service: {fault}"); }
             let ports = p["ports"].as_array().into_iter().flatten().filter_map(Value::as_str).map(str::to_string).collect();
             // `usb` and `match_ports` are optional: a probe without them is held back without consent.
             let usb = p["usb"].as_array().into_iter().flatten().filter_map(|u| {

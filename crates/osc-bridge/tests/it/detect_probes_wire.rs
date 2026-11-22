@@ -18,6 +18,11 @@ fn probe(tag: u8, ports: &[&str], usb: &[(u16, u16)], names: &[&str]) -> Probe {
 
 /// A service answering `GET /v1/detect` with `body`; the probes a client reads from it.
 fn read_back(body: &Value) -> Vec<Probe> {
+    try_read_back(body).unwrap()
+}
+
+/// The same, with the client's refusal kept.
+fn try_read_back(body: &Value) -> anyhow::Result<Vec<Probe>> {
     let server = tiny_http::Server::http("127.0.0.1:0").unwrap();
     let base = format!("http://{}", server.server_addr());
     let payload = body.to_string();
@@ -31,9 +36,32 @@ fn read_back(body: &Value) -> Vec<Probe> {
     std::fs::create_dir_all(account.parent().unwrap()).unwrap();
     std::fs::write(&account, "0123456789abcdef0123456789abcdef\n").unwrap();
     let online = Online::keeping_account_in(&base, Some(account));
-    let probes = online.probes().unwrap();
+    let probes = online.probes();
     handle.join().unwrap();
     probes
+}
+
+#[test]
+fn a_request_of_the_service_that_is_not_one_short_sysex_message_is_refused_and_told() {
+    for (hex, why) in [
+        ("F0 7D 01", "no F7"),
+        ("7D 01 F7", "no F0"),
+        ("F0 7D 90 3C F7", "a status byte inside"),
+        ("F0 7D F7 F0 7D F7", "two messages"),
+        ("F0 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F 20 F7", "33 bytes"),
+    ] {
+        let body = json!({ "probes": [{ "request_hex": "F0 7D 01 F7" }, { "request_hex": hex }] });
+        let err = try_read_back(&body).expect_err(why).to_string();
+        assert!(err.contains(hex), "{why}: the refusal tells the bytes: {err}");
+    }
+}
+
+#[test]
+fn a_request_of_the_service_of_32_bytes_is_read_back() {
+    let hex = format!("F0 {}F7", "01 ".repeat(30));
+    let probes = read_back(&json!({ "probes": [{ "request_hex": hex }] }));
+    assert_eq!(probes.len(), 1);
+    assert_eq!(probes[0].request.len(), 32);
 }
 
 #[test]

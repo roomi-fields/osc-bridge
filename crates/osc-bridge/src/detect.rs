@@ -135,16 +135,24 @@ pub struct Probe {
     pub match_ports: Vec<String>,
 }
 
-impl Probe {
-    /// The request goes to `port` without the person's consent: a port whose USB ids were read
-    /// is matched by them alone; a port with none, by its name. A probe with neither is never safe.
-    pub fn safe_for(&self, port: &str, usb: Option<(u16, u16)>) -> bool {
-        match usb {
-            Some(ids) => self.usb.contains(&ids),
-            None => port_matches(&self.match_ports, port),
-        }
+/// Why `request`, received from the service, is no maker request this copy may hold: it must be
+/// one SysEx message (F0, F7, no status byte between) of at most `MAKER_REQUEST_MAX` bytes.
+pub fn maker_request_fault(request: &[u8]) -> Option<String> {
+    let hex = request.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ");
+    if request.first() != Some(&0xF0) || request.last() != Some(&0xF7) || request.len() < 2 {
+        return Some(format!("a maker request must start with F0 and end with F7: refused {hex}"));
     }
+    if request[1..request.len() - 1].iter().any(|b| *b >= 0x80) {
+        return Some(format!("a maker request must be one SysEx message, with no status byte between F0 and F7: refused {hex}"));
+    }
+    if request.len() > MAKER_REQUEST_MAX {
+        return Some(format!("a maker request is at most {MAKER_REQUEST_MAX} bytes, this one has {}: refused {hex}", request.len()));
+    }
+    None
 }
+
+/// The longest maker request a copy accepts from the service.
+pub const MAKER_REQUEST_MAX: usize = 32;
 
 /// What one output port receives while detecting: the requests sent (the universal one first)
 /// and the maker requests held back for want of the person's consent.
@@ -156,14 +164,14 @@ pub struct PortSends {
 }
 
 /// The requests each of `ports` (name, USB ids read) receives: the universal request, the maker
-/// requests safe for it, and every other one when its index is in `consent`. Computed once,
-/// before any send.
+/// requests of the makers only when its index is in `consent`, whatever designates the port
+/// (its USB ids included, which the plan does not read). Computed once, before any send.
 pub fn send_plan(ports: &[(String, Option<(u16, u16)>)], probes: &[Probe], consent: &[usize]) -> Vec<PortSends> {
-    ports.iter().enumerate().map(|(i, (port, usb))| {
+    ports.iter().enumerate().map(|(i, (port, _usb))| {
         let mut sent = vec![IDENTITY_REQUEST.to_vec()];
         let mut held: Vec<Vec<u8>> = Vec::new();
         for p in probes {
-            if p.safe_for(port, *usb) || consent.contains(&i) {
+            if consent.contains(&i) {
                 if !sent.contains(&p.request) { sent.push(p.request.clone()); }
             } else if !held.contains(&p.request) {
                 held.push(p.request.clone());

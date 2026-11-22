@@ -151,10 +151,45 @@ fn a_maker_request_and_its_text_tell_a_firmware_apart() {
 
     let all = probes(cat.iter().filter_map(|c| c.identity.as_ref().map(|i| (c.slug.as_str(), i)))).probes;
     assert_eq!(all.len(), 2, "the universal request is not a probe: {all:?}");
-    let felucca = all.iter().find(|p| p.request[1] == 0x7D).unwrap();
-    assert!(felucca.safe_for("FM-1 Midi", None) && !felucca.safe_for("Digitakt", None), "sent only where it is safe");
-    assert!(!all.iter().find(|p| p.request[1] == 0x00).unwrap().safe_for("anything", None),
-        "a request that names no usb id and no port name is held back");
+    let plan = send_plan(&[("FM-1 Midi".to_string(), None), ("Digitakt".to_string(), None)], &all, &[]);
+    for sends in &plan {
+        assert_eq!(sends.sent, vec![IDENTITY_REQUEST.to_vec()], "{}: no maker request without consent", sends.port);
+        assert_eq!(sends.held.len(), 2, "{}", sends.port);
+    }
+}
+
+#[test]
+fn a_maker_request_that_is_one_short_sysex_message_has_no_fault() {
+    assert_eq!(maker_request_fault(&[0xF0, 0x7D, 0x46, 0x4C, 0x01, 0xF7]), None);
+    assert_eq!(maker_request_fault(&[0xF0, 0xF7]), None, "empty body");
+    let mut at_max = vec![0xF0];
+    at_max.extend(std::iter::repeat_n(0x01, 30));
+    at_max.push(0xF7);
+    assert_eq!(at_max.len(), 32);
+    assert_eq!(maker_request_fault(&at_max), None, "32 bytes is the bound");
+}
+
+#[test]
+fn a_maker_request_that_is_not_one_sysex_message_of_at_most_32_bytes_is_refused_with_its_bytes_told() {
+    let mut too_long = vec![0xF0];
+    too_long.extend(std::iter::repeat_n(0x01, 31));
+    too_long.push(0xF7);
+    assert_eq!(too_long.len(), 33);
+    let cases: [(&[u8], &str); 7] = [
+        (&[], "empty"),
+        (&[0xF0], "a lone F0"),
+        (&[0x7D, 0x01, 0xF7], "no F0"),
+        (&[0xF0, 0x7D, 0x01], "no F7"),
+        (&[0xF0, 0x7D, 0x90, 0x3C, 0x7F, 0xF7], "a note-on status byte inside"),
+        (&[0xF0, 0x7D, 0xF7, 0xF0, 0x7D, 0xF7], "two messages in one"),
+        (&too_long, "33 bytes"),
+    ];
+    for (bytes, why) in cases {
+        let fault = maker_request_fault(bytes).unwrap_or_else(|| panic!("{why} must be refused"));
+        assert!(!fault.is_empty(), "{why}");
+    }
+    let fault = maker_request_fault(&[0xF0, 0x7D, 0x90, 0xF7]).unwrap();
+    assert!(fault.contains("F0 7D 90 F7"), "the refusal names the bytes: {fault}");
 }
 
 #[test]

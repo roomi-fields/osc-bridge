@@ -19,6 +19,14 @@ is tracked explicitly under each release.
   report and the `device` description of `report_mapping` say the same, and the private-device guard
   covers a call named so.
 
+### Changed — without consent only the universal Identity Request leaves
+- A maker request no longer leaves without the person's consent, whatever designates the port: a
+  declared USB id and a port name no longer send it; each is held back and listed in `held_back`
+  with the way to consent (`--consent`, `consent_ports`). The universal Identity Request still
+  leaves on every port; with consent for a port, its maker requests leave as before.
+- A maker request received from the service that is not one SysEx message (F0, F7, no status byte
+  between, at most 32 bytes) is refused, and the refusal is told.
+
 ## [0.24.0] — 2026-11-22
 
 ### Fixed — a software port gets no hardware card from the service either

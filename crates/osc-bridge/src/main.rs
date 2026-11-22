@@ -141,8 +141,8 @@ enum Cmd {
         #[arg(long, value_name = "FILE", conflicts_with = "learn")]
         read: Option<PathBuf>,
         /// A port (a part of its name, or its out port index) that may receive every maker request,
-        /// the held back ones too (repeatable). Without it a port gets the universal request and the
-        /// requests of its own maker. Give it only for a device you agree to ask about.
+        /// the held back ones (repeatable). Without it a port gets only the
+        /// universal request, whatever its USB id or its name. Give it only for a device you agree to ask about.
         #[arg(long, value_name = "PORT", conflicts_with = "learn")]
         consent: Vec<String>,
     },

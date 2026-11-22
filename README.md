@@ -334,9 +334,8 @@ announced at the time of writing.
 osc-bridge detect
 ```
 Lists MIDI ports, asks each device who it is (the standard MIDI Identity
-Request, then the makers' own requests the drivers name, only those of the maker the
-port's USB id or name points to; the others are held back and listed, and
-`--consent <port>` sends them to that port after you agreed), has the
+Request; the makers' own requests the drivers name are all held back and
+listed, and `--consent <port>` sends them to that port after you agreed), has the
 SynthHub server match the answers against the drivers' identity blocks
 (offline: the drivers cached here), with the firmware read from them, and
 prints a ready-to-run `osc-bridge run` line. `--no-probe` matches by port
