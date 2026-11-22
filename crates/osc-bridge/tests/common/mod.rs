@@ -304,3 +304,46 @@ pub fn texts(reply: &Value) -> Vec<String> {
     reply["result"]["content"].as_array().into_iter().flatten()
         .filter_map(|c| c["text"].as_str().map(str::to_string)).collect()
 }
+
+/// The shared fake MIDI hardware: the named output ports are plugged, every send is recorded in
+/// `sent`, and nothing ever answers. A test never opens the machine's MIDI system.
+pub type SentLog = std::sync::Arc<std::sync::Mutex<Vec<(String, Vec<u8>)>>>;
+
+#[derive(Clone, Default)]
+pub struct FakeHardware {
+    pub ports: Vec<String>,
+    pub sent: SentLog,
+}
+
+impl FakeHardware {
+    pub fn with_ports(ports: &[&str]) -> Self {
+        Self { ports: ports.iter().map(|p| p.to_string()).collect(), sent: Default::default() }
+    }
+    pub fn none() -> Self {
+        Self::default()
+    }
+    /// An opener (what the commands take their MIDI from) that hands this hardware over.
+    pub fn opener(&self) -> impl Fn() -> anyhow::Result<Box<dyn osc_bridge::take::Midi>> + '_ {
+        move || Ok(Box::new(self.clone()) as Box<dyn osc_bridge::take::Midi>)
+    }
+}
+
+impl osc_bridge::take::Midi for FakeHardware {
+    fn outputs(&self) -> Vec<String> {
+        self.ports.clone()
+    }
+    fn send(&mut self, port: &str, messages: &[Vec<u8>], _why: &str) -> Result<(), String> {
+        for m in messages {
+            self.sent.lock().unwrap().push((port.to_string(), m.clone()));
+        }
+        Ok(())
+    }
+    fn received(&mut self, _wait: std::time::Duration) -> Vec<(String, Vec<u8>)> {
+        Vec::new()
+    }
+}
+
+/// An opener whose MIDI system cannot be opened, for the cause `why`.
+pub fn failing_opener(why: &'static str) -> impl Fn() -> anyhow::Result<Box<dyn osc_bridge::take::Midi>> {
+    move || Err(anyhow::anyhow!(why))
+}

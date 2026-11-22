@@ -24,6 +24,7 @@ mod electra_one_driver;
 mod identity_request_fault;
 mod install_export_fetch;
 mod isolated_config;
+mod midi_opening;
 mod learn_mode;
 mod learn_service_matches;
 mod link_chains;

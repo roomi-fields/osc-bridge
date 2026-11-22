@@ -38,6 +38,22 @@ pub struct Installed {
     pub messages: usize,
 }
 
+/// The `export --on` command: load both descriptors, take the MIDI from `open` (the guarded
+/// `take::open_hardware` for the program, the shared fake hardware for a test), and put the
+/// export of `source` on `target`. A MIDI system that cannot be opened is an error naming it
+/// and the cause.
+pub fn install_command(
+    source: &std::path::Path,
+    target: &std::path::Path,
+    confirm_overwrite: bool,
+    open: crate::take::Opener,
+) -> anyhow::Result<Installed> {
+    let source = crate::device::load(source)?;
+    let target = crate::device::load(target)?;
+    let mut midi = open().map_err(|e| anyhow::anyhow!("{} cannot be reached (MIDI system): {e}", export::device_title(&target)))?;
+    install(&source, &target, confirm_overwrite, midi.as_mut(), &mut crate::programs::SystemClock).map_err(anyhow::Error::msg)
+}
+
 /// Put the export of `source` on `target`, by the way `target`'s descriptor
 /// declares. Without `confirm_overwrite` nothing is sent.
 pub fn install(

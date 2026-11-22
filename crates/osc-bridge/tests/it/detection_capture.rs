@@ -558,17 +558,20 @@ fn detect_read_of_a_capture_of_an_unknown_version_names_the_version() {
 }
 
 #[test]
-fn detect_accepts_write_with_no_probe_and_devices_dir() {
+fn detect_publishes_write_beside_no_probe_and_devices_dir_without_scanning() {
+    // The help is answered before any scan: no MIDI system of the machine is opened.
+    let out = detect(&["--help"]);
+    assert!(out.status.success());
+    let help = String::from_utf8_lossy(&out.stdout);
+    for flag in ["--write <FILE>", "--no-probe", "--devices-dir <DEVICES_DIR>"] {
+        assert!(help.contains(flag), "{flag} missing from: {help}");
+    }
+    // `--write` conflicts only with `--learn` and `--read`: refused by the arguments, before any scan.
     let dir = temp("detect-write");
     let w = dir.path().join("out.json");
-    let out = detect(&["--write", w.to_str().unwrap(), "--no-probe", "--devices-dir", dir.path().to_str().unwrap()]);
-    let err = String::from_utf8_lossy(&out.stderr);
-    assert!(!err.contains("unexpected argument") && !err.contains("cannot be used"), "{err}");
-    if out.status.success() {
-        let c = Capture::parse(&std::fs::read_to_string(&w).unwrap()).unwrap();
-        let v: Value = serde_json::from_str(&c.to_json()).unwrap();
-        assert_eq!(v["requests"], json!([]), "no request without a probe");
-    }
+    let out = detect(&["--write", w.to_str().unwrap(), "--read", w.to_str().unwrap()]);
+    assert!(!out.status.success());
+    assert!(!w.exists());
 }
 
 // ---- the fingerprints of the corpus -----------------------------------------------

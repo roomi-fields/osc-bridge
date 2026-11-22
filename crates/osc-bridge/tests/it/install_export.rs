@@ -8,7 +8,7 @@
 //! the ports are a recorded exchange. The tool and the command refuse before touching any port
 //! when the target is not plugged.
 
-use crate::common::{files, temp, tool_call};
+use crate::common::{files, temp, tool_call, FakeHardware};
 use osc_bridge::install::install;
 use osc_bridge::programs::Clock;
 use osc_bridge::take::Midi;
@@ -403,6 +403,14 @@ fn deluge_doc() -> Value {
 }
 
 fn call(root: &tempfile::TempDir, args: Value) -> Value {
+    call_on(root, args, &crate::common::FakeHardware::none().opener())
+}
+
+fn call_on(
+    root: &tempfile::TempDir,
+    args: Value,
+    open: &dyn Fn() -> anyhow::Result<Box<dyn Midi>>,
+) -> Value {
     let opts = osc_bridge::mcp::McpOptions {
         devices_dir: Some(root.path().to_path_buf()),
         default_target: "127.0.0.1:9".parse().unwrap(),
@@ -411,7 +419,7 @@ fn call(root: &tempfile::TempDir, args: Value) -> Value {
     };
     let input = format!("{}\n", tool_call(1, "install_export", args));
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(opts, "http://127.0.0.1:1", None, input.as_bytes(), &mut out).unwrap();
+    osc_bridge::mcp::serve_with_midi(opts, "http://127.0.0.1:1", None, input.as_bytes(), &mut out, open).unwrap();
     let reply: Value = serde_json::from_str(String::from_utf8(out).unwrap().lines().next().unwrap()).unwrap();
     reply["result"].clone()
 }
@@ -445,22 +453,49 @@ fn install_export_refuses_a_call_without_a_target_naming_the_argument() {
 }
 
 #[test]
-fn the_export_command_with_a_target_installs_instead_of_writing_the_document() {
+fn the_export_command_function_refuses_a_target_that_is_not_plugged_naming_it_whatever_else_is_plugged() {
     let root = catalogue();
     let src = root.path().join("acme/box.json");
     let target = root.path().join("synthstrom/deluge.json");
-    let out = std::process::Command::new(env!("CARGO_BIN_EXE_osc-bridge"))
-        .args(["export", "--device"])
-        .arg(&src)
-        .arg("--on")
-        .arg(&target)
-        .arg("--yes")
-        .output()
-        .unwrap();
-    // no port of the machine is the Deluge's: refused, naming it, and the document is not written
-    assert!(!out.status.success());
-    assert!(out.stdout.is_empty(), "{}", String::from_utf8_lossy(&out.stdout));
-    assert!(String::from_utf8_lossy(&out.stderr).contains("Deluge"), "{}", String::from_utf8_lossy(&out.stderr));
+    for hardware in [FakeHardware::none(), FakeHardware::with_ports(&["Some Keyboard", "Midi Through"])] {
+        let e = osc_bridge::install::install_command(&src, &target, true, &hardware.opener()).unwrap_err().to_string();
+        assert!(e.contains("Deluge"), "{e}");
+        assert!(hardware.sent.lock().unwrap().is_empty(), "nothing is sent to a port that is not the target's");
+    }
+}
+
+#[test]
+fn the_export_command_function_names_the_midi_system_and_the_cause_when_it_cannot_be_opened() {
+    let root = catalogue();
+    let src = root.path().join("acme/box.json");
+    let target = root.path().join("synthstrom/deluge.json");
+    let e = osc_bridge::install::install_command(&src, &target, true, &crate::common::failing_opener("no sequencer"))
+        .unwrap_err()
+        .to_string();
+    assert!(e.contains("MIDI"), "{e}");
+    assert!(e.contains("no sequencer"), "{e}");
+}
+
+#[test]
+fn install_export_names_the_midi_system_and_the_cause_when_it_cannot_be_opened() {
+    let root = catalogue();
+    let r = call_on(
+        &root,
+        json!({"device": "acme/box", "on": "synthstrom/deluge", "confirm_overwrite": true}),
+        &crate::common::failing_opener("no sequencer"),
+    );
+    assert_eq!(r["isError"], json!(true), "{r}");
+    assert!(text(&r).contains("MIDI") && text(&r).contains("no sequencer"), "{}", text(&r));
+}
+
+#[test]
+fn install_export_takes_its_midi_from_the_opener_it_is_given() {
+    let root = catalogue();
+    let hardware = FakeHardware::with_ports(&["Some Keyboard"]);
+    let r = call_on(&root, json!({"device": "acme/box", "on": "synthstrom/deluge", "confirm_overwrite": true}), &hardware.opener());
+    assert_eq!(r["isError"], json!(true), "{r}");
+    assert!(text(&r).contains("Deluge"), "{}", text(&r));
+    assert!(hardware.sent.lock().unwrap().is_empty());
 }
 
 #[test]

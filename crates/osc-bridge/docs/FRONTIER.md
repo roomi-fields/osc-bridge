@@ -83,7 +83,7 @@ The other commands:
 | `list` | `cmd_list` (MIDI ports) | yes |
 | `osc-send`, `osc-listen` | `cmd_osc_send`, `cmd_osc_listen` (`main.rs:490`, `:512`) | yes |
 | `lint` | `main.rs:365` | a file only |
-| `export --on` | `take::Hardware::open` (`main.rs:303`), `install` | no: `take` is forbidden |
+| `export --on` | `install::install_command` with `take::open_hardware` (`main.rs:301`) | no: `take` is forbidden |
 | `detect` (no `--learn`) | `mcp::print_detection` (`main.rs:296`); without `--devices-dir` it reads the cache and, linked, the service (`mcp.rs:2337`, `:2346`) | no |
 | `detect --learn` | `mcp::print_learning` (`main.rs:292`); asks the service for matches; `--share-fingerprint` sends one | no |
 | `mcp` | `mcp::run` with `Settings` (`main.rs:335-341`) | no |

@@ -276,11 +276,17 @@ pub fn run(opts: McpOptions) -> Result<()> {
     serve(opts, crate::online::SERVER, crate::online::cache_dir(), std::io::stdin().lock(), std::io::stdout().lock())
 }
 
+/// `serve_with_midi` on the machine's MIDI system (the guarded opening).
+pub fn serve(opts: McpOptions, base: &str, cache: Option<PathBuf>, input: impl BufRead, out: impl Write) -> Result<()> {
+    serve_with_midi(opts, base, cache, input, out, &crate::take::open_hardware)
+}
+
 /// One MCP session: a JSON-RPC message per line of `input`, each reply a
 /// line of `out`. Linked (`opts.online`), it asks the server at `base` for
 /// the drivers it needs and keeps them in `cache`, unless the user gave
-/// `opts.devices_dir`.
-pub fn serve(opts: McpOptions, base: &str, cache: Option<PathBuf>, input: impl BufRead, mut out: impl Write) -> Result<()> {
+/// `opts.devices_dir`. The tools that reach the MIDI system take it from `open`.
+pub fn serve_with_midi(opts: McpOptions, base: &str, cache: Option<PathBuf>, input: impl BufRead, mut out: impl Write,
+                       open: crate::take::Opener) -> Result<()> {
     use std::sync::{Arc, RwLock};
     let link = opts.online.then(|| Arc::new(Link::new(base)));
     // Drivers from the server are kept in the cache; a folder the user gave is theirs.
@@ -315,7 +321,7 @@ pub fn serve(opts: McpOptions, base: &str, cache: Option<PathBuf>, input: impl B
             }
         }
         let current = index.read().map(|g| g.clone()).map_err(|_| anyhow::anyhow!("catalogue index poisoned"))?;
-        if let Some(mut resp) = handle_request(&req, &opts, &current, link.as_deref()) {
+        if let Some(mut resp) = handle_request_with(&req, &opts, &current, link.as_deref(), open) {
             if let (true, Some(result)) = (link.is_some() && req["method"] == "initialize", resp.get_mut("result")) {
                 result["instructions"] = json!(LINKED_INSTRUCTIONS);
             }
@@ -334,8 +340,13 @@ pub fn serve(opts: McpOptions, base: &str, cache: Option<PathBuf>, input: impl B
     Ok(())
 }
 
+#[cfg(test)]
 fn handle_request(req: &Value, opts: &McpOptions, index: &DeviceIndex, link: Option<&Link>) -> Option<Value> {
-    rpc_reply(req, &tool_names(opts), || tools_list(opts), |name, args| call_tool(name, args, opts, index, link))
+    handle_request_with(req, opts, index, link, &crate::take::open_hardware)
+}
+
+fn handle_request_with(req: &Value, opts: &McpOptions, index: &DeviceIndex, link: Option<&Link>, open: crate::take::Opener) -> Option<Value> {
+    rpc_reply(req, &tool_names(opts), || tools_list(opts), |name, args| call_tool_with(name, args, opts, index, link, open))
 }
 
 /// The reply to one JSON-RPC message of an MCP session — `initialize`,
@@ -1316,7 +1327,13 @@ fn tool_names(opts: &McpOptions) -> Vec<&'static str> {
     local.iter().chain(forwarded).chain(linked).copied().collect()
 }
 
+#[cfg(test)]
 fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, link: Option<&Link>) -> Result<Value, String> {
+    call_tool_with(name, args, opts, index, link, &crate::take::open_hardware)
+}
+
+fn call_tool_with(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, link: Option<&Link>,
+                  open: crate::take::Opener) -> Result<Value, String> {
     if args.get("slug").is_some() { device_arg(args)?; }
     if let Some(link) = link {
         if crate::online::FORWARDED_TOOLS.contains(&name) {
@@ -1339,10 +1356,10 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
             return link.forward(name, args);
         }
         if name == "take_sound" {
-            return take_sound(args, link);
+            return take_sound(args, link, open);
         }
         if name == "load_preset" {
-            return load_preset(args, link);
+            return load_preset(args, link, open);
         }
     }
     // Drivers from the server: it finds them, and matches the ports found here.
@@ -1414,7 +1431,7 @@ fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, l
             let wanted = device_arg(args)?;
             let on = args.get("on").and_then(Value::as_str).ok_or("missing on: the device that receives the export")?;
             let confirm = args.get("confirm_overwrite").and_then(Value::as_bool) == Some(true);
-            install_export(&preset_device(index, wanted)?, &preset_device(index, on)?, wanted, on, confirm)
+            install_export(&preset_device(index, wanted)?, &preset_device(index, on)?, wanted, on, confirm, open)
         }
         "detect_hardware" if args.get("learn").and_then(Value::as_bool) == Some(true) => {
             let text = |k: &str| args.get(k).and_then(Value::as_str);
@@ -2122,10 +2139,9 @@ fn preset_device(index: &DeviceIndex, wanted: &str) -> Result<Device, String> {
 
 /// `install_export`: the export of `source` put on `target` by the way its
 /// driver declares (see `crate::install`).
-fn install_export(source: &Device, target: &Device, device: &str, on: &str, confirm: bool) -> Result<Value, String> {
-    let mut midi = crate::take::Hardware::open()
-        .map_err(|e| format!("{} cannot be reached: MIDI: {e}", crate::export::device_title(target)))?;
-    let done = crate::install::install(source, target, confirm, &mut midi, &mut crate::programs::SystemClock)?;
+fn install_export(source: &Device, target: &Device, device: &str, on: &str, confirm: bool, open: crate::take::Opener) -> Result<Value, String> {
+    let mut midi = open().map_err(|e| format!("{} cannot be reached (MIDI system): {e}", crate::export::device_title(target)))?;
+    let done = crate::install::install(source, target, confirm, midi.as_mut(),&mut crate::programs::SystemClock)?;
     let lost: Vec<Value> = done.lost.iter().map(|l| json!({ "place": l.place, "reason": l.reason })).collect();
     let text = if done.written {
         format!("Wrote {} ({} bytes, {}) on {on}: {} message(s) sent.", done.path, done.size, done.format, done.messages)
@@ -2212,12 +2228,12 @@ fn librarian_ask(link: &Link) -> impl Fn(&str, &Value) -> Result<Value, String> 
 
 /// Take the sound a synth plays (or a program) through the server's
 /// librarian, saved as a .syx file for share_preset.
-fn take_sound(args: &Value, link: &Link) -> Result<Value, String> {
-    use crate::take::{find, take, Hardware};
+fn take_sound(args: &Value, link: &Link, open: crate::take::Opener) -> Result<Value, String> {
+    use crate::take::{find, take};
     let lib = link.client.librarian_synths().map_err(|e| format!("SynthHub's librarian could not be reached: {e}"))?;
     let ask = librarian_ask(link);
-    let mut midi = Hardware::open().map_err(|e| format!("MIDI: {e}"))?;
-    let found = find(&mut midi, &lib, &ask, args["port"].as_str())?;
+    let mut midi = open().map_err(|e| e.to_string())?;
+    let found = find(midi.as_mut(), &lib, &ask, args["port"].as_str())?;
     let f = match found.as_slice() {
         [] => return Err("no synth the librarian knows answered: check that it is on, plugged in, and that SysEx is \
             allowed in its MIDI settings. For another synth, back its sounds up with backup_presets.".into()),
@@ -2226,7 +2242,7 @@ fn take_sound(args: &Value, link: &Link) -> Result<Value, String> {
             several.iter().map(|f| format!("{} on {:?}", f.name, f.port)).collect::<Vec<_>>().join(", "))),
     };
     let program = args["program"].as_u64().map(|p| p.saturating_sub(1));
-    let taken = take(&mut midi, &ask, f, program, Duration::from_secs(10))?;
+    let taken = take(midi.as_mut(), &ask, f, program, Duration::from_secs(10))?;
     drop(midi);
     let file = match args["file"].as_str() {
         Some(p) => PathBuf::from(p),
@@ -2259,7 +2275,7 @@ fn take_sound(args: &Value, link: &Link) -> Result<Value, String> {
 /// local device (patch data only once the user agreed: it replaces what the
 /// device holds). A sound the librarian took is fitted to the receiving
 /// synth's MIDI channel, read from its answer to the detect messages.
-fn load_preset(args: &Value, link: &Link) -> Result<Value, String> {
+fn load_preset(args: &Value, link: &Link, open: crate::take::Opener) -> Result<Value, String> {
     let id = args.get("id").and_then(Value::as_str).ok_or("missing id")?;
     let out_port = args.get("out_port").and_then(Value::as_str).ok_or("missing out_port")?;
     let gap = Duration::from_millis(args.get("gap_ms").and_then(Value::as_u64).unwrap_or(50).min(2000));
@@ -2270,8 +2286,8 @@ fn load_preset(args: &Value, link: &Link) -> Result<Value, String> {
             let mut lib = link.client.librarian_synths().map_err(|e| format!("SynthHub's librarian could not be reached: {e}"))?;
             if let Some(all) = lib["synths"].as_array_mut() { all.retain(|s| s["synth"] == synth); }
             note = lib["synths"][0]["note"].as_str().map(str::to_string);
-            let mut midi = crate::take::Hardware::open().map_err(|e| format!("MIDI: {e}"))?;
-            let found = crate::take::find(&mut midi, &lib, &librarian_ask(link), Some(out_port))?;
+            let mut midi = open().map_err(|e| e.to_string())?;
+            let found = crate::take::find(midi.as_mut(), &lib, &librarian_ask(link), Some(out_port))?;
             Some(found.iter().find(|f| f.synth == synth).map(|f| f.channel)
                 .ok_or_else(|| format!("no {synth} answered on {out_port}: is it the synth this sound was taken from, on and plugged in?"))?)
         }

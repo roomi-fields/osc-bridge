@@ -192,9 +192,38 @@ pub struct Hardware {
     incoming: Receiver<(String, Vec<u8>)>,
 }
 
+/// What a command takes its MIDI from: opens the MIDI system, or says why it cannot. Tests give
+/// the shared fake hardware; the program gives `open_hardware`.
+pub type Opener<'a> = &'a dyn Fn() -> Result<Box<dyn Midi>>;
+
+/// The single guard of every opening of the MIDI system: a failure keeps its cause, and a panic
+/// inside the MIDI library (midir panics when ALSA cannot allocate a queue, a failure the
+/// application cannot prevent) comes back as an error too. Both name the MIDI system and the cause.
+pub fn guarded_open<T>(open: impl FnOnce() -> Result<T>) -> Result<T> {
+    match std::panic::catch_unwind(std::panic::AssertUnwindSafe(open)) {
+        Ok(Ok(v)) => Ok(v),
+        Ok(Err(e)) => Err(anyhow!("MIDI system cannot be opened: {e}")),
+        Err(p) => {
+            let cause = p.downcast_ref::<&str>().map(|s| s.to_string())
+                .or_else(|| p.downcast_ref::<String>().cloned())
+                .unwrap_or_else(|| "the MIDI library panicked".into());
+            Err(anyhow!("MIDI system cannot be opened: {cause}"))
+        }
+    }
+}
+
+/// The default opener: the machine's MIDI hardware, through the guard.
+pub fn open_hardware() -> Result<Box<dyn Midi>> {
+    Ok(Box::new(Hardware::open()?))
+}
+
 impl Hardware {
     pub fn open() -> Result<Self> {
-        let pairs = crate::detect::scan(false, Duration::ZERO, &[])?;
+        guarded_open(Self::open_unguarded)
+    }
+
+    fn open_unguarded() -> Result<Self> {
+        let pairs = crate::detect::replay(&crate::detect::observe_unguarded(false, Duration::ZERO, &[], &[])?);
         let probe = MidiOutput::new("osc-bridge-take")?;
         let out_ports = probe.ports();
         let in_ports = MidiInput::new("osc-bridge-take")?.ports();

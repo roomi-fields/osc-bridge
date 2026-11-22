@@ -298,12 +298,12 @@ fn main() -> Result<()> {
         Cmd::Inspect { device } => cmd_inspect(device),
         Cmd::Run(args) => cmd_run(args),
         Cmd::Export { device, on: Some(on), yes, .. } => {
-            let dev = osc_bridge::device::load(osc_bridge::catalogue::locate(&device)?)?;
-            let target = osc_bridge::device::load(osc_bridge::catalogue::locate(&on)?)?;
-            let mut midi = osc_bridge::take::Hardware::open()
-                .map_err(|e| anyhow::anyhow!("{} cannot be reached: MIDI: {e}", osc_bridge::export::device_title(&target)))?;
-            let done = osc_bridge::install::install(&dev, &target, yes, &mut midi, &mut osc_bridge::programs::SystemClock)
-                .map_err(anyhow::Error::msg)?;
+            let done = osc_bridge::install::install_command(
+                &osc_bridge::catalogue::locate(&device)?,
+                &osc_bridge::catalogue::locate(&on)?,
+                yes,
+                &osc_bridge::take::open_hardware,
+            )?;
             for l in &done.lost {
                 eprintln!("not carried: {}: {}", l.place, l.reason);
             }

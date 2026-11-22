@@ -748,6 +748,11 @@ fn derive(capture: &Capture) -> Vec<Probed> {
 /// requests sent (the Identity Request, then each of `probes` to its ports) with the SysEx
 /// received for `wait`.
 pub fn observe(probe: bool, wait: Duration, probes: &[Probe], consent: &[String]) -> Result<Capture> {
+    crate::take::guarded_open(|| observe_unguarded(probe, wait, probes, consent))
+}
+
+/// `observe` without the guard of the opening, for a caller that guards the whole.
+pub(crate) fn observe_unguarded(probe: bool, wait: Duration, probes: &[Probe], consent: &[String]) -> Result<Capture> {
     let output = MidiOutput::new("osc-bridge-detect")?;
     let out_ports = output.ports();
     let out_names: Vec<String> = out_ports.iter()
@@ -1088,6 +1093,10 @@ struct MidiWire {
 
 impl MidiWire {
     fn open(device: &Unit) -> Result<Self> {
+        crate::take::guarded_open(|| Self::open_unguarded(device))
+    }
+
+    fn open_unguarded(device: &Unit) -> Result<Self> {
         let got: Arc<Mutex<Vec<Heard>>> = Arc::new(Mutex::new(Vec::new()));
         let since: Arc<Mutex<Option<std::time::Instant>>> = Arc::new(Mutex::new(None));
         let mut inputs = Vec::new();
