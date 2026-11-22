@@ -18,5 +18,8 @@ A truth value is a driver id, null, or `{"wrong_today": {"truth": <id or null>, 
 for a port the detection gets wrong today; the test refuses the marker once the detection gives the truth.
 Keys starting with `_` are notes.
 
-A capture keeps raw replies: a maker's reply may carry a serial number; read a capture before
-sharing it.
+Every capture has the serial number of its unit replaced: in the bytes of each reply, the eight
+characters after `EO2-` become `00000000`, so the placeholder is `EO2-00000000`; the length of the
+reply and the position of every byte stay the same. The guard of the corpus reads every capture of
+this folder and refuses any other value of the `serial` field, so a capture added later is read
+without changing the guard. Replace the serial number before adding a capture.

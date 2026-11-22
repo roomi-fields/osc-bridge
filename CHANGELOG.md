@@ -894,7 +894,7 @@ against real hardware (firmware 4.1.4).
   `electra_one_driver` (12), plus expanded `scripting` (27). Total 100.
 
 ### Hardware-verified
-- **Electra One MK2** (firmware 4.1.4, serial EO2-4312746f, hw rev 3.0) —
+- **Electra One MK2** (firmware 4.1.4, hw rev 3.0) —
   upload round-trip, route registration, pot mapping, SysEx ACK/NACK flow,
   all introspection endpoints, and rendering of all control types (fader,
   list, pad, adsr, adr, dx7envelope). Bumped from 📘 vendor-doc to ✅.

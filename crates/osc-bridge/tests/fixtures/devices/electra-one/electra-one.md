@@ -6,8 +6,7 @@ via `/bridge/docs`. Targets both human integrators and LLM-driven clients.
 OSC prefix for this device: **`/electra1`**
 Device: Electra One MK2, firmware 4.x.
 
-**Hardware-verified** against Electra One MK2 firmware 4.1.4 (serial EO2-4312746f,
-hw revision 3.0) on 2026-04-14: upload round-trip, route registration, pot
+**Hardware-verified** against Electra One MK2 firmware 4.1.4 (hw revision 3.0) on 2026-04-14: upload round-trip, route registration, pot
 mapping, SysEx ACK/NACK, introspection endpoints, and rendering of all control
 types (fader, list, pad, adsr, adr, dx7envelope) all validated end-to-end.
 

@@ -454,28 +454,123 @@ fn the_software_ports_capture_holds_the_seven_software_ports_none_of_them_a_devi
     assert_eq!(serde_json::from_str::<Value>(&capture.to_json()).unwrap()["usbids"], json!([]), "software ports have no USB id");
 }
 
+/// Every capture of the corpus: each file of the folder that parses as a capture, the truth files
+/// and the README left aside.
+fn corpus_captures() -> Vec<(String, Capture)> {
+    let mut found = Vec::new();
+    for entry in std::fs::read_dir(captures_dir()).unwrap() {
+        let path = entry.unwrap().path();
+        let name = path.file_name().unwrap().to_string_lossy().to_string();
+        if !name.ends_with(".json") || name.ends_with(".expected.json") || name.ends_with(".fingerprints.expected.json") || name == "README.md" {
+            continue;
+        }
+        if let Ok(capture) = Capture::parse(&std::fs::read_to_string(&path).unwrap()) {
+            found.push((name, capture));
+        }
+    }
+    found
+}
+
+/// The replies' bytes as text, the bytes outside printable ASCII a space.
+fn ascii_of(bytes: &[u8]) -> String {
+    bytes.iter().map(|b| if (32..127).contains(b) { *b as char } else { ' ' }).collect()
+}
+
+/// The value of every `serial` field in a text, whatever the case.
+fn serial_values(text: &str) -> Vec<String> {
+    let lower = text.to_lowercase();
+    let mut values = Vec::new();
+    let mut from = 0;
+    while let Some(at) = lower[from..].find("serial") {
+        let rest = &text[from + at + 6..];
+        let value: String = rest.trim_start_matches(|c: char| c == '"' || c == ':' || c.is_whitespace()).chars().take_while(|c| *c != '"').collect();
+        values.push(value);
+        from += at + 6;
+    }
+    values
+}
+
+/// Each `EO2-` followed by eight hexadecimal digits in a text, the placeholder left out.
+fn electra_serials(text: &str) -> Vec<String> {
+    let mut found = Vec::new();
+    let mut from = 0;
+    while let Some(at) = text[from..].find("EO2-") {
+        let start = from + at;
+        let digits: String = text[start + 4..].chars().take(8).collect();
+        if digits.len() == 8 && digits.chars().all(|c| c.is_ascii_hexdigit()) && digits != "00000000" {
+            found.push(format!("EO2-{digits}"));
+        }
+        from = start + 4;
+    }
+    found
+}
+
 #[test]
-fn the_bench_capture_holds_no_serial_number_and_no_host_name() {
-    let text = std::fs::read_to_string(captures_dir().join("2026-11-21-banc-7-appareils.json")).unwrap();
-    let capture = Capture::parse(&text).unwrap();
-    let v: Value = serde_json::from_str(&capture.to_json()).unwrap();
-    // What the capture says outside the replies: the lists of ports and the cards.
-    let listings = format!("{} {} {}", v["outputs"], v["inputs"], v["cards"]).to_lowercase();
-    for word in ["serial", "hostname", "host-", "laptop", "/home/", "romain", "romi"] {
-        assert!(!listings.contains(word), "{word} in the listings");
+fn the_corpus_guard_reads_every_capture_of_the_folder() {
+    let names: Vec<String> = corpus_captures().into_iter().map(|(n, _)| n).collect();
+    for expected in ["2026-11-21.json", "2026-11-21-banc-7-appareils.json", "2026-11-21-ports.json", "2026-11-22-ports-logiciels.json"] {
+        assert!(names.iter().any(|n| n == expected), "{expected} is not read: {names:?}");
     }
-    // What the replies carry in their bytes: a serial value is the placeholder, never a number.
-    for r in &capture.received {
-        let ascii: String = r.bytes.iter().map(|b| if (32..127).contains(b) { *b as char } else { ' ' }).collect();
-        let lower = ascii.to_lowercase();
-        if let Some(at) = lower.find("\"serial\":\"") {
-            let value: String = ascii[at + 10..].chars().take_while(|c| *c != '"').collect();
-            assert_eq!(value, "EO2-00000000", "{}: serial value {value:?}", r.port);
-        }
-        for word in ["hostname", "host-", "laptop", "romain", "romi"] {
-            assert!(!lower.contains(word), "{word} in a reply of {}", r.port);
+    assert!(names.iter().all(|n| !n.contains("expected")), "{names:?}");
+}
+
+#[test]
+fn every_capture_of_the_corpus_has_the_serial_of_its_unit_replaced_by_the_placeholder() {
+    for (name, capture) in corpus_captures() {
+        for r in &capture.received {
+            for value in serial_values(&ascii_of(&r.bytes)) {
+                assert_eq!(value, "EO2-00000000", "{name}, port {}: serial value {value:?}", r.port);
+            }
         }
     }
+}
+
+#[test]
+fn every_capture_of_the_corpus_holds_no_host_name_in_its_listings_or_its_replies() {
+    for (name, capture) in corpus_captures() {
+        let v: Value = serde_json::from_str(&capture.to_json()).unwrap();
+        let listings = format!("{} {} {}", v["outputs"], v["inputs"], v["cards"]).to_lowercase();
+        for word in ["serial", "hostname", "host-", "laptop", "/home/", "romain", "romi"] {
+            assert!(!listings.contains(word), "{name}: {word} in the listings");
+        }
+        for r in &capture.received {
+            let lower = ascii_of(&r.bytes).to_lowercase();
+            for word in ["hostname", "host-", "laptop", "/home/", "romain", "romi"] {
+                assert!(!lower.contains(word), "{name}: {word} in a reply of {}", r.port);
+            }
+        }
+    }
+}
+
+#[test]
+fn the_serial_reader_finds_every_occurrence_whatever_the_case() {
+    let text = r#"{"Serial":"EO2-00000000","x":1}{"serial": "other"}"#;
+    assert_eq!(serial_values(text), vec!["EO2-00000000".to_string(), "other".to_string()]);
+    assert!(serial_values("no field here").is_empty());
+}
+
+#[test]
+fn the_electra_serial_pattern_refuses_a_number_and_accepts_the_placeholder() {
+    let real = format!("EO2-{}", "ABCDEF12");
+    assert_eq!(electra_serials(&format!("a {real} b")), vec![real.clone()]);
+    assert_eq!(electra_serials(&format!("EO2-{}", "0a1b2c3d")).len(), 1);
+    assert!(electra_serials("verified on EO2-00000000").is_empty());
+    assert!(electra_serials("EO2-123 and EO2-GHIJKLMN").is_empty());
+}
+
+#[test]
+fn no_tracked_file_of_the_repository_carries_an_electra_serial_other_than_the_placeholder() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let listed = std::process::Command::new("git").arg("-C").arg(&root).args(["ls-files", "-z"]).output().unwrap();
+    assert!(listed.status.success(), "git ls-files failed");
+    let mut read = 0;
+    for rel in String::from_utf8_lossy(&listed.stdout).split('\0').filter(|s| !s.is_empty()) {
+        let Ok(bytes) = std::fs::read(root.join(rel)) else { continue };
+        read += 1;
+        let text = String::from_utf8_lossy(&bytes);
+        assert!(electra_serials(&text).is_empty(), "{rel} carries an Electra One serial number");
+    }
+    assert!(read > 100, "only {read} tracked files read");
 }
 
 #[test]
