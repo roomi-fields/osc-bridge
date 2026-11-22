@@ -894,7 +894,7 @@ fn detect_service(answer: fn(&Value) -> Value) -> (crate::online::Online, std::s
 
 fn probed(name: &str, usb: Option<(u16, u16)>) -> crate::detect::Probed {
     crate::detect::Probed { out_index: Some(0), out_name: Some(name.into()), in_index: Some(0), in_name: Some(name.into()),
-        identity: None, usb, replies: Vec::new() }
+        identity: None, usb, replies: Vec::new(), client_kind: crate::detect::ClientKind::Unknown }
 }
 
 fn report_devices(server: &crate::online::Online, found: Vec<crate::detect::Probed>) -> Vec<Value> {
@@ -1028,7 +1028,7 @@ fn a_device_being_confirmed_still_has_every_maker_request_held_back_without_cons
     const MYSTERY: &str = "Mystery Box:Mystery Box 20:0";
     let capture = Capture::parse(&json!({
         "format_version": FORMAT_VERSION, "outputs": [MYSTERY], "inputs": [MYSTERY],
-        "cards": "", "usbids": [], "requests": [], "received": [],
+        "cards": "", "usbids": [], "clients": "", "requests": [], "received": [],
     }).to_string()).unwrap();
     let probes = vec![crate::detect::Probe { request: vec![0xF0, 0x11, 0xF7], ports: vec![], usb: vec![(0x1c75, 0x020b)], match_ports: vec![] },
                       crate::detect::Probe { request: vec![0xF0, 0x12, 0xF7], ports: vec![], usb: vec![], match_ports: vec![] }];

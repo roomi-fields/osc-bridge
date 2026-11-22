@@ -11,6 +11,17 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed — a software port is not a device; the capture file is in format version 2
+- The detection reads, on Linux, whether the client of each port is a device of the system
+  (`kernel`) or a program (`user`), from `/proc/asound/seq/clients`; where this is not readable
+  (Windows, macOS today) the kind is `unknown` and the port is matched as before. Each device of
+  the `detect` report carries it as `client_kind`. A `user` port gets no candidate of hardware
+  kind, whatever its name and whatever the service answers; a card of software kind may match it.
+- The capture file (`detect --write`) is in `format_version` 2: it carries `clients`, the raw text
+  of the system's client list; the kind of each port is derived from it at the scan and at the
+  replay. A version 1 capture is refused with an error naming the version, asking to capture
+  again. The captures of the corpus are in version 2.
+
 ### Changed — the name alone never designates a device
 - A candidate of `detect`, of the learn mode and of `detect_hardware` carries `proofs`, each with a
   nature (strong: identity reply recognised by the card, USB id the card declares; medium: the maker

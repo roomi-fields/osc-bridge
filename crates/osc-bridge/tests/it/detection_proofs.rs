@@ -183,7 +183,7 @@ fn a_name_alone_proposes_no_run_command_and_is_never_the_answer_of_the_port() {
     let cap = Capture::parse(&json!({
         "format_version": osc_bridge::capture::FORMAT_VERSION,
         "outputs": ["Osmose:Osmose MIDI 1 24:0"], "inputs": ["Osmose:Osmose MIDI 1 24:0"],
-        "cards": "", "usbids": [], "requests": [], "received": [],
+        "cards": "", "usbids": [], "clients": "", "requests": [], "received": [],
     }).to_string()).unwrap();
     let devices = detect_capture(root.path(), &cap).unwrap();
     let c = &devices[0]["candidates"][0];

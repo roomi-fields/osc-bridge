@@ -21,7 +21,7 @@ fn capture() -> Capture {
         "outputs": [MINILAB, MYSTERY],
         "inputs": [MINILAB, MYSTERY],
         "cards": " 6 [Minilab3       ]: USB-Audio - Minilab3\n                      Arturia Minilab3 at usb-0000:00:14.0-2, full speed\n",
-        "usbids": [{"card": 6, "text": "1c75:020b\n"}],
+        "usbids": [{"card": 6, "text": "1c75:020b\n"}], "clients": "",
         "requests": [], "received": [],
     }).to_string()).unwrap()
 }

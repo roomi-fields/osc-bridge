@@ -638,7 +638,7 @@ fn port_words_of_a_name_without_colon_or_numbers_are_the_whole_name_lower_cased(
 
 fn capture_of(ports: &[&str], cards: &str) -> Capture {
     let v = serde_json::json!({ "format_version": crate::capture::FORMAT_VERSION,
-        "outputs": ports, "inputs": ports, "cards": cards, "usbids": [], "requests": [], "received": [] });
+        "outputs": ports, "inputs": ports, "cards": cards, "usbids": [], "clients": "", "requests": [], "received": [] });
     Capture::parse(&v.to_string()).unwrap()
 }
 
@@ -680,7 +680,7 @@ fn units_group_by_client_name_when_the_names_carry_no_number() {
 fn units_keep_an_input_only_port_and_an_output_only_port_in_their_device() {
     let v = serde_json::json!({ "format_version": crate::capture::FORMAT_VERSION,
         "outputs": ["Box:Box Out 50:0"], "inputs": ["Box:Box In 50:1", "Pad:Pad 51:0"],
-        "cards": "", "usbids": [], "requests": [], "received": [] });
+        "cards": "", "usbids": [], "clients": "", "requests": [], "received": [] });
     let u = units(&Capture::parse(&v.to_string()).unwrap());
     assert_eq!(u.len(), 2);
     assert_eq!((u[0].inputs.len(), u[0].outputs.len()), (1, 1));
@@ -693,7 +693,7 @@ fn units_read_the_usb_ids_of_the_card_of_the_device() {
         "outputs": ["Minilab3:Minilab3 MIDI 40:0", "Minilab3:Minilab3 ALV 40:3"],
         "inputs": ["Minilab3:Minilab3 MIDI 40:0", "Minilab3:Minilab3 ALV 40:3"],
         "cards": " 6 [Minilab3       ]: USB-Audio - Minilab3\n",
-        "usbids": [{"card": 6, "text": "1c75:020b\n"}], "requests": [], "received": [] });
+        "usbids": [{"card": 6, "text": "1c75:020b\n"}], "clients": "", "requests": [], "received": [] });
     let u = units(&Capture::parse(&v.to_string()).unwrap());
     assert_eq!(u[0].usb, Some((0x1c75, 0x020b)));
 }

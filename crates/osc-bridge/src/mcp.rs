@@ -1706,7 +1706,12 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>,
         }
     };
     let devices: Vec<Value> = found.iter().zip(matched).map(|(d, answer)| {
-        let (mut candidates, unlisted): (Vec<Value>, Vec<Value>) = answer.into_iter().partition(|c| c["kind"] == "candidate");
+        let (mut candidates, mut unlisted): (Vec<Value>, Vec<Value>) = answer.into_iter().partition(|c| c["kind"] == "candidate");
+        // A port of a program is no device: whatever the catalogue or the service answers, it gets none.
+        if d.client_kind == crate::detect::ClientKind::User {
+            candidates.clear();
+            unlisted.clear();
+        }
         for c in candidates.iter_mut() {
             c["device"] = c["id"].clone();
             if let Some(e) = c["device"].as_str().and_then(|id| index.find(id)) {
@@ -1726,6 +1731,7 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>,
             "port": d.label(),
             "out_port": d.out_index,
             "in_port": d.in_index,
+            "client_kind": d.client_kind.word(),
             "identity": d.identity.as_ref().map(|id| json!({
                 "manufacturer_id": id.manufacturer_hex(),
                 "manufacturer": crate::detect::manufacturer_name(&id.manufacturer),

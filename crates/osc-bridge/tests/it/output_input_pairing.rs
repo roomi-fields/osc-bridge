@@ -7,7 +7,7 @@ use std::path::Path;
 
 fn capture_of(outputs: &[&str], inputs: &[&str]) -> Capture {
     let own = |l: &[&str]| l.iter().map(|s| s.to_string()).collect::<Vec<_>>();
-    Capture::new(own(outputs), own(inputs), Asound { cards: String::new(), usbids: vec![] })
+    Capture::new(own(outputs), own(inputs), Asound { cards: String::new(), usbids: vec![], clients: String::new() })
 }
 
 /// The (output name, input name) pairs the replay gives, in the outputs' order.

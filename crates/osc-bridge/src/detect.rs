@@ -607,6 +607,47 @@ pub struct Probed {
     pub usb: Option<(u16, u16)>,
     /// Every SysEx message its input sent while detecting, in order.
     pub replies: Vec<Vec<u8>>,
+    /// Whether its client is a device of the system or a program, as the list of clients says.
+    pub client_kind: ClientKind,
+}
+
+/// What owns the client of a port: the system (a device) or a program.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ClientKind {
+    Kernel,
+    User,
+    Unknown,
+}
+
+impl ClientKind {
+    pub fn word(self) -> &'static str {
+        match self {
+            ClientKind::Kernel => "kernel",
+            ClientKind::User => "user",
+            ClientKind::Unknown => "unknown",
+        }
+    }
+}
+
+/// The kind of the client of `port`, read from `clients` (the text of `/proc/asound/seq/clients`):
+/// the one entry whose number is the port's client number and whose name is the port's client name.
+/// A system that lists no clients, a port with no number, no entry, or several entries are `Unknown`.
+pub fn client_kind(clients: &str, port: &str) -> ClientKind {
+    let Some(number) = client_number(port) else { return ClientKind::Unknown };
+    let name = port.split(':').next().unwrap_or(port);
+    let mut found = clients.lines().filter_map(|line| {
+        let rest = line.strip_prefix("Client")?;
+        let (n, rest) = rest.split_once(':')?;
+        if n.trim().parse::<u32>().ok()? != number { return None; }
+        let (quoted, tail) = rest.trim().strip_prefix('"')?.rsplit_once('"')?;
+        if quoted != name { return None; }
+        Some(tail.trim().trim_start_matches('[').trim_end_matches(']').to_ascii_lowercase())
+    });
+    match (found.next(), found.next()) {
+        (Some(kind), None) if kind == "kernel" => ClientKind::Kernel,
+        (Some(kind), None) if kind == "user" => ClientKind::User,
+        _ => ClientKind::Unknown,
+    }
 }
 
 impl Probed {
@@ -672,12 +713,14 @@ fn derive(capture: &Capture) -> Vec<Probed> {
             identity: None,
             usb: None,
             replies: Vec::new(),
+            client_kind: client_kind(&capture.clients, oname),
         });
     }
     for (ii, iname) in in_names.iter().enumerate() {
         if !used_in.contains(&ii) {
             devices.push(Probed { out_index: None, out_name: None, in_index: Some(ii),
-                                  in_name: Some(iname.clone()), identity: None, usb: None, replies: Vec::new() });
+                                  in_name: Some(iname.clone()), identity: None, usb: None, replies: Vec::new(),
+                                  client_kind: client_kind(&capture.clients, iname) });
         }
     }
     let ids: Vec<(u32, &str)> = capture.usbids.iter().map(|u| (u.card, u.text.as_str())).collect();

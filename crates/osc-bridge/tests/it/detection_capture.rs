@@ -14,6 +14,9 @@ fn minilab_reply() -> Vec<u8> {
     Identity { manufacturer: vec![0x00, 0x20, 0x6B], family: 2, model: 4, version: [1, 2, 3, 4] }.reply()
 }
 
+/// The system's list of clients as `/proc/asound/seq/clients` gives it, the MiniLab 3 a kernel client.
+const MINILAB3_CLIENTS: &str = "Client info\n  cur  clients : 2\n  peak clients : 2\n  max  clients : 192\n\nClient   0 : \"System\" [Kernel]\n  Port   0 : \"Timer\" (Rwe-)\nClient  40 : \"Minilab3\" [Kernel]\n  Port   0 : \"Minilab3 MIDI\" (RWe-)\n";
+
 /// The capture of the bench's MiniLab 3, written by hand from the listing the system gave.
 fn minilab3_text() -> String {
     json!({
@@ -21,6 +24,7 @@ fn minilab3_text() -> String {
         "outputs": ["Minilab3:Minilab3 MIDI 40:0"],
         "inputs": ["Minilab3:Minilab3 MIDI 40:0"],
         "cards": " 6 [Minilab3       ]: USB-Audio - Minilab3\n                      Arturia Minilab3 at usb-0000:00:14.0-2, full speed\n",
+        "clients": MINILAB3_CLIENTS,
         "usbids": [{"card": 6, "text": "1c75:020b\n"}],
         "requests": [{"port": "Minilab3:Minilab3 MIDI 40:0", "bytes": [240, 126, 127, 6, 1, 247]}],
         "received": [{"port": "Minilab3:Minilab3 MIDI 40:0", "bytes": minilab_reply(), "ms": 12}],
@@ -55,7 +59,7 @@ fn a_capture_keeps_ports_and_messages_in_the_order_the_system_gave_them() {
         "format_version": FORMAT_VERSION,
         "outputs": ["Zed:Zed 20:0", "Alpha:Alpha 21:0", "Midi Through:Midi Through Port-0 14:0"],
         "inputs": ["Zed:Zed 20:0", "Midi Through:Midi Through Port-0 14:0"],
-        "cards": "", "usbids": [],
+        "cards": "", "usbids": [], "clients": "",
         "requests": [{"port": "Zed:Zed 20:0", "bytes": [1]}, {"port": "Alpha:Alpha 21:0", "bytes": [2]}],
         "received": [
             {"port": "Zed:Zed 20:0", "bytes": [240, 3, 247], "ms": 30},
@@ -74,7 +78,7 @@ fn a_capture_holds_no_pairing_and_no_usb_ids_read() {
     let v: Value = serde_json::from_str(&c).unwrap();
     let mut keys: Vec<&str> = v.as_object().unwrap().keys().map(String::as_str).collect();
     keys.sort();
-    assert_eq!(keys, ["cards", "format_version", "inputs", "outputs", "received", "requests", "usbids"]);
+    assert_eq!(keys, ["cards", "clients", "format_version", "inputs", "outputs", "received", "requests", "usbids"]);
 }
 
 // ---- the replay ---------------------------------------------------------------
@@ -101,7 +105,7 @@ fn the_replay_pairs_inputs_with_outputs_and_gives_each_port_its_own_replies() {
         "outputs": ["Minilab3:Minilab3 MIDI 40:0", "Lonely:Lonely 50:0"],
         "inputs": ["Minilab3:Minilab3 MIDI 40:0", "Lonely:Lonely 50:0", "Only In:Only In 51:0"],
         "cards": " 6 [Minilab3       ]: USB-Audio - Minilab3\n",
-        "usbids": [{"card": 6, "text": "1c75:020b\n"}],
+        "usbids": [{"card": 6, "text": "1c75:020b\n"}], "clients": "",
         "requests": [],
         "received": [
             {"port": "Lonely:Lonely 50:0", "bytes": other, "ms": 3},
@@ -126,7 +130,7 @@ fn a_listing_without_messages_replays_the_usb_ids_of_each_card_by_its_name() {
         "outputs": ["Behringer BCR-32:Behringer BCR-32 BCR-32 CTRL 24:0"],
         "inputs": ["Behringer BCR-32:Behringer BCR-32 BCR-32 CTRL 24:0"],
         "cards": " 2 [BCR32          ]: USB-Audio - Behringer BCR-32\n                      Behringer BCR-32 at usb-0000:00:14.0-1, full speed\n",
-        "usbids": [{"card": 2, "text": "1397:12cf\n"}],
+        "usbids": [{"card": 2, "text": "1397:12cf\n"}], "clients": "",
         "requests": [], "received": [],
     });
     let found = replay(&Capture::parse(&v.to_string()).unwrap());
@@ -346,7 +350,7 @@ fn a_port_marked_wrong_today_whose_detection_already_gives_the_truth_fails_sayin
     let dir = temp("corpus-none");
     let lonely = json!({
         "format_version": FORMAT_VERSION, "outputs": ["Lonely:Lonely 50:0"], "inputs": [],
-        "cards": "", "usbids": [], "requests": [], "received": [],
+        "cards": "", "usbids": [], "clients": "", "requests": [], "received": [],
     });
     files(dir.path(), &[
         ("c.json", &lonely.to_string()),
@@ -378,7 +382,7 @@ fn the_corpus_check_still_compares_a_plain_truth_when_a_neighbour_port_is_marked
         "format_version": FORMAT_VERSION,
         "outputs": ["Minilab3:Minilab3 MIDI 40:0", "Lonely:Lonely 50:0"],
         "inputs": [], "cards": " 6 [Minilab3       ]: USB-Audio - Minilab3\n",
-        "usbids": [{"card": 6, "text": "1c75:020b\n"}], "requests": [], "received": [],
+        "usbids": [{"card": 6, "text": "1c75:020b\n"}], "clients": "", "requests": [], "received": [],
     });
     let dir = temp("corpus-mixed");
     files(dir.path(), &[
@@ -649,4 +653,163 @@ fn a_fingerprint_keeps_the_ports_in_the_order_of_the_listing_not_sorted() {
     let ports = learned_ports(&unit);
     assert_eq!(ports["inputs"], serde_json::json!(["z zulu", "z alpha", "z mike"]));
     assert_eq!(ports["outputs"], serde_json::json!(["z mike", "z zulu", "z alpha"]));
+}
+
+// ---- a port of a program is not a device ------------------------------------------
+
+const FLUID: &str = "FLUID Synth (4242):Synth input port (4242:0) 128:0";
+
+/// The catalogue of one hardware card whose name is the name of the software synth.
+fn fluid_catalogue() -> tempfile::TempDir {
+    let root = temp("fluid-catalogue");
+    files(root.path(), &[("acme/fluid.json", &device05("FLUID Synth", "/fluid", ""))]);
+    root
+}
+
+fn corpus_capture(name: &str) -> Capture {
+    Capture::parse(&std::fs::read_to_string(captures_dir().join(name)).unwrap()).unwrap()
+}
+
+/// The capture of the software ports with its `clients` text changed.
+fn software_capture_with_clients(clients: &str) -> Capture {
+    let mut v: Value = serde_json::from_str(&corpus_capture("2026-11-22-ports-logiciels.json").to_json()).unwrap();
+    v["clients"] = json!(clients);
+    Capture::parse(&v.to_string()).unwrap()
+}
+
+fn device_of_port<'a>(devices: &'a [Value], port: &str) -> &'a Value {
+    devices.iter().find(|d| d["port"] == port).unwrap_or_else(|| panic!("{port} is not in {devices:?}"))
+}
+
+#[test]
+fn a_capture_is_written_in_version_two_with_the_raw_list_of_the_clients_of_the_system() {
+    assert_eq!(FORMAT_VERSION, 2);
+    let c = Capture::parse(&minilab3_text()).unwrap();
+    let v: Value = serde_json::from_str(&c.to_json()).unwrap();
+    assert_eq!(v["format_version"], json!(2));
+    assert_eq!(v["clients"], json!(MINILAB3_CLIENTS));
+}
+
+#[test]
+fn a_capture_of_a_machine_keeps_the_list_of_clients_the_system_gave_and_no_other_file_of_it() {
+    let asound = temp("asound-clients");
+    files(asound.path(), &[
+        ("cards", ""),
+        ("seq/clients", MINILAB3_CLIENTS),
+        ("seq/timer", "SECRET-TIMER\n"),
+    ]);
+    let c = Capture::new(vec![], vec![], Asound::read(asound.path()));
+    let v: Value = serde_json::from_str(&c.to_json()).unwrap();
+    assert_eq!(v["clients"], json!(MINILAB3_CLIENTS));
+    assert!(!c.to_json().contains("SECRET-TIMER"));
+}
+
+#[test]
+fn a_system_with_no_list_of_clients_gives_an_empty_one() {
+    let asound = temp("asound-no-clients");
+    files(asound.path(), &[("cards", "")]);
+    let c = Capture::new(vec![], vec![], Asound::read(asound.path()));
+    assert_eq!(serde_json::from_str::<Value>(&c.to_json()).unwrap()["clients"], json!(""));
+}
+
+#[test]
+fn a_capture_of_version_one_is_refused_naming_the_version_and_asking_to_capture_again() {
+    let mut v: Value = serde_json::from_str(&minilab3_text()).unwrap();
+    v["format_version"] = json!(1);
+    v.as_object_mut().unwrap().remove("clients");
+    let err = Capture::parse(&v.to_string()).expect_err("refused").to_string();
+    assert!(err.contains("version 1"), "{err}");
+    assert!(err.contains("capture again"), "{err}");
+}
+
+#[test]
+fn every_capture_of_the_corpus_is_in_version_two_with_its_list_of_clients() {
+    let mut seen = 0;
+    for e in std::fs::read_dir(captures_dir()).unwrap() {
+        let name = e.unwrap().file_name().to_string_lossy().to_string();
+        if !name.ends_with(".json") || name.ends_with(".expected.json") || name.ends_with(".fingerprints.expected.json") { continue; }
+        let raw: Value = read_json(&name);
+        assert_eq!(raw["format_version"], json!(2), "{name}");
+        assert!(raw["clients"].as_str().is_some_and(|c| c.contains("Client")), "{name} holds no list of clients");
+        seen += 1;
+    }
+    assert!(seen >= 4, "{seen} captures");
+}
+
+#[test]
+fn the_replay_reads_the_kind_of_each_port_from_the_clients_of_the_capture() {
+    let devices = osc_bridge::mcp::detect_capture(fluid_catalogue().path(), &corpus_capture("2026-11-22-ports-logiciels.json")).unwrap();
+    assert_eq!(device_of_port(&devices, FLUID)["client_kind"], "user");
+    assert_eq!(device_of_port(&devices, "Pure Data:Pure Data Midi-In 1 133:0")["client_kind"], "user");
+    assert_eq!(device_of_port(&devices, "Midi Through:Midi Through Port-0 14:0")["client_kind"], "kernel");
+    let bench = osc_bridge::mcp::detect_capture(corpus_catalogue().path(), &corpus_capture("2026-11-21.json")).unwrap();
+    assert_eq!(device_of_port(&bench, "Minilab3:Minilab3 MIDI 40:0")["client_kind"], "kernel");
+    assert_eq!(device_of_port(&bench, "Behringer BCR-32:Behringer BCR-32 BCR-32 CTRL 24:0")["client_kind"], "kernel");
+}
+
+#[test]
+fn a_port_whose_client_is_not_in_the_list_has_the_kind_unknown() {
+    let devices = osc_bridge::mcp::detect_capture(fluid_catalogue().path(), &corpus_capture("2026-11-22-ports-logiciels.json")).unwrap();
+    assert_eq!(device_of_port(&devices, "Microsoft GS Wavetable Synth:Microsoft GS Wavetable Synth 0:0")["client_kind"], "unknown");
+}
+
+#[test]
+fn a_system_whose_clients_are_not_readable_gives_every_port_the_kind_unknown() {
+    let capture = software_capture_with_clients("");
+    let devices = osc_bridge::mcp::detect_capture(fluid_catalogue().path(), &capture).unwrap();
+    assert!(!devices.is_empty());
+    for d in &devices { assert_eq!(d["client_kind"], "unknown", "{d}"); }
+}
+
+#[test]
+fn a_port_whose_link_to_a_client_is_ambiguous_has_the_kind_unknown() {
+    let twice = "Client info\n\nClient 128 : \"FLUID Synth (4242)\" [User]\n  Port   0 : \"Synth input port (4242:0)\" (Rwe-)\n\
+                 Client 128 : \"FLUID Synth (4242)\" [Kernel]\n  Port   0 : \"Synth input port (4242:0)\" (Rwe-)\n";
+    let devices = osc_bridge::mcp::detect_capture(fluid_catalogue().path(), &software_capture_with_clients(twice)).unwrap();
+    assert_eq!(device_of_port(&devices, FLUID)["client_kind"], "unknown");
+}
+
+#[test]
+fn a_port_of_a_program_gets_no_hardware_candidate_whatever_its_name() {
+    let devices = osc_bridge::mcp::detect_capture(fluid_catalogue().path(), &corpus_capture("2026-11-22-ports-logiciels.json")).unwrap();
+    let fluid = device_of_port(&devices, FLUID);
+    assert!(fluid["candidates"].as_array().unwrap().is_empty(), "{fluid}");
+    assert!(fluid["run_command"].is_null(), "{fluid}");
+}
+
+#[test]
+fn the_same_name_on_a_kernel_client_still_gets_its_candidate() {
+    let kernel = software_capture_with_clients(
+        "Client   0 : \"System\" [Kernel]\nClient 128 : \"FLUID Synth (4242)\" [Kernel]\n  Port   0 : \"Synth input port (4242:0)\" (RWe-)\n");
+    let devices = osc_bridge::mcp::detect_capture(fluid_catalogue().path(), &kernel).unwrap();
+    assert_eq!(device_of_port(&devices, FLUID)["candidates"][0]["device"], "acme/fluid");
+}
+
+#[test]
+fn a_port_of_the_kind_unknown_is_matched_as_before() {
+    let devices = osc_bridge::mcp::detect_capture(fluid_catalogue().path(), &software_capture_with_clients("")).unwrap();
+    assert_eq!(device_of_port(&devices, FLUID)["candidates"][0]["device"], "acme/fluid");
+}
+
+#[test]
+fn a_port_of_a_program_gets_no_candidate_even_with_the_usb_ids_of_a_card_declared() {
+    let program = json!({
+        "format_version": FORMAT_VERSION,
+        "clients": "Client  40 : \"Minilab3\" [User]\n  Port   0 : \"Minilab3 MIDI\" (RWe-)\n",
+        "outputs": ["Minilab3:Minilab3 MIDI 40:0"], "inputs": ["Minilab3:Minilab3 MIDI 40:0"],
+        "cards": " 6 [Minilab3       ]: USB-Audio - Minilab3\n", "usbids": [{"card": 6, "text": "1c75:020b\n"}],
+        "requests": [], "received": [{"port": "Minilab3:Minilab3 MIDI 40:0", "bytes": minilab_reply(), "ms": 4}],
+    });
+    let devices = osc_bridge::mcp::detect_capture(corpus_catalogue().path(), &Capture::parse(&program.to_string()).unwrap()).unwrap();
+    assert_eq!(devices[0]["client_kind"], "user");
+    assert!(devices[0]["candidates"].as_array().unwrap().is_empty(), "{}", devices[0]);
+}
+
+#[test]
+fn the_minilab3_of_the_kernel_is_recognised_as_before() {
+    let devices = osc_bridge::mcp::detect_capture(corpus_catalogue().path(), &corpus_capture("2026-11-21.json")).unwrap();
+    let minilab = device_of_port(&devices, "Minilab3:Minilab3 MIDI 40:0");
+    assert_eq!(minilab["client_kind"], "kernel");
+    assert_eq!(minilab["candidates"][0]["device"], "arturia/minilab3");
+    assert!(minilab["run_command"].is_string(), "{minilab}");
 }

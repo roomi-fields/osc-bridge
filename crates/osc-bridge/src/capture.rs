@@ -2,7 +2,7 @@
 //!
 //! It holds the port names as the system gave them (outputs, then inputs), the text of the
 //! system's card listing (`/proc/asound/cards` under Linux), the `usbid` text of each card, the
-//! requests sent (bytes, output port) and every message received (input port, bytes, ms since
+//! clients of the system (`/proc/asound/seq/clients`, raw), the requests sent (bytes, output port) and every message received (input port, bytes, ms since
 //! the first request). It holds no pairing, no USB ids read and no identity: the replay
 //! (`detect::replay`) derives them again from these raw values, through the derivation the scan
 //! uses. Nothing else of the machine is read: no host name, user name or serial number.
@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 use std::path::Path;
 
 /// The version of the capture format this build reads and writes.
-pub const FORMAT_VERSION: u32 = 1;
+pub const FORMAT_VERSION: u32 = 2;
 
 /// The most cards numbered on a machine whose `usbid` is read.
 const CARDS_READ: u32 = 32;
@@ -33,19 +33,22 @@ pub struct Asound {
     pub cards: String,
     /// The `usbid` of each card that has one, by card number.
     pub usbids: Vec<UsbId>,
+    /// The text of `/proc/asound/seq/clients`: the clients of the system, kernel or user.
+    pub clients: String,
 }
 
 impl Asound {
-    /// Reads `cards` and each `card<N>/usbid` under `root` (`/proc/asound`); no other file.
-    /// A missing file gives an empty listing.
+    /// Reads `cards`, `seq/clients` and each `card<N>/usbid` under `root` (`/proc/asound`); no
+    /// other file. A missing file gives an empty listing.
     pub fn read(root: &Path) -> Asound {
         let cards = std::fs::read_to_string(root.join("cards")).unwrap_or_default();
+        let clients = std::fs::read_to_string(root.join("seq/clients")).unwrap_or_default();
         let usbids = (0..CARDS_READ)
             .filter_map(|n| {
                 std::fs::read_to_string(root.join(format!("card{n}/usbid"))).ok().map(|text| UsbId { card: n, text })
             })
             .collect();
-        Asound { cards, usbids }
+        Asound { cards, usbids, clients }
     }
 
     /// The listing of this machine: Linux reads /proc/asound; no listing on other platforms yet.
@@ -77,6 +80,8 @@ pub struct Capture {
     pub inputs: Vec<String>,
     pub cards: String,
     pub usbids: Vec<UsbId>,
+    /// The text of `/proc/asound/seq/clients`, raw; empty where the system gives none.
+    pub clients: String,
     pub requests: Vec<Request>,
     pub received: Vec<Received>,
 }
@@ -90,6 +95,7 @@ impl Capture {
             inputs,
             cards: asound.cards,
             usbids: asound.usbids,
+            clients: asound.clients,
             requests: Vec::new(),
             received: Vec::new(),
         }
@@ -100,6 +106,7 @@ impl Capture {
         let raw: serde_json::Value = serde_json::from_str(text).map_err(|e| anyhow!("not a capture: {e}"))?;
         match raw.get("format_version").and_then(serde_json::Value::as_u64) {
             Some(v) if v == u64::from(FORMAT_VERSION) => {}
+            Some(1) => return Err(anyhow!("capture format version 1 is no longer read: this build reads version {FORMAT_VERSION}; capture again")),
             Some(v) => return Err(anyhow!("capture format version {v} is unknown: this build reads version {FORMAT_VERSION}")),
             None => return Err(anyhow!("not a capture: no format_version field")),
         }
