@@ -187,9 +187,24 @@ fn corpus_catalogue() -> tempfile::TempDir {
     root
 }
 
+/// A ticket id: a prefix of letters, a dash, a non-empty rest of letters, digits and dots.
+/// Its existence is not checked.
+fn is_ticket_id(s: &str) -> bool {
+    let Some((prefix, rest)) = s.split_once('-') else { return false };
+    !prefix.is_empty()
+        && prefix.chars().all(|c| c.is_ascii_alphabetic())
+        && !rest.is_empty()
+        && !rest.starts_with('.')
+        && !rest.ends_with('.')
+        && rest.chars().all(|c| c.is_ascii_alphanumeric() || c == '.')
+}
+
 /// Each capture of `dir` (`<name>.json`) is replayed over `catalogue` and compared with its
-/// neighbour `<name>.expected.json`, a map port → device id (null: none). The errors name the
-/// capture and the port.
+/// neighbour `<name>.expected.json`, a map port → truth, written by hand: a driver id of the
+/// catalogue, null (no driver in this catalogue, or no device), or a `wrong_today` marker that
+/// carries the expected truth and the ticket that corrects the detection (the marker is
+/// refused when the detection already gives the truth). Keys starting with `_` are notes.
+/// The errors name the capture and the port.
 fn check_corpus(dir: &Path, catalogue: &Path) -> Result<usize, Vec<String>> {
     let mut errors = Vec::new();
     let mut checked = 0;
@@ -218,11 +233,33 @@ fn check_corpus(dir: &Path, catalogue: &Path) -> Result<usize, Vec<String>> {
         for d in &devices {
             let port = d["port"].as_str().unwrap();
             let got = d["candidates"][0]["device"].as_str();
-            let want = expected.get(port).map(|w| w.as_str());
-            match want {
-                None => errors.push(format!("{n}.json: port {port}: not in {n}.expected.json")),
-                Some(w) if w != got => errors.push(format!("{n}.json: port {port}: detected {got:?}, expected {w:?}")),
-                Some(_) => checked += 1,
+            let Some(truth) = expected.get(port) else {
+                errors.push(format!("{n}.json: port {port}: not in {n}.expected.json"));
+                continue;
+            };
+            // A truth is a driver id or null, or `{"wrong_today": {"truth": …, "ticket": …}}`.
+            match truth.get("wrong_today") {
+                None => {
+                    let w = truth.as_str();
+                    if w != got {
+                        errors.push(format!("{n}.json: port {port}: detected {got:?}, expected {w:?}"));
+                    } else {
+                        checked += 1;
+                    }
+                }
+                Some(marker) => {
+                    let ticket = marker.get("ticket").and_then(Value::as_str).unwrap_or("");
+                    if !is_ticket_id(ticket) {
+                        errors.push(format!("{n}.json: port {port}: wrong_today ticket {ticket:?} is not a ticket id"));
+                        continue;
+                    }
+                    let w = marker.get("truth").and_then(Value::as_str);
+                    if w == got {
+                        errors.push(format!("{n}.json: port {port}: marked wrong_today ({ticket}) but detection already gives {w:?}: remove the marker"));
+                    } else {
+                        checked += 1;
+                    }
+                }
             }
         }
     }
@@ -234,7 +271,7 @@ fn every_capture_of_the_corpus_detects_the_device_its_neighbour_file_declares() 
     let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/captures");
     let catalogue = corpus_catalogue();
     match check_corpus(&dir, catalogue.path()) {
-        Ok(n) => assert!(n >= 3, "the corpus holds the bench of 2026-11-21 (3 devices), {n} checked"),
+        Ok(n) => assert!(n >= 28, "the corpus holds the three benches and the software ports, {n} ports checked"),
         Err(errors) => panic!("{}", errors.join("\n")),
     }
 }
@@ -275,6 +312,197 @@ fn the_corpus_check_refuses_a_capture_without_its_neighbour_file_and_the_reverse
     let errors = check_corpus(dir.path(), corpus_catalogue().path()).unwrap_err().join("\n");
     assert!(errors.contains("2026-02-03.json has no neighbour"), "{errors}");
     assert!(errors.contains("2026-03-04.expected.json has no capture"), "{errors}");
+}
+
+const MINILAB: &str = "Minilab3:Minilab3 MIDI 40:0";
+
+fn wrong_today(truth: Value, ticket: &str) -> Value {
+    json!({ MINILAB: { "wrong_today": { "truth": truth, "ticket": ticket } } })
+}
+
+#[test]
+fn a_port_marked_wrong_today_passes_while_the_detection_differs_from_its_truth() {
+    let dir = small_corpus(wrong_today(json!("electra-one/electra-one"), "OB-80g.17"));
+    assert_eq!(check_corpus(dir.path(), corpus_catalogue().path()), Ok(1));
+}
+
+#[test]
+fn a_port_marked_wrong_today_passes_whatever_the_wrong_detection_is() {
+    // The detection gives arturia/minilab3: a truth of none, or of another driver, both differ.
+    for truth in [json!(null), json!("behringer/bcr32")] {
+        let dir = small_corpus(wrong_today(truth.clone(), "OB-80g.19"));
+        assert_eq!(check_corpus(dir.path(), corpus_catalogue().path()), Ok(1), "{truth}");
+    }
+}
+
+#[test]
+fn a_port_marked_wrong_today_whose_detection_already_gives_the_truth_fails_saying_to_remove_the_marker() {
+    let dir = small_corpus(wrong_today(json!("arturia/minilab3"), "OB-80g.17"));
+    let errors = check_corpus(dir.path(), corpus_catalogue().path()).unwrap_err();
+    assert_eq!(errors.len(), 1, "{errors:?}");
+    assert!(errors[0].contains("2026-01-02.json") && errors[0].contains(MINILAB), "{errors:?}");
+    assert!(errors[0].contains("wrong_today") && errors[0].contains("remove the marker"), "{errors:?}");
+    // The truth none, when the detection gives none, is the same case.
+    let dir = temp("corpus-none");
+    let lonely = json!({
+        "format_version": FORMAT_VERSION, "outputs": ["Lonely:Lonely 50:0"], "inputs": [],
+        "cards": "", "usbids": [], "requests": [], "received": [],
+    });
+    files(dir.path(), &[
+        ("c.json", &lonely.to_string()),
+        ("c.expected.json", &json!({"Lonely:Lonely 50:0": {"wrong_today": {"truth": null, "ticket": "OB-80g.18"}}}).to_string()),
+    ]);
+    let errors = check_corpus(dir.path(), corpus_catalogue().path()).unwrap_err().join("\n");
+    assert!(errors.contains("remove the marker"), "{errors}");
+}
+
+#[test]
+fn a_wrong_today_ticket_must_have_the_shape_of_a_ticket_id_and_need_not_exist() {
+    for good in ["OB-80g.17", "OB-1", "SH-jmc.15", "AB-999999.9"] {
+        let dir = small_corpus(wrong_today(json!("electra-one/electra-one"), good));
+        assert_eq!(check_corpus(dir.path(), corpus_catalogue().path()), Ok(1), "{good}");
+    }
+    for bad in ["", "OB", "OB-", "-80g", "80g.17", "OB 80g", "OB-80g.", "OB-.17", "OB-80g 17", "#17"] {
+        let dir = small_corpus(wrong_today(json!("electra-one/electra-one"), bad));
+        let errors = check_corpus(dir.path(), corpus_catalogue().path()).unwrap_err();
+        assert_eq!(errors.len(), 1, "{bad:?}: {errors:?}");
+        assert!(errors[0].contains("not a ticket id") && errors[0].contains(MINILAB), "{bad:?}: {errors:?}");
+    }
+    let dir = small_corpus(json!({ MINILAB: { "wrong_today": { "truth": "electra-one/electra-one" } } }));
+    assert!(check_corpus(dir.path(), corpus_catalogue().path()).is_err(), "a marker without a ticket");
+}
+
+#[test]
+fn the_corpus_check_still_compares_a_plain_truth_when_a_neighbour_port_is_marked() {
+    let v = json!({
+        "format_version": FORMAT_VERSION,
+        "outputs": ["Minilab3:Minilab3 MIDI 40:0", "Lonely:Lonely 50:0"],
+        "inputs": [], "cards": " 6 [Minilab3       ]: USB-Audio - Minilab3\n",
+        "usbids": [{"card": 6, "text": "1c75:020b\n"}], "requests": [], "received": [],
+    });
+    let dir = temp("corpus-mixed");
+    files(dir.path(), &[
+        ("c.json", &v.to_string()),
+        ("c.expected.json", &json!({
+            MINILAB: { "wrong_today": { "truth": null, "ticket": "OB-80g.17" } },
+            "Lonely:Lonely 50:0": "behringer/bcr32",
+        }).to_string()),
+    ]);
+    let errors = check_corpus(dir.path(), corpus_catalogue().path()).unwrap_err();
+    assert_eq!(errors.len(), 1, "{errors:?}");
+    assert!(errors[0].contains("Lonely:Lonely 50:0"), "{errors:?}");
+}
+
+// ---- the corpus of the bench of seven devices and of the software ports -------------
+
+fn captures_dir() -> std::path::PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/captures")
+}
+
+fn read_json(name: &str) -> Value {
+    serde_json::from_str(&std::fs::read_to_string(captures_dir().join(name)).unwrap()).unwrap()
+}
+
+#[test]
+fn the_corpus_holds_the_bench_of_seven_devices_and_the_software_ports_each_with_its_truth_file() {
+    for n in ["2026-11-21-banc-7-appareils", "2026-11-22-ports-logiciels"] {
+        assert!(captures_dir().join(format!("{n}.json")).is_file(), "{n}.json");
+        assert!(captures_dir().join(format!("{n}.expected.json")).is_file(), "{n}.expected.json");
+    }
+}
+
+#[test]
+fn the_bench_of_seven_devices_has_a_truth_for_each_of_its_sixteen_ports() {
+    let capture = Capture::parse(&std::fs::read_to_string(captures_dir().join("2026-11-21-banc-7-appareils.json")).unwrap()).unwrap();
+    let expected = read_json("2026-11-21-banc-7-appareils.expected.json");
+    assert_eq!(capture.outputs.len(), 16);
+    let truths: Vec<(&String, &Value)> = expected.as_object().unwrap().iter().filter(|(k, _)| !k.starts_with('_')).collect();
+    assert_eq!(truths.len(), 16);
+    for port in &capture.outputs {
+        assert!(expected.get(port.as_str()).is_some(), "{port} has no truth");
+    }
+    let id = |client: &str| -> Vec<Value> {
+        truths.iter().filter(|(k, _)| k.starts_with(client)).map(|(_, v)| (*v).clone()).collect()
+    };
+    assert_eq!(id("Behringer BCR-32"), vec![json!("behringer/bcr32"); 2]);
+    assert_eq!(id("Electra Controller"), vec![json!("electra-one/electra-one"); 3]);
+    assert_eq!(id("Minilab3"), vec![json!("arturia/minilab3"); 4]);
+    for none in ["Midi Through", "Deluge", "MatrixBrute", "Moog Sub 37", "Osmose"] {
+        assert!(id(none).iter().all(Value::is_null), "{none}");
+    }
+    let note = expected["_note"].as_str().expect("the truth file says what none means");
+    assert!(note.contains("no driver in this catalogue"), "{note}");
+}
+
+#[test]
+fn the_software_ports_capture_holds_the_seven_software_ports_none_of_them_a_device() {
+    let capture = Capture::parse(&std::fs::read_to_string(captures_dir().join("2026-11-22-ports-logiciels.json")).unwrap()).unwrap();
+    let expected = read_json("2026-11-22-ports-logiciels.expected.json");
+    for client in ["FLUID Synth", "Microsoft GS Wavetable Synth", "Controller:", "Audio Interface MIDI", "TiMidity", "Pure Data", "Midi Through"] {
+        assert!(capture.outputs.iter().any(|p| p.starts_with(client)), "{client} is not in the capture");
+    }
+    assert!(capture.outputs.iter().any(|p| p.contains("Synth input port")), "FLUID Synth names its port Synth input port");
+    for (port, truth) in expected.as_object().unwrap().iter().filter(|(k, _)| !k.starts_with('_')) {
+        assert!(truth.is_null(), "{port}");
+    }
+    assert_eq!(serde_json::from_str::<Value>(&capture.to_json()).unwrap()["usbids"], json!([]), "software ports have no USB id");
+}
+
+#[test]
+fn the_bench_capture_holds_no_serial_number_and_no_host_name() {
+    let text = std::fs::read_to_string(captures_dir().join("2026-11-21-banc-7-appareils.json")).unwrap();
+    let capture = Capture::parse(&text).unwrap();
+    let v: Value = serde_json::from_str(&capture.to_json()).unwrap();
+    // What the capture says outside the replies: the lists of ports and the cards.
+    let listings = format!("{} {} {}", v["outputs"], v["inputs"], v["cards"]).to_lowercase();
+    for word in ["serial", "hostname", "host-", "laptop", "/home/", "romain", "romi"] {
+        assert!(!listings.contains(word), "{word} in the listings");
+    }
+    // What the replies carry in their bytes: a serial value is the placeholder, never a number.
+    for r in &capture.received {
+        let ascii: String = r.bytes.iter().map(|b| if (32..127).contains(b) { *b as char } else { ' ' }).collect();
+        let lower = ascii.to_lowercase();
+        if let Some(at) = lower.find("\"serial\":\"") {
+            let value: String = ascii[at + 10..].chars().take_while(|c| *c != '"').collect();
+            assert_eq!(value, "EO2-00000000", "{}: serial value {value:?}", r.port);
+        }
+        for word in ["hostname", "host-", "laptop", "romain", "romi"] {
+            assert!(!lower.contains(word), "{word} in a reply of {}", r.port);
+        }
+    }
+}
+
+#[test]
+fn the_bench_capture_replays_the_identities_and_the_usb_ids_the_bench_gave() {
+    let capture = Capture::parse(&std::fs::read_to_string(captures_dir().join("2026-11-21-banc-7-appareils.json")).unwrap()).unwrap();
+    let found = replay(&capture);
+    assert_eq!(found.len(), 16);
+    let by = |label: &str| found.iter().find(|d| d.label() == label).unwrap_or_else(|| panic!("{label}"));
+    // The identity replies (F0 7E … 06 02 …) keep their manufacturer, family, model and version bytes.
+    let minilab = by("Minilab3:Minilab3 MIDI 40:0");
+    assert_eq!(minilab.replies, vec![vec![0xF0, 0x7E, 0x7F, 0x06, 0x02, 0x00, 0x20, 0x6B, 0x02, 0x00, 0x04, 0x04, 0x45, 0x00, 0x02, 0x01, 0xF7]]);
+    assert_eq!(minilab.identity.as_ref().expect("identity").manufacturer, vec![0x00, 0x20, 0x6B]);
+    let brute = by("MatrixBrute:MatrixBrute 36:0");
+    assert_eq!(brute.replies, vec![vec![0xF0, 0x7E, 0x01, 0x06, 0x02, 0x00, 0x20, 0x6B, 0x04, 0x00, 0x03, 0x01, 0x02, 0x00, 0x03, 0x03, 0xF7]]);
+    assert!(brute.identity.is_some());
+    assert_eq!(by("MatrixBrute:MatrixBrute MIDI Interface 36:1").replies, vec![vec![0xF0, 0x7E, 0x01, 0x06, 0x02, 0x00, 0x20, 0x6B, 0x04, 0x00, 0x03, 0x02, 0x02, 0x00, 0x03, 0x03, 0xF7]]);
+    let moog = by("Moog Sub 37:Moog Sub 37 MIDI 1 44:0");
+    assert_eq!(moog.replies, vec![vec![0xF0, 0x7E, 0x7F, 0x06, 0x02, 0x04, 0x00, 0x0C, 0x00, 0x00, 0x00, 0x01, 0x02, 0x00, 0xF7]]);
+    assert!(moog.identity.is_some());
+    // The USB ids of the seven cards.
+    let usb = [
+        ("Behringer BCR-32:Behringer BCR-32 BCR-32 CTRL 24:0", (0x1397, 0x12cf)),
+        ("Electra Controller:Electra Controller Electra Port 28:0", (0x1fc9, 0x82cf)),
+        ("Deluge:Deluge OUT 32:0", (0x16d0, 0x0ce2)),
+        ("MatrixBrute:MatrixBrute 36:0", (0x1c75, 0x0403)),
+        ("Minilab3:Minilab3 MIDI 40:0", (0x1c75, 0x020b)),
+        ("Moog Sub 37:Moog Sub 37 MIDI 1 44:0", (0x2662, 0x0ffc)),
+        ("Osmose:Osmose  48:0", (0x2e14, 0x0010)),
+    ];
+    for (label, ids) in usb {
+        assert_eq!(by(label).usb, Some(ids), "{label}");
+    }
+    assert_eq!(by("Midi Through:Midi Through Port-0 14:0").usb, None);
 }
 
 // ---- the command ----------------------------------------------------------------
