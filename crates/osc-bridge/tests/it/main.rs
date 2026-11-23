@@ -35,6 +35,7 @@ mod midi_in_templates;
 mod midi_out;
 mod newer_version_notice;
 mod online_account;
+mod orchestrator_card_place;
 mod orchestrator_config;
 mod orchestrator_message_path;
 mod orchestrator_routing_e2e;

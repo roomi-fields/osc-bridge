@@ -14,7 +14,6 @@ const SUBMODULES: &[&str] = &["online", "connect", "relay_protocol", "catalogue"
 
 /// (reader module, submodule of the link, number of readings).
 const INSCRIBED: &[(&str, &str, usize)] = &[
-    ("orchestrator", "catalogue", 1),
     ("mcp", "online", 43),
     ("mcp", "catalogue", 5),
     ("mcp", "take", 2),
@@ -286,7 +285,7 @@ fn the_first_list_is_the_readings_of_the_bridge_at_the_split() {
     list.sort();
     assert_eq!(
         list,
-        [("mcp", "catalogue"), ("mcp", "online"), ("mcp", "take"), ("orchestrator", "catalogue")]
+        [("mcp", "catalogue"), ("mcp", "online"), ("mcp", "take")]
     );
 }
 

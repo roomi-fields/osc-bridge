@@ -330,7 +330,7 @@ fn main() -> Result<()> {
         Cmd::OscSend { target, addr, args, from_file } => cmd_osc_send(target, addr, args, from_file),
         Cmd::OscListen { bind } => cmd_osc_listen(bind),
         Cmd::Lint { device } => cmd_lint(device),
-        Cmd::Orchestrate { config } => osc_bridge::orchestrator::Orchestrator::run(&config),
+        Cmd::Orchestrate { config } => osc_bridge::orchestrator::Orchestrator::run(&config, osc_bridge::synthub::catalogue::locate),
         Cmd::Mcp { devices_dir, default_target, offline } => {
             let default_target = default_target.parse::<std::net::SocketAddr>()
                 .with_context(|| format!("parse --default-target {default_target}"))?;

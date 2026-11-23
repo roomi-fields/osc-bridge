@@ -11,8 +11,8 @@
 //! # ws_bind = "127.0.0.1:7890"   # optional — browser clients over WebSocket
 //! # oscquery_bind = "127.0.0.1:7891"   # optional — OSCQuery namespace over HTTP
 //!
-//! # Hardware (MIDI/SysEx) device: a driver file, or its catalogue id or
-//! # slug (fetched from the SynthHub server, see crate::synthub::catalogue).
+//! # Hardware (MIDI/SysEx) device: a `spec` that the caller of `run` turns
+//! # into a card file (a path, an id or a slug, as the caller understands it).
 //! [[devices]]
 //! spec = "moog/subsequent-37"
 //! midi_out_port = 3
@@ -332,7 +332,8 @@ struct PendingOscReply {
 pub struct Orchestrator;
 
 impl Orchestrator {
-    pub fn run(config_path: &Path) -> Result<()> {
+    /// `place` turns the `spec` of each device into the card file to load.
+    pub fn run(config_path: &Path, place: impl Fn(&Path) -> Result<PathBuf>) -> Result<()> {
         let cfg = OrchestratorConfig::load(config_path)?;
 
         // Parse OSC clients
@@ -362,7 +363,7 @@ impl Orchestrator {
         let mut pending_osc_reply: Vec<PendingOscReply> = Vec::new();
 
         for dc in &cfg.devices {
-            let mut dev = crate::device::load_with_docs(crate::synthub::catalogue::locate(&dc.spec)?)?;
+            let mut dev = crate::device::load_with_docs(place(&dc.spec)?)?;
             if let Some(pfx) = &dc.osc_prefix {
                 if !pfx.starts_with('/') {
                     bail!("osc_prefix override must start with '/': {pfx}");

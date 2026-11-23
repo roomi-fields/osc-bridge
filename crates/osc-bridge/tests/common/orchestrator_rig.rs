@@ -93,7 +93,7 @@ to = "/rigsentinel/ping"
 
         let (tx, rx) = mpsc::channel();
         std::thread::spawn(move || {
-            let result = Orchestrator::run(&toml);
+            let result = Orchestrator::run(&toml, |spec: &Path| Ok(spec.to_path_buf()));
             let _ = tx.send(result.map(|()| "returned without an error".to_string()).unwrap_or_else(|e| format!("{e:#}")));
         });
 
