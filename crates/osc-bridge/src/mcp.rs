@@ -18,8 +18,8 @@
 //!    ports of the machine the server runs on
 //!  - `report_result`, `report_mapping`, `get_trust`, `submit_driver`,
 //!    `submit_fix`, `get_contribution` — run on the SynthHub server:
-//!    a local copy is linked to it unless offline (`crate::online`), fetches
-//!    the drivers it needs from it one at a time (`crate::catalogue`), shows
+//!    a local copy is linked to it unless offline (`crate::synthub::online`), fetches
+//!    the drivers it needs from it one at a time (`crate::synthub::catalogue`), shows
 //!    each driver's trust, and forwards these there.
 //!
 //! The server reads one JSON-RPC request per line from stdin and writes one
@@ -49,7 +49,7 @@ pub struct McpOptions {
     /// (`online::cache_dir`), which is all there is offline.
     pub devices_dir: Option<PathBuf>,
     pub default_target: SocketAddr,
-    /// A local copy linked to the hosted server (`crate::online`): fetch the
+    /// A local copy linked to the hosted server (`crate::synthub::online`): fetch the
     /// drivers it needs (without `devices_dir`) and forward the report and
     /// contribution tools to it.
     pub online: bool,
@@ -66,14 +66,14 @@ const PRIVATE_REFUSED: [&str; 5] = ["report_result", "report_mapping", "submit_f
 /// A local copy's link to the hosted server: the client, the account kept on
 /// this machine, and the trust of every reported driver, as last fetched.
 struct Link {
-    client: crate::online::Online,
+    client: crate::synthub::online::Online,
     user: std::sync::Mutex<Option<String>>,
     trust: std::sync::RwLock<Value>,
 }
 
 impl Link {
     fn new(base: &str) -> Self {
-        Self { client: crate::online::Online::new(base), user: std::sync::Mutex::new(None), trust: std::sync::RwLock::new(Value::Null) }
+        Self { client: crate::synthub::online::Online::new(base), user: std::sync::Mutex::new(None), trust: std::sync::RwLock::new(Value::Null) }
     }
 
     /// The account, issued by the server on first use; `forget` replaces one
@@ -255,7 +255,7 @@ fn driver_wanted(req: &Value) -> Option<&str> {
     let (name, args) = (req["params"]["name"].as_str()?, &req["params"]["arguments"]);
     match name {
         "get_device_docs" | "list_routes" | "export_device" | "list_roles" | "set_by_role" | "get_by_role" => args["device"].as_str(),
-        n if crate::online::FORWARDED_TOOLS.contains(&n) => args["device"].as_str(),
+        n if crate::synthub::online::FORWARDED_TOOLS.contains(&n) => args["device"].as_str(),
         _ => None,
     }
 }
@@ -273,12 +273,12 @@ fn drivers_wanted(req: &Value) -> Vec<&str> {
 /// The MCP server over stdio, linked to `online::SERVER`, its drivers kept
 /// in `online::cache_dir`.
 pub fn run(opts: McpOptions) -> Result<()> {
-    serve(opts, crate::online::SERVER, crate::online::cache_dir(), std::io::stdin().lock(), std::io::stdout().lock())
+    serve(opts, crate::synthub::online::SERVER, crate::synthub::online::cache_dir(), std::io::stdin().lock(), std::io::stdout().lock())
 }
 
 /// `serve_with_midi` on the machine's MIDI system (the guarded opening).
 pub fn serve(opts: McpOptions, base: &str, cache: Option<PathBuf>, input: impl BufRead, out: impl Write) -> Result<()> {
-    serve_with_midi(opts, base, cache, input, out, &crate::take::open_hardware)
+    serve_with_midi(opts, base, cache, input, out, &crate::synthub::take::open_hardware)
 }
 
 /// One MCP session: a JSON-RPC message per line of `input`, each reply a
@@ -286,7 +286,7 @@ pub fn serve(opts: McpOptions, base: &str, cache: Option<PathBuf>, input: impl B
 /// the drivers it needs and keeps them in `cache`, unless the user gave
 /// `opts.devices_dir`. The tools that reach the MIDI system take it from `open`.
 pub fn serve_with_midi(opts: McpOptions, base: &str, cache: Option<PathBuf>, input: impl BufRead, mut out: impl Write,
-                       open: crate::take::Opener) -> Result<()> {
+                       open: crate::synthub::take::Opener) -> Result<()> {
     use std::sync::{Arc, RwLock};
     let link = opts.online.then(|| Arc::new(Link::new(base)));
     // Drivers from the server are kept in the cache; a folder the user gave is theirs.
@@ -313,8 +313,8 @@ pub fn serve_with_midi(opts: McpOptions, base: &str, cache: Option<PathBuf>, inp
         // device the user keeps private by that very name is not asked for.
         if let (Some(link), Some(cache)) = (&link, &cache) {
             for name in drivers_wanted(&req) {
-                if crate::online::Settings::covers(&opts.private, name, name) || !fetched.insert(name.to_string()) { continue; }
-                match crate::catalogue::fetch(&link.client, name, cache) {
+                if crate::synthub::online::Settings::covers(&opts.private, name, name) || !fetched.insert(name.to_string()) { continue; }
+                match crate::synthub::catalogue::fetch(&link.client, name, cache) {
                     Ok(_) => if let Ok(mut g) = index.write() { *g = Arc::new(DeviceIndex::build(cache)) },
                     Err(e) => eprintln!("{name}: {e:#}"),
                 }
@@ -327,7 +327,7 @@ pub fn serve_with_midi(opts: McpOptions, base: &str, cache: Option<PathBuf>, inp
             }
             // A newer osc-bridge the server announced is told once, in the next tool result.
             if let (true, Some(content)) = (req["method"] == "tools/call", resp.pointer_mut("/result/content").and_then(Value::as_array_mut)) {
-                if let Some(notice) = crate::online::newer_notice_once() {
+                if let Some(notice) = crate::synthub::online::newer_notice_once() {
                     content.push(json!({ "type": "text", "text": notice }));
                 }
             }
@@ -342,10 +342,10 @@ pub fn serve_with_midi(opts: McpOptions, base: &str, cache: Option<PathBuf>, inp
 
 #[cfg(test)]
 fn handle_request(req: &Value, opts: &McpOptions, index: &DeviceIndex, link: Option<&Link>) -> Option<Value> {
-    handle_request_with(req, opts, index, link, &crate::take::open_hardware)
+    handle_request_with(req, opts, index, link, &crate::synthub::take::open_hardware)
 }
 
-fn handle_request_with(req: &Value, opts: &McpOptions, index: &DeviceIndex, link: Option<&Link>, open: crate::take::Opener) -> Option<Value> {
+fn handle_request_with(req: &Value, opts: &McpOptions, index: &DeviceIndex, link: Option<&Link>, open: crate::synthub::take::Opener) -> Option<Value> {
     rpc_reply(req, &tool_names(opts), || tools_list(opts), |name, args| call_tool_with(name, args, opts, index, link, open))
 }
 
@@ -1323,20 +1323,20 @@ fn tool_names(opts: &McpOptions) -> Vec<&'static str> {
          "list_roles", "set_by_role", "get_by_role"];
     // Taking and loading sounds needs the server's librarian, like the forwarded tools.
     let linked: &[&str] = if opts.online { &["take_sound", "load_preset"] } else { &[] };
-    let forwarded = if opts.online { crate::online::FORWARDED_TOOLS.as_slice() } else { &[] };
+    let forwarded = if opts.online { crate::synthub::online::FORWARDED_TOOLS.as_slice() } else { &[] };
     local.iter().chain(forwarded).chain(linked).copied().collect()
 }
 
 #[cfg(test)]
 fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, link: Option<&Link>) -> Result<Value, String> {
-    call_tool_with(name, args, opts, index, link, &crate::take::open_hardware)
+    call_tool_with(name, args, opts, index, link, &crate::synthub::take::open_hardware)
 }
 
 fn call_tool_with(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, link: Option<&Link>,
-                  open: crate::take::Opener) -> Result<Value, String> {
+                  open: crate::synthub::take::Opener) -> Result<Value, String> {
     if args.get("slug").is_some() { device_arg(args)?; }
     if let Some(link) = link {
-        if crate::online::FORWARDED_TOOLS.contains(&name) {
+        if crate::synthub::online::FORWARDED_TOOLS.contains(&name) {
             if let Some(id) = private_device(index, opts, args) {
                 if name == "get_trust" {
                     let trust = link.trust.read().map(|t| t["devices"][&id].clone()).unwrap_or(Value::Null);
@@ -1494,7 +1494,7 @@ pub fn catalogue_tool(name: &str, args: &Value, index: &DeviceIndex, status: &dy
 /// covers the other variants of the same device (same slug).
 fn private_device(index: &DeviceIndex, opts: &McpOptions, args: &Value) -> Option<String> {
     let private = &opts.private;
-    let covers = |id: &str, slug: &str| crate::online::Settings::covers(private, id, slug)
+    let covers = |id: &str, slug: &str| crate::synthub::online::Settings::covers(private, id, slug)
         || private.iter().any(|p| index.find(p).is_some_and(|e| e.slug == slug));
     if let Some(wanted) = args.get("device").and_then(Value::as_str) {
         // Named as the private list names it, even when no driver of it is here.
@@ -1517,11 +1517,11 @@ fn private_device(index: &DeviceIndex, opts: &McpOptions, args: &Value) -> Optio
 /// `osc-bridge privacy`: change the settings at `path` — `offline`, devices
 /// made private or public again (ids or slugs, found in `index`, else asked
 /// of `server`) — then show them. Returns what to print.
-pub fn privacy(path: &Path, index: &DeviceIndex, server: Option<&crate::online::Online>, offline: Option<bool>,
+pub fn privacy(path: &Path, index: &DeviceIndex, server: Option<&crate::synthub::online::Online>, offline: Option<bool>,
                private: &[String], public: &[String]) -> Result<String> {
-    let mut settings = crate::online::Settings::load(Some(path))?;
+    let mut settings = crate::synthub::online::Settings::load(Some(path))?;
     let id_of = |name: &str| match name.strip_suffix("/*") {
-        Some(vendor) => crate::catalogue::is_slug(vendor).then(|| name.to_string())
+        Some(vendor) => crate::synthub::catalogue::is_slug(vendor).then(|| name.to_string())
             .ok_or_else(|| anyhow::anyhow!("'{vendor}' is not a vendor folder of the catalogue")),
         None => index.find(name).map(|e| e.id.clone())
             .or_else(|| {
@@ -1668,7 +1668,7 @@ pub fn match_port(catalogue: &[crate::detect::Candidate], port: &str, usb: Optio
 /// of `index`, or, given `server`, those of the SynthHub catalogue it
 /// matches the ports against. The command to run names the driver by its
 /// file when `by_file` (a folder the user keeps), else by its id.
-fn detect_hardware(index: &DeviceIndex, server: Option<&crate::online::Online>, by_file: bool, probe: bool,
+fn detect_hardware(index: &DeviceIndex, server: Option<&crate::synthub::online::Online>, by_file: bool, probe: bool,
                    wait: std::time::Duration, write: Option<&Path>, consent: &[String]) -> Result<Value, String> {
     let mut faults = Vec::new();
     let probes = match server {
@@ -1752,7 +1752,7 @@ fn software_cards_only(index: &DeviceIndex, candidates: Vec<Value>) -> Vec<Value
 }
 
 /// The report of `detect_hardware` over the devices `found`.
-fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>, by_file: bool, probe: bool,
+fn detection_report(index: &DeviceIndex, server: Option<&crate::synthub::online::Online>, by_file: bool, probe: bool,
                     found: Vec<crate::detect::Probed>, faults: Vec<crate::device::DeviceFault>,
                     plan: &[crate::detect::PortSends]) -> Result<Value, String> {
     let mut matched: Vec<Vec<Value>> = match server {
@@ -1858,7 +1858,7 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::online::Online>,
 
 /// `detect_hardware` in learn mode: a fingerprint per device, and its measures beside it. The
 /// report's text tells the person how long it listens and to move the controls.
-fn learn_hardware(index: &DeviceIndex, server: Option<&crate::online::Online>, listen: std::time::Duration, share: Option<Share>) -> Result<Value, String> {
+fn learn_hardware(index: &DeviceIndex, server: Option<&crate::synthub::online::Online>, listen: std::time::Duration, share: Option<Share>) -> Result<Value, String> {
     let learned = crate::detect::learn_all(listen).map_err(|e| format!("MIDI scan: {e}"))?;
     let sharing = share.map(|s| share_learned(&s, &learned)).transpose()?;
     let service = learn_service_matches(server, &learned);
@@ -1890,7 +1890,7 @@ fn learn_devices(learned: &[(crate::detect::Unit, crate::detect::Learned)]) -> V
 
 /// Asks the service to match the ports and identity reply of each device of `learned` (the
 /// system ports left out). Never fails: an unreachable service is `Unreachable`.
-pub fn learn_service_matches(server: Option<&crate::online::Online>, learned: &[(crate::detect::Unit, crate::detect::Learned)]) -> ServiceMatches {
+pub fn learn_service_matches(server: Option<&crate::synthub::online::Online>, learned: &[(crate::detect::Unit, crate::detect::Learned)]) -> ServiceMatches {
     let Some(server) = server else { return ServiceMatches::NotLinked };
     let devices = learn_devices(learned);
     if devices.is_empty() { return ServiceMatches::Answered(Vec::new()); }
@@ -1998,7 +1998,7 @@ fn covers_declared(private: &[String], name: &str) -> bool {
     let words: Vec<&str> = name.split_whitespace().collect();
     (1..=words.len()).any(|k| {
         let id = format!("{}/{}", slugify(&words[..k].join(" "), '-'), slugify(&words[k..].join(" "), '-'));
-        crate::online::Settings::covers(private, &id, &id)
+        crate::synthub::online::Settings::covers(private, &id, &id)
     })
 }
 
@@ -2119,7 +2119,7 @@ struct Share<'a> {
     firmware: &'a str,
     /// Typed on the command line: a refusal is worded with its flags.
     command: bool,
-    client: Option<&'a crate::online::Online>,
+    client: Option<&'a crate::synthub::online::Online>,
     private: &'a [String],
 }
 
@@ -2133,17 +2133,17 @@ fn share_learned(share: &Share, learned: &[(crate::detect::Unit, crate::detect::
     };
     let name = format!("{} {}", share.vendor, share.model);
     let id = device_id(share.vendor, share.model);
-    if crate::online::Settings::covers(share.private, &id, &id) {
+    if crate::synthub::online::Settings::covers(share.private, &id, &id) {
         return Ok(format!("not sent: {name} is private on this machine"));
     }
-    let (Some(client), Some(file)) = (share.client, crate::online::settings_file()) else {
+    let (Some(client), Some(file)) = (share.client, crate::synthub::online::settings_file()) else {
         return Ok("not sent: this copy is not linked to the SynthHub server".into());
     };
     Ok(match client.share_fingerprint(&file, share.vendor, share.model, share.firmware, &one.fingerprint) {
-        crate::online::Sharing::Sent => format!("the fingerprint of {name} (firmware {}, {}) was sent to SynthHub ({}). {}",
+        crate::synthub::online::Sharing::Sent => format!("the fingerprint of {name} (firmware {}, {}) was sent to SynthHub ({}). {}",
             share.firmware, unit.label(), SENT_FIELDS, shared_next_step(share.vendor, share.model)),
-        crate::online::Sharing::Withheld(why) => format!("not sent: {why}"),
-        crate::online::Sharing::Failed(why) => {
+        crate::synthub::online::Sharing::Withheld(why) => format!("not sent: {why}"),
+        crate::synthub::online::Sharing::Failed(why) => {
             let why = refusal_in_words(&why, share.command);
             eprintln!("osc-bridge: the fingerprint of {name} was not sent, it stays on this machine: {why}");
             format!("not sent, it stays on this machine: {why}")
@@ -2161,7 +2161,7 @@ fn preset_device(index: &DeviceIndex, wanted: &str) -> Result<Device, String> {
 
 /// `install_export`: the export of `source` put on `target` by the way its
 /// driver declares (see `crate::install`).
-fn install_export(source: &Device, target: &Device, device: &str, on: &str, confirm: bool, open: crate::take::Opener) -> Result<Value, String> {
+fn install_export(source: &Device, target: &Device, device: &str, on: &str, confirm: bool, open: crate::synthub::take::Opener) -> Result<Value, String> {
     let mut midi = open().map_err(|e| format!("{} cannot be reached (MIDI system): {e}", crate::export::device_title(target)))?;
     let done = crate::install::install(source, target, confirm, midi.as_mut(),&mut crate::programs::SystemClock)?;
     let lost: Vec<Value> = done.lost.iter().map(|l| json!({ "place": l.place, "reason": l.reason })).collect();
@@ -2243,15 +2243,15 @@ fn share_with_files(link: &Link, name: &str, args: &Value) -> Result<Value, Stri
 }
 
 /// The synths the server's librarian knows, and one librarian step, for
-/// `crate::take`.
+/// `crate::synthub::take`.
 fn librarian_ask(link: &Link) -> impl Fn(&str, &Value) -> Result<Value, String> + '_ {
     move |op, body| link.client.librarian(op, body).map_err(|e| format!("SynthHub's librarian: {e}"))
 }
 
 /// Take the sound a synth plays (or a program) through the server's
 /// librarian, saved as a .syx file for share_preset.
-fn take_sound(args: &Value, link: &Link, open: crate::take::Opener) -> Result<Value, String> {
-    use crate::take::{find, take};
+fn take_sound(args: &Value, link: &Link, open: crate::synthub::take::Opener) -> Result<Value, String> {
+    use crate::synthub::take::{find, take};
     let lib = link.client.librarian_synths().map_err(|e| format!("SynthHub's librarian could not be reached: {e}"))?;
     let ask = librarian_ask(link);
     let mut midi = open().map_err(|e| e.to_string())?;
@@ -2297,7 +2297,7 @@ fn take_sound(args: &Value, link: &Link, open: crate::take::Opener) -> Result<Va
 /// local device (patch data only once the user agreed: it replaces what the
 /// device holds). A sound the librarian took is fitted to the receiving
 /// synth's MIDI channel, read from its answer to the detect messages.
-fn load_preset(args: &Value, link: &Link, open: crate::take::Opener) -> Result<Value, String> {
+fn load_preset(args: &Value, link: &Link, open: crate::synthub::take::Opener) -> Result<Value, String> {
     let id = args.get("id").and_then(Value::as_str).ok_or("missing id")?;
     let out_port = args.get("out_port").and_then(Value::as_str).ok_or("missing out_port")?;
     let gap = Duration::from_millis(args.get("gap_ms").and_then(Value::as_u64).unwrap_or(50).min(2000));
@@ -2309,7 +2309,7 @@ fn load_preset(args: &Value, link: &Link, open: crate::take::Opener) -> Result<V
             if let Some(all) = lib["synths"].as_array_mut() { all.retain(|s| s["synth"] == synth); }
             note = lib["synths"][0]["note"].as_str().map(str::to_string);
             let mut midi = open().map_err(|e| e.to_string())?;
-            let found = crate::take::find(midi.as_mut(), &lib, &librarian_ask(link), Some(out_port))?;
+            let found = crate::synthub::take::find(midi.as_mut(), &lib, &librarian_ask(link), Some(out_port))?;
             Some(found.iter().find(|f| f.synth == synth).map(|f| f.channel)
                 .ok_or_else(|| format!("no {synth} answered on {out_port}: is it the synth this sound was taken from, on and plugged in?"))?)
         }
@@ -2343,10 +2343,10 @@ pub fn print_learning(listen_ms: Option<u64>, share: Option<(&str, [Option<&str>
     }).transpose().map_err(|e| anyhow::anyhow!(e))?;
     let listen = crate::detect::learn_listen(listen_ms).map_err(|e| anyhow::anyhow!(e))?;
     println!("{}", crate::detect::learn_notice(listen));
-    let client = crate::online::linked().then(|| crate::online::Online::new(crate::online::SERVER));
-    let private = crate::online::settings_file().and_then(|f| crate::online::Settings::load(Some(&f)).ok()).map(|s| s.private).unwrap_or_default();
+    let client = crate::synthub::online::linked().then(|| crate::synthub::online::Online::new(crate::synthub::online::SERVER));
+    let private = crate::synthub::online::settings_file().and_then(|f| crate::synthub::online::Settings::load(Some(&f)).ok()).map(|s| s.private).unwrap_or_default();
     let share = share.map(|(port, vendor, model, firmware)| Share { port, vendor, model, firmware, command: true, client: client.as_ref(), private: &private });
-    let catalogue = DeviceIndex::build(&crate::online::cache_dir().unwrap_or_default());
+    let catalogue = DeviceIndex::build(&crate::synthub::online::cache_dir().unwrap_or_default());
     let report = learn_hardware(&catalogue, client.as_ref(), listen, share).map_err(|e| anyhow::anyhow!(e))?;
     if let Some(said) = report["structuredContent"]["sharing"].as_str() { println!("Sharing: {said}"); }
     let devices = report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default();
@@ -2372,7 +2372,7 @@ pub fn print_learning(listen_ms: Option<u64>, share: Option<(&str, [Option<&str>
 /// capture of that file is replayed instead of scanning: no device, nothing sent; it refuses
 /// `probe` off and `write`, a replay sending and writing nothing.
 pub fn print_detection(devices_dir: Option<&Path>, probe: bool, write: Option<&Path>, read: Option<&Path>, consent: &[String]) -> Result<()> {
-    let root = devices_dir.map(Path::to_path_buf).or_else(crate::online::cache_dir).unwrap_or_default();
+    let root = devices_dir.map(Path::to_path_buf).or_else(crate::synthub::online::cache_dir).unwrap_or_default();
     let devices = if let Some(read) = read {
         if !probe { anyhow::bail!("--read cannot be used with --no-probe: a replay sends nothing"); }
         if write.is_some() { anyhow::bail!("--read cannot be used with --write: a replay writes no capture"); }
@@ -2381,7 +2381,7 @@ pub fn print_detection(devices_dir: Option<&Path>, probe: bool, write: Option<&P
         detect_capture(&root, &capture).map_err(|e| anyhow::anyhow!(e))?
     } else {
         let index = DeviceIndex::build(&root);
-        let server = (devices_dir.is_none() && crate::online::linked()).then(|| crate::online::Online::new(crate::online::SERVER));
+        let server = (devices_dir.is_none() && crate::synthub::online::linked()).then(|| crate::synthub::online::Online::new(crate::synthub::online::SERVER));
         let report = detect_hardware(&index, server.as_ref(), devices_dir.is_some(), probe, std::time::Duration::from_millis(800), write, consent)
             .map_err(|e| anyhow::anyhow!(e))?;
         report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default()

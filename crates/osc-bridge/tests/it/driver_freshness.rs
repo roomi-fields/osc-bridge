@@ -120,7 +120,7 @@ fn an_unreachable_server_leaves_the_kept_driver_in_use() {
     let kept = std::fs::read(cache.join("acme/box.json")).unwrap();
 
     let unreachable = online_in("http://127.0.0.1:9", dir.path());
-    let path = osc_bridge::catalogue::from_cache_or_server("acme/box", &cache, Some(&unreachable)).unwrap();
+    let path = osc_bridge::synthub::catalogue::from_cache_or_server("acme/box", &cache, Some(&unreachable)).unwrap();
     assert_eq!(path, cache.join("acme/box.json"));
     assert_eq!(std::fs::read(&path).unwrap(), kept);
 }

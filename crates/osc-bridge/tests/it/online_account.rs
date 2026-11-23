@@ -19,7 +19,7 @@
 use crate::common;
 
 use common::{catalogue, temp};
-use osc_bridge::online::Online;
+use osc_bridge::synthub::online::Online;
 use serde_json::{json, Value};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU32, Ordering};
@@ -228,7 +228,7 @@ fn criterion_4_every_family_presents_the_account_in_the_same_header() {
     online.catalogue_call("list_devices", &json!({})).unwrap();
 
     let id = kept(&account);
-    assert!(osc_bridge::online::is_user_id(&id), "{id}");
+    assert!(osc_bridge::synthub::online::is_user_id(&id), "{id}");
     let seen = fake.catalogue_requests();
     for url in ["/api/v1/devices/acme/synth.json", "/api/v1/devices/acme/synth.md", "/v1/devices/acme/synth", "/v1/devices/synth",
         "/v1/detect", "/v1/trust", "/v1/librarian", "/v1/librarian/recognize", "/v1/presets/abc/messages?channel=1", "/mcp"] {
@@ -431,7 +431,7 @@ fn criterion_8_the_account_is_not_followed_to_another_host() {
 
 #[test]
 fn criterion_9_the_texts_no_longer_say_the_requests_carry_no_account() {
-    let settings = osc_bridge::online::Settings::default().render();
+    let settings = osc_bridge::synthub::online::Settings::default().render();
     assert!(!settings.contains("without your account"), "{settings}");
 
     let dir = temp("acct-text");

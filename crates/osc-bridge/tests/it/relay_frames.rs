@@ -2,7 +2,7 @@
 //! the other doors read. What `osc-bridge connect` builds equals them field for field; what it
 //! reads is recognised from them.
 
-use osc_bridge::relay_protocol::{
+use osc_bridge::synthub::relay_protocol::{
     confirm_reply_frame, is_identity_request, midi_in_frame, needs_confirmation, parse_door_frame,
     ports_frame, share_frame, ServerFrame,
 };

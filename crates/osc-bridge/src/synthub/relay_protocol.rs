@@ -1,6 +1,6 @@
 //! The relay protocol: how a "door" — the browser door (Web MIDI), which is
 //! the SyntHub service's, on its page https://synthhub.roomi-fields.com/connect ;
-//! `osc-bridge connect` (`crate::connect`), a plugin, any program
+//! `osc-bridge connect` (`crate::synthub::connect`), a plugin, any program
 //! speaking it — lets an agent reach the MIDI ports of a machine it does not
 //! run on, through the SynthHub server.
 //!
@@ -9,7 +9,7 @@
 //! against that file, so a change of frame here breaks it until the file is
 //! updated; the file's diff is what the service's door rereads.
 //!
-//! The door opens a WebSocket to the server (`crate::connect::DEFAULT_RELAY`).
+//! The door opens a WebSocket to the server (`crate::synthub::connect::DEFAULT_RELAY`).
 //! The server gives the session a pairing code; the user hands that code to
 //! their agent, whose MCP calls (`relay_*` tools) then travel through the
 //! server to the door and on to the hardware. The server does all the work —

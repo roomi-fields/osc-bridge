@@ -11,7 +11,7 @@
 use crate::common::{files, temp, tool_call, FakeHardware};
 use osc_bridge::install::install;
 use osc_bridge::programs::Clock;
-use osc_bridge::take::Midi;
+use osc_bridge::synthub::take::Midi;
 use serde_json::{json, Value};
 use std::time::Duration;
 

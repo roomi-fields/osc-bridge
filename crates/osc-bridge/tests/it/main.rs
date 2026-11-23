@@ -51,6 +51,7 @@ mod script_log_and_checksum;
 mod scripting;
 mod scripting_integration;
 mod single_executable;
+mod synthub_frontier_guard;
 mod sounds_stored;
 mod temp_folders;
 mod triggers;

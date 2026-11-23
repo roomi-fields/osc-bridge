@@ -67,7 +67,7 @@ enum Cmd {
     /// between the relay and every port until stopped.
     Connect {
         /// Relay WebSocket address.
-        #[arg(long, default_value = osc_bridge::connect::DEFAULT_RELAY)]
+        #[arg(long, default_value = osc_bridge::synthub::connect::DEFAULT_RELAY)]
         server: String,
         /// Do not record the identity (model, firmware) of the devices seen.
         #[arg(long)]
@@ -270,21 +270,21 @@ fn main() -> Result<()> {
         Cmd::Backup { device, in_port, out, out_port, idle_secs, max_secs } =>
             cmd_backup(device, in_port, out, out_port, idle_secs, max_secs),
         Cmd::Restore { device, out_port, bank, number, file } => {
-            let dev = osc_bridge::device::load(osc_bridge::catalogue::locate(&device)?)?;
+            let dev = osc_bridge::device::load(osc_bridge::synthub::catalogue::locate(&device)?)?;
             let target = bank.as_deref().zip(number);
             let sent = osc_bridge::librarian::restore_to_device(&dev, &out_port, &file, target)?;
             eprintln!("Sent {sent} SysEx message(s) from {}", file.display());
             Ok(())
         }
         Cmd::Connect { server, no_share, test_synth, private_ports } =>
-            osc_bridge::connect::run(&server, !no_share, test_synth, &private_ports),
+            osc_bridge::synthub::connect::run(&server, !no_share, test_synth, &private_ports),
         Cmd::Privacy { offline, private, public } => {
-            let path = osc_bridge::online::settings_file().context("no configuration directory (HOME is not set)")?;
+            let path = osc_bridge::synthub::online::settings_file().context("no configuration directory (HOME is not set)")?;
             let offline = offline.map(|o| o == "on");
-            let cached = osc_bridge::mcp::DeviceIndex::build(&osc_bridge::online::cache_dir().unwrap_or_default());
+            let cached = osc_bridge::mcp::DeviceIndex::build(&osc_bridge::synthub::online::cache_dir().unwrap_or_default());
             // A device not cached here is looked up on the server, unless the link is being cut.
-            let server = (offline != Some(true) && osc_bridge::online::linked())
-                .then(|| osc_bridge::online::Online::new(osc_bridge::online::SERVER));
+            let server = (offline != Some(true) && osc_bridge::synthub::online::linked())
+                .then(|| osc_bridge::synthub::online::Online::new(osc_bridge::synthub::online::SERVER));
             print!("{}", osc_bridge::mcp::privacy(&path, &cached, server.as_ref(), offline, &private, &public)?);
             Ok(())
         }
@@ -299,10 +299,10 @@ fn main() -> Result<()> {
         Cmd::Run(args) => cmd_run(args),
         Cmd::Export { device, on: Some(on), yes, .. } => {
             let done = osc_bridge::install::install_command(
-                &osc_bridge::catalogue::locate(&device)?,
-                &osc_bridge::catalogue::locate(&on)?,
+                &osc_bridge::synthub::catalogue::locate(&device)?,
+                &osc_bridge::synthub::catalogue::locate(&on)?,
                 yes,
-                &osc_bridge::take::open_hardware,
+                &osc_bridge::synthub::take::open_hardware,
             )?;
             for l in &done.lost {
                 eprintln!("not carried: {}: {}", l.place, l.reason);
@@ -316,7 +316,7 @@ fn main() -> Result<()> {
             Ok(())
         }
         Cmd::Export { device, format, .. } => {
-            let dev = osc_bridge::device::load(osc_bridge::catalogue::locate(&device)?)?;
+            let dev = osc_bridge::device::load(osc_bridge::synthub::catalogue::locate(&device)?)?;
             let format = format.ok_or_else(|| anyhow::anyhow!("--format is required without --on"))?;
             let out = osc_bridge::export::export(&dev, format.parse()?)?;
             for l in &out.lost {
@@ -332,11 +332,11 @@ fn main() -> Result<()> {
         Cmd::Mcp { devices_dir, default_target, offline } => {
             let default_target = default_target.parse::<std::net::SocketAddr>()
                 .with_context(|| format!("parse --default-target {default_target}"))?;
-            let settings = match osc_bridge::online::settings_file() {
-                Some(path) => osc_bridge::online::Settings::load_or_create(&path)?,
-                None => osc_bridge::online::Settings::default(),
+            let settings = match osc_bridge::synthub::online::settings_file() {
+                Some(path) => osc_bridge::synthub::online::Settings::load_or_create(&path)?,
+                None => osc_bridge::synthub::online::Settings::default(),
             };
-            let online = !offline && !settings.offline && !osc_bridge::online::offline_by_env();
+            let online = !offline && !settings.offline && !osc_bridge::synthub::online::offline_by_env();
             let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, online, private: settings.private };
             osc_bridge::mcp::run(opts)
         }
@@ -347,7 +347,7 @@ fn cmd_backup(device: PathBuf, in_port: String, out: PathBuf, out_port: Option<S
               idle_secs: u64, max_secs: u64) -> Result<()> {
     use osc_bridge::librarian::{backup_from_device, write_syx};
     use std::time::Duration;
-    let dev = osc_bridge::device::load(osc_bridge::catalogue::locate(&device)?)?;
+    let dev = osc_bridge::device::load(osc_bridge::synthub::catalogue::locate(&device)?)?;
     if out_port.is_none() {
         eprintln!("Listening — start the SysEx dump from the device's menu now.");
     }
@@ -426,7 +426,7 @@ fn cmd_list() -> Result<()> {
 }
 
 fn cmd_inspect(path: PathBuf) -> Result<()> {
-    let dev = osc_bridge::device::load(osc_bridge::catalogue::locate(&path)?)?;
+    let dev = osc_bridge::device::load(osc_bridge::synthub::catalogue::locate(&path)?)?;
     for line in checksum_warnings(&dev) { eprintln!("{line}"); }
     let d = &dev.device;
     println!("Device:   {} ({})", d.name, d.revision.as_deref().unwrap_or_default());
@@ -459,7 +459,7 @@ fn hex_vec(v: &[u8]) -> String {
 
 fn cmd_run(args: RunArgs) -> Result<()> {
     let RunArgs { device: path, out_port, in_port, bind, osc_clients: clients, ws_bind, ws_allow_origins, oscquery_bind } = args;
-    let dev = osc_bridge::device::load_with_docs(osc_bridge::catalogue::locate(&path)?)?;
+    let dev = osc_bridge::device::load_with_docs(osc_bridge::synthub::catalogue::locate(&path)?)?;
     let is_osc = dev.device.transport.as_ref().map(|t| t.kind) == Some(osd::TransportKind::Osc);
     let out_port = match (out_port, is_osc) {
         (Some(p), _) => p,

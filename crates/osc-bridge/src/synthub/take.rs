@@ -278,7 +278,7 @@ impl Midi for Hardware {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::connect::TestSynth;
+    use crate::synthub::connect::TestSynth;
 
     /// The test synth on two ports (one unit, answering on both), and a
     /// silent port.

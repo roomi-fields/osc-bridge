@@ -178,7 +178,7 @@ fn not_linked_no_service_is_asked() {
 
 #[test]
 fn a_service_that_cannot_be_reached_is_told_unreachable_and_does_not_fail() {
-    let client = osc_bridge::online::Online::keeping_account_in("http://127.0.0.1:1", None);
+    let client = osc_bridge::synthub::online::Online::keeping_account_in("http://127.0.0.1:1", None);
     let got = learn_service_matches(Some(&client), &pairs(&[UNKNOWN]));
     assert!(matches!(got, ServiceMatches::Unreachable));
 }
@@ -203,7 +203,7 @@ fn a_service_that_answers_is_asked_each_device_and_its_candidates_come_back_in_o
     let dir = crate::common::temp("learn-service-answers");
     let account = dir.path().join("user");
     std::fs::write(&account, "0123456789abcdef0123456789abcdef\n").unwrap();
-    let client = osc_bridge::online::Online::keeping_account_in(&base, Some(account));
+    let client = osc_bridge::synthub::online::Online::keeping_account_in(&base, Some(account));
 
     let mut learned = pairs(&["Midi Through:Midi Through Port-0 14:0", "Minilab3:Minilab3 MIDI 24:0", UNKNOWN]);
     learned[1].1.fingerprint["identity_reply"] = json!("F0 7E 00 06 02 00 20 6B F7");
@@ -237,7 +237,7 @@ fn unit_with_usb(port: &str, usb: Option<(u16, u16)>) -> Unit {
 }
 
 /// A service that gives `answer` to each detect request and keeps the requests it got.
-fn service_answering(answer: Value) -> (osc_bridge::online::Online, std::sync::Arc<std::sync::Mutex<Vec<Value>>>, tempfile::TempDir) {
+fn service_answering(answer: Value) -> (osc_bridge::synthub::online::Online, std::sync::Arc<std::sync::Mutex<Vec<Value>>>, tempfile::TempDir) {
     let server = tiny_http::Server::http("127.0.0.1:0").unwrap();
     let base = format!("http://{}", server.server_addr());
     let bodies = std::sync::Arc::new(std::sync::Mutex::new(Vec::<Value>::new()));
@@ -255,7 +255,7 @@ fn service_answering(answer: Value) -> (osc_bridge::online::Online, std::sync::A
     let dir = crate::common::temp("learn-service-usb");
     let account = dir.path().join("user");
     std::fs::write(&account, "0123456789abcdef0123456789abcdef\n").unwrap();
-    (osc_bridge::online::Online::keeping_account_in(&base, Some(account)), bodies, dir)
+    (osc_bridge::synthub::online::Online::keeping_account_in(&base, Some(account)), bodies, dir)
 }
 
 fn unlisted(confirmations: u64, state: Option<&str>, label: Option<&str>, disputed: bool) -> Value {

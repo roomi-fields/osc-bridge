@@ -181,8 +181,8 @@ pub fn device05(name: &str, prefix: &str, body: &str) -> String {
 
 /// A client of the server at `base` keeping its account in `dir/user`, a
 /// folder of the test's own, never the machine's.
-pub fn online_in(base: &str, dir: &Path) -> osc_bridge::online::Online {
-    osc_bridge::online::Online::keeping_account_in(base, Some(dir.join("user")))
+pub fn online_in(base: &str, dir: &Path) -> osc_bridge::synthub::online::Online {
+    osc_bridge::synthub::online::Online::keeping_account_in(base, Some(dir.join("user")))
 }
 
 static CONFIG_LOCK: Mutex<()> = Mutex::new(());
@@ -325,12 +325,12 @@ impl FakeHardware {
         Self::default()
     }
     /// An opener (what the commands take their MIDI from) that hands this hardware over.
-    pub fn opener(&self) -> impl Fn() -> anyhow::Result<Box<dyn osc_bridge::take::Midi>> + '_ {
-        move || Ok(Box::new(self.clone()) as Box<dyn osc_bridge::take::Midi>)
+    pub fn opener(&self) -> impl Fn() -> anyhow::Result<Box<dyn osc_bridge::synthub::take::Midi>> + '_ {
+        move || Ok(Box::new(self.clone()) as Box<dyn osc_bridge::synthub::take::Midi>)
     }
 }
 
-impl osc_bridge::take::Midi for FakeHardware {
+impl osc_bridge::synthub::take::Midi for FakeHardware {
     fn outputs(&self) -> Vec<String> {
         self.ports.clone()
     }
@@ -346,6 +346,6 @@ impl osc_bridge::take::Midi for FakeHardware {
 }
 
 /// An opener whose MIDI system cannot be opened, for the cause `why`.
-pub fn failing_opener(why: &'static str) -> impl Fn() -> anyhow::Result<Box<dyn osc_bridge::take::Midi>> {
+pub fn failing_opener(why: &'static str) -> impl Fn() -> anyhow::Result<Box<dyn osc_bridge::synthub::take::Midi>> {
     move || Err(anyhow::anyhow!(why))
 }

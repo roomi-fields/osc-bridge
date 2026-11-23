@@ -3,7 +3,7 @@
 //! kept (nothing is written to the settings file), and a failure of the service leaves the
 //! fingerprint here, with no retry.
 
-use osc_bridge::online::{FingerprintBody, Online, Settings, Sharing};
+use osc_bridge::synthub::online::{FingerprintBody, Online, Settings, Sharing};
 use serde_json::{json, Value};
 use std::path::Path;
 use std::sync::{Arc, Mutex};

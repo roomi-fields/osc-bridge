@@ -4,7 +4,7 @@
 use crate::common::temp;
 use osc_bridge::detect::Probe;
 use osc_bridge::mcp::probes_json;
-use osc_bridge::online::Online;
+use osc_bridge::synthub::online::Online;
 use serde_json::{json, Value};
 
 fn probe(tag: u8, ports: &[&str], usb: &[(u16, u16)], names: &[&str]) -> Probe {

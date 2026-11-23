@@ -17,7 +17,7 @@ use serde_json::Value;
 use crate::export::{self, Format, Loss};
 use crate::frame::{self, Bindings};
 use crate::programs::Clock;
-use crate::take::Midi;
+use crate::synthub::take::Midi;
 
 /// What the gesture did, or, without consent, would do.
 #[derive(Debug, Clone, PartialEq)]
@@ -46,7 +46,7 @@ pub fn install_command(
     source: &std::path::Path,
     target: &std::path::Path,
     confirm_overwrite: bool,
-    open: crate::take::Opener,
+    open: crate::synthub::take::Opener,
 ) -> anyhow::Result<Installed> {
     let source = crate::device::load(source)?;
     let target = crate::device::load(target)?;

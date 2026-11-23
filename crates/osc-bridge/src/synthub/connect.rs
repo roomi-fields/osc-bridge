@@ -3,7 +3,7 @@
 //! The command-line twin of the SyntHub service's browser door
 //! (https://synthhub.roomi-fields.com/connect), for Safari users,
 //! servers without a browser, and agents that run next to the hardware. It
-//! opens a WebSocket to the hosted relay (protocol in `crate::relay_protocol`), shows
+//! opens a WebSocket to the hosted relay (protocol in `crate::synthub::relay_protocol`), shows
 //! the pairing code, and moves bytes: `midi_out` frames to the named output
 //! port, every message of every input to the server. Ports are rescanned
 //! every few seconds, so a device plugged in later appears without restart.
@@ -22,7 +22,7 @@
 use anyhow::{anyhow, Context, Result};
 use crossbeam_channel::{unbounded, Sender};
 use midir::{Ignore, MidiInput, MidiInputConnection, MidiOutput, MidiOutputConnection};
-use crate::relay_protocol::{
+use crate::synthub::relay_protocol::{
     confirm_reply_frame, midi_in_frame, needs_confirmation, parse_door_frame, ports_frame, share_frame, ServerFrame,
 };
 use std::collections::{HashMap, VecDeque};
@@ -201,7 +201,7 @@ fn set_read_timeout(ws: &WebSocket<MaybeTlsStream<TcpStream>>, t: Duration) -> R
 pub fn run(server: &str, share: bool, test_synth: bool, private_ports: &[String]) -> Result<()> {
     // One TLS crypto provider for the process (several may be compiled in).
     let _ = rustls::crypto::ring::default_provider().install_default();
-    let file = crate::online::account_file();
+    let file = crate::synthub::online::account_file();
     let known = file.as_ref().and_then(|f| std::fs::read_to_string(f).ok()).map(|s| s.trim().to_string());
     let url = match &known {
         Some(id) if !id.is_empty() => format!("{server}?user={id}"),
@@ -230,7 +230,7 @@ pub fn run(server: &str, share: bool, test_synth: bool, private_ports: &[String]
     println!("Relay code: {code}");
     println!();
     println!("1. In your AI assistant, add this remote MCP server once:");
-    println!("   {}/u/{user}/mcp", crate::online::SERVER);
+    println!("   {}/u/{user}/mcp", crate::synthub::online::SERVER);
     println!("2. Tell the agent: \"My osc-bridge relay code is {code}\"");
     println!("3. Keep this running while you play (Ctrl-C to stop).");
     println!();

@@ -103,11 +103,11 @@ fn the_privacy_command_records_choices_by_catalogue_id() {
     assert!(!path.exists(), "showing writes nothing");
     let shown = privacy(&path, &devices, None, Some(true), &["minilogue".into()], &[]).unwrap();
     assert!(shown.contains("Offline") && shown.contains("korg/minilogue"), "{shown}");
-    assert_eq!(crate::online::Settings::load(Some(&path)).unwrap(),
-        crate::online::Settings { offline: true, private: vec!["korg/minilogue".into()] });
+    assert_eq!(crate::synthub::online::Settings::load(Some(&path)).unwrap(),
+        crate::synthub::online::Settings { offline: true, private: vec!["korg/minilogue".into()] });
     assert!(privacy(&path, &devices, None, None, &["no-such-synth".into()], &[]).is_err());
     privacy(&path, &devices, None, Some(false), &[], &["korg/minilogue".into()]).unwrap();
-    assert_eq!(crate::online::Settings::load(Some(&path)).unwrap(), crate::online::Settings::default());
+    assert_eq!(crate::synthub::online::Settings::load(Some(&path)).unwrap(), crate::synthub::online::Settings::default());
 }
 
 #[test]
@@ -140,7 +140,7 @@ fn the_catalogue_tools_are_shared_with_the_hosted_server() {
         .unwrap().is_err());
     let names: Vec<String> = tool_schemas()["tools"].as_array().unwrap().iter()
         .map(|t| t["name"].as_str().unwrap().to_string()).collect();
-    assert!(crate::online::FORWARDED_TOOLS.iter().all(|f| names.iter().any(|n| n == f)), "{names:?}");
+    assert!(crate::synthub::online::FORWARDED_TOOLS.iter().all(|f| names.iter().any(|n| n == f)), "{names:?}");
     assert!(!names.iter().any(|n| n.starts_with("relay_")), "relay tools belong to the hosted server");
 }
 
@@ -413,15 +413,15 @@ fn a_local_copy_fetches_the_drivers_it_needs_and_forwards_reports() {
     let tmp = dir.path();
     let cache = tmp.join("cache");
     let (base, calls) = fake_server(Path::new(FIXTURES));
-    let link = Link { client: crate::online::Online::keeping_account_in(&base, Some(tmp.join("user"))), ..Link::new("unused") };
+    let link = Link { client: crate::synthub::online::Online::keeping_account_in(&base, Some(tmp.join("user"))), ..Link::new("unused") };
 
     // By slug, its best variant; with its notes and the driver it takes its MIDI from.
-    let fetched = crate::catalogue::fetch(&link.client, "microfreak_tools", &cache).unwrap();
+    let fetched = crate::synthub::catalogue::fetch(&link.client, "microfreak_tools", &cache).unwrap();
     assert_eq!(fetched, cache.join("arturia/microfreak.vendor.fw-microfreak-tools-0.1.0.json"));
     assert!(fetched.with_extension("md").is_file() && cache.join("arturia/microfreak.json").is_file());
     assert_eq!(crate::device::load(&fetched).unwrap().device.osc_prefix, "/microfreak_tools");
-    assert_eq!(crate::catalogue::fetch(&link.client, "box", &cache).unwrap(), cache.join("acme/box.vendor.fw-2.json"));
-    assert!(crate::catalogue::fetch(&link.client, "acme/none", &cache).unwrap_err().to_string().contains("no driver acme/none"));
+    assert_eq!(crate::synthub::catalogue::fetch(&link.client, "box", &cache).unwrap(), cache.join("acme/box.vendor.fw-2.json"));
+    assert!(crate::synthub::catalogue::fetch(&link.client, "acme/none", &cache).unwrap_err().to_string().contains("no driver acme/none"));
     assert!(link.client.fetch_driver("../secret", &cache).is_err());
     assert_eq!(DeviceIndex::build(&cache).entries.len(), 3, "only what was asked for is on this machine");
 
@@ -446,7 +446,7 @@ fn a_local_copy_fetches_the_drivers_it_needs_and_forwards_reports() {
     assert!(tool_names(&opts).contains(&"submit_fix") && !tool_names(&test_opts()).contains(&"submit_fix"));
 
     std::fs::write(tmp.join("user"), "0".repeat(32)).unwrap();
-    let relinked = Link { client: crate::online::Online::keeping_account_in(&base, Some(tmp.join("user"))), ..Link::new("unused") };
+    let relinked = Link { client: crate::synthub::online::Online::keeping_account_in(&base, Some(tmp.join("user"))), ..Link::new("unused") };
     let trust = call_tool("get_trust", &json!({"device": "korg/minilogue"}), &opts, &index, Some(&relinked)).unwrap();
     assert_eq!(trust["content"][0]["text"], "get_trust", "an account the server forgot is replaced: {trust}");
     assert_ne!(std::fs::read_to_string(tmp.join("user")).unwrap(), "0".repeat(32));
@@ -871,7 +871,7 @@ const BEING_CONFIRMED: &str = "being confirmed: not enough people agree yet, to 
 const IN_DISAGREEMENT: &str = "in disagreement: several devices are named for it, to confirm with the person";
 
 /// A service that answers each detect request with `answer(port)` and keeps the requests.
-fn detect_service(answer: fn(&Value) -> Value) -> (crate::online::Online, std::sync::Arc<std::sync::Mutex<Vec<Value>>>, tempfile::TempDir) {
+fn detect_service(answer: fn(&Value) -> Value) -> (crate::synthub::online::Online, std::sync::Arc<std::sync::Mutex<Vec<Value>>>, tempfile::TempDir) {
     let server = tiny_http::Server::http("127.0.0.1:0").unwrap();
     let base = format!("http://{}", server.server_addr());
     let bodies = std::sync::Arc::new(std::sync::Mutex::new(Vec::<Value>::new()));
@@ -889,7 +889,7 @@ fn detect_service(answer: fn(&Value) -> Value) -> (crate::online::Online, std::s
     let dir = tempfile::Builder::new().prefix("osc-bridge-detect-").tempdir().unwrap();
     let account = dir.path().join("user");
     std::fs::write(&account, "0123456789abcdef0123456789abcdef\n").unwrap();
-    (crate::online::Online::keeping_account_in(&base, Some(account)), bodies, dir)
+    (crate::synthub::online::Online::keeping_account_in(&base, Some(account)), bodies, dir)
 }
 
 fn probed(name: &str, usb: Option<(u16, u16)>) -> crate::detect::Probed {
@@ -897,7 +897,7 @@ fn probed(name: &str, usb: Option<(u16, u16)>) -> crate::detect::Probed {
         identity: None, usb, replies: Vec::new(), client_kind: crate::detect::ClientKind::Unknown }
 }
 
-fn report_devices(server: &crate::online::Online, found: Vec<crate::detect::Probed>) -> Vec<Value> {
+fn report_devices(server: &crate::synthub::online::Online, found: Vec<crate::detect::Probed>) -> Vec<Value> {
     let r = detection_report(&fixtures(), Some(server), true, true, found, Vec::new(), &[]).unwrap();
     r["structuredContent"]["devices"].as_array().unwrap().clone()
 }

@@ -1,7 +1,7 @@
 //! Guard: no test reaches the machine's real account or settings file.
 //!
-//! The refused paths are the ones of `src/online.rs` that read the real `~/.config`.
-//! A new config path in `online.rs` is added to `KEEPS_REAL_ACCOUNT` / `CONFIG_PATH_FNS`
+//! The refused paths are the ones of `src/synthub/online.rs` that read the real `~/.config`.
+//! A new config path in `synthub/online.rs` is added to `KEEPS_REAL_ACCOUNT` / `CONFIG_PATH_FNS`
 //! together with its faulty example source below.
 
 use std::path::{Path, PathBuf};
@@ -16,13 +16,13 @@ const GUARDED_TYPE: &str = "Online";
 const ISOLATION: &str = "ConfigHome";
 
 #[derive(Debug, PartialEq)]
-enum Tok {
+pub(crate) enum Tok {
     Ident(String),
     Punct(char),
 }
 
 /// Code tokens with their line; comments, strings and chars are dropped.
-fn lex(src: &str) -> Vec<(usize, Tok)> {
+pub(crate) fn lex(src: &str) -> Vec<(usize, Tok)> {
     let c: Vec<char> = src.chars().collect();
     let mut out = Vec::new();
     let (mut i, mut line) = (0, 1);
@@ -275,6 +275,12 @@ fn guard_scans_every_rust_file_under_tests_recursively() {
     assert_eq!(found.len(), 2, "{found:?}");
     assert!(found.iter().any(|f| f.starts_with(&format!("elsewhere{}deeper{}stray.rs:2:", std::path::MAIN_SEPARATOR, std::path::MAIN_SEPARATOR))));
     assert!(found.iter().any(|f| f.starts_with("top.rs:1:")));
+}
+
+#[test]
+fn guarded_online_source_exists_so_a_move_cannot_empty_the_guard() {
+    let file = Path::new(env!("CARGO_MANIFEST_DIR")).join("src").join("synthub").join("online.rs");
+    assert!(file.is_file(), "the guarded source {} is missing: follow its move", file.display());
 }
 
 #[test]

@@ -3,7 +3,7 @@
 //! own, held under a process-wide lock, and given back when it ends.
 
 use crate::common::{catalogue, initialize, temp, texts, tool_call, ConfigHome, FakeSynthHub};
-use osc_bridge::online::{account_file, settings_file};
+use osc_bridge::synthub::online::{account_file, settings_file};
 use serde_json::json;
 
 #[test]
