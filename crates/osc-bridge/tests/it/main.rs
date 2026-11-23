@@ -47,6 +47,7 @@ mod osd_driver;
 mod output_input_pairing;
 mod presets_with_device;
 mod privacy_policy;
+mod published_surface;
 mod published_tool_lists;
 mod roles;
 mod script_log_and_checksum;

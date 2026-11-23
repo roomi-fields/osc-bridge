@@ -156,7 +156,7 @@ impl DeviceIndex {
 
 /// Build the catalogue index once — every device tool reads from it
 /// instead of re-walking the tree.
-pub(crate) fn build_index(devices_dir: &Path, opts: &McpOptions) -> DeviceIndex {
+pub fn build_index(devices_dir: &Path, opts: &McpOptions) -> DeviceIndex {
     eprintln!("MCP server starting (devices_dir={}, default_target={})",
         devices_dir.display(), opts.default_target);
     let index = DeviceIndex::build(devices_dir, opts.tier_order);
@@ -860,7 +860,7 @@ fn link_tool_output() -> Value {
 }
 
 /// The 16 tools the local server answers.
-pub(crate) fn tool_names(_opts: &McpOptions) -> Vec<&'static str> {
+pub fn tool_names(_opts: &McpOptions) -> Vec<&'static str> {
     vec!["list_devices", "get_device_docs", "list_routes", "export_device", "send", "get_status",
          "add_link", "remove_link", "list_links", "detect_hardware", "backup_presets", "restore_presets", "install_export",
          "list_roles", "set_by_role", "get_by_role"]
@@ -872,16 +872,16 @@ pub(crate) fn tool_names(_opts: &McpOptions) -> Vec<&'static str> {
 // The local tools read the card status and the candidates; the trust and the private decision
 // are the link's own (its private-device branches) and ride along for the tools that learn them.
 #[allow(dead_code)]
-pub(crate) struct Known<'a> {
-    pub(crate) trust: Value,
-    pub(crate) candidates: Vec<Value>,
-    pub(crate) status: &'a dyn Fn(&str) -> Option<String>,
-    pub(crate) private: &'a dyn Fn(&str) -> bool,
+pub struct Known<'a> {
+    pub trust: Value,
+    pub candidates: Vec<Value>,
+    pub status: &'a dyn Fn(&str) -> Option<String>,
+    pub private: &'a dyn Fn(&str) -> bool,
 }
 
 /// The local answer to one call of the 16 local tools, with what the service knows given as values;
 /// any other tool is unknown to it.
-pub(crate) fn call_local(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex,
+pub fn call_local(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex,
                          open: crate::midi_port::Opener, known: &Known) -> Result<Value, String> {
     if args.get("slug").is_some() { device_arg(args)?; }
     if let Some(done) = catalogue_tool(name, args, index, known.status) {
@@ -970,7 +970,7 @@ fn consent_arg(args: &Value) -> Result<Vec<String>, String> {
 
 /// The one reading of the argument that names a device: `device`. The former
 /// `slug`, alone or beside `device`, is refused before any device is read.
-pub(crate) fn device_arg(args: &Value) -> Result<&str, String> {
+pub fn device_arg(args: &Value) -> Result<&str, String> {
     if args.get("slug").is_some() {
         return Err("`slug` no longer exists: name the device by `device` (a catalogue id or an OSC prefix, see list_devices)".into());
     }
@@ -1055,7 +1055,7 @@ pub fn hex_bytes(bytes: &[u8]) -> String {
 const POSSIBLE_LABEL: &str = "possible, to confirm";
 
 /// The proofs of a candidate as published: `{nature, kind}` each.
-pub(crate) fn proofs_json(proofs: &[crate::recognition::Proof]) -> Value {
+pub fn proofs_json(proofs: &[crate::recognition::Proof]) -> Value {
     json!(proofs.iter().map(|p| json!({ "nature": p.nature.as_str(), "kind": p.kind })).collect::<Vec<_>>())
 }
 
@@ -1095,7 +1095,7 @@ type ProbesOf<'a> = &'a dyn Fn() -> Result<Vec<crate::recognition::Probe>, Strin
 type AnswersOf<'a> = &'a dyn Fn(&[crate::detect::Probed]) -> Result<Vec<Value>, String>;
 
 /// `detect_hardware` as the tool is called: the arguments read, then `detect_hardware`.
-pub(crate) fn detect_tool(args: &Value, index: &DeviceIndex, opts: &McpOptions, probes_of: Option<ProbesOf>, answers: AnswersOf) -> Result<Value, String> {
+pub fn detect_tool(args: &Value, index: &DeviceIndex, opts: &McpOptions, probes_of: Option<ProbesOf>, answers: AnswersOf) -> Result<Value, String> {
     let probe = args.get("probe").and_then(Value::as_bool).unwrap_or(true);
     let wait = args.get("timeout_ms").and_then(Value::as_u64).unwrap_or(800).clamp(100, 5000);
     let consent = consent_arg(args)?;
@@ -1108,7 +1108,7 @@ pub(crate) fn detect_tool(args: &Value, index: &DeviceIndex, opts: &McpOptions, 
 /// (else the drivers of `index` do). The command to run names the driver by its
 /// file when `by_file` (a folder the user keeps), else by its id.
 #[allow(clippy::too_many_arguments)] // the caller's order of the cards is the ninth value
-pub(crate) fn detect_hardware(index: &DeviceIndex, probes_of: Option<ProbesOf>, answers: AnswersOf, by_file: bool, probe: bool,
+pub fn detect_hardware(index: &DeviceIndex, probes_of: Option<ProbesOf>, answers: AnswersOf, by_file: bool, probe: bool,
                    wait: std::time::Duration, write: Option<&Path>, consent: &[String], order: crate::recognition::TierOrder) -> Result<Value, String> {
     let mut faults = Vec::new();
     let probes = match probes_of {
@@ -1188,7 +1188,7 @@ fn merge_candidates(found: &[crate::detect::Probed], per_port: Vec<(usize, Vec<V
 
 /// What a port of a program keeps of the candidates: those whose card the local catalogue knows,
 /// by id, as a software. A card it does not know, or of another kind, is no candidate for a program.
-pub(crate) fn software_cards_only(index: &DeviceIndex, candidates: Vec<Value>) -> Vec<Value> {
+pub fn software_cards_only(index: &DeviceIndex, candidates: Vec<Value>) -> Vec<Value> {
     candidates.into_iter().filter(|c| c["id"].as_str()
         .and_then(|id| index.find(id)).is_some_and(|e| e.kind == "software")).collect()
 }
@@ -1295,7 +1295,7 @@ fn detection_report(index: &DeviceIndex, answers: &[Value], by_file: bool, probe
 
 /// One port of the detection request: its name, its identity replies and, when read, its USB ids
 /// (`usb: {vendor_id, product_id}`, numbers); a port without ids has no `usb` field.
-pub(crate) fn detect_port(port: &str, replies_hex: Vec<String>, usb: Option<(u16, u16)>) -> Value {
+pub fn detect_port(port: &str, replies_hex: Vec<String>, usb: Option<(u16, u16)>) -> Value {
     let mut p = json!({ "port": port, "replies_hex": replies_hex });
     if let Some((vendor_id, product_id)) = usb {
         p["usb"] = json!({ "vendor_id": vendor_id, "product_id": product_id });
@@ -1307,7 +1307,7 @@ pub(crate) fn detect_port(port: &str, replies_hex: Vec<String>, usb: Option<(u16
 /// `candidates` (marked `kind: candidate`), carrying the confirmations and state the service gives
 /// for it in `learned`; else, when there is no candidate, each entry of `unlisted` that names a
 /// vendor or a model (marked `kind: unlisted`). A device has one state: a candidate hides them.
-pub(crate) fn port_answer(answer: &Value) -> Vec<Value> {
+pub fn port_answer(answer: &Value) -> Vec<Value> {
     let list = |k: &str| answer[k].as_array().cloned().unwrap_or_default();
     let mut candidates = list("candidates");
     if candidates.is_empty() {
@@ -1327,7 +1327,7 @@ pub(crate) fn port_answer(answer: &Value) -> Vec<Value> {
 
 /// A device without a card in words, with the fields the service gave and no other: the maker and
 /// model, then the firmware and the confirmations.
-pub(crate) fn unlisted_text(u: &Value) -> String {
+pub fn unlisted_text(u: &Value) -> String {
     let name = [u["vendor"].as_str(), u["model"].as_str()].into_iter().flatten().collect::<Vec<_>>().join(" ");
     let mut text = name;
     if let Some(f) = u["firmware"].as_str() { text.push_str(&format!(", firmware {f}")); }
@@ -1380,7 +1380,7 @@ fn restore_presets(dev: &Device, out_port: &str, file: &Path, target: Option<(&s
 
 /// The text of a detection report: one block per port, `usb: vvvv:pppp`
 /// (as `lsusb` writes it) right under the port when its ids are known.
-pub(crate) fn format_detection(devices: &[Value], probe: bool) -> String {
+pub fn format_detection(devices: &[Value], probe: bool) -> String {
     use std::fmt::Write as _;
     let mut out = String::new();
     if devices.is_empty() {

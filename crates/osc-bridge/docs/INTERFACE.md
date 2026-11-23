@@ -74,6 +74,16 @@ A candidate of `detect`, of the learn mode and of `detect_hardware` carries `pro
 
 A name made only of common words (synth, control, controller, audio, midi, mini, interface, port, input, output) is no proof. A port with no proof other than the name and no candidate left is "unknown": the next step is the learn mode's. A software port never receives the card of a real device. A device the service names "being confirmed" is printed as the service's answer, "to confirm", with no run command.
 
+## What the program built outside the workspace reads
+
+The library publishes, for a program that links it from another repository, these items; all are plain `pub`.
+
+- `detect::client_number(name)` is the final ALSA client number of a port name, if any; `detect::ClientKey` (`Number` or `Name`) and `detect::client_key(name)` group the ports of one client.
+- `mcp::build_index(devices_dir, opts)` builds the catalogue index of a folder; `mcp::tool_names(opts)` lists the 16 local tools; `mcp::device_arg(args)` reads the `device` argument and refuses the former `slug`.
+- `mcp::Known` (fields `trust`, `candidates`, `status`, `private`) is what a caller knows beyond the library, given as values; `mcp::call_local(name, args, opts, index, open, known)` is the local answer to one tool call.
+- `mcp::detect_tool` and `mcp::detect_hardware` run a detection with the probes and the answers the caller gives; they reach the machine's MIDI ports.
+- `mcp::detect_port(port, replies_hex, usb)` writes one detected port; `mcp::port_answer(answer)` lists the candidates and the unlisted devices of an answer; `mcp::unlisted_text(u)` words an unlisted device; `mcp::format_detection(devices, probe)` words a detection; `mcp::proofs_json(proofs)` writes the proofs of a candidate; `mcp::software_cards_only(index, candidates)` keeps the software cards.
+
 ## The OSC addresses
 
 Each device's addresses come from its driver, under its prefix; the uniform addresses (`/identity`, `/program/recall`, `/program/dump`) are the same on every device; `/bridge/status` and `/bridge/docs` describe the bridge itself. An orchestrator also answers, to any client (UDP or WebSocket), `/bridge/link/add <from> <to> [in_lo in_hi out_lo out_hi]` (`/bridge/link/added`, or `/bridge/link/error <text>`), `/bridge/link/remove <from> <to>` (`/bridge/link/removed`, or `/bridge/link/error <text>`) and `/bridge/link/list` (one `/bridge/link/list/item <from> <to> <origin> [scaling]` per link, then `/bridge/link/list/end <count>`). A link follows the output of another link: with a→b and b→c, a message received at a reaches c, once per device address. A chain is followed for four links; a matching fifth link is not followed, and the cut is said by `/bridge/link/error` naming the chain followed. OSCQuery publishes the whole namespace.

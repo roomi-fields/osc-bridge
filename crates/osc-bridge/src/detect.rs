@@ -305,7 +305,7 @@ pub(crate) fn observe_unguarded(probe: bool, wait: Duration, probes: &[Probe], c
 }
 
 /// The ALSA client number of a raw port name: the `N` of its final `N:M`.
-pub(crate) fn client_number(name: &str) -> Option<u32> {
+pub fn client_number(name: &str) -> Option<u32> {
     let last = name.split_whitespace().next_back()?;
     let (n, m) = last.split_once(':')?;
     let digits = |s: &str| !s.is_empty() && s.bytes().all(|b| b.is_ascii_digit());
@@ -314,9 +314,9 @@ pub(crate) fn client_number(name: &str) -> Option<u32> {
 
 /// What groups the ports of one device: the client number, else the squashed client name.
 #[derive(PartialEq)]
-pub(crate) enum ClientKey { Number(u32), Name(String) }
+pub enum ClientKey { Number(u32), Name(String) }
 
-pub(crate) fn client_key(name: &str) -> ClientKey {
+pub fn client_key(name: &str) -> ClientKey {
     match client_number(name) {
         Some(c) => ClientKey::Number(c),
         None => ClientKey::Name(squash(name.split(':').next().unwrap_or(name))),
