@@ -29,6 +29,7 @@ fn install(private: &[&str], args: Value) -> (FakeSynthHub, Value, tempfile::Tem
         devices_dir: None,
         default_target: "127.0.0.1:9".parse().unwrap(),
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
+        detect_mode: None,
     };
     let private: Vec<String> = private.iter().map(|p| p.to_string()).collect();
     let input = format!("{}\n", tool_call(1, "install_export", args));

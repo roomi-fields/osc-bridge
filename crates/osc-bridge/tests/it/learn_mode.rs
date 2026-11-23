@@ -5,11 +5,16 @@
 use serde_json::{json, Value};
 
 fn ask(request: Value) -> String {
+    ask_with(request, Some(osc_bridge::synthub::learn::detect_offline))
+}
+
+fn ask_with(request: Value, detect_mode: Option<osc_bridge::mcp::DetectMode>) -> String {
     let dir = super::common::temp("learn-mode");
     let opts = osc_bridge::mcp::McpOptions {
         devices_dir: Some(dir.path().to_path_buf()),
         default_target: "127.0.0.1:9000".parse().unwrap(),
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
+        detect_mode,
     };
     let input = format!("{request}\n");
     let mut out = Vec::new();
@@ -44,4 +49,21 @@ fn detect_hardware_in_learn_mode_refuses_a_listening_time_outside_the_interval()
         assert!(out.contains("1000") && out.contains("30000"), "{bad}: {out}");
         assert!(!out.contains("\"devices\""), "{bad}: scanned anyway: {out}");
     }
+}
+
+#[test]
+fn detect_hardware_in_learn_mode_says_the_mode_is_not_given_when_the_server_has_no_handler() {
+    let out = ask_with(json!({ "jsonrpc": "2.0", "id": 3, "method": "tools/call",
+        "params": { "name": "detect_hardware", "arguments": { "learn": true } } }), None);
+    let reply: Value = serde_json::from_str(out.lines().next().unwrap()).unwrap();
+    let failed = reply.get("error").is_some() || reply["result"]["isError"] == true;
+    assert!(failed, "no handler is an error: {out}");
+    assert!(out.contains("not given"), "{out}");
+    assert!(!out.contains("\"devices\""), "scanned anyway: {out}");
+}
+
+#[test]
+fn detect_hardware_in_learn_mode_without_a_handler_still_refuses_nothing_else_than_the_learn_branch() {
+    let out = ask_with(json!({ "jsonrpc": "2.0", "id": 4, "method": "tools/list" }), None);
+    assert!(out.contains("detect_hardware"), "{out}");
 }

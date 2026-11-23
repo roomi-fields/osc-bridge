@@ -284,6 +284,7 @@ pub fn mcp_session_in(_home: &ConfigHome, base: &str, cache: &Path, requests: &[
         devices_dir: None,
         default_target: "127.0.0.1:9000".parse().unwrap(),
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
+        detect_mode: None,
     };
     let input: String = requests.iter().map(|r| format!("{r}\n")).collect();
     let mut out = Vec::new();

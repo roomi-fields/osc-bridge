@@ -415,6 +415,7 @@ fn call_on(
         devices_dir: Some(root.path().to_path_buf()),
         default_target: "127.0.0.1:9".parse().unwrap(),
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
+        detect_mode: None,
     };
     let input = format!("{}\n", tool_call(1, "install_export", args));
     let mut out = Vec::new();

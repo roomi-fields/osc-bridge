@@ -289,7 +289,7 @@ fn main() -> Result<()> {
             Ok(())
         }
         Cmd::Detect { learn: true, listen_ms, share_fingerprint, vendor, model, firmware, .. } => {
-            osc_bridge::synthub::mcp::print_learning(listen_ms, share_fingerprint.as_deref()
+            osc_bridge::synthub::learn::print_learning(listen_ms, share_fingerprint.as_deref()
                 .map(|port| (port, [vendor.as_deref(), model.as_deref(), firmware.as_deref()])),
                 osc_bridge::synthub::catalogue::tier_rank)
         }
@@ -343,10 +343,13 @@ fn main() -> Result<()> {
             // Linked, the server of the link wraps the local one; otherwise the local one serves
             // alone, over the folder of cards the user gave, else the cards cached on this machine.
             if online {
-                osc_bridge::synthub::mcp::run(osc_bridge::mcp::McpOptions { devices_dir, default_target, tier_order }, &settings.private)
+                osc_bridge::synthub::mcp::run(osc_bridge::mcp::McpOptions { devices_dir, default_target, tier_order, detect_mode: None }, &settings.private)
             } else {
                 let devices_dir = devices_dir.or_else(osc_bridge::synthub::online::cache_dir);
-                osc_bridge::mcp::run(osc_bridge::mcp::McpOptions { devices_dir, default_target, tier_order })
+                osc_bridge::mcp::run(osc_bridge::mcp::McpOptions {
+                    devices_dir, default_target, tier_order,
+                    detect_mode: Some(osc_bridge::synthub::learn::detect_offline),
+                })
             }
         }
     }

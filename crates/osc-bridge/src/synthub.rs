@@ -4,6 +4,7 @@
 
 pub mod catalogue;
 pub mod connect;
+pub mod learn;
 pub mod mcp;
 pub mod online;
 pub mod relay_protocol;

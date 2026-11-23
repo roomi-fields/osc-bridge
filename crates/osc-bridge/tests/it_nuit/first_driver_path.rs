@@ -8,7 +8,7 @@
 
 use midir::os::unix::{VirtualInput, VirtualOutput};
 use midir::{MidiInput, MidiOutput};
-use osc_bridge::detect::{learn_units, Unit};
+use osc_bridge::synthub::learn::{learn_units, units, Unit};
 use serde_json::{json, Value};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -37,7 +37,7 @@ fn fake_device(marker: &str) -> (Unit, Arc<Mutex<bool>>) {
     });
     std::thread::sleep(Duration::from_millis(300));
     // The ports the bridge lists for it, and only them.
-    let seen = osc_bridge::detect::units(&osc_bridge::detect::observe(false, Duration::ZERO, &[], &[]).unwrap());
+    let seen = units(&osc_bridge::detect::observe(false, Duration::ZERO, &[], &[]).unwrap());
     let mut mine = Unit { inputs: vec![], outputs: vec![], in_indexes: vec![], out_indexes: vec![], usb: None,
         client_kind: osc_bridge::detect::ClientKind::Unknown };
     for u in seen {
@@ -97,8 +97,8 @@ fn an_agent_goes_from_a_device_with_no_driver_to_a_first_driver_on_a_fake_midi_d
     let cc = controls.iter().find(|c| c["cc"] == 74).unwrap_or_else(|| panic!("CC 74 not heard: {controls:?}"));
     let empty = tempfile::tempdir().unwrap();
     let order = osc_bridge::synthub::catalogue::tier_rank;
-    let report = osc_bridge::mcp::learn_report(&learned, &osc_bridge::mcp::DeviceIndex::build(empty.path(), order), Duration::from_millis(1500),
-        &osc_bridge::mcp::ServiceMatches::NotLinked, order);
+    let report = osc_bridge::synthub::learn::learn_report(&learned, &osc_bridge::mcp::DeviceIndex::build(empty.path(), order), Duration::from_millis(1500),
+        &osc_bridge::synthub::learn::ServiceMatches::NotLinked, order);
     let step = report["structuredContent"]["devices"][0]["next_step"].as_str().unwrap_or_else(|| panic!("{report}"));
     assert!(step.contains("report_mapping"), "{step}");
 
@@ -121,6 +121,7 @@ fn an_agent_goes_from_a_device_with_no_driver_to_a_first_driver_on_a_fake_midi_d
         devices_dir: None,
         default_target: "127.0.0.1:9".parse().unwrap(),
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
+        detect_mode: None,
     };
     let call = |id: u64, tool: &str, args: &Value| json!({ "jsonrpc": "2.0", "id": id, "method": "tools/call",
         "params": { "name": tool, "arguments": args } });

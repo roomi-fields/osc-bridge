@@ -708,7 +708,7 @@ impl Online {
             Ok(s) => s,
             Err(e) => return Sharing::Failed(format!("settings: {e:#}")),
         };
-        let id = crate::mcp::device_id(vendor, model);
+        let id = super::learn::device_id(vendor, model);
         if settings.offline || Settings::covers(&settings.private, &id, &id) {
             return Sharing::Withheld(format!("{vendor} {model} is private or the link is cut: nothing is sent"));
         }

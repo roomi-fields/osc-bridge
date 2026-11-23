@@ -5,9 +5,9 @@
 
 use crate::common::{device05, files, temp};
 use osc_bridge::capture::Capture;
-use osc_bridge::detect::{Learned, Unit};
+use osc_bridge::synthub::learn::{learn_report, Learned, ServiceMatches, Unit};
 use osc_bridge::recognition::{Candidate, Identity};
-use osc_bridge::mcp::{learn_report, DeviceIndex, ServiceMatches};
+use osc_bridge::mcp::DeviceIndex;
 use osc_bridge::synthub::catalogue::tier_rank;
 use serde_json::{json, Value};
 use std::path::Path;
@@ -254,7 +254,7 @@ fn unit(port: &str, usb: Option<(u16, u16)>) -> Unit {
 }
 
 fn learned(port: &str) -> Learned {
-    let words = osc_bridge::detect::port_words(port);
+    let words = osc_bridge::synthub::learn::port_words(port);
     Learned {
         fingerprint: json!({ "$schema": "https://w3id.org/osd/0.6/fingerprint.schema.json", "observed": "2026-11-21",
             "via": "native", "ports": { "inputs": [words], "outputs": [words] },

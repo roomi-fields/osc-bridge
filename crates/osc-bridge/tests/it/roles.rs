@@ -153,6 +153,7 @@ fn call(root: &tempfile::TempDir, target: SocketAddr, tool: &str, args: Value) -
         devices_dir: Some(root.path().to_path_buf()),
         default_target: target,
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
+        detect_mode: None,
     };
     let input = format!("{}\n", crate::common::tool_call(1, tool, args));
     let mut out = Vec::new();

@@ -678,16 +678,16 @@ fn detect_publishes_write_beside_no_probe_and_devices_dir_without_scanning() {
 // ---- the fingerprints of the corpus -----------------------------------------------
 
 /// A wire that plays back what a capture received.
-struct Played(Vec<osc_bridge::detect::Heard>);
+struct Played(Vec<osc_bridge::synthub::learn::Heard>);
 
-impl osc_bridge::detect::Wire for Played {
+impl osc_bridge::synthub::learn::Wire for Played {
     fn send(&mut self, _port: &str, _msg: &[u8]) {}
-    fn heard(&mut self, _listen: std::time::Duration) -> Vec<osc_bridge::detect::Heard> { self.0.clone() }
+    fn heard(&mut self, _listen: std::time::Duration) -> Vec<osc_bridge::synthub::learn::Heard> { self.0.clone() }
 }
 
 #[test]
 fn the_bench_of_the_21st_of_november_2026_learns_one_fingerprint_per_device_with_the_words_of_its_ports() {
-    use osc_bridge::detect::{learn, units, Heard};
+    use osc_bridge::synthub::learn::{learn, units, Heard};
     let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/captures");
     let capture = Capture::parse(&std::fs::read_to_string(dir.join("2026-11-21.json")).unwrap()).unwrap();
     let expected: Value = serde_json::from_str(
@@ -709,8 +709,8 @@ fn the_bench_of_the_21st_of_november_2026_learns_one_fingerprint_per_device_with
 }
 
 /// A device built in memory from the port names the system gave, in that order.
-fn unit_of(inputs: &[&str], outputs: &[&str], usb: Option<(u16, u16)>) -> osc_bridge::detect::Unit {
-    osc_bridge::detect::Unit {
+fn unit_of(inputs: &[&str], outputs: &[&str], usb: Option<(u16, u16)>) -> osc_bridge::synthub::learn::Unit {
+    osc_bridge::synthub::learn::Unit {
         inputs: inputs.iter().map(|s| s.to_string()).collect(),
         outputs: outputs.iter().map(|s| s.to_string()).collect(),
         in_indexes: (0..inputs.len()).collect(),
@@ -720,8 +720,8 @@ fn unit_of(inputs: &[&str], outputs: &[&str], usb: Option<(u16, u16)>) -> osc_br
     }
 }
 
-fn learned_ports(unit: &osc_bridge::detect::Unit) -> Value {
-    let l = osc_bridge::detect::learn(unit, &mut Played(vec![]), std::time::Duration::from_millis(1000), "2026-11-21");
+fn learned_ports(unit: &osc_bridge::synthub::learn::Unit) -> Value {
+    let l = osc_bridge::synthub::learn::learn(unit, &mut Played(vec![]), std::time::Duration::from_millis(1000), "2026-11-21");
     osd::read(&l.fingerprint.to_string(), osd::Kind::Fingerprint).unwrap();
     l.fingerprint["ports"].clone()
 }

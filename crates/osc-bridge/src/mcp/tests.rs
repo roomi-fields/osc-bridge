@@ -39,6 +39,7 @@ fn test_opts() -> McpOptions {
         devices_dir: Some(PathBuf::from(FIXTURES)),
         default_target: "127.0.0.1:7777".parse().unwrap(),
         tier_order: neutral,
+        detect_mode: None,
     }
 }
 

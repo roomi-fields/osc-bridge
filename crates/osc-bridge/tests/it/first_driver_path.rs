@@ -51,6 +51,7 @@ fn linked_private(request: Value, private: &[&str]) -> (Value, Vec<Value>) {
         devices_dir: None,
         default_target: "127.0.0.1:9".parse().unwrap(),
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
+        detect_mode: None,
     };
     let private: Vec<String> = private.iter().map(|p| p.to_string()).collect();
     let input = format!("{request}\n");
@@ -116,7 +117,7 @@ fn a_first_driver_of_a_device_with_no_driver_goes_to_the_service_as_it_is() {
 
 // ---- the learn mode's result: the next step of a device with no driver ----
 
-use osc_bridge::detect::{Learned, Unit};
+use osc_bridge::synthub::learn::{Learned, Unit};
 use osc_bridge::mcp::DeviceIndex;
 use std::time::Duration;
 
@@ -131,7 +132,7 @@ fn unit(port: &str) -> Unit {
 }
 
 fn learned(port: &str) -> Learned {
-    let words = osc_bridge::detect::port_words(port);
+    let words = osc_bridge::synthub::learn::port_words(port);
     Learned {
         fingerprint: json!({ "$schema": "https://w3id.org/osd/0.6/fingerprint.schema.json", "observed": "2026-11-21",
             "via": "native", "ports": { "inputs": [words], "outputs": [words] },
@@ -142,8 +143,8 @@ fn learned(port: &str) -> Learned {
 
 fn report(ports: &[&str]) -> Value {
     let learned: Vec<(Unit, Learned)> = ports.iter().map(|p| (unit(p), learned(p))).collect();
-    osc_bridge::mcp::learn_report(&learned, &catalogue(), Duration::from_millis(5000),
-        &osc_bridge::mcp::ServiceMatches::NotLinked, osc_bridge::synthub::catalogue::tier_rank)
+    osc_bridge::synthub::learn::learn_report(&learned, &catalogue(), Duration::from_millis(5000),
+        &osc_bridge::synthub::learn::ServiceMatches::NotLinked, osc_bridge::synthub::catalogue::tier_rank)
 }
 
 fn device_of(report: &Value, at: usize) -> &Value { &report["structuredContent"]["devices"][at] }
@@ -180,8 +181,8 @@ fn learned_with_reply(port: &str, reply: &str) -> Learned {
 fn report_with_reply(port: &str, reply: Option<&str>) -> Value {
     let mut l = learned(port);
     if let Some(r) = reply { l.fingerprint["identity_reply"] = json!(r); }
-    osc_bridge::mcp::learn_report(&[(unit(port), l)], &catalogue(), Duration::from_millis(5000),
-        &osc_bridge::mcp::ServiceMatches::NotLinked, osc_bridge::synthub::catalogue::tier_rank)
+    osc_bridge::synthub::learn::learn_report(&[(unit(port), l)], &catalogue(), Duration::from_millis(5000),
+        &osc_bridge::synthub::learn::ServiceMatches::NotLinked, osc_bridge::synthub::catalogue::tier_rank)
 }
 
 #[test]
@@ -205,7 +206,7 @@ fn a_device_with_no_identity_reply_has_no_proposed_firmware_and_its_step_asks_th
 
 /// The `device` argument a share's next step gives `report_mapping`.
 fn shared_device(vendor: &str, model: &str) -> String {
-    let step = osc_bridge::mcp::shared_next_step(vendor, model);
+    let step = osc_bridge::synthub::learn::shared_next_step(vendor, model);
     assert!(step.contains("report_mapping") && !step.contains("device_name"), "{step}");
     let from = step.find("(device: ").unwrap_or_else(|| panic!("no device in {step}")) + "(device: ".len();
     let len = step[from..].find("); ").unwrap_or_else(|| panic!("device not closed in {step}"));
@@ -230,7 +231,7 @@ fn after_a_share_the_next_step_names_the_device_as_the_person_declared_it() {
 #[test]
 fn after_a_share_the_next_step_carries_no_slug_of_the_name() {
     for (v, m) in [("Sequential", "Prophet Rev2"), ("Arturia", "MiniLab 3"), ("Black Corporation", "Deckard's Dream")] {
-        let step = osc_bridge::mcp::shared_next_step(v, m);
+        let step = osc_bridge::synthub::learn::shared_next_step(v, m);
         assert!(!step.contains('/') && !step.contains("-rev2") && !step.contains("minilab-3") && !step.contains("black-"), "{step}");
     }
 }
@@ -322,8 +323,8 @@ fn a_device_whose_driver_matches_by_a_strong_proof_carries_no_next_step() {
 fn a_recognised_and_an_unrecognised_device_side_by_side_only_the_second_has_a_next_step() {
     let known = learned_with_reply("Acme Box 1", ACME_BOX_REPLY);
     let other = learned("Zork Thing 1");
-    let r = osc_bridge::mcp::learn_report(&[(unit("Acme Box 1"), known), (unit("Zork Thing 1"), other)],
-        &catalogue(), Duration::from_millis(5000), &osc_bridge::mcp::ServiceMatches::NotLinked,
+    let r = osc_bridge::synthub::learn::learn_report(&[(unit("Acme Box 1"), known), (unit("Zork Thing 1"), other)],
+        &catalogue(), Duration::from_millis(5000), &osc_bridge::synthub::learn::ServiceMatches::NotLinked,
         osc_bridge::synthub::catalogue::tier_rank);
     assert!(device_of(&r, 0).get("next_step").is_none(), "{r}");
     assert!(device_of(&r, 1).get("next_step").is_some(), "{r}");

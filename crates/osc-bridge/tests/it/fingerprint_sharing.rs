@@ -184,6 +184,7 @@ fn detect_hardware_publishes_the_maker_model_and_firmware_arguments_and_says_wha
         devices_dir: Some(dir.path().to_path_buf()),
         default_target: "127.0.0.1:9000".parse().unwrap(),
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
+        detect_mode: Some(osc_bridge::synthub::learn::detect_offline),
     };
     let input = format!("{}\n", json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" }));
     let mut out = Vec::new();
@@ -285,17 +286,17 @@ fn the_command_help_names_the_maker_the_model_and_the_firmware_and_no_free_name(
 #[test]
 fn a_refusal_of_the_service_naming_the_maker_and_model_is_told_with_the_flags_of_the_command() {
     let said = "HTTP 400: device: its descriptor (maker/file), or its vendor and model";
-    let command = osc_bridge::mcp::refusal_in_words(said, true);
+    let command = osc_bridge::synthub::learn::refusal_in_words(said, true);
     assert!(command.contains("--vendor") && command.contains("--model"), "{command}");
-    let tool = osc_bridge::mcp::refusal_in_words(said, false);
+    let tool = osc_bridge::synthub::learn::refusal_in_words(said, false);
     assert!(tool.contains("vendor") && tool.contains("model") && !tool.contains("--vendor"), "{tool}");
 }
 
 #[test]
 fn a_refusal_of_the_service_that_names_no_field_is_told_as_it_is() {
     let said = "HTTP 429: Daily quota reached";
-    assert_eq!(osc_bridge::mcp::refusal_in_words(said, true), said);
-    assert_eq!(osc_bridge::mcp::refusal_in_words(said, false), said);
+    assert_eq!(osc_bridge::synthub::learn::refusal_in_words(said, true), said);
+    assert_eq!(osc_bridge::synthub::learn::refusal_in_words(said, false), said);
 }
 
 #[test]

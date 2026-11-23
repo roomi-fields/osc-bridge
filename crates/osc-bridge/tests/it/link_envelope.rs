@@ -13,6 +13,7 @@ fn options(devices: Option<&std::path::Path>) -> osc_bridge::mcp::McpOptions {
         devices_dir: devices.map(|d| d.to_path_buf()),
         default_target: "127.0.0.1:9".parse().unwrap(),
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
+        detect_mode: None,
     }
 }
 

@@ -44,12 +44,18 @@ pub const PROTOCOL_VERSION: &str = "2025-06-18";
 pub const SERVER_NAME: &str = "osc-bridge";
 pub const SERVER_VERSION: &str = env!("CARGO_PKG_VERSION");
 
+/// How `detect_hardware` answers a call that asks for a listening mode (`learn: true`): the
+/// arguments, the cards and the options of the server give the result or the refusal.
+pub type DetectMode = fn(&Value, &DeviceIndex, &McpOptions) -> Result<Value, String>;
+
 pub struct McpOptions {
     /// Which of two cards of one device wins: the caller's order (`recognition::TierOrder`).
     pub tier_order: crate::recognition::TierOrder,
     /// The folder of cards the server serves, used as it is. None: an empty index.
     pub devices_dir: Option<PathBuf>,
     pub default_target: SocketAddr,
+    /// The handler of the listening mode, given by the caller; None: the mode is not given.
+    pub detect_mode: Option<DetectMode>,
 }
 
 /// One lightweight catalogue entry. The full `Device` is loaded on demand
@@ -943,8 +949,10 @@ pub(crate) fn call_local(name: &str, args: &Value, opts: &McpOptions, index: &De
             let confirm = args.get("confirm_overwrite").and_then(Value::as_bool) == Some(true);
             install_export(&preset_device(index, wanted)?, &preset_device(index, on)?, wanted, on, confirm, open)
         }
-        "detect_hardware" if args.get("learn").and_then(Value::as_bool) == Some(true) =>
-            learn_tool(args, index, opts, &not_linked_share, &|_| ServiceMatches::NotLinked),
+        "detect_hardware" if args.get("learn").and_then(Value::as_bool) == Some(true) => match opts.detect_mode {
+            Some(handler) => handler(args, index, opts),
+            None => Err("detect_hardware with learn: true is not available: the mode is not given to this server.".into()),
+        },
         "detect_hardware" => detect_tool(args, index, opts, None, &|_| Ok(known.candidates.clone())),
         other => Err(format!("unknown tool: {other}")),
     }
@@ -1047,7 +1055,7 @@ pub fn hex_bytes(bytes: &[u8]) -> String {
 const POSSIBLE_LABEL: &str = "possible, to confirm";
 
 /// The proofs of a candidate as published: `{nature, kind}` each.
-fn proofs_json(proofs: &[crate::recognition::Proof]) -> Value {
+pub(crate) fn proofs_json(proofs: &[crate::recognition::Proof]) -> Value {
     json!(proofs.iter().map(|p| json!({ "nature": p.nature.as_str(), "kind": p.kind })).collect::<Vec<_>>())
 }
 
@@ -1092,55 +1100,6 @@ pub(crate) fn detect_tool(args: &Value, index: &DeviceIndex, opts: &McpOptions, 
     let wait = args.get("timeout_ms").and_then(Value::as_u64).unwrap_or(800).clamp(100, 5000);
     let consent = consent_arg(args)?;
     detect_hardware(index, probes_of, answers, opts.devices_dir.is_some(), probe, std::time::Duration::from_millis(wait), None, &consent, opts.tier_order)
-}
-
-/// What a caller gives to share a fingerprint: the port, the vendor, model and firmware the
-/// person gave, and what was learned; it says what happened.
-pub(crate) type SharesFingerprint<'a> =
-    &'a dyn Fn(&str, &str, &str, &str, &[(crate::detect::Unit, crate::detect::Learned)]) -> Result<String, String>;
-
-/// The sharing of the fingerprint of the port the person named, as a learn mode runs it.
-pub(crate) type SharesLearned<'a> = &'a dyn Fn(&[(crate::detect::Unit, crate::detect::Learned)]) -> Result<String, String>;
-
-/// What a caller gives to know what the service says of the devices a learn mode found.
-pub(crate) type MatchesOf<'a> = &'a dyn Fn(&[(crate::detect::Unit, crate::detect::Learned)]) -> ServiceMatches;
-
-/// The one device whose port `port` names, or the refusal that asks to name exactly one port.
-pub(crate) fn sharing_target<'a>(port: &str, learned: &'a [(crate::detect::Unit, crate::detect::Learned)])
-    -> Result<&'a (crate::detect::Unit, crate::detect::Learned), String> {
-    let wanted = port.to_lowercase();
-    let found: Vec<_> = learned.iter().filter(|(u, _)| u.inputs.iter().chain(&u.outputs).any(|p| p.to_lowercase().contains(&wanted))).collect();
-    match found.as_slice() {
-        [one] => Ok(one),
-        _ => Err(format!("share_fingerprint {port:?} names {} device(s): name exactly one port", found.len())),
-    }
-}
-
-/// The sharing of a copy with no link: nothing goes out.
-fn not_linked_share(port: &str, _vendor: &str, _model: &str, _firmware: &str,
-                    learned: &[(crate::detect::Unit, crate::detect::Learned)]) -> Result<String, String> {
-    sharing_target(port, learned)?;
-    Ok("not sent: this copy is not linked to the SynthHub server".into())
-}
-
-/// `detect_hardware` in learn mode as the tool is called: the arguments read, the fingerprint
-/// shared through `shares` when a name is given, the ports matched through `matches`.
-pub(crate) fn learn_tool(args: &Value, index: &DeviceIndex, opts: &McpOptions, shares: SharesFingerprint,
-                         matches: MatchesOf) -> Result<Value, String> {
-    let text = |k: &str| args.get(k).and_then(Value::as_str);
-    let named = match text("share_fingerprint") {
-        None if ["vendor", "model", "firmware"].iter().any(|k| text(k).is_some()) =>
-            return Err("vendor, model and firmware go with share_fingerprint: the port whose fingerprint is shared".into()),
-        None => None,
-        Some(port) => {
-            let (vendor, model, firmware) = share_fields(text("vendor"), text("model"), text("firmware"), false)?;
-            Some((port, vendor, model, firmware))
-        }
-    };
-    let share = named.map(|(port, vendor, model, firmware)| move |learned: &[(crate::detect::Unit, crate::detect::Learned)]|
-        shares(port, vendor, model, firmware, learned));
-    learn_hardware(index, matches, crate::detect::learn_listen(args.get("listen_ms").and_then(Value::as_u64))?,
-        share.as_ref().map(|s| s as SharesLearned), opts.tier_order)
 }
 
 /// Find the MIDI devices plugged into this machine and their drivers: those
@@ -1229,7 +1188,7 @@ fn merge_candidates(found: &[crate::detect::Probed], per_port: Vec<(usize, Vec<V
 
 /// What a port of a program keeps of the candidates: those whose card the local catalogue knows,
 /// by id, as a software. A card it does not know, or of another kind, is no candidate for a program.
-fn software_cards_only(index: &DeviceIndex, candidates: Vec<Value>) -> Vec<Value> {
+pub(crate) fn software_cards_only(index: &DeviceIndex, candidates: Vec<Value>) -> Vec<Value> {
     candidates.into_iter().filter(|c| c["id"].as_str()
         .and_then(|id| index.find(id)).is_some_and(|e| e.kind == "software")).collect()
 }
@@ -1334,40 +1293,6 @@ fn detection_report(index: &DeviceIndex, answers: &[Value], by_file: bool, probe
     Ok(out)
 }
 
-/// `detect_hardware` in learn mode: a fingerprint per device, and its measures beside it. The
-/// report's text tells the person how long it listens and to move the controls.
-pub(crate) fn learn_hardware(index: &DeviceIndex, matches: MatchesOf, listen: std::time::Duration,
-                             share: Option<SharesLearned>,
-                             order: crate::recognition::TierOrder) -> Result<Value, String> {
-    let learned = crate::detect::learn_all(listen).map_err(|e| format!("MIDI scan: {e}"))?;
-    let sharing = share.map(|s| s(&learned)).transpose()?;
-    let service = matches(&learned);
-    let mut report = learn_report(&learned, index, listen, &service, order);
-    if let Some(said) = sharing {
-        report["structuredContent"]["sharing"] = json!(said);
-        let text = format!("{}\nSharing: {said}", report["content"][0]["text"].as_str().unwrap_or_default());
-        report["content"][0]["text"] = json!(text);
-    }
-    Ok(report)
-}
-
-/// What the service said of the devices of a learn mode.
-#[derive(Debug, Clone)]
-pub enum ServiceMatches {
-    /// The copy is not linked: only the local catalogue is looked at.
-    NotLinked,
-    /// Linked, but the service did not answer.
-    Unreachable,
-    /// What it names for each device, in the order of the devices the learn mode reports: its
-    /// catalogue candidates, else its devices without a card (see `port_answer`).
-    Answered(Vec<Vec<Value>>),
-}
-
-/// The devices the learn mode reports: the ports of the system are no device.
-pub(crate) fn learn_devices(learned: &[(crate::detect::Unit, crate::detect::Learned)]) -> Vec<&(crate::detect::Unit, crate::detect::Learned)> {
-    learned.iter().filter(|(u, _)| !crate::detect::is_system_unit(u)).collect()
-}
-
 /// One port of the detection request: its name, its identity replies and, when read, its USB ids
 /// (`usb: {vendor_id, product_id}`, numbers); a port without ids has no `usb` field.
 pub(crate) fn detect_port(port: &str, replies_hex: Vec<String>, usb: Option<(u16, u16)>) -> Value {
@@ -1400,168 +1325,14 @@ pub(crate) fn port_answer(answer: &Value) -> Vec<Value> {
     candidates
 }
 
-/// The ask that ends the next step of a device nobody knows: name it, then map its controls.
-const NEXT_STEP_ASK: &str = "Ask the person to name it: its vendor (the maker), its model and its firmware version; \
-    share_fingerprint needs the three, none empty.";
-
-/// What the person is asked for the firmware: the version the identity reply carries, to
-/// confirm, or nothing to propose.
-fn firmware_ask(proposed: Option<&str>) -> String {
-    match proposed {
-        Some(v) => format!(" The identity reply carries the firmware version {v}: propose it and have the person confirm it as the firmware."),
-        None => " The device sent no firmware version: ask the person for the firmware.".into(),
-    }
-}
-
-/// The next step of an unknown device, worded by what was looked at.
-fn next_step(service: &ServiceMatches, proposed_firmware: Option<&str>) -> String {
-    let ask = format!("{NEXT_STEP_ASK}{} Then map its controls one by one with report_mapping, device being its vendor and model as shared (e.g. Behringer BCR-32); a first driver built from the mappings goes to submit_driver.",
-        firmware_ask(proposed_firmware));
-    match service {
-        ServiceMatches::Answered(_) => format!("Neither the local catalogue nor SynthHub knows this device. {ask}"),
-        _ => format!("Only the local catalogue was looked at, and no driver in it matches this device. {ask}"),
-    }
-}
-
 /// A device without a card in words, with the fields the service gave and no other: the maker and
 /// model, then the firmware and the confirmations.
-fn unlisted_text(u: &Value) -> String {
+pub(crate) fn unlisted_text(u: &Value) -> String {
     let name = [u["vendor"].as_str(), u["model"].as_str()].into_iter().flatten().collect::<Vec<_>>().join(" ");
     let mut text = name;
     if let Some(f) = u["firmware"].as_str() { text.push_str(&format!(", firmware {f}")); }
     if let Some(n) = u["confirmations"].as_u64() { text.push_str(&format!(", {n} confirmation(s)")); }
     text
-}
-
-/// The next step of a device the service names without a card: it is proposed to the person to
-/// confirm, never named again, and nothing is sent to the device on its account without consent.
-fn being_confirmed_step(unlisted: &[Value]) -> String {
-    let named: Vec<String> = unlisted.iter().map(unlisted_text).collect();
-    let said = unlisted.iter().find_map(|u| u["state_label"].as_str()).unwrap_or("being confirmed");
-    format!("SynthHub names this device without a card: {}; {said}. Ask the person to confirm which it is, and do not ask them to name it again. \
-        Nothing is sent to the device on this account without the person's consent.", named.join(" or "))
-}
-
-/// The next step once a fingerprint is shared: the mappings go to `report_mapping` under the
-/// device named as the service accepts it, « maker model » as the person declared it, the firmware
-/// not being part of it.
-pub fn shared_next_step(vendor: &str, model: &str) -> String {
-    format!("Map its controls one by one with report_mapping (device: {}); a first driver built from the mappings goes to submit_driver.",
-        declared_name(vendor, model))
-}
-
-/// The name of a device without a card as the service accepts it: the model alone when it already
-/// starts with the maker (whole word, case ignored), else the maker and the model; spaces reduced.
-fn declared_name(vendor: &str, model: &str) -> String {
-    let (v, m): (Vec<&str>, Vec<&str>) = (vendor.split_whitespace().collect(), model.split_whitespace().collect());
-    let starts = !v.is_empty() && m.len() >= v.len() && v.iter().zip(&m).all(|(a, b)| a.eq_ignore_ascii_case(b));
-    if starts { m.join(" ") } else { v.into_iter().chain(m).collect::<Vec<_>>().join(" ") }
-}
-
-/// The id of a device the catalogue does not describe: its vendor and model, slugged.
-pub fn device_id(vendor: &str, model: &str) -> String {
-    format!("{}/{}", slugify(vendor, '-'), slugify(model, '-'))
-}
-
-/// The firmware version of a universal Identity Reply (`F0 7E id 06 02 maker family model
-/// version F7`: a one- or three-byte maker, two bytes of family, two of model, four of version),
-/// as its bytes joined by dots; none when the reply is too short.
-fn identity_firmware(hex: &str) -> Option<String> {
-    let bytes: Vec<u8> = hex.split_whitespace().map(|b| u8::from_str_radix(b, 16).ok()).collect::<Option<_>>()?;
-    if bytes.len() < 6 || bytes[..2] != [0xF0, 0x7E] || bytes[3..5] != [0x06, 0x02] { return None; }
-    let body = bytes[5..].strip_suffix(&[0xF7]).unwrap_or(&bytes[5..]);
-    let maker = if body.first() == Some(&0) { 3 } else { 1 };
-    let version = body.get(maker + 4..maker + 8)?;
-    Some(version.iter().map(u8::to_string).collect::<Vec<_>>().join("."))
-}
-
-/// The vendor, model and firmware of a sharing, none empty, as the person gave them; the
-/// refusal names every missing one in the words of the command (`--vendor`) or the tool (`vendor`).
-pub(crate) fn share_fields<'a>(vendor: Option<&'a str>, model: Option<&'a str>, firmware: Option<&'a str>, command: bool)
-    -> Result<(&'a str, &'a str, &'a str), String> {
-    let given = |v: Option<&'a str>| v.map(str::trim).filter(|v| !v.is_empty());
-    let (v, m, f) = (given(vendor), given(model), given(firmware));
-    if let (Some(v), Some(m), Some(f)) = (v, m, f) { return Ok((v, m, f)); }
-    let missing: Vec<String> = [("vendor", v), ("model", m), ("firmware", f)].into_iter()
-        .filter(|(_, x)| x.is_none()).map(|(k, _)| if command { format!("--{k}") } else { k.to_string() }).collect();
-    Err(format!("nothing is sent: a fingerprint is shared with three fields, none empty; missing: {}. Ask the person.", missing.join(", ")))
-}
-
-/// A refusal of the service that names the vendor, model or firmware, in the words of the
-/// command typed (`--vendor`) when `command`, else as it is (the tool's parameters are named
-/// so); any other text is returned as it is.
-pub fn refusal_in_words(said: &str, command: bool) -> String {
-    if !command || !said.contains("device:") { return said.to_string(); }
-    said.split(' ').map(|w| {
-        let bare = w.trim_matches(|c: char| !c.is_ascii_alphabetic());
-        if ["vendor", "model", "firmware"].contains(&bare) { w.replacen(bare, &format!("--{bare}"), 1) } else { w.to_string() }
-    }).collect::<Vec<_>>().join(" ")
-}
-
-/// The learn mode's result for `learned`: the structured devices and their text. A device the
-/// service or `catalogue` recognises carries its `driver` (the service's first) and no
-/// `next_step`; an unknown one carries a `next_step` worded by what was looked at. A port of the
-/// system is left out. Pure: no MIDI.
-pub fn learn_report(learned: &[(crate::detect::Unit, crate::detect::Learned)], catalogue: &DeviceIndex, listen: std::time::Duration,
-                    service: &ServiceMatches, order: crate::recognition::TierOrder) -> Value {
-    let candidates = hardware_candidates(catalogue);
-    let devices: Vec<Value> = learn_devices(learned).into_iter().enumerate().map(|(at, (d, l))| {
-        let replies: Vec<Vec<u8>> = l.fingerprint["identity_reply"].as_str().map(|h| {
-            h.split_whitespace().filter_map(|b| u8::from_str_radix(b, 16).ok()).collect()
-        }).into_iter().collect();
-        // Only a strong proof names a driver; a name alone leaves the device unknown.
-        let program = d.client_kind == crate::detect::ClientKind::User;
-        let local = d.inputs.iter().chain(&d.outputs).filter(|_| !program)
-            .find_map(|p| crate::recognition::rank(p, d.usb, &replies, &candidates, 1, order).into_iter().find(|r| r.is_strong()))
-            .map(|r| (&candidates[r.index], proofs_json(&r.proofs)));
-        let named: Vec<Value> = match service {
-            ServiceMatches::Answered(all) => all.get(at).cloned().unwrap_or_default(),
-            _ => Vec::new(),
-        };
-        let named = if program { software_cards_only(catalogue, named) } else { named };
-        let first = named.first();
-        let remote = first.and_then(|c| {
-            let mut driver = json!({ "id": c["id"].as_str()?, "name": c["name"].as_str().unwrap_or_default() });
-            for k in ["confirmations", "disputed", "state", "state_label"] {
-                if let Some(v) = c.get(k) { driver[k] = v.clone(); }
-            }
-            Some(driver)
-        });
-        let unlisted: Vec<Value> = if remote.is_none() { named.iter().filter(|u| u["kind"] == "unlisted").cloned().collect() } else { Vec::new() };
-        // The local driver is the one its slug resolves to (the most trustworthy file of the
-        // device), not a firmware variant that only ranked higher by recognising the port.
-        let local = local.map(|(c, proofs)| catalogue.find(&c.slug).map(|e| json!({ "id": e.id, "name": e.name, "proofs": proofs }))
-            .unwrap_or_else(|| json!({ "id": c.id, "name": c.name, "proofs": proofs })));
-        let driver = remote.or(local);
-        let mut out = json!({
-            "port": d.label(),
-            "inputs": d.inputs,
-            "outputs": d.outputs,
-            "fingerprint": l.fingerprint,
-            "measured": l.measured,
-        });
-        match driver {
-            Some(driver) => out["driver"] = driver,
-            None if !unlisted.is_empty() => {
-                out["next_step"] = json!(being_confirmed_step(&unlisted));
-                out["unlisted"] = json!(unlisted);
-            }
-            None => {
-                let proposed = l.fingerprint["identity_reply"].as_str().and_then(identity_firmware);
-                if let Some(v) = &proposed { out["proposed_firmware"] = json!(v); }
-                out["next_step"] = json!(next_step(service, proposed.as_deref()));
-            }
-        }
-        out
-    }).collect();
-    let mut notice = crate::detect::learn_notice(listen);
-    if matches!(service, ServiceMatches::Unreachable) {
-        notice.push_str(" The SynthHub service did not answer: only the local catalogue was looked at.");
-    }
-    let structured = json!({ "probed": true, "learn": true, "listen_ms": listen.as_millis() as u64,
-        "notice": notice, "devices": devices });
-    let text = format!("{notice}\n{}", serde_json::to_string_pretty(&structured).unwrap_or_default());
-    content_structured(&text, structured)
 }
 
 /// The driver of the device a preset tool is told to talk to; a device the

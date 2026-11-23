@@ -90,6 +90,7 @@ fn call(root: &tempfile::TempDir, tool: &str, args: Value) -> Value {
         devices_dir: Some(root.path().to_path_buf()),
         default_target: "127.0.0.1:9".parse().unwrap(),
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
+        detect_mode: None,
     };
     let input = format!("{}\n", tool_call(1, tool, args));
     let mut out = Vec::new();
@@ -136,6 +137,7 @@ fn export_device_takes_no_consent_and_install_export_alone_carries_it() {
         devices_dir: Some(root.path().to_path_buf()),
         default_target: "127.0.0.1:9".parse().unwrap(),
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
+        detect_mode: None,
     };
     let input = format!("{}\n", json!({"jsonrpc": "2.0", "id": 1, "method": "tools/list"}));
     let mut out = Vec::new();

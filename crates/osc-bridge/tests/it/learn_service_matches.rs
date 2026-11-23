@@ -2,9 +2,11 @@
 //! matches, the local catalogue), and the ports of the system it leaves out.
 
 use osc_bridge::capture::{Capture, FORMAT_VERSION};
-use osc_bridge::detect::{is_system_port, learn_units, units, ClientKind, Learned, Unit};
-use osc_bridge::mcp::{learn_report, DeviceIndex, ServiceMatches};
-use osc_bridge::synthub::mcp::learn_service_matches;
+use osc_bridge::detect::ClientKind;
+use osc_bridge::mcp::DeviceIndex;
+use osc_bridge::synthub::learn::{
+    is_system_port, learn_report, learn_service_matches, learn_units, units, Learned, ServiceMatches, Unit,
+};
 use serde_json::{json, Value};
 use std::time::Duration;
 
@@ -19,7 +21,7 @@ fn unit(port: &str) -> Unit {
 }
 
 fn learned(port: &str) -> Learned {
-    let words = osc_bridge::detect::port_words(port);
+    let words = osc_bridge::synthub::learn::port_words(port);
     Learned {
         fingerprint: json!({ "$schema": "https://w3id.org/osd/0.6/fingerprint.schema.json", "observed": "2026-11-21",
             "via": "native", "ports": { "inputs": [words], "outputs": [words] },

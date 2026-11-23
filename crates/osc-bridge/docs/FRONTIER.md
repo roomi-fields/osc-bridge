@@ -85,7 +85,7 @@ The other commands:
 | `lint` | `main.rs:365` | a file only |
 | `export --on` | `install::install_command` with `take::open_hardware` (`main.rs:301`) | no: `take` is forbidden |
 | `detect` (no `--learn`) | `mcp::print_detection` (`main.rs:296`); without `--devices-dir` it reads the cache and, linked, the service (`mcp.rs:2337`, `:2346`) | no |
-| `detect --learn` | `mcp::print_learning` (`main.rs:292`); asks the service for matches; `--share-fingerprint` sends one | no |
+| `detect --learn` | `synthub::learn::print_learning` (`main.rs:292`); asks the service for matches; `--share-fingerprint` sends one | no |
 | `mcp` | `mcp::run` with `Settings` (`main.rs:335-341`) | no |
 | `connect` | `connect::run` (`main.rs:280`) | no: the relay, the account |
 | `privacy` | `online::settings_file`, `mcp::privacy` (`main.rs:282-288`) | no: the service's settings |

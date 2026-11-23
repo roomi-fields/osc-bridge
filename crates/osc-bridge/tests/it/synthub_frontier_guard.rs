@@ -10,7 +10,7 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 /// The submodules of the link.
-const SUBMODULES: &[&str] = &["online", "connect", "relay_protocol", "catalogue", "take", "mcp"];
+const SUBMODULES: &[&str] = &["online", "connect", "relay_protocol", "catalogue", "take", "mcp", "learn"];
 
 /// (reader module, submodule of the link, number of readings).
 const INSCRIBED: &[(&str, &str, usize)] = &[];
