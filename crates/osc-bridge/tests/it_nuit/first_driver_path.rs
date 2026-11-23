@@ -94,7 +94,7 @@ fn an_agent_goes_from_a_device_with_no_driver_to_a_first_driver_on_a_fake_midi_d
     let fp = &learned[0].1.fingerprint;
     assert_eq!(fp["identity_reply"], "F0 7E 7F 06 02 00 20 6B 02 00 04 00 01 00 04 00 F7", "{fp}");
     let controls = fp["controls"].as_array().unwrap_or_else(|| panic!("no controls heard: {fp}"));
-    let cc = controls.iter().find(|c| c["number"] == 74).unwrap_or_else(|| panic!("CC 74 not heard: {controls:?}"));
+    let cc = controls.iter().find(|c| c["cc"] == 74).unwrap_or_else(|| panic!("CC 74 not heard: {controls:?}"));
     let empty = tempfile::tempdir().unwrap();
     let report = osc_bridge::mcp::learn_report(&learned, &osc_bridge::mcp::DeviceIndex::build(empty.path()), Duration::from_millis(1500),
         &osc_bridge::mcp::ServiceMatches::NotLinked);
@@ -103,11 +103,11 @@ fn an_agent_goes_from_a_device_with_no_driver_to_a_first_driver_on_a_fake_midi_d
 
     // 2. The mappings heard, named by the name the person gave, and the first driver, go on.
     let name = "Night Synth";
-    let mapping = json!({ "device": name, "label": "Cutoff", "cc": cc["number"], "channel": 1 });
+    let mapping = json!({ "device": name, "label": "Cutoff", "cc": cc["cc"], "channel": 1 });
     let driver = json!({
         "$schema": "https://w3id.org/osd/0.5/device.schema.json",
         "device": { "name": name, "vendor": "Night", "osc_prefix": "/night_synth" },
-        "cc_params": [{ "name": "Cutoff", "cc": 74, "channel": 1 }],
+        "cc_params": { "channel": 0, "entries": [{ "osc": "/cutoff", "cc": 74 }] },
     });
     let text = driver.to_string();
     osd::read(&text, osd::Kind::Device).unwrap_or_else(|e| panic!("{e}\n{text}"));
