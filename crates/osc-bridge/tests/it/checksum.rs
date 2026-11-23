@@ -37,8 +37,8 @@ fn load(header: &str, rest: &str) -> (tempfile::TempDir, anyhow::Result<osd::Dev
         r#"{{"device":{{"name":"Acme Box","osc_prefix":"/b"}},"sysex":{{"header":{header},"footer":[247]}}{rest}}}"#
     );
     let path = dir.path().join("box.json");
-    // The driver as the converter writes it in 0.5.
-    std::fs::write(&path, common::to05(&json)).unwrap();
+    // The driver as the converter writes it in 0.6.
+    std::fs::write(&path, common::to06(&json)).unwrap();
     let dev = load_driver(&path);
     (dir, dev)
 }

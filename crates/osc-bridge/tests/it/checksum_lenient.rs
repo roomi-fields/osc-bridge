@@ -27,13 +27,13 @@ fn write05(dir: &tempfile::TempDir, header: &str, rest: &str) -> PathBuf {
     path
 }
 
-/// The same, written in 0.4 with the tests' checksum names and converted by `osd::convert`.
+/// The same, written in 0.4 with the tests' checksum names and converted to 0.6 by `osd::convert`.
 fn write(dir: &tempfile::TempDir, header: &str, rest: &str) -> PathBuf {
     let json = format!(
         r#"{{"device":{{"name":"Acme Box","osc_prefix":"/b"}},"sysex":{{"header":{header},"footer":[247]}}{rest}}}"#
     );
     let path = dir.path().join("box.json");
-    std::fs::write(&path, common::to05(&json)).unwrap();
+    std::fs::write(&path, common::to06(&json)).unwrap();
     path
 }
 

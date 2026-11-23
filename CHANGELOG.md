@@ -11,6 +11,22 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed — the reading of device cards comes from the registry
+
+- `osd` and `osd-formats` come from crates.io in 0.6.0 (they were pinned to a git commit), so the
+  bridge builds from the public registries. The reader's number follows the format's: it reads 0.6
+  and converts 0.4 and 0.5, so the cards read before are still read. Where the bridge's result
+  changes, it is a rule of the reader:
+  - `convert` writes 0.6 by default; a 0.5 card converted to 0.6 has its SysEx in upper case and
+    `value_bits` on each NRPN/RPN, and is refused (`NotConvertible`) when a control mixes CC, NRPN
+    and RPN or when the content of a sound holds no sysex, midi or settings.
+  - New refusals at reading: `null` on a direct key of `identity` or `programs` other than
+    `profile` and `identity.firmware` in 0.4 and 0.5; a sound transfer setting whose `control` names
+    an entry absent from the merged tables; a 0.6 fingerprint that names neither a device nor a
+    program (the fingerprint the learn mode writes carries neither, as the person gives vendor, model and
+    firmware only when sharing it; reading it back as a 0.6 fingerprint is refused).
+  - The imports of `osd-formats` (Electra One, MIDI 2.0 controllers, CSV, MIDNAM) write `value_bits`.
+
 ## [0.24.1] — 2026-11-22
 
 ### Fixed

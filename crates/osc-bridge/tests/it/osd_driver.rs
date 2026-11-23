@@ -57,7 +57,7 @@ fn assert_schema(schema: Option<osd::Version>, text: &str, path: &Path) {
 }
 
 #[test]
-fn every_test_driver_is_the_converters_output_and_reads_without_fault() {
+fn every_test_driver_reads_without_fault_and_converts_to_a_stable_0_6_text() {
     let all = fixture_files();
     assert!(all.len() >= 14, "{all:?}");
     for path in all {
@@ -69,10 +69,16 @@ fn every_test_driver_is_the_converters_output_and_reads_without_fault() {
             osd::Descriptor::Profile(p) => assert_schema(p.schema, &text, &path),
             other => panic!("{}: {:?}", path.display(), other.kind()),
         }
-        // The converter goes forward to 0.5 only: a 0.6 driver is already past it.
-        if !text.contains("/osd/0.6/") {
-            assert_eq!(osd::convert(&text, kind).unwrap(), text, "{}: committed as it comes out of the converter", path.display());
+        // The converter writes the published version, 0.6: a 0.5 driver is converted to the 0.6 text the
+        // reader writes, which reads and which the converter leaves as it is.
+        let converted = osd::convert(&text, kind).unwrap_or_else(|e| panic!("{}: convert: {e}", path.display()));
+        assert!(converted.contains("/osd/0.6/"), "{}: the converter writes 0.6", path.display());
+        match osd::read(&converted, kind).unwrap_or_else(|e| panic!("{}: converted: {e}", path.display())) {
+            osd::Descriptor::Device(d) => assert_eq!(d.schema, Some(osd::Version::V0_6), "{}", path.display()),
+            osd::Descriptor::Profile(p) => assert_eq!(p.schema, Some(osd::Version::V0_6), "{}", path.display()),
+            other => panic!("{}: {:?}", path.display(), other.kind()),
         }
+        assert_eq!(osd::convert(&converted, kind).unwrap(), converted, "{}: the converter leaves its own output as it is", path.display());
     }
 }
 

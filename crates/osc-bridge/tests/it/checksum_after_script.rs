@@ -19,7 +19,7 @@ use osc_bridge::runtime::encode;
 use rosc::OscMessage;
 
 /// A driver of one command `/fn`, written in 0.4 with the tests' checksum
-/// names and converted to 0.5 as the converter writes it (`to05`).
+/// names and converted to 0.6 as the converter writes it (`to06`).
 fn text(frame: &str, script: Option<&str>) -> String {
     let script = script.map(|s| format!(r#","script":{}"#, serde_json::to_string(s).unwrap())).unwrap_or_default();
     format!(
@@ -31,7 +31,7 @@ fn text(frame: &str, script: Option<&str>) -> String {
 fn load(frame: &str, script: Option<&str>) -> (tempfile::TempDir, osd::Device) {
     let dir = common::temp("checksum_after_script");
     let path = dir.path().join("jv.json");
-    std::fs::write(&path, common::to05(&text(frame, script))).unwrap();
+    std::fs::write(&path, common::to06(&text(frame, script))).unwrap();
     let dev = load_driver(&path).unwrap_or_else(|e| panic!("driver refused: {e}"));
     (dir, dev)
 }

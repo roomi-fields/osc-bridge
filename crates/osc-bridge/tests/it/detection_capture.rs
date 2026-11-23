@@ -685,6 +685,16 @@ impl osc_bridge::synthub::learn::Wire for Played {
     fn heard(&mut self, _listen: std::time::Duration) -> Vec<osc_bridge::synthub::learn::Heard> { self.0.clone() }
 }
 
+/// A learned fingerprint names no device or program yet (vendor, model and firmware come at
+/// sharing): the reader's only refusal allowed is that missing subject, at `/device`.
+fn read_learned(fp: &Value, who: &str) {
+    match osd::read(&fp.to_string(), osd::Kind::Fingerprint) {
+        Ok(_) => {}
+        Err(e) if e.kind == osd::FaultKind::Missing && e.pointer == "/device" => {}
+        Err(e) => panic!("{who}: {e}"),
+    }
+}
+
 #[test]
 fn the_bench_of_the_21st_of_november_2026_learns_one_fingerprint_per_device_with_the_words_of_its_ports() {
     use osc_bridge::synthub::learn::{learn, units, Heard};
@@ -702,7 +712,7 @@ fn the_bench_of_the_21st_of_november_2026_learns_one_fingerprint_per_device_with
             .map(|r| Heard { port: r.port.clone(), at: std::time::Duration::from_millis(r.ms), msg: r.bytes.clone() })
             .collect();
         let l = learn(unit, &mut Played(heard), std::time::Duration::from_millis(5000), "2026-11-21");
-        osd::read(&l.fingerprint.to_string(), osd::Kind::Fingerprint).unwrap_or_else(|e| panic!("{client}: {e}"));
+        read_learned(&l.fingerprint, &client);
         assert_eq!(l.fingerprint["ports"]["inputs"], want["inputs"], "{client}");
         assert_eq!(l.fingerprint["ports"]["outputs"], want["outputs"], "{client}");
     }
@@ -722,7 +732,7 @@ fn unit_of(inputs: &[&str], outputs: &[&str], usb: Option<(u16, u16)>) -> osc_br
 
 fn learned_ports(unit: &osc_bridge::synthub::learn::Unit) -> Value {
     let l = osc_bridge::synthub::learn::learn(unit, &mut Played(vec![]), std::time::Duration::from_millis(1000), "2026-11-21");
-    osd::read(&l.fingerprint.to_string(), osd::Kind::Fingerprint).unwrap();
+    read_learned(&l.fingerprint, "learned");
     l.fingerprint["ports"].clone()
 }
 

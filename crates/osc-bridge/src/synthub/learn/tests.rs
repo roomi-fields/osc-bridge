@@ -43,9 +43,15 @@ fn learn_on(heard: Vec<Heard>, usb: Option<(u16, u16)>) -> (Learned, Script) {
 }
 
 /// The fingerprint read back by `osd` as a 0.6 fingerprint: its schema's own check.
+/// A learned fingerprint names no device or program yet (vendor, model and firmware come at
+/// sharing), so the reader's only refusal allowed is that missing subject, at `/device`.
 fn valid_fingerprint(fp: &serde_json::Value) {
     let text = fp.to_string();
-    osd::read(&text, osd::Kind::Fingerprint).unwrap_or_else(|e| panic!("{e}\n{text}"));
+    match osd::read(&text, osd::Kind::Fingerprint) {
+        Ok(_) => {}
+        Err(e) if e.kind == osd::FaultKind::Missing && e.pointer == "/device" => {}
+        Err(e) => panic!("{e}\n{text}"),
+    }
 }
 
 fn synth_heard() -> Vec<Heard> {
