@@ -59,4 +59,5 @@ mod export_command;
 mod export_documents;
 mod export_formats;
 mod install_export;
+mod tier_order;
 mod ws_transport;

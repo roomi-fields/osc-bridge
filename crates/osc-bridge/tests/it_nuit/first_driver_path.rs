@@ -96,8 +96,9 @@ fn an_agent_goes_from_a_device_with_no_driver_to_a_first_driver_on_a_fake_midi_d
     let controls = fp["controls"].as_array().unwrap_or_else(|| panic!("no controls heard: {fp}"));
     let cc = controls.iter().find(|c| c["cc"] == 74).unwrap_or_else(|| panic!("CC 74 not heard: {controls:?}"));
     let empty = tempfile::tempdir().unwrap();
-    let report = osc_bridge::mcp::learn_report(&learned, &osc_bridge::mcp::DeviceIndex::build(empty.path()), Duration::from_millis(1500),
-        &osc_bridge::mcp::ServiceMatches::NotLinked);
+    let order = osc_bridge::synthub::catalogue::tier_rank;
+    let report = osc_bridge::mcp::learn_report(&learned, &osc_bridge::mcp::DeviceIndex::build(empty.path(), order), Duration::from_millis(1500),
+        &osc_bridge::mcp::ServiceMatches::NotLinked, order);
     let step = report["structuredContent"]["devices"][0]["next_step"].as_str().unwrap_or_else(|| panic!("{report}"));
     assert!(step.contains("report_mapping"), "{step}");
 
@@ -121,6 +122,7 @@ fn an_agent_goes_from_a_device_with_no_driver_to_a_first_driver_on_a_fake_midi_d
         default_target: "127.0.0.1:9".parse().unwrap(),
         online: true,
         private: vec![],
+        tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
     let call = |id: u64, tool: &str, args: &Value| json!({ "jsonrpc": "2.0", "id": id, "method": "tools/call",
         "params": { "name": tool, "arguments": args } });

@@ -7,10 +7,21 @@ use crate::common::{device05, files, temp};
 use osc_bridge::capture::Capture;
 use osc_bridge::detect::{Learned, Unit};
 use osc_bridge::recognition::{Candidate, Identity};
-use osc_bridge::mcp::{detect_capture, learn_report, match_port, DeviceIndex, ServiceMatches};
+use osc_bridge::mcp::{learn_report, DeviceIndex, ServiceMatches};
+use osc_bridge::synthub::catalogue::tier_rank;
 use serde_json::{json, Value};
 use std::path::Path;
 use std::time::Duration;
+
+/// `match_port` with the catalogue's order of tiers, the order of every caller of the bridge.
+fn match_port(cat: &[Candidate], port: &str, usb: Option<(u16, u16)>, replies: &[Vec<u8>]) -> Vec<Value> {
+    osc_bridge::mcp::match_port(cat, port, usb, replies, tier_rank)
+}
+
+/// `detect_capture` with the catalogue's order of tiers.
+fn detect_capture(dir: &Path, capture: &Capture) -> Result<Vec<Value>, String> {
+    osc_bridge::mcp::detect_capture(dir, capture, tier_rank)
+}
 
 const POSSIBLE: &str = "possible, to confirm";
 
@@ -81,7 +92,7 @@ fn the_identity_reply_the_card_recognises_is_a_strong_proof() {
     let cat = vec![driver("arturia/minilab3", "MiniLab 3", "Arturia", vec![0x00, 0x20, 0x6B], None)];
     let reply = Identity { manufacturer: vec![0x00, 0x20, 0x6B], family: 2, model: 4, version: [1, 2, 3, 4] }.reply();
     // The card names the reply it recognises through the fixture driver of the catalogue.
-    let index = DeviceIndex::build(&Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/devices"));
+    let index = DeviceIndex::build(&Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/devices"), osc_bridge::synthub::catalogue::tier_rank);
     assert!(index.find("acme/box.vendor.fw-2").is_some());
     let acme = Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] }.reply();
     let fixtures = osc_bridge::mcp::hardware_candidates(&index);
@@ -253,8 +264,9 @@ fn learned(port: &str) -> Learned {
 }
 
 fn learn(root: &Path, port: &str, usb: Option<(u16, u16)>) -> Value {
-    let index = DeviceIndex::build(root);
-    learn_report(&[(unit(port, usb), learned(port))], &index, Duration::from_millis(5000), &ServiceMatches::NotLinked)
+    let index = DeviceIndex::build(root, osc_bridge::synthub::catalogue::tier_rank);
+    learn_report(&[(unit(port, usb), learned(port))], &index, Duration::from_millis(5000), &ServiceMatches::NotLinked,
+                 osc_bridge::synthub::catalogue::tier_rank)
 }
 
 #[test]

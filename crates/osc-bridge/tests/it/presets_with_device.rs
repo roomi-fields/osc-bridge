@@ -128,6 +128,7 @@ fn call(root: &tempfile::TempDir, tool: &str, args: Value) -> Value {
         default_target: "127.0.0.1:9".parse().unwrap(),
         online: false,
         private: vec![],
+        tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
     let input = format!("{}\n", crate::common::tool_call(1, tool, args));
     let mut out = Vec::new();

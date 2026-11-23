@@ -154,6 +154,7 @@ fn call(root: &tempfile::TempDir, target: SocketAddr, tool: &str, args: Value) -
         default_target: target,
         online: false,
         private: vec![],
+        tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
     let input = format!("{}\n", crate::common::tool_call(1, tool, args));
     let mut out = Vec::new();

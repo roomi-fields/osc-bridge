@@ -4,8 +4,13 @@
 
 use osc_bridge::capture::{Capture, FORMAT_VERSION};
 use osc_bridge::recognition::Probe;
-use osc_bridge::mcp::{detect_capture_held, hex_bytes};
+use osc_bridge::mcp::hex_bytes;
 use serde_json::{json, Value};
+
+/// `detect_capture_held` with the catalogue's order of tiers, the order of every caller of the bridge.
+fn detect_capture_held(dir: &std::path::Path, capture: &Capture, probes: &[Probe], consent: &[String]) -> Result<Vec<Value>, String> {
+    osc_bridge::mcp::detect_capture_held(dir, capture, probes, consent, osc_bridge::synthub::catalogue::tier_rank)
+}
 
 const MYSTERY: &str = "Mystery Box:Mystery Box 20:0";
 const MINILAB: &str = "Minilab3:Minilab3 MIDI 40:0";
@@ -85,6 +90,7 @@ fn detect_hardware_publishes_the_consent_argument_and_the_safe_list_in_its_descr
         default_target: "127.0.0.1:9000".parse().unwrap(),
         online: false,
         private: vec![],
+        tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
     let input = format!("{}\n", json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" }));
     let mut out = Vec::new();
@@ -151,6 +157,7 @@ fn detect_hardware_says_that_with_no_usb_id_read_only_the_universal_request_leav
         default_target: "127.0.0.1:9000".parse().unwrap(),
         online: false,
         private: vec![],
+        tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
     let input = format!("{}\n", json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" }));
     let mut out = Vec::new();

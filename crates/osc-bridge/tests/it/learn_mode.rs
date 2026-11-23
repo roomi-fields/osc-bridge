@@ -11,6 +11,7 @@ fn ask(request: Value) -> String {
         default_target: "127.0.0.1:9000".parse().unwrap(),
         online: false,
         private: vec![],
+        tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
     let input = format!("{request}\n");
     let mut out = Vec::new();

@@ -30,6 +30,7 @@ fn install(private: &[&str], args: Value) -> (FakeSynthHub, Value, tempfile::Tem
         default_target: "127.0.0.1:9".parse().unwrap(),
         online: true,
         private: private.iter().map(|p| p.to_string()).collect(),
+        tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
     let input = format!("{}\n", tool_call(1, "install_export", args));
     let mut out = Vec::new();

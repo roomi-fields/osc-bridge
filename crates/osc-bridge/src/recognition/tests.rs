@@ -2,6 +2,54 @@ use super::*;
 
 mod consent;
 
+/// The order of two cards of one device, as a caller would give it: the tier "a" before "b".
+fn a_before_b(tier: &str) -> u8 { if tier == "a" { 0 } else { 1 } }
+/// The reverse: "b" before "a".
+fn b_before_a(tier: &str) -> u8 { if tier == "b" { 0 } else { 1 } }
+/// An order that puts nothing before anything: ties fall to the identifier.
+fn neutral(_: &str) -> u8 { 0 }
+
+/// `rank` as the tests read it: the order is neutral unless a test gives one.
+fn rank(port: &str, usb: Option<(u16, u16)>, replies: &[Vec<u8>], cat: &[Candidate], limit: usize) -> Vec<Ranked> {
+    super::rank(port, usb, replies, cat, limit, neutral)
+}
+
+fn tiered(slug: &str, tier: &str) -> Candidate {
+    Candidate { tier: tier.into(), ..cand(slug, "Pad", "Acme", &[]) }
+}
+
+fn slugs(best: &[Ranked], cat: &[Candidate]) -> Vec<String> {
+    best.iter().map(|r| cat[r.index].slug.clone()).collect()
+}
+
+#[test]
+fn candidates_of_equal_score_follow_the_order_the_caller_gives() {
+    let cat = vec![tiered("y", "b"), tiered("z", "a")];
+    let forward = super::rank("Pad MIDI 1", None, &[], &cat, 3, a_before_b);
+    assert_eq!(slugs(&forward, &cat), ["z", "y"], "the caller's first tier first, though its id sorts last");
+    let reversed = super::rank("Pad MIDI 1", None, &[], &cat, 3, b_before_a);
+    assert_eq!(slugs(&reversed, &cat), ["y", "z"], "the inverted order inverts the candidates");
+}
+
+#[test]
+fn candidates_of_equal_score_and_rank_fall_to_the_identifier() {
+    let cat = vec![tiered("y", "b"), tiered("z", "a")];
+    let best = super::rank("Pad MIDI 1", None, &[], &cat, 3, neutral);
+    assert_eq!(slugs(&best, &cat), ["y", "z"]);
+}
+
+#[test]
+fn the_driver_the_others_share_midi_with_stays_first_whatever_the_order() {
+    let id = r#"{"reply":[240,126,{"device_id":true},6,2,65,89,1,0,0]}"#;
+    let base = Candidate { tier: "b".into(), ..with_id("zbase", None, id) };
+    let fork = Candidate { tier: "a".into(), midi_of: Some("acme/zbase".into()), ..with_id("afork", None, id) };
+    let cat = vec![fork, base];
+    for order in [a_before_b as TierOrder, b_before_a] {
+        let best = super::rank("USB MIDI Interface", None, &[ROLAND.to_vec()], &cat, 3, order);
+        assert_eq!(slugs(&best, &cat), ["zbase", "afork"]);
+    }
+}
+
 fn cand(slug: &str, name: &str, vendor: &str, mfr: &[u8]) -> Candidate {
     Candidate { id: format!("acme/{slug}"), slug: slug.into(), name: name.into(), vendor: vendor.into(),
                 file: format!("devices/{slug}.json"), tier: "pencilresearch".into(),

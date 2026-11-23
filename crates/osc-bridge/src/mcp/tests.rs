@@ -8,8 +8,16 @@ fn empty_index() -> DeviceIndex {
 /// The drivers the tests read: a few of the catalogue's, and synthetic ones.
 const FIXTURES: &str = "tests/fixtures/devices";
 
+/// An order that puts no card before another: these tests do not depend on which card wins.
+fn neutral(_: &str) -> u8 { 0 }
+
+/// An order that puts the tier whose name starts with the later letter first: the fixture
+/// folder's two cards of `acme/box` (`contributed`, `vendor-doc`) are then told apart without
+/// the test knowing the catalogue's tiers.
+fn later_letter_first(tier: &str) -> u8 { 255 - tier.bytes().next().unwrap_or(0) }
+
 fn fixtures() -> DeviceIndex {
-    DeviceIndex::build(Path::new(FIXTURES))
+    DeviceIndex::build(Path::new(FIXTURES), neutral)
 }
 
 fn test_opts() -> McpOptions {
@@ -18,6 +26,7 @@ fn test_opts() -> McpOptions {
         default_target: "127.0.0.1:7777".parse().unwrap(),
         online: false,
         private: Vec::new(),
+        tier_order: neutral,
     }
 }
 
@@ -218,24 +227,6 @@ fn list_routes_exposes_expects_on_surface_entries() {
 }
 
 #[test]
-fn shared_slug_resolves_to_the_most_trustworthy_variant() {
-    let idx = fixtures();
-    let mut by_slug: HashMap<&str, Vec<&DeviceIndexEntry>> = HashMap::new();
-    for e in &idx.entries { by_slug.entry(e.slug.as_str()).or_default().push(e); }
-    let mut checked = 0;
-    for (slug, variants) in by_slug.iter().filter(|(s, v)| !s.is_empty() && v.len() > 1) {
-        let best = variants.iter().map(|e| tier_rank(&e.tier)).min().unwrap();
-        let chosen = idx.find_path(slug).unwrap();
-        let chosen_tier = &variants.iter().find(|e| e.path == chosen).unwrap().tier;
-        assert_eq!(tier_rank(chosen_tier), best, "{slug} resolved to a weaker variant");
-        checked += 1;
-    }
-    assert!(checked > 0, "the test drivers hold variants of one device");
-    assert_eq!(idx.find_path("box"), Some(Path::new(FIXTURES).join("acme/box.vendor.fw-2.json").as_path()),
-        "the vendor's documentation wins over an unreviewed contribution");
-}
-
-#[test]
 fn tool_failure_is_a_result_and_unknown_tool_a_protocol_error() {
     let idx = fixtures();
     let opts = test_opts();
@@ -265,12 +256,12 @@ fn port_names_and_identities_resolve_to_their_driver() {
     let cat = hardware_candidates(&fixtures());
     for (port, want) in [("minilogue MIDI 1", "korg/minilogue"), ("Bass Station II", "novation/bass_station_ii"),
                          ("Electra Controller Electra Port 1", "electra-one/electra-one")] {
-        let best = match_port(&cat, port, None, &[]);
+        let best = match_port(&cat, port, None, &[], neutral);
         assert_eq!(best.first().map(|c| c["id"].clone()), Some(json!(want)), "{port}: {best:?}");
     }
     // An Identity Reply from the maker puts its driver first.
     let acme = crate::recognition::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
-    let best = match_port(&cat, "Box", None, &[acme.reply()]);
+    let best = match_port(&cat, "Box", None, &[acme.reply()], neutral);
     assert_eq!(best[0]["slug"], "box", "{best:?}");
     // Its identity block names the firmware, which picks the variant for it.
     assert_eq!(best[0]["id"], "acme/box.vendor.fw-2", "{best:?}");
@@ -278,10 +269,10 @@ fn port_names_and_identities_resolve_to_their_driver() {
     assert_eq!(best[0]["firmware"].as_str(), Some("2.0.0.0"));
     assert!(best[0]["proofs"].as_array().unwrap().contains(&json!({ "nature": "strong", "kind": "identity reply" })), "{best:?}");
     assert!(best[0].get("recognised_by").is_none(), "{best:?}");
-    let nameless = match_port(&cat, "USB MIDI Interface", None, &[acme.reply()]);
+    let nameless = match_port(&cat, "USB MIDI Interface", None, &[acme.reply()], neutral);
     assert_eq!(nameless[0]["id"],"acme/box.vendor.fw-2", "behind a port named after nothing: {nameless:?}");
     let other_fw = crate::recognition::Identity { version: [3, 0, 0, 0], ..acme.clone() };
-    assert!(match_port(&cat, "Box", None, &[other_fw.reply()])[0]["score"].as_u64() < best[0]["score"].as_u64());
+    assert!(match_port(&cat, "Box", None, &[other_fw.reply()], neutral)[0]["score"].as_u64() < best[0]["score"].as_u64());
     assert!(best.iter().all(|c| c.get("file").is_none()), "no path of the machine that matched them");
 }
 
@@ -329,7 +320,7 @@ fn fake_server(root: &Path) -> (String, std::sync::Arc<std::sync::Mutex<Vec<Stri
     let calls = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
     let (root, seen) = (root.to_path_buf(), calls.clone());
     std::thread::spawn(move || {
-        let index = DeviceIndex::build(&root);
+        let index = DeviceIndex::build(&root, later_letter_first);
         let mut issued: Vec<String> = Vec::new();
         let challenge = json!({ "challenge": "fake", "algorithm": "sha256", "bits": 4, "deliver": "/v1/access/deliver" }).to_string();
         for mut req in server.incoming_requests() {
@@ -364,7 +355,7 @@ fn fake_server(root: &Path) -> (String, std::sync::Arc<std::sync::Mutex<Vec<Stri
                     let ports: Vec<Value> = asked["ports"].as_array().unwrap().iter().map(|p| {
                         let replies: Vec<Vec<u8>> = p["replies_hex"].as_array().into_iter().flatten()
                             .map(|h| crate::librarian::parse_hex(h.as_str().unwrap()).unwrap()).collect();
-                        json!({ "port": p["port"], "candidates": match_port(&cat, p["port"].as_str().unwrap(), None, &replies) })
+                        json!({ "port": p["port"], "candidates": match_port(&cat, p["port"].as_str().unwrap(), None, &replies, neutral) })
                     }).collect();
                     (200, json!({ "ports": ports }).to_string())
                 }
@@ -423,11 +414,11 @@ fn a_local_copy_fetches_the_drivers_it_needs_and_forwards_reports() {
     assert_eq!(crate::synthub::catalogue::fetch(&link.client, "box", &cache).unwrap(), cache.join("acme/box.vendor.fw-2.json"));
     assert!(crate::synthub::catalogue::fetch(&link.client, "acme/none", &cache).unwrap_err().to_string().contains("no driver acme/none"));
     assert!(link.client.fetch_driver("../secret", &cache).is_err());
-    assert_eq!(DeviceIndex::build(&cache).entries.len(), 3, "only what was asked for is on this machine");
+    assert_eq!(DeviceIndex::build(&cache, neutral).entries.len(), 3, "only what was asked for is on this machine");
 
     // The server lists and matches the drivers; what is cached here is not the catalogue.
     let opts = McpOptions { online: true, devices_dir: None, ..test_opts() };
-    let index = DeviceIndex::build(&cache);
+    let index = DeviceIndex::build(&cache, neutral);
     let listed = call_tool("list_devices", &json!({"query": "minilogue"}), &opts, &index, Some(&link)).unwrap();
     assert_eq!(listed["structuredContent"]["devices"][0]["device"], "korg/minilogue", "{listed}");
     let matched = link.client.detect(&[json!({"port": "minilogue MIDI 1"})]).unwrap();
@@ -435,7 +426,7 @@ fn a_local_copy_fetches_the_drivers_it_needs_and_forwards_reports() {
     let acme = crate::recognition::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
     let matched = link.client.detect(&[json!({"port": "USB MIDI", "replies_hex": [hex_bytes(&acme.reply())]})]).unwrap();
     assert_eq!(matched[0]["candidates"][0]["firmware"], "2.0.0.0", "{matched:?}");
-    assert_eq!(link.client.probes().unwrap(), detect_probes(&DeviceIndex::build(Path::new(FIXTURES))));
+    assert_eq!(link.client.probes().unwrap(), detect_probes(&DeviceIndex::build(Path::new(FIXTURES), neutral)));
 
     // Reports go out under the account kept on this machine.
     let user = link.user(false).unwrap();
@@ -788,11 +779,11 @@ fn a_port_with_the_usb_ids_of_a_driver_is_recognised_by_usb() {
     let cat = vec![crate::recognition::Candidate { id: "acme/box".into(), slug: "box".into(), name: "Box".into(),
         vendor: "Acme".into(), file: "devices/box.json".into(), tier: "pencilresearch".into(),
         manufacturer_id: vec![], identity: Some(identity), firmware: None, midi_of: None }];
-    let best = match_port(&cat, "USB MIDI Interface", Some((4660, 22136)), &[]);
+    let best = match_port(&cat, "USB MIDI Interface", Some((4660, 22136)), &[], neutral);
     assert_eq!(best[0]["id"], "acme/box", "{best:?}");
     assert!(best[0]["proofs"].as_array().unwrap().contains(&json!({ "nature": "strong", "kind": "usb id" })), "{best:?}");
-    assert!(match_port(&cat, "USB MIDI Interface", None, &[]).is_empty());
-    assert!(match_port(&cat, "USB MIDI Interface", Some((1, 2)), &[]).is_empty());
+    assert!(match_port(&cat, "USB MIDI Interface", None, &[], neutral).is_empty());
+    assert!(match_port(&cat, "USB MIDI Interface", Some((1, 2)), &[], neutral).is_empty());
 }
 
 fn usb_lines(text: &str) -> Vec<&str> {
@@ -898,7 +889,7 @@ fn probed(name: &str, usb: Option<(u16, u16)>) -> crate::detect::Probed {
 }
 
 fn report_devices(server: &crate::synthub::online::Online, found: Vec<crate::detect::Probed>) -> Vec<Value> {
-    let r = detection_report(&fixtures(), Some(server), true, true, found, Vec::new(), &[]).unwrap();
+    let r = detection_report(&fixtures(), Some(server), true, true, found, Vec::new(), &[], neutral).unwrap();
     r["structuredContent"]["devices"].as_array().unwrap().clone()
 }
 
@@ -1018,7 +1009,7 @@ fn the_detection_reports_a_catalogue_candidate_the_service_gives_as_being_confir
 
 #[test]
 fn the_detection_without_a_service_reports_no_device_being_confirmed() {
-    let r = detection_report(&fixtures(), None, true, true, vec![probed("BCR32", Some((0x1397, 0x12cf)))], Vec::new(), &[]).unwrap();
+    let r = detection_report(&fixtures(), None, true, true, vec![probed("BCR32", Some((0x1397, 0x12cf)))], Vec::new(), &[], neutral).unwrap();
     assert!(r["structuredContent"]["devices"][0].get("unlisted").is_none(), "{r}");
 }
 
@@ -1034,8 +1025,8 @@ fn a_device_being_confirmed_still_has_every_maker_request_held_back_without_cons
                       crate::recognition::Probe { request: vec![0xF0, 0x12, 0xF7], ports: vec![], usb: vec![], match_ports: vec![] }];
     let plan = held_plan(&capture, &probes, &[]).unwrap();
     let (client, _bodies, _dir) = detect_service(bcr_unlisted);
-    let with = detection_report(&fixtures(), Some(&client), true, true, crate::detect::replay(&capture), Vec::new(), &plan).unwrap();
-    let without = detection_report(&fixtures(), None, true, true, crate::detect::replay(&capture), Vec::new(), &plan).unwrap();
+    let with = detection_report(&fixtures(), Some(&client), true, true, crate::detect::replay(&capture), Vec::new(), &plan, neutral).unwrap();
+    let without = detection_report(&fixtures(), None, true, true, crate::detect::replay(&capture), Vec::new(), &plan, neutral).unwrap();
     let held = &with["structuredContent"]["devices"][0]["held_back"];
     assert_eq!(held, &json!([hex_bytes(&[0xF0, 0x11, 0xF7]), hex_bytes(&[0xF0, 0x12, 0xF7])]), "{with}");
     assert_eq!(held, &without["structuredContent"]["devices"][0]["held_back"]);
@@ -1108,7 +1099,7 @@ fn the_command_prints_a_port_with_no_candidate_and_nothing_named_as_unknown_and_
 
 #[test]
 fn a_name_alone_never_proposes_a_run_command_in_the_detection_of_a_port() {
-    let r = detection_report(&fixtures(), None, true, true, vec![probed("minilogue MIDI 1", None)], Vec::new(), &[]).unwrap();
+    let r = detection_report(&fixtures(), None, true, true, vec![probed("minilogue MIDI 1", None)], Vec::new(), &[], neutral).unwrap();
     let d = &r["structuredContent"]["devices"][0];
     assert_eq!(d["candidates"][0]["device"], "korg/minilogue", "{r}");
     assert_eq!(d["candidates"][0]["state_label"], "possible, to confirm", "{r}");
@@ -1120,7 +1111,7 @@ fn an_identity_reply_the_card_recognises_proposes_the_run_command_in_the_detecti
     let acme = crate::recognition::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
     let mut port = probed("Box", None);
     port.replies = vec![acme.reply()];
-    let r = detection_report(&fixtures(), None, true, true, vec![port], Vec::new(), &[]).unwrap();
+    let r = detection_report(&fixtures(), None, true, true, vec![port], Vec::new(), &[], neutral).unwrap();
     let d = &r["structuredContent"]["devices"][0];
     let file = d["candidates"][0]["file"].as_str().unwrap();
     assert!(file.contains("box.vendor.fw-2"), "{r}");
@@ -1144,7 +1135,7 @@ fn the_command_prints_one_device_with_its_other_ports_as_ports_of_it() {
         "format_version": FORMAT_VERSION, "outputs": ports, "inputs": ports, "cards": "", "usbids": [], "clients": "",
         "requests": [], "received": [{ "port": ports[1], "bytes": reply, "ms": 5 }],
     }).to_string()).unwrap();
-    let devices = detect_capture(Path::new(FIXTURES), &capture).unwrap();
+    let devices = detect_capture(Path::new(FIXTURES), &capture, neutral).unwrap();
     assert_eq!(devices.len(), 1, "{devices:?}");
     let text = format_detection(&devices, true);
     assert!(text.contains("port 2 of Box"), "{text}");
@@ -1217,7 +1208,7 @@ fn the_service_candidates_of_the_fluid_synth_capture_are_dropped_and_the_port_is
             { "id": "electra-community/ay3_synth", "slug": "ay3_synth", "name": "AY3 Synth", "vendor": "Electra",
               "source_tier": "electra-preset", "score": 10 }] })
     } else { json!({ "candidates": [] }) });
-    let r = detection_report(&fixtures(), Some(&client), true, false, crate::detect::replay(&capture), Vec::new(), &[]).unwrap();
+    let r = detection_report(&fixtures(), Some(&client), true, false, crate::detect::replay(&capture), Vec::new(), &[], neutral).unwrap();
     let devices = r["structuredContent"]["devices"].as_array().unwrap();
     let fluid = devices.iter().find(|d| d["port"].as_str().unwrap().starts_with("FLUID Synth")).unwrap();
     assert_eq!(fluid["client_kind"], "user", "{fluid}");
@@ -1241,7 +1232,7 @@ fn the_service_answers_for_the_minilab_3_and_the_bcr_32_of_the_bench_capture_are
                 "confirmations": 1, "disputed": false }] })
         } else { json!({ "candidates": [] }) }
     });
-    let r = detection_report(&fixtures(), Some(&client), true, false, crate::detect::replay(&capture), Vec::new(), &[]).unwrap();
+    let r = detection_report(&fixtures(), Some(&client), true, false, crate::detect::replay(&capture), Vec::new(), &[], neutral).unwrap();
     let devices = r["structuredContent"]["devices"].as_array().unwrap();
     let of = |name: &str| devices.iter().find(|d| d["port"].as_str().unwrap().starts_with(name)).unwrap();
     assert_eq!(of("Minilab3")["client_kind"], "kernel");

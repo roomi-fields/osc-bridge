@@ -367,7 +367,7 @@ fn a_scripted_command_builds_the_same_frame_in_0_5_as_in_0_4() {
 #[test]
 fn what_agents_are_served_for_a_driver_is_the_same_in_0_5_as_in_0_4() {
     // The catalogue index agents are served lists each driver with what the 0.4 file said.
-    let index = osc_bridge::mcp::DeviceIndex::build(Path::new(FIXTURES));
+    let index = osc_bridge::mcp::DeviceIndex::build(Path::new(FIXTURES), osc_bridge::synthub::catalogue::tier_rank);
     let entry = |id: &str| index.entries.iter().find(|e| e.id == id).unwrap_or_else(|| panic!("{id} is listed"));
     let synth = entry("examples/test_synth");
     assert_eq!((synth.slug.as_str(), synth.name.as_str(), synth.vendor.as_str(), synth.tier.as_str()),

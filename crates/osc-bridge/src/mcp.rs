@@ -44,6 +44,8 @@ pub const SERVER_NAME: &str = "osc-bridge";
 pub const SERVER_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub struct McpOptions {
+    /// Which of two cards of one device wins: the caller's order (`recognition::TierOrder`).
+    pub tier_order: crate::recognition::TierOrder,
     /// A folder of drivers the user keeps, used as it is. None: the drivers
     /// come from the SynthHub server, one at a time, kept in the cache
     /// (`online::cache_dir`), which is all there is offline.
@@ -145,8 +147,8 @@ impl DeviceIndex {
     /// Walk `dir` once, parsing each JSON just enough to capture the
     /// catalogue metadata. When several files share an `osc_prefix` (the
     /// per-variant convention), the most trustworthy source wins the slug
-    /// lookup (`tier_rank`), ties broken by path so the choice is stable.
-    pub fn build(dir: &Path) -> Self {
+    /// lookup (the caller's `order`, lower first), ties broken by path so the choice is stable.
+    pub fn build(dir: &Path, order: crate::recognition::TierOrder) -> Self {
         let mut entries: Vec<DeviceIndexEntry> = Vec::new();
         let mut by_slug: HashMap<String, usize> = HashMap::new();
         let _ = walk_json(dir, &mut |path| {
@@ -168,7 +170,7 @@ impl DeviceIndex {
                     None => true,
                     Some(&cur) => {
                         let c = &entries[cur];
-                        (tier_rank(&tier), path) < (tier_rank(&c.tier), c.path.as_path())
+                        (order(&tier), path) < (order(&c.tier), c.path.as_path())
                     }
                 };
                 if better { by_slug.insert(slug.clone(), idx); }
@@ -204,28 +206,12 @@ impl DeviceIndex {
     }
 }
 
-/// Lower is more trustworthy: tested on the device, then the vendor's own
-/// documentation, then curated OSC surfaces, then community sources, then
-/// what agents contributed (checked automatically, not reviewed).
-pub fn tier_rank(tier: &str) -> u8 {
-    match tier {
-        "hardware-verified" | "software-verified" => 0,
-        "vendor-doc" | "vendor" => 1,
-        "vendor-osc-api" | "third-party-osc" => 2,
-        "electra-preset" => 3,
-        "pencilresearch" | "knobkraft" => 4,
-        "agent-contributed" => 5,
-        "test-fixture" => 6,
-        _ => 7,
-    }
-}
-
 /// Build the catalogue index once — every device tool reads from it
 /// instead of re-walking the tree.
 fn build_index(devices_dir: &Path, opts: &McpOptions) -> DeviceIndex {
     eprintln!("MCP server starting (devices_dir={}, default_target={})",
         devices_dir.display(), opts.default_target);
-    let index = DeviceIndex::build(devices_dir);
+    let index = DeviceIndex::build(devices_dir, opts.tier_order);
     eprintln!("indexed {} device file(s)", index.entries.len());
     index
 }
@@ -315,7 +301,7 @@ pub fn serve_with_midi(opts: McpOptions, base: &str, cache: Option<PathBuf>, inp
             for name in drivers_wanted(&req) {
                 if crate::synthub::online::Settings::covers(&opts.private, name, name) || !fetched.insert(name.to_string()) { continue; }
                 match crate::synthub::catalogue::fetch(&link.client, name, cache) {
-                    Ok(_) => if let Ok(mut g) = index.write() { *g = Arc::new(DeviceIndex::build(cache)) },
+                    Ok(_) => if let Ok(mut g) = index.write() { *g = Arc::new(DeviceIndex::build(cache, opts.tier_order)) },
                     Err(e) => eprintln!("{name}: {e:#}"),
                 }
             }
@@ -1444,13 +1430,13 @@ fn call_tool_with(name: &str, args: &Value, opts: &McpOptions, index: &DeviceInd
                     Some(Share { port, vendor, model, firmware, command: false, client: link.map(|l| &l.client), private: &opts.private })
                 }
             };
-            learn_hardware(index, server.map(|l| &l.client), crate::detect::learn_listen(args.get("listen_ms").and_then(Value::as_u64))?, share)
+            learn_hardware(index, server.map(|l| &l.client), crate::detect::learn_listen(args.get("listen_ms").and_then(Value::as_u64))?, share, opts.tier_order)
         }
         "detect_hardware" => {
             let probe = args.get("probe").and_then(Value::as_bool).unwrap_or(true);
             let wait = args.get("timeout_ms").and_then(Value::as_u64).unwrap_or(800).clamp(100, 5000);
             let consent = consent_arg(args)?;
-            detect_hardware(index, server.map(|l| &l.client), opts.devices_dir.is_some(), probe, std::time::Duration::from_millis(wait), None, &consent)
+            detect_hardware(index, server.map(|l| &l.client), opts.devices_dir.is_some(), probe, std::time::Duration::from_millis(wait), None, &consent, opts.tier_order)
         }
         other => Err(format!("unknown tool: {other}")),
     }
@@ -1647,8 +1633,8 @@ fn has_strong(c: &Value) -> bool {
 /// firmware read from the reply and the drivers matching it equally. The hosted server answers
 /// `POST /v1/detect` with them.
 pub fn match_port(catalogue: &[crate::recognition::Candidate], port: &str, usb: Option<(u16, u16)>,
-                  replies: &[Vec<u8>]) -> Vec<Value> {
-    crate::recognition::rank(port, usb, replies, catalogue, 3).iter().map(|r| {
+                  replies: &[Vec<u8>], order: crate::recognition::TierOrder) -> Vec<Value> {
+    crate::recognition::rank(port, usb, replies, catalogue, 3, order).iter().map(|r| {
         let c = &catalogue[r.index];
         let mut out = json!({ "id": c.id, "slug": c.slug, "name": c.name, "vendor": c.vendor, "source_tier": c.tier, "score": r.score });
         out["proofs"] = proofs_json(&r.proofs);
@@ -1668,8 +1654,9 @@ pub fn match_port(catalogue: &[crate::recognition::Candidate], port: &str, usb: 
 /// of `index`, or, given `server`, those of the SynthHub catalogue it
 /// matches the ports against. The command to run names the driver by its
 /// file when `by_file` (a folder the user keeps), else by its id.
+#[allow(clippy::too_many_arguments)] // the caller's order of the cards is the eighth value
 fn detect_hardware(index: &DeviceIndex, server: Option<&crate::synthub::online::Online>, by_file: bool, probe: bool,
-                   wait: std::time::Duration, write: Option<&Path>, consent: &[String]) -> Result<Value, String> {
+                   wait: std::time::Duration, write: Option<&Path>, consent: &[String], order: crate::recognition::TierOrder) -> Result<Value, String> {
     let mut faults = Vec::new();
     let probes = match server {
         Some(server) if probe => server.probes().map_err(|e| format!("detect_hardware asks the SynthHub server which \
@@ -1681,7 +1668,7 @@ fn detect_hardware(index: &DeviceIndex, server: Option<&crate::synthub::online::
         capture.write(path).map_err(|e| e.to_string())?;
     }
     let plan = if probe { held_plan(&capture, &probes, consent)? } else { Vec::new() };
-    detection_report(index, server, by_file, probe, crate::detect::replay(&capture), faults, &plan)
+    detection_report(index, server, by_file, probe, crate::detect::replay(&capture), faults, &plan, order)
 }
 
 /// What each output port of `capture` received of `probes`, and what was held back.
@@ -1691,20 +1678,21 @@ fn held_plan(capture: &crate::capture::Capture, probes: &[crate::recognition::Pr
 }
 
 /// The devices a capture shows, matched against the drivers of `devices_dir`: the report of
-/// `detect_hardware`, with no device plugged in and nothing sent.
-pub fn detect_capture(devices_dir: &Path, capture: &crate::capture::Capture) -> Result<Vec<Value>, String> {
-    let index = DeviceIndex::build(devices_dir);
-    let report = detection_report(&index, None, true, false, crate::detect::replay(capture), Vec::new(), &[])?;
+/// `detect_hardware`, with no device plugged in and nothing sent. The caller's `order` ranks two
+/// cards of one device.
+pub fn detect_capture(devices_dir: &Path, capture: &crate::capture::Capture, order: crate::recognition::TierOrder) -> Result<Vec<Value>, String> {
+    let index = DeviceIndex::build(devices_dir, order);
+    let report = detection_report(&index, None, true, false, crate::detect::replay(capture), Vec::new(), &[], order)?;
     Ok(report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default())
 }
 
 /// `detect_capture` with the requests `probes` would go out as, given the `consent` of the person:
 /// each device lists the maker requests held back for its output port.
 pub fn detect_capture_held(devices_dir: &Path, capture: &crate::capture::Capture, probes: &[crate::recognition::Probe],
-                           consent: &[String]) -> Result<Vec<Value>, String> {
-    let index = DeviceIndex::build(devices_dir);
+                           consent: &[String], order: crate::recognition::TierOrder) -> Result<Vec<Value>, String> {
+    let index = DeviceIndex::build(devices_dir, order);
     let plan = held_plan(capture, probes, consent)?;
-    let report = detection_report(&index, None, true, true, crate::detect::replay(capture), Vec::new(), &plan)?;
+    let report = detection_report(&index, None, true, true, crate::detect::replay(capture), Vec::new(), &plan, order)?;
     Ok(report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default())
 }
 
@@ -1752,9 +1740,10 @@ fn software_cards_only(index: &DeviceIndex, candidates: Vec<Value>) -> Vec<Value
 }
 
 /// The report of `detect_hardware` over the devices `found`.
+#[allow(clippy::too_many_arguments)] // the caller's order of the cards is the eighth value
 fn detection_report(index: &DeviceIndex, server: Option<&crate::synthub::online::Online>, by_file: bool, probe: bool,
                     found: Vec<crate::detect::Probed>, faults: Vec<crate::device::DeviceFault>,
-                    plan: &[crate::recognition::PortSends]) -> Result<Value, String> {
+                    plan: &[crate::recognition::PortSends], order: crate::recognition::TierOrder) -> Result<Value, String> {
     let mut matched: Vec<Vec<Value>> = match server {
         Some(server) => {
             let ports: Vec<Value> = found.iter().map(|d| detect_port(d.label(),
@@ -1765,7 +1754,7 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::synthub::online:
         }
         None => {
             let catalogue = hardware_candidates(index);
-            found.iter().map(|d| match_port(&catalogue, d.label(), d.usb, &d.replies).into_iter().map(|mut c| { c["kind"] = json!("candidate"); c }).collect()).collect()
+            found.iter().map(|d| match_port(&catalogue, d.label(), d.usb, &d.replies, order).into_iter().map(|mut c| { c["kind"] = json!("candidate"); c }).collect()).collect()
         }
     };
     // One answer per device: the ports of a device are judged together, a candidate keeping the
@@ -1858,11 +1847,12 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::synthub::online:
 
 /// `detect_hardware` in learn mode: a fingerprint per device, and its measures beside it. The
 /// report's text tells the person how long it listens and to move the controls.
-fn learn_hardware(index: &DeviceIndex, server: Option<&crate::synthub::online::Online>, listen: std::time::Duration, share: Option<Share>) -> Result<Value, String> {
+fn learn_hardware(index: &DeviceIndex, server: Option<&crate::synthub::online::Online>, listen: std::time::Duration, share: Option<Share>,
+                  order: crate::recognition::TierOrder) -> Result<Value, String> {
     let learned = crate::detect::learn_all(listen).map_err(|e| format!("MIDI scan: {e}"))?;
     let sharing = share.map(|s| share_learned(&s, &learned)).transpose()?;
     let service = learn_service_matches(server, &learned);
-    let mut report = learn_report(&learned, index, listen, &service);
+    let mut report = learn_report(&learned, index, listen, &service, order);
     if let Some(said) = sharing {
         report["structuredContent"]["sharing"] = json!(said);
         let text = format!("{}\nSharing: {said}", report["content"][0]["text"].as_str().unwrap_or_default());
@@ -2047,7 +2037,7 @@ pub fn refusal_in_words(said: &str, command: bool) -> String {
 /// `next_step`; an unknown one carries a `next_step` worded by what was looked at. A port of the
 /// system is left out. Pure: no MIDI.
 pub fn learn_report(learned: &[(crate::detect::Unit, crate::detect::Learned)], catalogue: &DeviceIndex, listen: std::time::Duration,
-                    service: &ServiceMatches) -> Value {
+                    service: &ServiceMatches, order: crate::recognition::TierOrder) -> Value {
     let candidates = hardware_candidates(catalogue);
     let devices: Vec<Value> = learn_devices(learned).into_iter().enumerate().map(|(at, (d, l))| {
         let replies: Vec<Vec<u8>> = l.fingerprint["identity_reply"].as_str().map(|h| {
@@ -2056,7 +2046,7 @@ pub fn learn_report(learned: &[(crate::detect::Unit, crate::detect::Learned)], c
         // Only a strong proof names a driver; a name alone leaves the device unknown.
         let program = d.client_kind == crate::detect::ClientKind::User;
         let local = d.inputs.iter().chain(&d.outputs).filter(|_| !program)
-            .find_map(|p| crate::recognition::rank(p, d.usb, &replies, &candidates, 1).into_iter().find(|r| r.is_strong()))
+            .find_map(|p| crate::recognition::rank(p, d.usb, &replies, &candidates, 1, order).into_iter().find(|r| r.is_strong()))
             .map(|r| (&candidates[r.index], proofs_json(&r.proofs)));
         let named: Vec<Value> = match service {
             ServiceMatches::Answered(all) => all.get(at).cloned().unwrap_or_default(),
@@ -2337,7 +2327,7 @@ fn load_preset(args: &Value, link: &Link, open: crate::midi_port::Opener) -> Res
 /// With `share` (the port, then the vendor, model and firmware the person gives), that
 /// fingerprint is sent to SynthHub when linked and not private; naming the port is the person's
 /// agreement. A missing vendor, model or firmware is refused before anything is listened to.
-pub fn print_learning(listen_ms: Option<u64>, share: Option<(&str, [Option<&str>; 3])>) -> Result<()> {
+pub fn print_learning(listen_ms: Option<u64>, share: Option<(&str, [Option<&str>; 3])>, order: crate::recognition::TierOrder) -> Result<()> {
     let share = share.map(|(port, [vendor, model, firmware])| {
         share_fields(vendor, model, firmware, true).map(|(vendor, model, firmware)| (port, vendor, model, firmware))
     }).transpose().map_err(|e| anyhow::anyhow!(e))?;
@@ -2346,8 +2336,8 @@ pub fn print_learning(listen_ms: Option<u64>, share: Option<(&str, [Option<&str>
     let client = crate::synthub::online::linked().then(|| crate::synthub::online::Online::new(crate::synthub::online::SERVER));
     let private = crate::synthub::online::settings_file().and_then(|f| crate::synthub::online::Settings::load(Some(&f)).ok()).map(|s| s.private).unwrap_or_default();
     let share = share.map(|(port, vendor, model, firmware)| Share { port, vendor, model, firmware, command: true, client: client.as_ref(), private: &private });
-    let catalogue = DeviceIndex::build(&crate::synthub::online::cache_dir().unwrap_or_default());
-    let report = learn_hardware(&catalogue, client.as_ref(), listen, share).map_err(|e| anyhow::anyhow!(e))?;
+    let catalogue = DeviceIndex::build(&crate::synthub::online::cache_dir().unwrap_or_default(), order);
+    let report = learn_hardware(&catalogue, client.as_ref(), listen, share, order).map_err(|e| anyhow::anyhow!(e))?;
     if let Some(said) = report["structuredContent"]["sharing"].as_str() { println!("Sharing: {said}"); }
     let devices = report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default();
     if devices.is_empty() {
@@ -2371,18 +2361,19 @@ pub fn print_learning(listen_ms: Option<u64>, share: Option<(&str, [Option<&str>
 /// With `write`, the observation is also written to that file as a capture. With `read`, the
 /// capture of that file is replayed instead of scanning: no device, nothing sent; it refuses
 /// `probe` off and `write`, a replay sending and writing nothing.
-pub fn print_detection(devices_dir: Option<&Path>, probe: bool, write: Option<&Path>, read: Option<&Path>, consent: &[String]) -> Result<()> {
+pub fn print_detection(devices_dir: Option<&Path>, probe: bool, write: Option<&Path>, read: Option<&Path>, consent: &[String],
+                       order: crate::recognition::TierOrder) -> Result<()> {
     let root = devices_dir.map(Path::to_path_buf).or_else(crate::synthub::online::cache_dir).unwrap_or_default();
     let devices = if let Some(read) = read {
         if !probe { anyhow::bail!("--read cannot be used with --no-probe: a replay sends nothing"); }
         if write.is_some() { anyhow::bail!("--read cannot be used with --write: a replay writes no capture"); }
         if !consent.is_empty() { anyhow::bail!("--read cannot be used with --consent: a replay sends nothing"); }
         let capture = crate::capture::Capture::read(read)?;
-        detect_capture(&root, &capture).map_err(|e| anyhow::anyhow!(e))?
+        detect_capture(&root, &capture, order).map_err(|e| anyhow::anyhow!(e))?
     } else {
-        let index = DeviceIndex::build(&root);
+        let index = DeviceIndex::build(&root, order);
         let server = (devices_dir.is_none() && crate::synthub::online::linked()).then(|| crate::synthub::online::Online::new(crate::synthub::online::SERVER));
-        let report = detect_hardware(&index, server.as_ref(), devices_dir.is_some(), probe, std::time::Duration::from_millis(800), write, consent)
+        let report = detect_hardware(&index, server.as_ref(), devices_dir.is_some(), probe, std::time::Duration::from_millis(800), write, consent, order)
             .map_err(|e| anyhow::anyhow!(e))?;
         report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default()
     };

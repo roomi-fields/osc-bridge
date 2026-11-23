@@ -5,9 +5,13 @@
 use crate::common::{device05, files, temp};
 use osc_bridge::capture::{Capture, FORMAT_VERSION};
 use osc_bridge::recognition::Identity;
-use osc_bridge::mcp::detect_capture;
 use serde_json::{json, Value};
 use std::path::Path;
+
+/// `detect_capture` with the catalogue's order of tiers, the order of every caller of the bridge.
+fn detect_capture(dir: &Path, capture: &Capture) -> Result<Vec<Value>, String> {
+    osc_bridge::mcp::detect_capture(dir, capture, osc_bridge::synthub::catalogue::tier_rank)
+}
 
 const MINILAB_MIDI: &str = "Minilab3:Minilab3 MIDI 40:0";
 const BOX_A: &str = "Box:Box A 20:0";

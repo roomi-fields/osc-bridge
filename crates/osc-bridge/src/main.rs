@@ -281,7 +281,7 @@ fn main() -> Result<()> {
         Cmd::Privacy { offline, private, public } => {
             let path = osc_bridge::synthub::online::settings_file().context("no configuration directory (HOME is not set)")?;
             let offline = offline.map(|o| o == "on");
-            let cached = osc_bridge::mcp::DeviceIndex::build(&osc_bridge::synthub::online::cache_dir().unwrap_or_default());
+            let cached = osc_bridge::mcp::DeviceIndex::build(&osc_bridge::synthub::online::cache_dir().unwrap_or_default(), osc_bridge::synthub::catalogue::tier_rank);
             // A device not cached here is looked up on the server, unless the link is being cut.
             let server = (offline != Some(true) && osc_bridge::synthub::online::linked())
                 .then(|| osc_bridge::synthub::online::Online::new(osc_bridge::synthub::online::SERVER));
@@ -290,10 +290,12 @@ fn main() -> Result<()> {
         }
         Cmd::Detect { learn: true, listen_ms, share_fingerprint, vendor, model, firmware, .. } => {
             osc_bridge::mcp::print_learning(listen_ms, share_fingerprint.as_deref()
-                .map(|port| (port, [vendor.as_deref(), model.as_deref(), firmware.as_deref()])))
+                .map(|port| (port, [vendor.as_deref(), model.as_deref(), firmware.as_deref()])),
+                osc_bridge::synthub::catalogue::tier_rank)
         }
         Cmd::Detect { no_probe, devices_dir, write, read, consent, .. } => {
-            osc_bridge::mcp::print_detection(devices_dir.as_deref(), !no_probe, write.as_deref(), read.as_deref(), &consent)
+            osc_bridge::mcp::print_detection(devices_dir.as_deref(), !no_probe, write.as_deref(), read.as_deref(), &consent,
+                osc_bridge::synthub::catalogue::tier_rank)
         }
         Cmd::Inspect { device } => cmd_inspect(device),
         Cmd::Run(args) => cmd_run(args),
@@ -337,7 +339,7 @@ fn main() -> Result<()> {
                 None => osc_bridge::synthub::online::Settings::default(),
             };
             let online = !offline && !settings.offline && !osc_bridge::synthub::online::offline_by_env();
-            let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, online, private: settings.private };
+            let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, online, private: settings.private, tier_order: osc_bridge::synthub::catalogue::tier_rank };
             osc_bridge::mcp::run(opts)
         }
     }

@@ -185,6 +185,7 @@ fn detect_hardware_publishes_the_maker_model_and_firmware_arguments_and_says_wha
         default_target: "127.0.0.1:9000".parse().unwrap(),
         online: false,
         private: vec![],
+        tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
     let input = format!("{}\n", json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" }));
     let mut out = Vec::new();

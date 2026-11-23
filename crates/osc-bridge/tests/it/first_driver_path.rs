@@ -52,6 +52,7 @@ fn linked_private(request: Value, private: &[&str]) -> (Value, Vec<Value>) {
         default_target: "127.0.0.1:9".parse().unwrap(),
         online: true,
         private: private.iter().map(|p| p.to_string()).collect(),
+        tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
     let input = format!("{request}\n");
     let mut out = Vec::new();
@@ -121,7 +122,8 @@ use osc_bridge::mcp::DeviceIndex;
 use std::time::Duration;
 
 fn catalogue() -> DeviceIndex {
-    DeviceIndex::build(&std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/devices"))
+    DeviceIndex::build(&std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/devices"),
+                       osc_bridge::synthub::catalogue::tier_rank)
 }
 
 fn unit(port: &str) -> Unit {
@@ -142,7 +144,7 @@ fn learned(port: &str) -> Learned {
 fn report(ports: &[&str]) -> Value {
     let learned: Vec<(Unit, Learned)> = ports.iter().map(|p| (unit(p), learned(p))).collect();
     osc_bridge::mcp::learn_report(&learned, &catalogue(), Duration::from_millis(5000),
-        &osc_bridge::mcp::ServiceMatches::NotLinked)
+        &osc_bridge::mcp::ServiceMatches::NotLinked, osc_bridge::synthub::catalogue::tier_rank)
 }
 
 fn device_of(report: &Value, at: usize) -> &Value { &report["structuredContent"]["devices"][at] }
@@ -180,7 +182,7 @@ fn report_with_reply(port: &str, reply: Option<&str>) -> Value {
     let mut l = learned(port);
     if let Some(r) = reply { l.fingerprint["identity_reply"] = json!(r); }
     osc_bridge::mcp::learn_report(&[(unit(port), l)], &catalogue(), Duration::from_millis(5000),
-        &osc_bridge::mcp::ServiceMatches::NotLinked)
+        &osc_bridge::mcp::ServiceMatches::NotLinked, osc_bridge::synthub::catalogue::tier_rank)
 }
 
 #[test]
@@ -322,7 +324,8 @@ fn a_recognised_and_an_unrecognised_device_side_by_side_only_the_second_has_a_ne
     let known = learned_with_reply("Acme Box 1", ACME_BOX_REPLY);
     let other = learned("Zork Thing 1");
     let r = osc_bridge::mcp::learn_report(&[(unit("Acme Box 1"), known), (unit("Zork Thing 1"), other)],
-        &catalogue(), Duration::from_millis(5000), &osc_bridge::mcp::ServiceMatches::NotLinked);
+        &catalogue(), Duration::from_millis(5000), &osc_bridge::mcp::ServiceMatches::NotLinked,
+        osc_bridge::synthub::catalogue::tier_rank);
     assert!(device_of(&r, 0).get("next_step").is_none(), "{r}");
     assert!(device_of(&r, 1).get("next_step").is_some(), "{r}");
 }

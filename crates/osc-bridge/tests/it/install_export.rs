@@ -416,6 +416,7 @@ fn call_on(
         default_target: "127.0.0.1:9".parse().unwrap(),
         online: false,
         private: vec![],
+        tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
     let input = format!("{}\n", tool_call(1, "install_export", args));
     let mut out = Vec::new();

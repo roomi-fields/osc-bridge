@@ -10,6 +10,11 @@ use osc_bridge::recognition::Identity;
 use serde_json::{json, Value};
 use std::path::Path;
 
+/// `detect_capture` with the catalogue's order of tiers, the order of every caller of the bridge.
+fn detect_capture(dir: &Path, capture: &Capture) -> Result<Vec<Value>, String> {
+    osc_bridge::mcp::detect_capture(dir, capture, osc_bridge::synthub::catalogue::tier_rank)
+}
+
 /// The identity reply of an Arturia MiniLab 3.
 fn minilab_reply() -> Vec<u8> {
     Identity { manufacturer: vec![0x00, 0x20, 0x6B], family: 2, model: 4, version: [1, 2, 3, 4] }.reply()
@@ -234,7 +239,7 @@ fn check_corpus(dir: &Path, catalogue: &Path) -> Result<usize, Vec<String>> {
         let capture = Capture::parse(&std::fs::read_to_string(dir.join(format!("{n}.json"))).unwrap())
             .unwrap_or_else(|e| panic!("{n}.json: {e}"));
         let expected: Value = serde_json::from_str(&std::fs::read_to_string(dir.join(format!("{n}.expected.json"))).unwrap()).unwrap();
-        let devices = osc_bridge::mcp::detect_capture(catalogue, &capture).unwrap();
+        let devices = detect_capture(catalogue, &capture).unwrap();
         // One answer per device: each of its ports is judged on it.
         for (d, port) in devices.iter().flat_map(|d| {
             d["ports"].as_array().unwrap_or_else(|| panic!("no ports: {d}")).iter().map(move |p| (d, p["port"].as_str().unwrap()))
@@ -840,25 +845,25 @@ fn every_capture_of_the_corpus_is_in_version_two_with_its_list_of_clients() {
 
 #[test]
 fn the_replay_reads_the_kind_of_each_port_from_the_clients_of_the_capture() {
-    let devices = osc_bridge::mcp::detect_capture(fluid_catalogue().path(), &corpus_capture("2026-11-22-ports-logiciels.json")).unwrap();
+    let devices = detect_capture(fluid_catalogue().path(), &corpus_capture("2026-11-22-ports-logiciels.json")).unwrap();
     assert_eq!(device_of_port(&devices, FLUID)["client_kind"], "user");
     assert_eq!(device_of_port(&devices, "Pure Data:Pure Data Midi-In 1 133:0")["client_kind"], "user");
     assert_eq!(device_of_port(&devices, "Midi Through:Midi Through Port-0 14:0")["client_kind"], "kernel");
-    let bench = osc_bridge::mcp::detect_capture(corpus_catalogue().path(), &corpus_capture("2026-11-21.json")).unwrap();
+    let bench = detect_capture(corpus_catalogue().path(), &corpus_capture("2026-11-21.json")).unwrap();
     assert_eq!(device_of_port(&bench, "Minilab3:Minilab3 MIDI 40:0")["client_kind"], "kernel");
     assert_eq!(device_of_port(&bench, "Behringer BCR-32:Behringer BCR-32 BCR-32 CTRL 24:0")["client_kind"], "kernel");
 }
 
 #[test]
 fn a_port_whose_client_is_not_in_the_list_has_the_kind_unknown() {
-    let devices = osc_bridge::mcp::detect_capture(fluid_catalogue().path(), &corpus_capture("2026-11-22-ports-logiciels.json")).unwrap();
+    let devices = detect_capture(fluid_catalogue().path(), &corpus_capture("2026-11-22-ports-logiciels.json")).unwrap();
     assert_eq!(device_of_port(&devices, "Microsoft GS Wavetable Synth:Microsoft GS Wavetable Synth 0:0")["client_kind"], "unknown");
 }
 
 #[test]
 fn a_system_whose_clients_are_not_readable_gives_every_port_the_kind_unknown() {
     let capture = software_capture_with_clients("");
-    let devices = osc_bridge::mcp::detect_capture(fluid_catalogue().path(), &capture).unwrap();
+    let devices = detect_capture(fluid_catalogue().path(), &capture).unwrap();
     assert!(!devices.is_empty());
     for d in &devices { assert_eq!(d["client_kind"], "unknown", "{d}"); }
 }
@@ -867,13 +872,13 @@ fn a_system_whose_clients_are_not_readable_gives_every_port_the_kind_unknown() {
 fn a_port_whose_link_to_a_client_is_ambiguous_has_the_kind_unknown() {
     let twice = "Client info\n\nClient 128 : \"FLUID Synth (4242)\" [User]\n  Port   0 : \"Synth input port (4242:0)\" (Rwe-)\n\
                  Client 128 : \"FLUID Synth (4242)\" [Kernel]\n  Port   0 : \"Synth input port (4242:0)\" (Rwe-)\n";
-    let devices = osc_bridge::mcp::detect_capture(fluid_catalogue().path(), &software_capture_with_clients(twice)).unwrap();
+    let devices = detect_capture(fluid_catalogue().path(), &software_capture_with_clients(twice)).unwrap();
     assert_eq!(device_of_port(&devices, FLUID)["client_kind"], "unknown");
 }
 
 #[test]
 fn a_port_of_a_program_gets_no_hardware_candidate_whatever_its_name() {
-    let devices = osc_bridge::mcp::detect_capture(fluid_catalogue().path(), &corpus_capture("2026-11-22-ports-logiciels.json")).unwrap();
+    let devices = detect_capture(fluid_catalogue().path(), &corpus_capture("2026-11-22-ports-logiciels.json")).unwrap();
     let fluid = device_of_port(&devices, FLUID);
     assert!(fluid["candidates"].as_array().unwrap().is_empty(), "{fluid}");
     assert!(fluid["run_command"].is_null(), "{fluid}");
@@ -883,13 +888,13 @@ fn a_port_of_a_program_gets_no_hardware_candidate_whatever_its_name() {
 fn the_same_name_on_a_kernel_client_still_gets_its_candidate() {
     let kernel = software_capture_with_clients(
         "Client   0 : \"System\" [Kernel]\nClient 128 : \"FLUID Synth (4242)\" [Kernel]\n  Port   0 : \"Synth input port (4242:0)\" (RWe-)\n");
-    let devices = osc_bridge::mcp::detect_capture(fluid_catalogue().path(), &kernel).unwrap();
+    let devices = detect_capture(fluid_catalogue().path(), &kernel).unwrap();
     assert_eq!(device_of_port(&devices, FLUID)["candidates"][0]["device"], "acme/fluid");
 }
 
 #[test]
 fn a_port_of_the_kind_unknown_is_matched_as_before() {
-    let devices = osc_bridge::mcp::detect_capture(fluid_catalogue().path(), &software_capture_with_clients("")).unwrap();
+    let devices = detect_capture(fluid_catalogue().path(), &software_capture_with_clients("")).unwrap();
     assert_eq!(device_of_port(&devices, FLUID)["candidates"][0]["device"], "acme/fluid");
 }
 
@@ -902,14 +907,14 @@ fn a_port_of_a_program_gets_no_candidate_even_with_the_usb_ids_of_a_card_declare
         "cards": " 6 [Minilab3       ]: USB-Audio - Minilab3\n", "usbids": [{"card": 6, "text": "1c75:020b\n"}],
         "requests": [], "received": [{"port": "Minilab3:Minilab3 MIDI 40:0", "bytes": minilab_reply(), "ms": 4}],
     });
-    let devices = osc_bridge::mcp::detect_capture(corpus_catalogue().path(), &Capture::parse(&program.to_string()).unwrap()).unwrap();
+    let devices = detect_capture(corpus_catalogue().path(), &Capture::parse(&program.to_string()).unwrap()).unwrap();
     assert_eq!(devices[0]["client_kind"], "user");
     assert!(devices[0]["candidates"].as_array().unwrap().is_empty(), "{}", devices[0]);
 }
 
 #[test]
 fn the_minilab3_of_the_kernel_is_recognised_as_before() {
-    let devices = osc_bridge::mcp::detect_capture(corpus_catalogue().path(), &corpus_capture("2026-11-21.json")).unwrap();
+    let devices = detect_capture(corpus_catalogue().path(), &corpus_capture("2026-11-21.json")).unwrap();
     let minilab = device_of_port(&devices, "Minilab3:Minilab3 MIDI 40:0");
     assert_eq!(minilab["client_kind"], "kernel");
     assert_eq!(minilab["candidates"][0]["device"], "arturia/minilab3");

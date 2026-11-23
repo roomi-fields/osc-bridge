@@ -8,7 +8,8 @@ use serde_json::{json, Value};
 use std::time::Duration;
 
 fn catalogue() -> DeviceIndex {
-    DeviceIndex::build(&std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/devices"))
+    DeviceIndex::build(&std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/devices"),
+                       osc_bridge::synthub::catalogue::tier_rank)
 }
 
 fn unit(port: &str) -> Unit {
@@ -31,7 +32,7 @@ fn pairs(ports: &[&str]) -> Vec<(Unit, Learned)> {
 }
 
 fn report(ports: &[&str], service: &ServiceMatches) -> Value {
-    learn_report(&pairs(ports), &catalogue(), Duration::from_millis(5000), service)
+    learn_report(&pairs(ports), &catalogue(), Duration::from_millis(5000), service, osc_bridge::synthub::catalogue::tier_rank)
 }
 
 fn device(r: &Value, at: usize) -> &Value { &r["structuredContent"]["devices"][at] }
@@ -270,7 +271,7 @@ fn learn_with(answer_port: Value) -> Value {
     let (client, _bodies, _dir) = service_answering(json!({ "ports": [answer_port] }));
     let learned = pairs(&[UNKNOWN]);
     let service = learn_service_matches(Some(&client), &learned);
-    learn_report(&learned, &catalogue(), Duration::from_millis(5000), &service)
+    learn_report(&learned, &catalogue(), Duration::from_millis(5000), &service, osc_bridge::synthub::catalogue::tier_rank)
 }
 
 #[test]
@@ -421,7 +422,7 @@ fn learn_of_kind(kind: ClientKind, candidates: &[&str]) -> Value {
     let (client, _bodies, _dir) = service_answering(json!({ "ports": [answer] }));
     let learned = vec![of_kind(FLUID_PORT, kind)];
     let service = learn_service_matches(Some(&client), &learned);
-    learn_report(&learned, &catalogue(), Duration::from_millis(5000), &service)
+    learn_report(&learned, &catalogue(), Duration::from_millis(5000), &service, osc_bridge::synthub::catalogue::tier_rank)
 }
 
 #[test]

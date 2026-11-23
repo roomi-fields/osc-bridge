@@ -101,6 +101,11 @@ pub fn manufacturer_name(id: &[u8]) -> Option<&'static str> {
     })
 }
 
+/// Which of two cards of one device comes first: a rank per source tier, lower first. A value the
+/// caller gives, as a transport gives its congestion controller to `quinn-proto`: this module knows
+/// no tier. A bare function pointer, since the order is a pure comparison and carries no state.
+pub type TierOrder = fn(&str) -> u8;
+
 /// A driver of the catalogue, as much as matching needs.
 #[derive(Debug, Clone)]
 pub struct Candidate {
@@ -444,7 +449,7 @@ impl Ranked {
 /// recognises the device ranks first, the one for the firmware it reported
 /// above the others; drivers matching neither the name nor the identity are
 /// dropped.
-pub fn rank(port_name: &str, usb: Option<(u16, u16)>, replies: &[Vec<u8>], catalogue: &[Candidate], limit: usize) -> Vec<Ranked> {
+pub fn rank(port_name: &str, usb: Option<(u16, u16)>, replies: &[Vec<u8>], catalogue: &[Candidate], limit: usize, order: TierOrder) -> Vec<Ranked> {
     let port_tokens = name_tokens(port_name);
     let port_squashed = squash(port_name);
     let identity = replies.iter().find_map(|r| parse_identity_reply(r));
@@ -515,7 +520,7 @@ pub fn rank(port_name: &str, usb: Option<(u16, u16)>, replies: &[Vec<u8>], catal
     let builds_others = |r: &Ranked| !shared.contains(&(r.score, catalogue[r.index].id.as_str()));
     scored.sort_by(|a, b| b.score.cmp(&a.score)
         .then_with(|| builds_others(a).cmp(&builds_others(b)))
-        .then_with(|| crate::mcp::tier_rank(&catalogue[a.index].tier).cmp(&crate::mcp::tier_rank(&catalogue[b.index].tier)))
+        .then_with(|| order(&catalogue[a.index].tier).cmp(&order(&catalogue[b.index].tier)))
         .then_with(|| catalogue[a.index].id.cmp(&catalogue[b.index].id)));
     let equally: Vec<Vec<usize>> = scored.iter().map(|r| match r.recognised {
         Some(_) => scored.iter().filter(|o| o.index != r.index && o.score == r.score && o.recognised.is_some())

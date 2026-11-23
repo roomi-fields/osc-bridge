@@ -65,12 +65,28 @@ pub fn fetch(online: &Online, name: &str, cache: &Path) -> Result<PathBuf> {
     online.fetch_driver(&id, cache)
 }
 
+/// Lower is more trustworthy: tested on the device, then the vendor's own
+/// documentation, then curated OSC surfaces, then community sources, then
+/// what agents contributed (checked automatically, not reviewed).
+pub fn tier_rank(tier: &str) -> u8 {
+    match tier {
+        "hardware-verified" | "software-verified" => 0,
+        "vendor-doc" | "vendor" => 1,
+        "vendor-osc-api" | "third-party-osc" => 2,
+        "electra-preset" => 3,
+        "pencilresearch" | "knobkraft" => 4,
+        "agent-contributed" => 5,
+        "test-fixture" => 6,
+        _ => 7,
+    }
+}
+
 /// The cached file of driver `name`: by id, or the best cached variant of a slug.
 pub fn cached(name: &str, cache: &Path) -> Option<PathBuf> {
     if is_driver_id(name) {
         return Some(driver_path(cache, name)).filter(|p| p.is_file());
     }
-    crate::mcp::DeviceIndex::build(cache).find_path(name).map(Path::to_path_buf)
+    crate::mcp::DeviceIndex::build(cache, tier_rank).find_path(name).map(Path::to_path_buf)
 }
 
 #[cfg(test)]
