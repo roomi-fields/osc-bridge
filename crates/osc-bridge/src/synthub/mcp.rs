@@ -13,7 +13,7 @@ use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use super::online::{Online, Settings, FORWARDED_TOOLS};
-use crate::mcp::{content_structured, device_arg, DeviceIndex, Known, McpOptions};
+use crate::mcp::{content_structured, device_arg, DeviceIndex, Known, McpOptions, ServiceMatches};
 
 /// Tools a private device keeps on the machine: refused before anything is
 /// sent. `get_trust` on a private device is answered from the trust fetched
@@ -26,11 +26,15 @@ struct Link {
     client: Online,
     user: std::sync::Mutex<Option<String>>,
     trust: std::sync::RwLock<Value>,
+    /// Devices the user keeps private on this machine (ids, slugs or `vendor/*`, see
+    /// `Settings`): nothing about them is sent.
+    private: Vec<String>,
 }
 
 impl Link {
     fn new(base: &str) -> Self {
-        Self { client: Online::new(base), user: std::sync::Mutex::new(None), trust: std::sync::RwLock::new(Value::Null) }
+        Self { client: Online::new(base), user: std::sync::Mutex::new(None), trust: std::sync::RwLock::new(Value::Null),
+               private: Vec::new() }
     }
 
     /// The account, issued by the server on first use; `forget` replaces one
@@ -106,23 +110,24 @@ fn drivers_wanted(req: &Value) -> Vec<&str> {
 }
 
 /// The MCP server over stdio, linked to `online::SERVER`, its drivers kept
-/// in `online::cache_dir`.
-pub fn run(opts: McpOptions) -> Result<()> {
-    serve(opts, super::online::SERVER, super::online::cache_dir(), std::io::stdin().lock(), std::io::stdout().lock())
+/// in `online::cache_dir`; `private` are the devices the user keeps private.
+pub fn run(opts: McpOptions, private: &[String]) -> Result<()> {
+    serve(opts, super::online::SERVER, super::online::cache_dir(), private, std::io::stdin().lock(), std::io::stdout().lock())
 }
 
 /// `serve_with_midi` on the machine's MIDI system (the guarded opening).
-pub fn serve(opts: McpOptions, base: &str, cache: Option<PathBuf>, input: impl BufRead, out: impl Write) -> Result<()> {
-    serve_with_midi(opts, base, cache, input, out, &crate::midi_port::open_hardware)
+pub fn serve(opts: McpOptions, base: &str, cache: Option<PathBuf>, private: &[String], input: impl BufRead, out: impl Write) -> Result<()> {
+    serve_with_midi(opts, base, cache, private, input, out, &crate::midi_port::open_hardware)
 }
 
 /// One MCP session linked to the server at `base`: a JSON-RPC message per line of `input`, each
 /// reply a line of `out`. It asks the server for the drivers it needs and keeps them in `cache`,
-/// unless the user gave `opts.devices_dir`. The tools that reach the MIDI system take it from `open`.
-pub fn serve_with_midi(opts: McpOptions, base: &str, cache: Option<PathBuf>, input: impl BufRead, out: impl Write,
-                       open: crate::midi_port::Opener) -> Result<()> {
+/// unless the user gave `opts.devices_dir`. Nothing about the devices of `private` is sent. The
+/// tools that reach the MIDI system take it from `open`.
+pub fn serve_with_midi(opts: McpOptions, base: &str, cache: Option<PathBuf>, private: &[String], input: impl BufRead,
+                       out: impl Write, open: crate::midi_port::Opener) -> Result<()> {
     use std::sync::{Arc, RwLock};
-    let link = Arc::new(Link::new(base));
+    let link = Arc::new(Link { private: private.to_vec(), ..Link::new(base) });
     // Drivers from the server are kept in the cache; a folder the user gave is theirs.
     let cache = if opts.devices_dir.is_some() { None } else { cache };
     let root = opts.devices_dir.clone().or_else(|| cache.clone()).unwrap_or_default();
@@ -135,7 +140,7 @@ pub fn serve_with_midi(opts: McpOptions, base: &str, cache: Option<PathBuf>, inp
         // device the user keeps private by that very name is not asked for.
         if let Some(cache) = &cache {
             for name in drivers_wanted(req) {
-                if Settings::covers(&opts.private, name, name) || !fetched.insert(name.to_string()) { continue; }
+                if Settings::covers(&link.private, name, name) || !fetched.insert(name.to_string()) { continue; }
                 match super::catalogue::fetch(&link.client, name, cache) {
                     Ok(_) => if let Ok(mut g) = index.write() { *g = Arc::new(DeviceIndex::build(cache, opts.tier_order)) },
                     Err(e) => eprintln!("{name}: {e:#}"),
@@ -192,7 +197,7 @@ fn call_tool_with(name: &str, args: &Value, opts: &McpOptions, index: &DeviceInd
                   open: crate::midi_port::Opener) -> Result<Value, String> {
     if args.get("slug").is_some() { device_arg(args)?; }
     if FORWARDED_TOOLS.contains(&name) {
-        if let Some(id) = private_device(index, opts, args) {
+        if let Some(id) = private_device(index, &link.private, args) {
             if name == "get_trust" {
                 let trust = link.trust.read().map(|t| t["devices"][&id].clone()).unwrap_or(Value::Null);
                 let structured = json!({ "device": id, "private": true,
@@ -224,30 +229,233 @@ fn call_tool_with(name: &str, args: &Value, opts: &McpOptions, index: &DeviceInd
     }
     if name == "detect_hardware" {
         if args.get("learn").and_then(Value::as_bool) == Some(true) {
-            return crate::mcp::learn_tool(args, index, opts, Some(&link.client), server.map(|l| &l.client));
+            let shares = |port: &str, vendor: &str, model: &str, firmware: &str, learned: &[(crate::detect::Unit, crate::detect::Learned)]|
+                share_learned(&Share { port, vendor, model, firmware, command: false, client: Some(&link.client), private: &link.private }, learned);
+            let matches = |learned: &[(crate::detect::Unit, crate::detect::Learned)]| learn_service_matches(server.map(|l| &l.client), learned);
+            return crate::mcp::learn_tool(args, index, opts, &shares, &matches);
         }
         if let Some(server) = server {
-            let probes = || crate::mcp::service_probes(&server.client);
+            let probes = || service_probes(&server.client);
             let answers = |found: &[crate::detect::Probed]| detect_answers(&server.client, found);
             return crate::mcp::detect_tool(args, index, opts, Some(&probes), &answers);
         }
     }
     let status = |id: &str| link.status(id);
-    let private = |id: &str| Settings::covers(&opts.private, id, id);
+    let private = |id: &str| Settings::covers(&link.private, id, id);
     let trust = link.trust.read().map(|t| t.clone()).unwrap_or(Value::Null);
     crate::mcp::call_local(name, args, opts, index, open, &Known { trust, candidates: Vec::new(), status: &status, private: &private })
 }
 
 /// What the service says of each port of `found`, one answer per port, in order.
 pub fn detect_answers(client: &Online, found: &[crate::detect::Probed]) -> Result<Vec<Value>, String> {
-    crate::mcp::service_answers(client, found)
+    service_answers(client, found)
+}
+
+/// The requests the service says recognise devices.
+fn service_probes(server: &Online) -> Result<Vec<crate::recognition::Probe>, String> {
+    server.probes().map_err(|e| format!("detect_hardware asks the SynthHub server which \
+        requests recognise devices, and it could not be reached: {e}. Offline, the ports are matched against the drivers cached here."))
+}
+
+/// What the service says of each port of `found`, one answer per port in order.
+fn service_answers(server: &Online, found: &[crate::detect::Probed]) -> Result<Vec<Value>, String> {
+    let ports: Vec<Value> = found.iter().map(|d| crate::mcp::detect_port(d.label(),
+        d.replies.iter().map(|r| crate::mcp::hex_bytes(r)).collect(), d.usb)).collect();
+    server.detect(&ports).map_err(|e| format!("detect_hardware asks the SynthHub server to match \
+        the ports, and it could not be reached: {e}. Offline, the ports are matched against the drivers cached here."))
+}
+
+/// Asks the service to match the ports and identity reply of each device of `learned` (the
+/// system ports left out). Never fails: an unreachable service is `Unreachable`.
+pub fn learn_service_matches(server: Option<&Online>, learned: &[(crate::detect::Unit, crate::detect::Learned)]) -> ServiceMatches {
+    let Some(server) = server else { return ServiceMatches::NotLinked };
+    let devices = crate::mcp::learn_devices(learned);
+    if devices.is_empty() { return ServiceMatches::Answered(Vec::new()); }
+    let ports: Vec<Value> = devices.iter().map(|(d, l)| crate::mcp::detect_port(d.label(),
+        l.fingerprint["identity_reply"].as_str().into_iter().map(str::to_string).collect(), d.usb)).collect();
+    match server.detect(&ports) {
+        Ok(answers) => ServiceMatches::Answered((0..devices.len()).map(|i| answers.get(i).map(crate::mcp::port_answer).unwrap_or_default()).collect()),
+        Err(_) => ServiceMatches::Unreachable,
+    }
+}
+
+/// Whether `private` covers a device named « maker model » without a card: its slug is compared
+/// to the list under each cut of the words into maker and model.
+fn covers_declared(private: &[String], name: &str) -> bool {
+    let words: Vec<&str> = name.split_whitespace().collect();
+    (1..=words.len()).any(|k| {
+        let id = format!("{}/{}", crate::mcp::slugify(&words[..k].join(" "), '-'), crate::mcp::slugify(&words[k..].join(" "), '-'));
+        Settings::covers(private, &id, &id)
+    })
+}
+
+/// What a fingerprint sent to the service says it carries.
+const SENT_FIELDS: &str = "sent: the vendor, model and firmware, USB vendor and product ids, identity_reply, ports, what it sends, its controls; no serial number, host name or measure";
+
+/// The fingerprint to share: the port, the name the person gave and the link and private list
+/// that decide whether anything goes out.
+struct Share<'a> {
+    port: &'a str,
+    vendor: &'a str,
+    model: &'a str,
+    firmware: &'a str,
+    /// Typed on the command line: a refusal is worded with its flags.
+    command: bool,
+    client: Option<&'a Online>,
+    private: &'a [String],
+}
+
+/// Shares the fingerprint of the one device `share.port` names, and says what happened. A
+/// failure of the service is said here and on the standard error, and the detection goes on.
+fn share_learned(share: &Share, learned: &[(crate::detect::Unit, crate::detect::Learned)]) -> Result<String, String> {
+    let (unit, one) = crate::mcp::sharing_target(share.port, learned)?;
+    let name = format!("{} {}", share.vendor, share.model);
+    let id = crate::mcp::device_id(share.vendor, share.model);
+    if Settings::covers(share.private, &id, &id) {
+        return Ok(format!("not sent: {name} is private on this machine"));
+    }
+    let (Some(client), Some(file)) = (share.client, super::online::settings_file()) else {
+        return Ok("not sent: this copy is not linked to the SynthHub server".into());
+    };
+    Ok(match client.share_fingerprint(&file, share.vendor, share.model, share.firmware, &one.fingerprint) {
+        super::online::Sharing::Sent => format!("the fingerprint of {name} (firmware {}, {}) was sent to SynthHub ({}). {}",
+            share.firmware, unit.label(), SENT_FIELDS, crate::mcp::shared_next_step(share.vendor, share.model)),
+        super::online::Sharing::Withheld(why) => format!("not sent: {why}"),
+        super::online::Sharing::Failed(why) => {
+            let why = crate::mcp::refusal_in_words(&why, share.command);
+            eprintln!("osc-bridge: the fingerprint of {name} was not sent, it stays on this machine: {why}");
+            format!("not sent, it stays on this machine: {why}")
+        }
+    })
+}
+
+/// `osc-bridge privacy`: change the settings at `path` — `offline`, devices
+/// made private or public again (ids or slugs, found in `index`, else asked
+/// of `server`) — then show them. Returns what to print.
+pub fn privacy(path: &Path, index: &DeviceIndex, server: Option<&Online>, offline: Option<bool>,
+               private: &[String], public: &[String]) -> Result<String> {
+    let mut settings = Settings::load(Some(path))?;
+    let id_of = |name: &str| match name.strip_suffix("/*") {
+        Some(vendor) => super::catalogue::is_slug(vendor).then(|| name.to_string())
+            .ok_or_else(|| anyhow::anyhow!("'{vendor}' is not a vendor folder of the catalogue")),
+        None => index.find(name).map(|e| e.id.clone())
+            .or_else(|| {
+                // An id the server knows is kept as it is; a slug stands for its best variant.
+                let found = server?.variants(name).ok()?;
+                let known = found["variants"].as_array()?.iter().any(|v| v["id"] == name);
+                if known { Some(name.to_string()) } else { found["best"].as_str().map(str::to_string) }
+            })
+            .ok_or_else(|| anyhow::anyhow!("no device '{name}' in the catalogue (use an id or OSC prefix from list_devices, or vendor/*)")),
+    };
+    let changed = offline.is_some() || !private.is_empty() || !public.is_empty();
+    if let Some(o) = offline { settings.offline = o; }
+    for name in private {
+        let id = id_of(name)?;
+        if !settings.private.contains(&id) { settings.private.push(id); }
+    }
+    for name in public {
+        let id = id_of(name).unwrap_or_else(|_| name.clone());
+        settings.private.retain(|p| *p != id && p != name);
+    }
+    if changed { settings.save(path)?; }
+    let mut out = if settings.offline {
+        "Offline: this copy does not contact the SynthHub server and uses only the drivers cached on this machine \
+         (osc-bridge privacy --offline off to link it again).\n".to_string()
+    } else {
+        "Linked to the SynthHub server: drivers come from it one at a time under the anonymous account of this machine, and reports \
+         and fixes are shared under that account (osc-bridge privacy --offline on to stop).\n".to_string()
+    };
+    if settings.private.is_empty() {
+        out.push_str("Private devices: none.\n");
+    } else {
+        out.push_str("Private devices (nothing about them is sent to the server):\n");
+        for id in &settings.private {
+            let name = index.find(id).map(|e| if e.name.to_lowercase().starts_with(&e.vendor.to_lowercase()) {
+                e.name.clone()
+            } else {
+                format!("{} {}", e.vendor, e.name)
+            }).unwrap_or_else(|| if id.ends_with("/*") { "every device of this vendor".into() } else { String::new() });
+            out.push_str(&format!("  {id}  {name}\n"));
+        }
+    }
+    out.push_str(&format!("Settings: {}\n", path.display()));
+    Ok(out)
+}
+
+/// `osc-bridge detect --learn`: the notice first (the person moves the controls while it
+/// listens), then the fingerprint of each port and its measures.
+/// With `share` (the port, then the vendor, model and firmware the person gives), that
+/// fingerprint is sent to SynthHub when linked and not private; naming the port is the person's
+/// agreement. A missing vendor, model or firmware is refused before anything is listened to.
+pub fn print_learning(listen_ms: Option<u64>, share: Option<(&str, [Option<&str>; 3])>, order: crate::recognition::TierOrder) -> Result<()> {
+    let share = share.map(|(port, [vendor, model, firmware])| {
+        crate::mcp::share_fields(vendor, model, firmware, true).map(|(vendor, model, firmware)| (port, vendor, model, firmware))
+    }).transpose().map_err(|e| anyhow::anyhow!(e))?;
+    let listen = crate::detect::learn_listen(listen_ms).map_err(|e| anyhow::anyhow!(e))?;
+    println!("{}", crate::detect::learn_notice(listen));
+    let client = super::online::linked().then(|| Online::new(super::online::SERVER));
+    let private = super::online::settings_file().and_then(|f| Settings::load(Some(&f)).ok()).map(|s| s.private).unwrap_or_default();
+    let (linked, kept) = (client.as_ref(), private.as_slice());
+    let share = share.map(|(port, vendor, model, firmware)| move |learned: &[(crate::detect::Unit, crate::detect::Learned)]|
+        share_learned(&Share { port, vendor, model, firmware, command: true, client: linked, private: kept }, learned));
+    let catalogue = DeviceIndex::build(&super::online::cache_dir().unwrap_or_default(), order);
+    let matches = |learned: &[(crate::detect::Unit, crate::detect::Learned)]| learn_service_matches(client.as_ref(), learned);
+    let report = crate::mcp::learn_hardware(&catalogue, &matches, listen,
+        share.as_ref().map(|s| s as crate::mcp::SharesLearned), order)
+        .map_err(|e| anyhow::anyhow!(e))?;
+    if let Some(said) = report["structuredContent"]["sharing"].as_str() { println!("Sharing: {said}"); }
+    let devices = report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default();
+    if devices.is_empty() {
+        println!("No MIDI port found.");
+    }
+    for d in devices {
+        let names = |k: &str| d[k].as_array().map(|a| a.iter().filter_map(Value::as_str).collect::<Vec<_>>().join(", "))
+            .filter(|s| !s.is_empty()).unwrap_or("-".into());
+        println!("{}  (out {}; in {})", d["port"].as_str().unwrap_or("?"), names("outputs"), names("inputs"));
+        println!("  fingerprint: {}", serde_json::to_string_pretty(&d["fingerprint"]).unwrap_or_default().replace('\n', "\n  "));
+        println!("  measured: {}", d["measured"]);
+        if let Some(step) = d["next_step"].as_str() { println!("  next step: {step}"); }
+    }
+    Ok(())
+}
+
+/// `osc-bridge detect`: the same report as the `detect_hardware` tool, for a
+/// terminal: drivers of `devices_dir`, else of the SynthHub catalogue when
+/// linked, else those cached on this machine.
+///
+/// With `write`, the observation is also written to that file as a capture. With `read`, the
+/// capture of that file is replayed instead of scanning: no device, nothing sent; it refuses
+/// `probe` off and `write`, a replay sending and writing nothing.
+pub fn print_detection(devices_dir: Option<&Path>, probe: bool, write: Option<&Path>, read: Option<&Path>, consent: &[String],
+                       order: crate::recognition::TierOrder) -> Result<()> {
+    let root = devices_dir.map(Path::to_path_buf).or_else(super::online::cache_dir).unwrap_or_default();
+    let devices = if let Some(read) = read {
+        if !probe { anyhow::bail!("--read cannot be used with --no-probe: a replay sends nothing"); }
+        if write.is_some() { anyhow::bail!("--read cannot be used with --write: a replay writes no capture"); }
+        if !consent.is_empty() { anyhow::bail!("--read cannot be used with --consent: a replay sends nothing"); }
+        let capture = crate::capture::Capture::read(read)?;
+        crate::mcp::detect_capture(&root, &capture, order).map_err(|e| anyhow::anyhow!(e))?
+    } else {
+        let index = DeviceIndex::build(&root, order);
+        let server = (devices_dir.is_none() && super::online::linked()).then(|| Online::new(super::online::SERVER));
+        let probes = || service_probes(server.as_ref().expect("asked only when linked"));
+        let answers = |found: &[crate::detect::Probed]| match &server {
+            Some(server) => service_answers(server, found),
+            None => Ok(Vec::new()),
+        };
+        let report = crate::mcp::detect_hardware(&index, server.as_ref().map(|_| &probes as &dyn Fn() -> Result<Vec<crate::recognition::Probe>, String>),
+            &answers, devices_dir.is_some(), probe, std::time::Duration::from_millis(800), write, consent, order)
+            .map_err(|e| anyhow::anyhow!(e))?;
+        report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default()
+    };
+    print!("{}", crate::mcp::format_detection(&devices, probe));
+    Ok(())
 }
 
 /// The driver a tool call is about, when the user keeps it private: the
 /// `device` argument, or the device of a submitted driver. A private id also
 /// covers the other variants of the same device (same slug).
-fn private_device(index: &DeviceIndex, opts: &McpOptions, args: &Value) -> Option<String> {
-    let private = &opts.private;
+fn private_device(index: &DeviceIndex, private: &[String], args: &Value) -> Option<String> {
     let covers = |id: &str, slug: &str| Settings::covers(private, id, slug)
         || private.iter().any(|p| index.find(p).is_some_and(|e| e.slug == slug));
     if let Some(wanted) = args.get("device").and_then(Value::as_str) {
@@ -255,7 +463,7 @@ fn private_device(index: &DeviceIndex, opts: &McpOptions, args: &Value) -> Optio
         if covers(wanted, wanted) {
             return Some(index.find(wanted).map(|e| e.id.clone()).unwrap_or_else(|| wanted.to_string()));
         }
-        if index.find(wanted).is_none() && crate::mcp::covers_declared(private, wanted) {
+        if index.find(wanted).is_none() && covers_declared(private, wanted) {
             return Some(wanted.to_string());
         }
         let entry = index.find(wanted)?;

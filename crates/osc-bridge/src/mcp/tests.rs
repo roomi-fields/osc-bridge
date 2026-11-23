@@ -38,8 +38,6 @@ fn test_opts() -> McpOptions {
     McpOptions {
         devices_dir: Some(PathBuf::from(FIXTURES)),
         default_target: "127.0.0.1:7777".parse().unwrap(),
-        online: false,
-        private: Vec::new(),
         tier_order: neutral,
     }
 }
@@ -71,23 +69,6 @@ fn list_devices_filters_by_words_vendor_kind_and_limit() {
     assert_eq!(novation["devices"].as_array().unwrap().len(), 1);
     let software = run(json!({"kind": "software"}));
     assert!(software["devices"].as_array().unwrap().iter().all(|d| d["kind"] == "software"));
-}
-
-#[test]
-fn the_privacy_command_records_choices_by_catalogue_id() {
-    let dir = tempfile::Builder::new().prefix("osc-bridge-privacy-").tempdir().unwrap();
-    let path = dir.path().join("settings.toml");
-    let devices = fixtures();
-    let shown = privacy(&path, &devices, None, None, &[], &[]).unwrap();
-    assert!(shown.contains("Linked to the SynthHub server") && shown.contains("Private devices: none"), "{shown}");
-    assert!(!path.exists(), "showing writes nothing");
-    let shown = privacy(&path, &devices, None, Some(true), &["minilogue".into()], &[]).unwrap();
-    assert!(shown.contains("Offline") && shown.contains("korg/minilogue"), "{shown}");
-    assert_eq!(crate::synthub::online::Settings::load(Some(&path)).unwrap(),
-        crate::synthub::online::Settings { offline: true, private: vec!["korg/minilogue".into()] });
-    assert!(privacy(&path, &devices, None, None, &["no-such-synth".into()], &[]).is_err());
-    privacy(&path, &devices, None, Some(false), &[], &["korg/minilogue".into()]).unwrap();
-    assert_eq!(crate::synthub::online::Settings::load(Some(&path)).unwrap(), crate::synthub::online::Settings::default());
 }
 
 #[test]
@@ -1080,8 +1061,6 @@ fn the_local_answer_takes_what_the_service_knows_as_values_and_serves_the_16_too
 
 #[test]
 fn the_local_server_offers_the_16_local_tools_whether_or_not_the_copy_is_linked() {
-    let linked = McpOptions { online: true, ..test_opts() };
-    assert_eq!(tool_names(&linked), tool_names(&test_opts()));
     assert_eq!(tool_names(&test_opts()).len(), 16);
     let schemas = local_tool_schemas();
     let named: Vec<&str> = schemas["tools"].as_array().unwrap().iter().map(|t| t["name"].as_str().unwrap()).collect();

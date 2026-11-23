@@ -8,12 +8,10 @@ use crate::common::{catalogue, temp, tool_call, ConfigHome, FakeSynthHub};
 use serde_json::{json, Value};
 use std::collections::BTreeSet;
 
-fn options(devices: Option<&std::path::Path>, online: bool, private: &[&str]) -> osc_bridge::mcp::McpOptions {
+fn options(devices: Option<&std::path::Path>) -> osc_bridge::mcp::McpOptions {
     osc_bridge::mcp::McpOptions {
         devices_dir: devices.map(|d| d.to_path_buf()),
         default_target: "127.0.0.1:9".parse().unwrap(),
-        online,
-        private: private.iter().map(|p| p.to_string()).collect(),
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
     }
 }
@@ -29,14 +27,15 @@ fn lines(requests: &[Value]) -> String {
 /// The local server: no service, no account, no address of a service.
 fn local_session(devices: &std::path::Path, requests: &[Value]) -> Vec<Value> {
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(options(Some(devices), false, &[]), lines(requests).as_bytes(), &mut out).unwrap();
+    osc_bridge::mcp::serve(options(Some(devices)), lines(requests).as_bytes(), &mut out).unwrap();
     replies(out)
 }
 
 /// The server of the link, answering through the fake service at `base`.
 fn linked_session(devices: Option<&std::path::Path>, base: &str, cache: &std::path::Path, private: &[&str], requests: &[Value]) -> Vec<Value> {
     let mut out = Vec::new();
-    osc_bridge::synthub::mcp::serve(options(devices, true, private), base, Some(cache.to_path_buf()), lines(requests).as_bytes(), &mut out).unwrap();
+    let private: Vec<String> = private.iter().map(|p| p.to_string()).collect();
+    osc_bridge::synthub::mcp::serve(options(devices), base, Some(cache.to_path_buf()), &private, lines(requests).as_bytes(), &mut out).unwrap();
     replies(out)
 }
 
@@ -64,6 +63,16 @@ fn the_local_server_offers_the_sixteen_local_tools_with_the_schemas_the_bridge_h
     for linked in ["take_sound", "load_preset", "get_trust", "report_result", "share_preset"] {
         assert!(!names_of(&offered).contains(linked), "{linked} is the link's");
     }
+}
+
+#[test]
+fn the_local_server_without_a_folder_of_cards_serves_an_empty_index() {
+    let _home = ConfigHome::new();
+    let mut out = Vec::new();
+    let request = tool_call(1, "list_devices", json!({}));
+    osc_bridge::mcp::serve(options(None), lines(&[request]).as_bytes(), &mut out).unwrap();
+    let reply = &replies(out)[0];
+    assert_eq!(reply["result"]["structuredContent"]["count"], json!(0), "{reply}");
 }
 
 #[test]

@@ -152,8 +152,6 @@ fn call(root: &tempfile::TempDir, target: SocketAddr, tool: &str, args: Value) -
     let opts = osc_bridge::mcp::McpOptions {
         devices_dir: Some(root.path().to_path_buf()),
         default_target: target,
-        online: false,
-        private: vec![],
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
     let input = format!("{}\n", crate::common::tool_call(1, tool, args));

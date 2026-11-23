@@ -3,7 +3,8 @@
 
 use osc_bridge::capture::{Capture, FORMAT_VERSION};
 use osc_bridge::detect::{is_system_port, learn_units, units, ClientKind, Learned, Unit};
-use osc_bridge::mcp::{learn_report, learn_service_matches, DeviceIndex, ServiceMatches};
+use osc_bridge::mcp::{learn_report, DeviceIndex, ServiceMatches};
+use osc_bridge::synthub::mcp::learn_service_matches;
 use serde_json::{json, Value};
 use std::time::Duration;
 

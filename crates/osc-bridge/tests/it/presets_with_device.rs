@@ -126,8 +126,6 @@ fn call(root: &tempfile::TempDir, tool: &str, args: Value) -> Value {
     let opts = osc_bridge::mcp::McpOptions {
         devices_dir: Some(root.path().to_path_buf()),
         default_target: "127.0.0.1:9".parse().unwrap(),
-        online: false,
-        private: vec![],
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
     let input = format!("{}\n", crate::common::tool_call(1, tool, args));

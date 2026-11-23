@@ -22,8 +22,6 @@ fn offline_tools() -> BTreeMap<String, String> {
     let opts = osc_bridge::mcp::McpOptions {
         devices_dir: Some(dir.path().to_path_buf()),
         default_target: "127.0.0.1:9000".parse().unwrap(),
-        online: false,
-        private: vec![],
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
     let request = serde_json::json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" });
@@ -95,8 +93,6 @@ fn code_schema(tool: &str) -> (BTreeSet<String>, BTreeSet<String>) {
     let opts = osc_bridge::mcp::McpOptions {
         devices_dir: Some(dir.path().to_path_buf()),
         default_target: "127.0.0.1:9000".parse().unwrap(),
-        online: false,
-        private: vec![],
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
     let request = serde_json::json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" });

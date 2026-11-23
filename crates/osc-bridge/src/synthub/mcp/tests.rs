@@ -21,18 +21,33 @@ fn test_opts() -> McpOptions {
     McpOptions {
         devices_dir: Some(PathBuf::from(FIXTURES)),
         default_target: "127.0.0.1:7777".parse().unwrap(),
-        online: false,
-        private: Vec::new(),
         tier_order: neutral,
     }
 }
 
 #[test]
+fn the_privacy_command_records_choices_by_catalogue_id() {
+    let dir = tempfile::Builder::new().prefix("osc-bridge-privacy-").tempdir().unwrap();
+    let path = dir.path().join("settings.toml");
+    let devices = fixtures();
+    let shown = privacy(&path, &devices, None, None, &[], &[]).unwrap();
+    assert!(shown.contains("Linked to the SynthHub server") && shown.contains("Private devices: none"), "{shown}");
+    assert!(!path.exists(), "showing writes nothing");
+    let shown = privacy(&path, &devices, None, Some(true), &["minilogue".into()], &[]).unwrap();
+    assert!(shown.contains("Offline") && shown.contains("korg/minilogue"), "{shown}");
+    assert_eq!(crate::synthub::online::Settings::load(Some(&path)).unwrap(),
+        crate::synthub::online::Settings { offline: true, private: vec!["korg/minilogue".into()] });
+    assert!(privacy(&path, &devices, None, None, &["no-such-synth".into()], &[]).is_err());
+    privacy(&path, &devices, None, Some(false), &[], &["korg/minilogue".into()]).unwrap();
+    assert_eq!(crate::synthub::online::Settings::load(Some(&path)).unwrap(), crate::synthub::online::Settings::default());
+}
+
+#[test]
 fn a_private_device_keeps_its_reports_on_the_machine() {
     let index = fixtures();
-    let opts = McpOptions { online: true, private: vec!["korg/minilogue".into()], ..test_opts() };
+    let opts = test_opts();
     // Never reached: the refusal comes first.
-    let link = Link::new("http://127.0.0.1:9");
+    let link = Link { private: vec!["korg/minilogue".into()], ..Link::new("http://127.0.0.1:9") };
     for (tool, args) in [("report_result", json!({"device": "korg/minilogue", "outcome": "works"})),
                          ("report_mapping", json!({"device": "minilogue", "address": "/filter/cutoff", "cc": 43})),
                          ("submit_fix", json!({"device": "korg/minilogue", "content": "{}"})),
@@ -44,10 +59,10 @@ fn a_private_device_keeps_its_reports_on_the_machine() {
     assert!(call_tool("submit_driver", &driver, &opts, &index, &link).unwrap_err().contains("private"));
     let trust = call_tool("get_trust", &json!({"device": "korg/minilogue"}), &opts, &index, &link).unwrap();
     assert_eq!(trust["structuredContent"]["private"], json!(true), "answered on the machine, the server is never asked");
-    let vendor = McpOptions { private: vec!["korg/*".into()], ..opts };
-    assert!(call_tool("report_result", &json!({"device": "korg/ms2000", "outcome": "works"}), &vendor, &index, &link)
+    let vendor = Link { private: vec!["korg/*".into()], ..Link::new("http://127.0.0.1:9") };
+    assert!(call_tool("report_result", &json!({"device": "korg/ms2000", "outcome": "works"}), &opts, &index, &vendor)
         .unwrap_err().contains("private"));
-    let other = call_tool("report_result", &json!({"device": "arturia/minilab3", "outcome": "works"}), &vendor, &index, &link).unwrap_err();
+    let other = call_tool("report_result", &json!({"device": "arturia/minilab3", "outcome": "works"}), &opts, &index, &vendor).unwrap_err();
     assert!(other.contains("could not be reached"), "another device is shared: {other}");
 }
 
@@ -180,7 +195,7 @@ fn a_local_copy_fetches_the_drivers_it_needs_and_forwards_reports() {
     assert_eq!(DeviceIndex::build(&cache, neutral).entries.len(), 3, "only what was asked for is on this machine");
 
     // The server lists and matches the drivers; what is cached here is not the catalogue.
-    let opts = McpOptions { online: true, devices_dir: None, ..test_opts() };
+    let opts = McpOptions { devices_dir: None, ..test_opts() };
     let index = DeviceIndex::build(&cache, neutral);
     let listed = call_tool("list_devices", &json!({"query": "minilogue"}), &opts, &index, &link).unwrap();
     assert_eq!(listed["structuredContent"]["devices"][0]["device"], "korg/minilogue", "{listed}");
@@ -212,7 +227,7 @@ fn the_link_answers_a_local_tool_with_the_text_the_local_answer_gives() {
     let (base, calls, _) = fake_server(Path::new(FIXTURES));
     let link = Link { client: crate::synthub::online::Online::keeping_account_in(&base, Some(dir.path().join("user"))), ..Link::new("unused") };
     let index = fixtures();
-    let opts = McpOptions { online: true, ..test_opts() };
+    let opts = test_opts();
     let unreachable = json!({ "target": "127.0.0.1:9" });
     for (tool, args) in [("list_links", unreachable.clone()), ("add_link", json!({ "to": "/b" })),
                          ("get_device_docs", json!({ "device": "korg/minilogue" })),

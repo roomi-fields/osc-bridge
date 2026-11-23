@@ -183,8 +183,6 @@ fn detect_hardware_publishes_the_maker_model_and_firmware_arguments_and_says_wha
     let opts = osc_bridge::mcp::McpOptions {
         devices_dir: Some(dir.path().to_path_buf()),
         default_target: "127.0.0.1:9000".parse().unwrap(),
-        online: false,
-        private: vec![],
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
     let input = format!("{}\n", json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" }));

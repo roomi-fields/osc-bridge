@@ -285,16 +285,16 @@ fn main() -> Result<()> {
             // A device not cached here is looked up on the server, unless the link is being cut.
             let server = (offline != Some(true) && osc_bridge::synthub::online::linked())
                 .then(|| osc_bridge::synthub::online::Online::new(osc_bridge::synthub::online::SERVER));
-            print!("{}", osc_bridge::mcp::privacy(&path, &cached, server.as_ref(), offline, &private, &public)?);
+            print!("{}", osc_bridge::synthub::mcp::privacy(&path, &cached, server.as_ref(), offline, &private, &public)?);
             Ok(())
         }
         Cmd::Detect { learn: true, listen_ms, share_fingerprint, vendor, model, firmware, .. } => {
-            osc_bridge::mcp::print_learning(listen_ms, share_fingerprint.as_deref()
+            osc_bridge::synthub::mcp::print_learning(listen_ms, share_fingerprint.as_deref()
                 .map(|port| (port, [vendor.as_deref(), model.as_deref(), firmware.as_deref()])),
                 osc_bridge::synthub::catalogue::tier_rank)
         }
         Cmd::Detect { no_probe, devices_dir, write, read, consent, .. } => {
-            osc_bridge::mcp::print_detection(devices_dir.as_deref(), !no_probe, write.as_deref(), read.as_deref(), &consent,
+            osc_bridge::synthub::mcp::print_detection(devices_dir.as_deref(), !no_probe, write.as_deref(), read.as_deref(), &consent,
                 osc_bridge::synthub::catalogue::tier_rank)
         }
         Cmd::Inspect { device } => cmd_inspect(device),
@@ -339,12 +339,14 @@ fn main() -> Result<()> {
                 None => osc_bridge::synthub::online::Settings::default(),
             };
             let online = !offline && !settings.offline && !osc_bridge::synthub::online::offline_by_env();
-            let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, online, private: settings.private, tier_order: osc_bridge::synthub::catalogue::tier_rank };
-            // Linked, the server of the link wraps the local one; otherwise the local one serves alone.
-            if opts.online {
-                osc_bridge::synthub::mcp::run(opts)
+            let tier_order = osc_bridge::synthub::catalogue::tier_rank;
+            // Linked, the server of the link wraps the local one; otherwise the local one serves
+            // alone, over the folder of cards the user gave, else the cards cached on this machine.
+            if online {
+                osc_bridge::synthub::mcp::run(osc_bridge::mcp::McpOptions { devices_dir, default_target, tier_order }, &settings.private)
             } else {
-                osc_bridge::mcp::run(opts, osc_bridge::synthub::online::cache_dir())
+                let devices_dir = devices_dir.or_else(osc_bridge::synthub::online::cache_dir);
+                osc_bridge::mcp::run(osc_bridge::mcp::McpOptions { devices_dir, default_target, tier_order })
             }
         }
     }

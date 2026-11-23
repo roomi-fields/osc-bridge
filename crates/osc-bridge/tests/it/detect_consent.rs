@@ -88,8 +88,6 @@ fn detect_hardware_publishes_the_consent_argument_and_the_safe_list_in_its_descr
     let opts = osc_bridge::mcp::McpOptions {
         devices_dir: Some(dir.path().to_path_buf()),
         default_target: "127.0.0.1:9000".parse().unwrap(),
-        online: false,
-        private: vec![],
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
     let input = format!("{}\n", json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" }));
@@ -155,8 +153,6 @@ fn detect_hardware_says_that_with_no_usb_id_read_only_the_universal_request_leav
     let opts = osc_bridge::mcp::McpOptions {
         devices_dir: Some(dir.path().to_path_buf()),
         default_target: "127.0.0.1:9000".parse().unwrap(),
-        online: false,
-        private: vec![],
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
     let input = format!("{}\n", json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" }));

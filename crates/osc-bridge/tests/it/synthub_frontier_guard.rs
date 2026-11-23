@@ -13,10 +13,7 @@ use std::path::{Path, PathBuf};
 const SUBMODULES: &[&str] = &["online", "connect", "relay_protocol", "catalogue", "take", "mcp"];
 
 /// (reader module, submodule of the link, number of readings).
-const INSCRIBED: &[(&str, &str, usize)] = &[
-    ("mcp", "online", 25),
-    ("mcp", "catalogue", 1),
-];
+const INSCRIBED: &[(&str, &str, usize)] = &[];
 
 /// `(line, what)` pairs found in one source.
 type Found = Vec<(usize, String)>;
@@ -279,10 +276,30 @@ fn the_sources_read_the_link_only_as_inscribed() {
 }
 
 #[test]
-fn the_first_list_is_the_readings_of_the_bridge_at_the_split() {
-    let mut list: Vec<_> = INSCRIBED.iter().map(|(r, s, _)| (*r, *s)).collect();
-    list.sort();
-    assert_eq!(list, [("mcp", "catalogue"), ("mcp", "online")]);
+fn the_list_inscribes_no_reading_of_the_local_answer() {
+    assert!(INSCRIBED.iter().all(|(r, _, _)| *r != "mcp"), "{INSCRIBED:?}");
+    assert!(INSCRIBED.is_empty(), "the list only shrinks: {INSCRIBED:?}");
+}
+
+#[test]
+fn the_local_answer_source_names_no_submodule_of_the_link() {
+    let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("src");
+    let (counts, refused) = tree_readings(&src);
+    assert!(refused.is_empty(), "{refused:?}");
+    assert!(!counts.keys().any(|(reader, _)| reader == "mcp"), "{counts:?}");
+}
+
+#[test]
+fn guard_refuses_any_file_of_the_mcp_reader_that_names_a_submodule_of_the_link() {
+    for (file, body) in [
+        ("mcp.rs", "fn f() { crate::synthub::online::linked(); }\n"),
+        ("mcp/tests.rs", "fn t() { crate::synthub::online::Settings::default(); }\n"),
+        ("mcp/roles.rs", "use crate::synthub::catalogue::is_slug;\n"),
+    ] {
+        let dir = tree(&[(file, body)]);
+        let found = problems(dir.path(), INSCRIBED);
+        assert!(found.iter().any(|f| f.contains("new reading") && f.contains("mcp reads")), "{file}: {found:?}");
+    }
 }
 
 #[test]

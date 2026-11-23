@@ -50,13 +50,12 @@ fn linked_private(request: Value, private: &[&str]) -> (Value, Vec<Value>) {
     let opts = osc_bridge::mcp::McpOptions {
         devices_dir: None,
         default_target: "127.0.0.1:9".parse().unwrap(),
-        online: true,
-        private: private.iter().map(|p| p.to_string()).collect(),
         tier_order: osc_bridge::synthub::catalogue::tier_rank,
     };
+    let private: Vec<String> = private.iter().map(|p| p.to_string()).collect();
     let input = format!("{request}\n");
     let mut out = Vec::new();
-    osc_bridge::synthub::mcp::serve(opts, &base, Some(dir.path().join("cache")), input.as_bytes(), &mut out).unwrap();
+    osc_bridge::synthub::mcp::serve(opts, &base, Some(dir.path().join("cache")), &private, input.as_bytes(), &mut out).unwrap();
     let reply: Value = serde_json::from_str(String::from_utf8(out).unwrap().lines().next().unwrap()).unwrap();
     let seen = calls.lock().unwrap().clone();
     (reply, seen)

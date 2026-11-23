@@ -436,6 +436,6 @@ fn criterion_9_the_texts_no_longer_say_the_requests_carry_no_account() {
 
     let dir = temp("acct-text");
     let index = osc_bridge::mcp::DeviceIndex::build(dir.path(), osc_bridge::synthub::catalogue::tier_rank);
-    let text = osc_bridge::mcp::privacy(&dir.path().join("settings.toml"), &index, None, None, &[], &[]).unwrap();
+    let text = osc_bridge::synthub::mcp::privacy(&dir.path().join("settings.toml"), &index, None, None, &[], &[]).unwrap();
     assert!(!text.contains("without your account"), "{text}");
 }
