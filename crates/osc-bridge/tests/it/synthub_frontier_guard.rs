@@ -1,86 +1,126 @@
-//! Guard: the link to the service lives in `src/synthub/`, and what still reads it is frozen.
+//! Guard: the bridge is free of its first service. Outside the module of the link
+//! (`src/synthub.rs`, `src/synthub/`) no file of `src/` reads that module, writes the name of the
+//! service in any case, or writes its host name, comments and strings included.
 //!
-//! Every file of `src/` outside `synthub.rs`, `synthub/` and `main.rs` is read as tokens. Each
-//! occurrence of the path `synthub::<submodule>` counts as one reading of that submodule by the
-//! reader module (the first path component under `src/`). The counts must equal `INSCRIBED`:
-//! a higher real count is a new reading, a lower one a stale entry to lower. The list only shrinks.
+//! Two exemptions only, told apart by tokens: the declaration `pub mod synthub;` of `lib.rs`, and in
+//! `main.rs` the call by full path `osc_bridge::synthub::<submodule>::…` in code position (never a
+//! `use`, a `mod`, a path without submodule, a rename or a glob). A word in a comment or a string,
+//! even written `synthub::x`, is refused.
 
 use crate::account_isolation_guard::{lex, Tok};
-use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
-/// The submodules of the link.
-const SUBMODULES: &[&str] = &["online", "connect", "relay_protocol", "catalogue", "take", "mcp", "learn"];
+/// The reason of every inscribed line.
+const PUBLISHED: &str =
+    "published text, leaves with the removal of the link (RENAME-SYNTHUB § 4, R0)";
 
-/// (reader module, submodule of the link, number of readings).
-const INSCRIBED: &[(&str, &str, usize)] = &[];
+/// The inscribed list, frozen both ways: a line of the sources that names the service and is not
+/// here is refused; an entry here that matches no line is refused. Each entry is a file under
+/// `src/`, the exact text of the line (indentation trimmed) and its reason. It holds published
+/// texts only (`--help` of `main.rs`, the schema of the local tool `detect_hardware`).
+const INSCRIBED: &[(&str, &str, &str)] = &[
+    ("main.rs", "/// Show or change what this machine shares with the SynthHub server.", PUBLISHED),
+    ("main.rs", "/// Match against the drivers of this folder instead of the SynthHub", PUBLISHED),
+    (
+        "main.rs",
+        "/// With --learn: the port (a part of its name) whose fingerprint is sent to SynthHub, so that",
+        PUBLISHED,
+    ),
+    ("main.rs", "/// the SynthHub catalogue (fetched one at a time and cached).", PUBLISHED),
+    ("main.rs", "/// Do not contact the SynthHub server for this run (also", PUBLISHED),
+    ("main.rs", "/// or slug (minilab3), fetched from the SynthHub server and kept in", PUBLISHED),
+    (
+        "mcp.rs",
+        r#""share_fingerprint": { "type": "string", "description": "Learn mode only: the port (a part of its name) whose fingerprint is sent to SynthHub, so that everyone recognises this device. Giving it, with vendor, model and firmware, sends that device's fingerprint to SynthHub (POST /v1/fingerprints): the vendor, model and firmware, the USB vendor and product ids, the identity_reply, the ports (names without machine numbers), what the device sends and its controls; never a serial number, a host name, a measure or anything about the person. Nothing is sent for a private device or when offline. Ask the person first. Needs vendor, model and firmware, none empty." },"#,
+        PUBLISHED,
+    ),
+];
 
-/// `(line, what)` pairs found in one source.
-type Found = Vec<(usize, String)>;
+/// The host name of the service, as `online::SERVER` writes it.
+const HOST: &str = "mcp.synthhub.roomi-fields.com";
 
-type Counts =BTreeMap<(String, String), usize>;
+/// The names of the service, lower-cased: its spelling in the code and its spelling in prose.
+const NAMES: &[&str] = &["synthub", "synthhub"];
 
-/// Readings of one source: each submodule named after `synthub`, and each refused form, `(line, what)`.
-fn readings(src: &str) -> (Found, Found) {
+fn occurrences(line: &str) -> usize {
+    let low = line.to_lowercase();
+    NAMES.iter().map(|n| low.matches(n).count()).sum()
+}
+
+/// Lines of the tokens of `src` that are the exempt forms, for the file called `file`.
+fn exempt_lines(file: &str, src: &str) -> Vec<usize> {
     let toks = lex(src);
-    let ident = |k: usize| match toks.get(k) {
+    let ident = |k: Option<usize>| match k.and_then(|k| toks.get(k)) {
         Some((_, Tok::Ident(s))) => Some(s.as_str()),
         _ => None,
     };
     let punct = |k: usize, p: char| matches!(toks.get(k), Some((_, Tok::Punct(q))) if *q == p);
-    let (mut subs, mut bad) = (Vec::new(), Vec::new());
-    let named = |subs: &mut Found, bad: &mut Found, line: usize, name: Option<&str>| match name {
-        Some(n) if SUBMODULES.contains(&n) => subs.push((line, n.to_string())),
-        Some(n) => bad.push((line, format!("synthub::{n} is not a submodule of the link"))),
-        None => bad.push((line, "synthub::<not a submodule name>: the submodule read cannot be determined".into())),
-    };
+    let mut out = Vec::new();
     for (k, (line, tok)) in toks.iter().enumerate() {
         if !matches!(tok, Tok::Ident(s) if s == "synthub") {
             continue;
         }
-        if k > 0 && ident(k - 1) == Some("mod") {
-            continue;
-        }
-        if !(punct(k + 1, ':') && punct(k + 2, ':')) {
-            bad.push((*line, "bare `synthub`: the submodule read cannot be determined".into()));
-        } else if punct(k + 3, '{') {
-            // one reading per member of the group, at depth 1
-            let (mut depth, mut j, mut at_start) = (0usize, k + 3, true);
-            while let Some((l, t)) = toks.get(j) {
-                match t {
-                    Tok::Punct('{') => {
-                        depth += 1;
-                        at_start = depth == 1;
-                    }
-                    Tok::Punct('}') => {
-                        depth -= 1;
-                        if depth == 0 {
-                            break;
-                        }
-                    }
-                    Tok::Punct(',') if depth == 1 => at_start = true,
-                    Tok::Ident(s) if depth == 1 && at_start => {
-                        named(&mut subs, &mut bad, *l, Some(s.as_str()));
-                        at_start = false;
-                    }
-                    Tok::Punct(_) if depth == 1 && at_start => {
-                        named(&mut subs, &mut bad, *l, None);
-                        at_start = false;
-                    }
-                    _ => {}
-                }
-                j += 1;
+        let ok = match file {
+            "lib.rs" => {
+                ident(k.checked_sub(1)) == Some("mod")
+                    && ident(k.checked_sub(2)) == Some("pub")
+                    && punct(k + 1, ';')
             }
-        } else if punct(k + 3, '*') {
-            bad.push((*line, "`synthub::*`: the submodule read cannot be determined".into()));
-        } else {
-            named(&mut subs, &mut bad, *line, ident(k + 3));
-        }
-        if ident(k + 1) == Some("as") {
-            bad.push((*line, "`synthub as …`: renamed, cannot be followed".into()));
+            "main.rs" => {
+                k >= 3
+                    && ident(Some(k - 3)) == Some("osc_bridge")
+                    && punct(k - 2, ':')
+                    && punct(k - 1, ':')
+                    && punct(k + 1, ':')
+                    && punct(k + 2, ':')
+                    && ident(Some(k + 3)).is_some()
+                    && punct(k + 4, ':')
+                    && punct(k + 5, ':')
+                    && !prefixed_by_use(&toks, k)
+            }
+            _ => false,
+        };
+        if ok {
+            out.push(*line);
         }
     }
-    (subs, bad)
+    out
+}
+
+/// Whether the statement holding token `k` starts with `use` (or `pub use`).
+fn prefixed_by_use(toks: &[(usize, Tok)], k: usize) -> bool {
+    for j in (0..k).rev() {
+        match &toks[j].1 {
+            Tok::Punct(';') | Tok::Punct('}') | Tok::Punct('{') => return false,
+            Tok::Ident(s) if s == "use" => return true,
+            _ => {}
+        }
+    }
+    false
+}
+
+/// Refused lines of one source, `(line, what)`; `file` is its path under `src/`.
+fn refused_in(
+    file: &str,
+    src: &str,
+    inscribed: &[(&str, &str, &str)],
+) -> Vec<(usize, String)> {
+    let exempt = exempt_lines(file, src);
+    let mut out = Vec::new();
+    for (i, text) in src.lines().enumerate() {
+        let line = i + 1;
+        if inscribed.iter().any(|(f, t, _)| *f == file && *t == text.trim()) {
+            continue;
+        }
+        let exempted = exempt.iter().filter(|l| **l == line).count();
+        if text.contains(HOST) {
+            out.push((line, "the host name of the service".to_string()));
+        }
+        if occurrences(text) > exempted {
+            out.push((line, "the name of the service, or a reading of the link".to_string()));
+        }
+    }
+    out
 }
 
 fn rust_files(dir: &Path, into: &mut Vec<PathBuf>) {
@@ -95,47 +135,29 @@ fn rust_files(dir: &Path, into: &mut Vec<PathBuf>) {
     }
 }
 
-/// The reader module of a file: the first component under `src/`, without `.rs`.
-fn reader_of(rel: &Path) -> String {
-    let first = rel.components().next().unwrap().as_os_str().to_string_lossy().into_owned();
-    first.strip_suffix(".rs").unwrap_or(&first).to_string()
-}
-
-/// Counts per (reader, submodule) and the refused forms as `path:line: what`, over `src`.
-fn tree_readings(src: &Path) -> (Counts, Vec<String>) {
+/// Every refusal over the sources of `src`, as `path:line: what`, outside the module of the link.
+fn problems(src: &Path, inscribed: &[(&str, &str, &str)]) -> Vec<String> {
     let mut files = Vec::new();
     rust_files(src, &mut files);
-    let (mut counts, mut refused) = (Counts::new(), Vec::new());
+    let mut out = Vec::new();
+    for (f, t, _) in inscribed {
+        let held = std::fs::read_to_string(src.join(f))
+            .is_ok_and(|s| s.lines().any(|l| l.trim() == *t));
+        if !held {
+            out.push(format!("{f}: stale inscribed entry, no line matches: {t}"));
+        }
+    }
     for file in files {
         let rel = file.strip_prefix(src).unwrap();
-        let reader = reader_of(rel);
-        if reader == "synthub" || reader == "main" {
+        let first = rel.components().next().unwrap().as_os_str().to_string_lossy().into_owned();
+        if first == "synthub.rs" || first == "synthub" {
             continue;
         }
-        let (subs, bad) = readings(&std::fs::read_to_string(&file).unwrap());
-        for (_, sub) in subs {
-            *counts.entry((reader.clone(), sub)).or_default() += 1;
-        }
-        for (line, what) in bad {
-            refused.push(format!("{}:{line}: {what}", rel.display()));
-        }
-    }
-    (counts, refused)
-}
-
-/// Every problem of the readings against an inscribed list.
-fn problems(src: &Path, inscribed: &[(&str, &str, usize)]) -> Vec<String> {
-    let (counts, mut out) = tree_readings(src);
-    for ((reader, sub), real) in &counts {
-        let listed = inscribed.iter().find(|(r, s, _)| r == reader && s == sub).map_or(0, |e| e.2);
-        if *real > listed {
-            out.push(format!("new reading: {reader} reads synthub::{sub} {real} times, {listed} inscribed"));
-        }
-    }
-    for (reader, sub, n) in inscribed {
-        let real = counts.get(&(reader.to_string(), sub.to_string())).copied().unwrap_or(0);
-        if real < *n {
-            out.push(format!("stale entry: {reader} reads synthub::{sub} {real} times, {n} inscribed: lower it"));
+        let rel_s = rel.to_string_lossy().into_owned();
+        for (line, what) in
+            refused_in(&rel_s, &std::fs::read_to_string(&file).unwrap(), inscribed)
+        {
+            out.push(format!("{rel_s}:{line}: {what}"));
         }
     }
     out
@@ -151,185 +173,138 @@ fn tree(files: &[(&str, &str)]) -> tempfile::TempDir {
     dir
 }
 
-fn count(src: &str) -> Vec<String> {
-    readings(src).0.into_iter().map(|(_, s)| s).collect()
+fn refused(files: &[(&str, &str)]) -> Vec<String> {
+    problems(tree(files).path(), &[])
+}
+
+fn refused_with(files: &[(&str, &str)], inscribed: &[(&str, &str, &str)]) -> Vec<String> {
+    problems(tree(files).path(), inscribed)
 }
 
 #[test]
-fn guard_refuses_a_reading_of_the_link_that_is_not_inscribed() {
-    let dir = tree(&[("orchestrator.rs", "fn f() { crate::synthub::catalogue::locate(x); }\n")]);
-    let found = problems(dir.path(), &[]);
-    assert_eq!(found.len(), 1, "{found:?}");
-    assert!(found[0].contains("new reading") && found[0].contains("orchestrator") && found[0].contains("catalogue"));
+fn guard_list_is_frozen_both_ways() {
+    let body = "/// Talks to the SynthHub server.\nfn f() {}\n";
+    let entry = [("main.rs", "/// Talks to the SynthHub server.", "reason")];
+    // an inscribed line passes
+    assert!(refused_with(&[("main.rs", body)], &entry).is_empty());
+    // the same text in another file is refused
+    assert!(!refused_with(&[("orchestrator.rs", body)], &entry).is_empty());
+    // a line that is not inscribed is refused
+    let other = "/// Talks to the SynthHub server.\n/// Another SynthHub line.\n";
+    assert!(!refused_with(&[("main.rs", other)], &entry).is_empty());
+    // an entry that matches no line is refused
+    let stale = refused_with(&[("main.rs", "fn f() {}\n")], &entry);
+    assert!(stale.iter().any(|f| f.contains("stale")), "{stale:?}");
 }
 
 #[test]
-fn guard_accepts_an_inscribed_reading() {
-    let dir = tree(&[("install.rs", "use crate::synthub::take::Midi;\nfn f(o: crate::synthub::take::Opener) {}\n")]);
-    assert!(problems(dir.path(), &[("install", "take", 2)]).is_empty());
-}
-
-#[test]
-fn guard_refuses_a_count_above_the_inscribed_one() {
-    let dir = tree(&[("install.rs", "use crate::synthub::take::Midi;\nfn f(o: crate::synthub::take::Opener) {}\n")]);
-    let found = problems(dir.path(), &[("install", "take", 1)]);
-    assert_eq!(found.len(), 1, "{found:?}");
-    assert!(found[0].contains("new reading"));
-}
-
-#[test]
-fn guard_refuses_a_stale_entry_whose_count_fell() {
-    let dir = tree(&[("install.rs", "use crate::synthub::take::Midi;\n")]);
-    let found = problems(dir.path(), &[("install", "take", 2)]);
-    assert_eq!(found.len(), 1, "{found:?}");
-    assert!(found[0].contains("stale entry"));
-}
-
-#[test]
-fn guard_refuses_an_entry_that_no_longer_exists_in_the_sources() {
-    let dir = tree(&[("install.rs", "fn f() {}\n")]);
-    let found = problems(dir.path(), &[("install", "take", 1)]);
-    assert_eq!(found.len(), 1, "{found:?}");
-    assert!(found[0].contains("stale entry"));
-}
-
-#[test]
-fn guard_counts_readings_across_the_files_of_one_reader_module() {
-    let dir = tree(&[
-        ("mcp.rs", "fn f() { crate::synthub::online::linked(); }\n"),
-        ("mcp/tests.rs", "fn t() { crate::synthub::online::SERVER; crate::synthub::take::find(); }\n"),
-    ]);
-    assert!(problems(dir.path(), &[("mcp", "online", 2), ("mcp", "take", 1)]).is_empty());
-}
-
-#[test]
-fn guard_reads_super_self_and_osc_bridge_paths_the_same() {
-    assert_eq!(count("use super::synthub::online::Online;"), ["online"]);
-    assert_eq!(count("use self::synthub::take::Midi;"), ["take"]);
-    assert_eq!(count("let c = osc_bridge::synthub::catalogue::locate(p);"), ["catalogue"]);
-    assert_eq!(count("synthub\n    ::\n    connect::run();"), ["connect"]);
-}
-
-#[test]
-fn guard_counts_one_reading_per_member_of_a_group() {
-    assert_eq!(count("use crate::synthub::{online::Online, take::{find, Midi}, catalogue};"), ["online", "take", "catalogue"]);
-    assert!(readings("use crate::synthub::{online, take};").1.is_empty());
-}
-
-#[test]
-fn guard_refuses_a_bare_synthub_import() {
-    let (subs, bad) = readings("use crate::synthub;\n");
-    assert!(subs.is_empty());
-    assert_eq!(bad.len(), 1, "{bad:?}");
-}
-
-#[test]
-fn guard_refuses_a_renamed_synthub_import() {
-    let (_, bad) = readings("use crate::synthub as s;\n");
-    assert!(!bad.is_empty());
-}
-
-#[test]
-fn guard_refuses_a_glob_import_of_synthub() {
-    let (subs, bad) = readings("use crate::synthub::*;\n");
-    assert!(subs.is_empty());
-    assert_eq!(bad.len(), 1, "{bad:?}");
-}
-
-#[test]
-fn guard_refuses_a_bare_synthub_that_no_inscribed_entry_can_list() {
-    let dir = tree(&[("mcp.rs", "use crate::synthub;\n")]);
-    let found = problems(dir.path(), INSCRIBED);
-    assert!(found.iter().any(|f| f.starts_with("mcp.rs:1:")), "{found:?}");
-}
-
-#[test]
-fn guard_refuses_a_path_through_synthub_that_names_no_submodule() {
-    let (_, bad) = readings("use crate::synthub::Online;\n");
-    assert_eq!(bad.len(), 1, "{bad:?}");
-}
-
-#[test]
-fn guard_does_not_read_the_declaration_of_the_module_nor_comments_nor_strings() {
-    assert_eq!(readings("pub mod synthub;\n"), (vec![], vec![]));
-    let src = "// crate::synthub::online::linked()\n/* synthub */\nlet s = \"crate::synthub::take::open\";\n";
-    assert_eq!(readings(src), (vec![], vec![]));
-}
-
-#[test]
-fn guard_leaves_the_link_itself_and_main_unread() {
-    let dir = tree(&[
-        ("synthub.rs", "pub mod online;\nuse crate::synthub::online::X;\n"),
-        ("synthub/take.rs", "use crate::synthub::catalogue::y;\n"),
-        ("main.rs", "fn main() { osc_bridge::synthub::online::linked(); }\n"),
-        ("lib.rs", "pub mod synthub;\n"),
-    ]);
-    assert!(problems(dir.path(), &[]).is_empty());
-}
-
-#[test]
-fn the_sources_read_the_link_only_as_inscribed() {
+fn the_sources_of_the_bridge_name_neither_the_service_nor_its_host_nor_read_the_link() {
     let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("src");
     assert!(src.join("synthub").join("online.rs").is_file(), "the link is not under src/synthub/");
     let found = problems(&src, INSCRIBED);
-    assert!(found.is_empty(), "readings of the link outside the inscribed list:\n{}", found.join("\n"));
+    assert!(found.is_empty(), "the bridge is not free of the service:\n{}", found.join("\n"));
 }
 
 #[test]
-fn the_list_inscribes_no_reading_of_the_local_answer() {
-    assert!(INSCRIBED.iter().all(|(r, _, _)| *r != "mcp"), "{INSCRIBED:?}");
-    assert!(INSCRIBED.is_empty(), "the list only shrinks: {INSCRIBED:?}");
-}
-
-#[test]
-fn the_local_answer_source_names_no_submodule_of_the_link() {
-    let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("src");
-    let (counts, refused) = tree_readings(&src);
-    assert!(refused.is_empty(), "{refused:?}");
-    assert!(!counts.keys().any(|(reader, _)| reader == "mcp"), "{counts:?}");
-}
-
-#[test]
-fn guard_refuses_any_file_of_the_mcp_reader_that_names_a_submodule_of_the_link() {
+fn guard_refuses_a_reading_of_the_link_from_a_module_of_the_bridge() {
     for (file, body) in [
-        ("mcp.rs", "fn f() { crate::synthub::online::linked(); }\n"),
-        ("mcp/tests.rs", "fn t() { crate::synthub::online::Settings::default(); }\n"),
-        ("mcp/roles.rs", "use crate::synthub::catalogue::is_slug;\n"),
+        ("orchestrator.rs", "fn f() { crate::synthub::catalogue::locate(x); }\n"),
+        ("mcp.rs", "use crate::synthub::online::linked;\n"),
+        ("mcp/tests.rs", "fn t() { super::super::synthub::take::find(); }\n"),
+        ("midi_port.rs", "use crate::synthub::{online, take};\n"),
+        ("install.rs", "use crate::synthub as s;\n"),
+        ("detect.rs", "use crate::synthub::*;\n"),
+        ("lib.rs", "fn f() { crate::synthub::online::linked(); }\n"),
     ] {
-        let dir = tree(&[(file, body)]);
-        let found = problems(dir.path(), INSCRIBED);
-        assert!(found.iter().any(|f| f.contains("new reading") && f.contains("mcp reads")), "{file}: {found:?}");
+        let found = refused(&[(file, body)]);
+        assert!(found.iter().any(|f| f.starts_with(&format!("{file}:"))), "{file}: {found:?}");
     }
 }
 
 #[test]
-fn guard_refuses_the_local_answer_reading_the_mcp_part_of_the_link() {
-    let dir = tree(&[("mcp.rs", "fn f() { crate::synthub::mcp::serve(a, b); }\n")]);
-    let found = problems(dir.path(), INSCRIBED);
-    assert!(found.iter().any(|f| f.contains("new reading") && f.contains("synthub::mcp")), "{found:?}");
-    assert!(readings("use crate::synthub::mcp::Link;\n").1.is_empty(), "the mcp part is a submodule of the link");
+fn guard_refuses_a_name_of_the_service_in_any_case_in_code_comments_and_strings() {
+    for body in [
+        "// the SynthHub catalogue\nfn f() {}\n",
+        "/* synthub */ fn f() {}\n",
+        "//! Link to synthub.\n",
+        "fn f() -> &'static str { \"the SYNTHHUB service\" }\n",
+        "// crate::synthub::online::linked()\n",
+        "let s = \"crate::synthub::take::open\";\n",
+        "fn synthub() {}\n",
+        "fn f() { SynthHub::x(); }\n",
+    ] {
+        let found = refused(&[("orchestrator.rs", body)]);
+        assert!(!found.is_empty(), "not refused: {body}");
+    }
 }
 
 #[test]
-fn the_local_answer_reads_nothing_of_the_taking_of_sounds() {
-    assert!(!INSCRIBED.iter().any(|(r, s, _)| *r == "mcp" && (*s == "take" || *s == "mcp")));
-    let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("src");
-    let (counts, _) = tree_readings(&src);
-    assert!(!counts.keys().any(|(r, s)| r == "mcp" && (s == "take" || s == "mcp")), "{counts:?}");
+fn guard_refuses_the_host_name_of_the_service() {
+    for (file, body) in [
+        ("orchestrator.rs", "const S: &str = \"https://mcp.synthhub.roomi-fields.com\";\n"),
+        ("main.rs", "const S: &str = \"https://mcp.synthhub.roomi-fields.com\";\n"),
+        ("mcp.rs", "// see mcp.synthhub.roomi-fields.com\n"),
+    ] {
+        let found = refused(&[(file, body)]);
+        assert!(found.iter().any(|f| f.contains("host name")), "{file}: {found:?}");
+    }
 }
 
 #[test]
-fn the_midi_port_module_reads_no_submodule_of_the_link() {
-    let dir = tree(&[("midi_port.rs", "use crate::synthub::catalogue::x;\n")]);
-    let found = problems(dir.path(), &[]);
-    assert!(found.iter().any(|f| f.contains("new reading") && f.contains("midi_port")), "{found:?}");
+fn guard_leaves_the_link_itself_unread() {
+    let found = refused(&[
+        ("synthub.rs", "//! The link to SynthHub.\npub mod online;\nuse crate::synthub::online::X;\n"),
+        ("synthub/online.rs", "pub const SERVER: &str = \"https://mcp.synthhub.roomi-fields.com\";\n"),
+        ("synthub/take.rs", "use crate::synthub::catalogue::y;\n"),
+    ]);
+    assert!(found.is_empty(), "{found:?}");
 }
 
 #[test]
-fn the_midi_port_source_of_the_bridge_reads_nothing_of_the_link() {
-    let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("src");
-    assert!(src.join("midi_port.rs").is_file(), "the MIDI port module is not src/midi_port.rs");
-    let (counts, refused) = tree_readings(&src);
-    assert!(refused.is_empty(), "{refused:?}");
-    assert!(!counts.keys().any(|(reader, _)| reader == "midi_port"), "{counts:?}");
+fn guard_allows_the_declaration_of_the_module_in_lib_only() {
+    assert!(refused(&[("lib.rs", "pub mod synthub;\n")]).is_empty());
+    assert!(!refused(&[("lib.rs", "pub mod synthub;\n// synthub\n")]).is_empty());
+    assert!(!refused(&[("orchestrator.rs", "pub mod synthub;\n")]).is_empty());
+    assert!(!refused(&[("main.rs", "mod synthub;\n")]).is_empty());
+}
+
+#[test]
+fn guard_allows_main_to_call_the_link_by_full_path_only() {
+    let ok = "fn main() { let d = osc_bridge::synthub::catalogue::locate(&p)?; osc_bridge::synthub::connect::run(a); }\n";
+    assert!(refused(&[("main.rs", ok)]).is_empty());
+    let attr = "#[arg(default_value = osc_bridge::synthub::connect::DEFAULT_RELAY)]\nstruct A;\n";
+    assert!(refused(&[("main.rs", attr)]).is_empty());
+    // the same call elsewhere is refused
+    assert!(!refused(&[("orchestrator.rs", ok)]).is_empty());
+}
+
+#[test]
+fn guard_refuses_in_main_a_use_a_bare_path_a_rename_or_a_glob() {
+    for body in [
+        "use osc_bridge::synthub::catalogue::locate;\n",
+        "pub use osc_bridge::synthub::catalogue;\n",
+        "use osc_bridge::synthub;\n",
+        "use osc_bridge::synthub as s;\n",
+        "use osc_bridge::synthub::*;\n",
+        "use osc_bridge::{synthub::online, device};\n",
+        "fn main() { osc_bridge::synthub::run(); }\n",
+        "fn main() { let s = osc_bridge::synthub; }\n",
+        "fn main() { osc_bridge::synthub::*; }\n",
+        "fn main() { use osc_bridge::synthub::online::linked; }\n",
+        "fn main() { crate::synthub::online::linked(); }\n",
+    ] {
+        assert!(!refused(&[("main.rs", body)]).is_empty(), "not refused: {body}");
+    }
+}
+
+#[test]
+fn guard_refuses_in_main_a_word_in_a_comment_or_a_string_even_written_as_a_path() {
+    for body in [
+        "// osc_bridge::synthub::online::linked()\nfn main() {}\n",
+        "fn main() { println!(\"osc_bridge::synthub::online::linked\"); }\n",
+        "/// Connect to SynthHub.\nstruct A;\n",
+        "fn main() { osc_bridge::synthub::online::linked(); } // synthub\n",
+    ] {
+        assert!(!refused(&[("main.rs", body)]).is_empty(), "not refused: {body}");
+    }
 }

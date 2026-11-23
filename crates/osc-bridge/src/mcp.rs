@@ -1,10 +1,10 @@
-//! MCP (Model Context Protocol) server — exposes the SynthHub catalogue and
+//! MCP (Model Context Protocol) server — exposes the driver catalogue and
 //! OSC surface to LLMs via JSON-RPC 2.0 over stdio.
 //!
 //! Spec: <https://modelcontextprotocol.io/specification/2025-06-18>
 //!
 //! Tools exposed:
-//!  - `list_devices`   — find drivers: in the SynthHub catalogue, or under
+//!  - `list_devices`   — find drivers: in the driver catalogue, or under
 //!    `--devices-dir` (offline: the drivers cached on this machine)
 //!  - `get_device_docs`— fetch the .md companion of one device
 //!  - `list_routes`    — return the OSC routes (commands + cc/params) of one device
@@ -18,7 +18,7 @@
 //!    ports of the machine the server runs on
 //!
 //! These are the 16 local tools, answered with no service (`call_local`, which takes what a
-//! service knows as values: `Known`). The tools of the SynthHub service — the reports, the
+//! service knows as values: `Known`). The tools of the service — the reports, the
 //! contributions, the shared presets, `take_sound`, `load_preset` — belong to the link, which
 //! wraps this server: it answers its own tools first and hands every other request to the
 //! local answer.
@@ -1103,7 +1103,7 @@ pub(crate) fn detect_tool(args: &Value, index: &DeviceIndex, opts: &McpOptions, 
 }
 
 /// Find the MIDI devices plugged into this machine and their drivers: those
-/// of `index`, or, given `answers`, those of the SynthHub catalogue the service
+/// of `index`, or, given `answers`, those of the catalogue the service
 /// matched the ports against. `probes_of`, when given, says which requests recognise devices
 /// (else the drivers of `index` do). The command to run names the driver by its
 /// file when `by_file` (a folder the user keeps), else by its id.

@@ -278,16 +278,7 @@ fn main() -> Result<()> {
         }
         Cmd::Connect { server, no_share, test_synth, private_ports } =>
             osc_bridge::synthub::connect::run(&server, !no_share, test_synth, &private_ports),
-        Cmd::Privacy { offline, private, public } => {
-            let path = osc_bridge::synthub::online::settings_file().context("no configuration directory (HOME is not set)")?;
-            let offline = offline.map(|o| o == "on");
-            let cached = osc_bridge::mcp::DeviceIndex::build(&osc_bridge::synthub::online::cache_dir().unwrap_or_default(), osc_bridge::synthub::catalogue::tier_rank);
-            // A device not cached here is looked up on the server, unless the link is being cut.
-            let server = (offline != Some(true) && osc_bridge::synthub::online::linked())
-                .then(|| osc_bridge::synthub::online::Online::new(osc_bridge::synthub::online::SERVER));
-            print!("{}", osc_bridge::synthub::mcp::privacy(&path, &cached, server.as_ref(), offline, &private, &public)?);
-            Ok(())
-        }
+        Cmd::Privacy { offline, private, public } => osc_bridge::synthub::command::privacy(offline, private, public),
         Cmd::Detect { learn: true, listen_ms, share_fingerprint, vendor, model, firmware, .. } => {
             osc_bridge::synthub::learn::print_learning(listen_ms, share_fingerprint.as_deref()
                 .map(|port| (port, [vendor.as_deref(), model.as_deref(), firmware.as_deref()])),
@@ -331,27 +322,7 @@ fn main() -> Result<()> {
         Cmd::OscListen { bind } => cmd_osc_listen(bind),
         Cmd::Lint { device } => cmd_lint(device),
         Cmd::Orchestrate { config } => osc_bridge::orchestrator::Orchestrator::run(&config, osc_bridge::synthub::catalogue::locate),
-        Cmd::Mcp { devices_dir, default_target, offline } => {
-            let default_target = default_target.parse::<std::net::SocketAddr>()
-                .with_context(|| format!("parse --default-target {default_target}"))?;
-            let settings = match osc_bridge::synthub::online::settings_file() {
-                Some(path) => osc_bridge::synthub::online::Settings::load_or_create(&path)?,
-                None => osc_bridge::synthub::online::Settings::default(),
-            };
-            let online = !offline && !settings.offline && !osc_bridge::synthub::online::offline_by_env();
-            let tier_order = osc_bridge::synthub::catalogue::tier_rank;
-            // Linked, the server of the link wraps the local one; otherwise the local one serves
-            // alone, over the folder of cards the user gave, else the cards cached on this machine.
-            if online {
-                osc_bridge::synthub::mcp::run(osc_bridge::mcp::McpOptions { devices_dir, default_target, tier_order, detect_mode: None }, &settings.private)
-            } else {
-                let devices_dir = devices_dir.or_else(osc_bridge::synthub::online::cache_dir);
-                osc_bridge::mcp::run(osc_bridge::mcp::McpOptions {
-                    devices_dir, default_target, tier_order,
-                    detect_mode: Some(osc_bridge::synthub::learn::detect_offline),
-                })
-            }
-        }
+        Cmd::Mcp { devices_dir, default_target, offline } => osc_bridge::synthub::command::mcp(devices_dir, default_target, offline),
     }
 }
 

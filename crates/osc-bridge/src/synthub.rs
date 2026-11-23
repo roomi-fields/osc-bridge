@@ -3,6 +3,7 @@
 //! bridge reads it only through the paths the frontier guard lists.
 
 pub mod catalogue;
+pub mod command;
 pub mod connect;
 pub mod learn;
 pub mod mcp;
