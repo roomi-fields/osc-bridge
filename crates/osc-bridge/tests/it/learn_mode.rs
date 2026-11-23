@@ -15,7 +15,7 @@ fn ask(request: Value) -> String {
     };
     let input = format!("{request}\n");
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(opts, "http://127.0.0.1:1", None, input.as_bytes(), &mut out).unwrap();
+    osc_bridge::mcp::serve(opts, input.as_bytes(), &mut out).unwrap();
     String::from_utf8(out).unwrap()
 }
 

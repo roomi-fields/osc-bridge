@@ -16,17 +16,18 @@
 //!
 //!  - `detect_hardware`, `backup_presets`, `restore_presets` — the MIDI
 //!    ports of the machine the server runs on
-//!  - `report_result`, `report_mapping`, `get_trust`, `submit_driver`,
-//!    `submit_fix`, `get_contribution` — run on the SynthHub server:
-//!    a local copy is linked to it unless offline (`crate::synthub::online`), fetches
-//!    the drivers it needs from it one at a time (`crate::synthub::catalogue`), shows
-//!    each driver's trust, and forwards these there.
+//!
+//! These are the 16 local tools, answered with no service (`call_local`, which takes what a
+//! service knows as values: `Known`). The tools of the SynthHub service — the reports, the
+//! contributions, the shared presets, `take_sound`, `load_preset` — belong to the link, which
+//! wraps this server (`crate::synthub::mcp`): it answers its own tools first and hands every
+//! other request to the local answer.
 //!
 //! The server reads one JSON-RPC request per line from stdin and writes one
 //! response per line to stdout; logging goes to stderr.
 //!
 //! The hosted server is a separate program built on this module: it serves
-//! the catalogue tools (`catalogue_tool`), the schemas of `tool_schemas` and
+//! the catalogue tools (`catalogue_tool`), the schemas of `local_tool_schemas` and
 //! the same JSON-RPC framing (`rpc_reply`) over HTTP.
 
 use anyhow::Result;
@@ -38,6 +39,8 @@ use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use osd::Device;
+
+use crate::synthub::online::Online;
 
 pub const PROTOCOL_VERSION: &str = "2025-06-18";
 pub const SERVER_NAME: &str = "osc-bridge";
@@ -51,63 +54,13 @@ pub struct McpOptions {
     /// (`online::cache_dir`), which is all there is offline.
     pub devices_dir: Option<PathBuf>,
     pub default_target: SocketAddr,
-    /// A local copy linked to the hosted server (`crate::synthub::online`): fetch the
-    /// drivers it needs (without `devices_dir`) and forward the report and
-    /// contribution tools to it.
+    /// A local copy linked to the hosted server: the caller then runs the server of the link
+    /// (`crate::synthub::mcp`), which fetches the drivers it needs (without `devices_dir`) and
+    /// forwards the report and contribution tools. The local server does not read it.
     pub online: bool,
     /// Devices the user keeps private on this machine (ids, slugs or
     /// `vendor/*`, see `online::Settings`): nothing about them is sent.
     pub private: Vec<String>,
-}
-
-/// Tools a private device keeps on the machine: refused before anything is
-/// sent. `get_trust` on a private device is answered from the trust fetched
-/// at startup instead.
-const PRIVATE_REFUSED: [&str; 5] = ["report_result", "report_mapping", "submit_fix", "submit_driver", "share_preset"];
-
-/// A local copy's link to the hosted server: the client, the account kept on
-/// this machine, and the trust of every reported driver, as last fetched.
-struct Link {
-    client: crate::synthub::online::Online,
-    user: std::sync::Mutex<Option<String>>,
-    trust: std::sync::RwLock<Value>,
-}
-
-impl Link {
-    fn new(base: &str) -> Self {
-        Self { client: crate::synthub::online::Online::new(base), user: std::sync::Mutex::new(None), trust: std::sync::RwLock::new(Value::Null) }
-    }
-
-    /// The account, issued by the server on first use; `forget` replaces one
-    /// the server no longer knows.
-    fn user(&self, forget: bool) -> Result<String, String> {
-        let mut g = self.user.lock().map_err(|_| "account unavailable")?;
-        if let (Some(id), false) = (g.as_ref(), forget) {
-            return Ok(id.clone());
-        }
-        let id = self.client.account(forget).map_err(|e| e.to_string())?;
-        *g = Some(id.clone());
-        Ok(id)
-    }
-
-    fn forward(&self, name: &str, args: &Value) -> Result<Value, String> {
-        let unreachable = |e: anyhow::Error| format!("{name} goes to the SynthHub server, which could not be reached: {e}");
-        let user = self.user(false).map_err(|e| unreachable(anyhow::anyhow!(e)))?;
-        match self.client.call_tool(&user, name, args) {
-            Err(e) if e.to_string() == "unknown account" => {
-                let user = self.user(true).map_err(|e| unreachable(anyhow::anyhow!(e)))?;
-                self.client.call_tool(&user, name, args).map_err(unreachable)
-            }
-            r => r.map_err(unreachable),
-        }
-    }
-
-    /// A driver's trust status, once trust has been fetched.
-    fn status(&self, id: &str) -> Option<String> {
-        let trust = self.trust.read().ok()?;
-        if trust.is_null() { return None; }
-        Some(trust["devices"][id]["status"].as_str().unwrap_or("unreported").to_string())
-    }
 }
 
 /// One lightweight catalogue entry. The full `Device` is loaded on demand
@@ -208,7 +161,7 @@ impl DeviceIndex {
 
 /// Build the catalogue index once — every device tool reads from it
 /// instead of re-walking the tree.
-fn build_index(devices_dir: &Path, opts: &McpOptions) -> DeviceIndex {
+pub(crate) fn build_index(devices_dir: &Path, opts: &McpOptions) -> DeviceIndex {
     eprintln!("MCP server starting (devices_dir={}, default_target={})",
         devices_dir.display(), opts.default_target);
     let index = DeviceIndex::build(devices_dir, opts.tier_order);
@@ -216,72 +169,35 @@ fn build_index(devices_dir: &Path, opts: &McpOptions) -> DeviceIndex {
     index
 }
 
-/// Sent with `initialize` by a linked local copy.
-const LINKED_INSTRUCTIONS: &str = "osc-bridge with the SynthHub catalogue of MIDI implementations (CC, NRPN, \
-    SysEx, drum maps) of synths, drum machines and DAWs: each driver is fetched from the SynthHub server when a \
-    tool needs it, as other users and agents fixed and confirmed it. Start with list_devices (or detect_hardware), \
-    then list_routes with the device; usage_status and get_trust tell how far other users confirmed a driver, per \
-    firmware. After testing a driver on the real device, call report_result with the firmware and the device's \
-    Identity Reply: it improves the driver for everyone.";
-
-/// Fetch the trust of every reported driver from the hosted server, in the
-/// background; the session waits for it when it ends, so nothing of it (the account it may
-/// have delivered) is written after the session.
-fn trust_in_background(link: std::sync::Arc<Link>) -> std::thread::JoinHandle<()> {
-    std::thread::spawn(move || match link.client.trust() {
-        Ok(t) => if let Ok(mut g) = link.trust.write() { *g = t },
-        Err(e) => eprintln!("SynthHub server unreachable ({e}): only the drivers cached on this machine"),
-    })
-}
-
-/// The driver a tool call needs on this machine, by id or OSC prefix: the one it
-/// reads, or the one it reports on (to tell whether it is private).
-fn driver_wanted(req: &Value) -> Option<&str> {
-    if req["method"] != "tools/call" { return None; }
-    let (name, args) = (req["params"]["name"].as_str()?, &req["params"]["arguments"]);
-    match name {
-        "get_device_docs" | "list_routes" | "export_device" | "list_roles" | "set_by_role" | "get_by_role" => args["device"].as_str(),
-        n if crate::synthub::online::FORWARDED_TOOLS.contains(&n) => args["device"].as_str(),
-        _ => None,
-    }
-}
-
-/// Every driver a tool call needs: `driver_wanted`, and for `install_export` both
-/// its `device` and its `on`.
-fn drivers_wanted(req: &Value) -> Vec<&str> {
-    if req["method"] == "tools/call" && req["params"]["name"] == "install_export" {
-        let args = &req["params"]["arguments"];
-        return [args["device"].as_str(), args["on"].as_str()].into_iter().flatten().collect();
-    }
-    driver_wanted(req).into_iter().collect()
-}
-
-/// The MCP server over stdio, linked to `online::SERVER`, its drivers kept
-/// in `online::cache_dir`.
-pub fn run(opts: McpOptions) -> Result<()> {
-    serve(opts, crate::synthub::online::SERVER, crate::synthub::online::cache_dir(), std::io::stdin().lock(), std::io::stdout().lock())
+/// The local MCP server over stdio, its drivers those of `opts.devices_dir`, else those kept in
+/// `cache` (what a linked copy fetched earlier). A linked copy runs the server of the link
+/// (`crate::synthub::mcp`), which wraps this one.
+pub fn run(opts: McpOptions, cache: Option<PathBuf>) -> Result<()> {
+    let root = opts.devices_dir.clone().or(cache).unwrap_or_default();
+    serve_in(opts, &root, std::io::stdin().lock(), std::io::stdout().lock(), &crate::midi_port::open_hardware)
 }
 
 /// `serve_with_midi` on the machine's MIDI system (the guarded opening).
-pub fn serve(opts: McpOptions, base: &str, cache: Option<PathBuf>, input: impl BufRead, out: impl Write) -> Result<()> {
-    serve_with_midi(opts, base, cache, input, out, &crate::midi_port::open_hardware)
+pub fn serve(opts: McpOptions, input: impl BufRead, out: impl Write) -> Result<()> {
+    serve_with_midi(opts, input, out, &crate::midi_port::open_hardware)
 }
 
-/// One MCP session: a JSON-RPC message per line of `input`, each reply a
-/// line of `out`. Linked (`opts.online`), it asks the server at `base` for
-/// the drivers it needs and keeps them in `cache`, unless the user gave
-/// `opts.devices_dir`. The tools that reach the MIDI system take it from `open`.
-pub fn serve_with_midi(opts: McpOptions, base: &str, cache: Option<PathBuf>, input: impl BufRead, mut out: impl Write,
-                       open: crate::midi_port::Opener) -> Result<()> {
-    use std::sync::{Arc, RwLock};
-    let link = opts.online.then(|| Arc::new(Link::new(base)));
-    // Drivers from the server are kept in the cache; a folder the user gave is theirs.
-    let cache = if opts.devices_dir.is_some() { None } else { cache };
-    let root = opts.devices_dir.clone().or_else(|| cache.clone()).unwrap_or_default();
-    let index = RwLock::new(Arc::new(build_index(&root, &opts)));
-    let trust = link.as_ref().map(|link| trust_in_background(link.clone()));
-    let mut fetched = std::collections::HashSet::new();
+/// One local MCP session: a JSON-RPC message per line of `input`, each reply a line of `out`,
+/// answered by the 16 local tools over the drivers of `opts.devices_dir`. The tools that reach
+/// the MIDI system take it from `open`.
+pub fn serve_with_midi(opts: McpOptions, input: impl BufRead, out: impl Write, open: crate::midi_port::Opener) -> Result<()> {
+    let root = opts.devices_dir.clone().unwrap_or_default();
+    serve_in(opts, &root, input, out, open)
+}
 
+fn serve_in(opts: McpOptions, root: &Path, input: impl BufRead, out: impl Write, open: crate::midi_port::Opener) -> Result<()> {
+    let index = build_index(root, &opts);
+    run_session(input, out, |req| Ok(handle_request_with(req, &opts, &index, open)))
+}
+
+/// A session over JSON-RPC lines: each line of `input` parsed and handed to `handle`, each reply
+/// written as a line of `out`. A line that does not parse is told on the standard error and skipped.
+pub fn run_session(input: impl BufRead, mut out: impl Write, mut handle: impl FnMut(&Value) -> Result<Option<Value>>) -> Result<()> {
     for line in input.lines() {
         let line = match line {
             Ok(l) if l.trim().is_empty() => continue,
@@ -295,44 +211,18 @@ pub fn serve_with_midi(opts: McpOptions, base: &str, cache: Option<PathBuf>, inp
                 continue;
             }
         };
-        // Once a session, the driver a call needs comes from the server; a
-        // device the user keeps private by that very name is not asked for.
-        if let (Some(link), Some(cache)) = (&link, &cache) {
-            for name in drivers_wanted(&req) {
-                if crate::synthub::online::Settings::covers(&opts.private, name, name) || !fetched.insert(name.to_string()) { continue; }
-                match crate::synthub::catalogue::fetch(&link.client, name, cache) {
-                    Ok(_) => if let Ok(mut g) = index.write() { *g = Arc::new(DeviceIndex::build(cache, opts.tier_order)) },
-                    Err(e) => eprintln!("{name}: {e:#}"),
-                }
-            }
-        }
-        let current = index.read().map(|g| g.clone()).map_err(|_| anyhow::anyhow!("catalogue index poisoned"))?;
-        if let Some(mut resp) = handle_request_with(&req, &opts, &current, link.as_deref(), open) {
-            if let (true, Some(result)) = (link.is_some() && req["method"] == "initialize", resp.get_mut("result")) {
-                result["instructions"] = json!(LINKED_INSTRUCTIONS);
-            }
-            // A newer osc-bridge the server announced is told once, in the next tool result.
-            if let (true, Some(content)) = (req["method"] == "tools/call", resp.pointer_mut("/result/content").and_then(Value::as_array_mut)) {
-                if let Some(notice) = crate::synthub::online::newer_notice_once() {
-                    content.push(json!({ "type": "text", "text": notice }));
-                }
-            }
+        if let Some(resp) = handle(&req)? {
             let s = serde_json::to_string(&resp)?;
             writeln!(out, "{s}")?;
             out.flush()?;
         }
     }
-    if let Some(trust) = trust { let _ = trust.join(); }
     Ok(())
 }
 
-#[cfg(test)]
-fn handle_request(req: &Value, opts: &McpOptions, index: &DeviceIndex, link: Option<&Link>) -> Option<Value> {
-    handle_request_with(req, opts, index, link, &crate::midi_port::open_hardware)
-}
-
-fn handle_request_with(req: &Value, opts: &McpOptions, index: &DeviceIndex, link: Option<&Link>, open: crate::midi_port::Opener) -> Option<Value> {
-    rpc_reply(req, &tool_names(opts), || tools_list(opts), |name, args| call_tool_with(name, args, opts, index, link, open))
+fn handle_request_with(req: &Value, opts: &McpOptions, index: &DeviceIndex, open: crate::midi_port::Opener) -> Option<Value> {
+    let nothing = Known { trust: Value::Null, candidates: Vec::new(), status: &|_| None, private: &|_| false };
+    rpc_reply(req, &tool_names(opts), || tools_list(opts), |name, args| call_local(name, args, opts, index, open, &nothing))
 }
 
 /// The reply to one JSON-RPC message of an MCP session — `initialize`,
@@ -391,19 +281,13 @@ pub fn init_result() -> Value {
     })
 }
 
-fn tools_list(opts: &McpOptions) -> Value {
-    let mut all = tool_schemas();
-    if let Some(tools) = all["tools"].as_array_mut() {
-        let offered = tool_names(opts);
-        tools.retain(|t| t["name"].as_str().is_some_and(|n| offered.contains(&n)));
-    }
-    all
+fn tools_list(_opts: &McpOptions) -> Value {
+    local_tool_schemas()
 }
 
-/// The schema of every tool osc-bridge defines: the local ones, and those a
-/// linked copy forwards to the hosted server (`online::FORWARDED_TOOLS`),
-/// which serves them too.
-pub fn tool_schemas() -> Value {
+/// The schema of the 16 local tools. The tools of the service are the link's
+/// (`crate::synthub::mcp::linked_tool_schemas`).
+pub fn local_tool_schemas() -> Value {
     json!({
         "tools": [
             {
@@ -958,327 +842,6 @@ pub fn tool_schemas() -> Value {
                     "openWorldHint": true
                 }
             },
-            {
-                "name": "report_result",
-                "description": "Tell the catalogue how a driver behaved on a real device, after testing it: 'works', 'fails' or 'partial', for the whole driver or one OSC address (from list_routes). Give the firmware version, and the device's reply to the MIDI Identity Request (F0 7E 7F 06 01 F7) as identity_hex when you can: trust is counted per firmware, so a failure on another firmware does not count against the driver, and a report of unknown firmware cannot be placed. Several accounts that agree on one firmware mark the driver usage-verified there; a report that several others contradict is rolled back and puts its account under review. Report only what was actually tested.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or OSC prefix, from list_devices." },
-                        "outcome": { "type": "string", "enum": ["works", "fails", "partial"] },
-                        "address": { "type": "string", "description": "One OSC address of the driver (e.g. '/minilogue/filter/cutoff'); omit to report on the whole driver." },
-                        "firmware": { "type": "string", "description": "Firmware version of the tested device." },
-                        "identity_hex": { "type": "string", "description": "The device's reply to the MIDI Identity Request, in hex (e.g. 'F0 7E 00 06 02 42 2C 01 00 00 02 01 00 00 F7'). Proves the device was connected and carries its firmware version." },
-                        "note": { "type": "string", "description": "What happened, briefly (500 characters at most): wrong range, no effect, other parameter moved…" }
-                    },
-                    "required": ["device", "outcome"],
-                    "additionalProperties": false
-                },
-                "outputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "recorded": { "type": "boolean" },
-                        "report": { "type": "integer", "description": "The report's id." },
-                        "status": { "type": "string", "enum": ["accepted", "pending", "rolled-back", "rejected"], "description": "accepted: counts in the trust; pending: the account is under review; rolled-back: other accounts contradict it on this firmware." },
-                        "trust": { "type": "object", "description": "The driver's trust after this report (see get_trust)." }
-                    },
-                    "required": ["recorded", "report", "status", "trust"]
-                },
-                "annotations": {
-                    "title": "Report a test result",
-                    "readOnlyHint": false,
-                    "destructiveHint": false,
-                    "idempotentHint": true,
-                    "openWorldHint": false
-                }
-            },
-            {
-                "name": "get_trust",
-                "description": "How far a driver has been confirmed by people who used it, per firmware: status (unreported, unconfirmed, usage-verified, firmware-dependent, failing, disputed), how many users report it works / fails / partly works, each firmware's own status, the device identities seen for each firmware, and the same per OSC address. needs_firmware: true means reports disagree and some have no firmware — identify the device before reporting (see learn). Check it before relying on a driver, together with its source_tier.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or OSC prefix, from list_devices." }
-                    },
-                    "required": ["device"],
-                    "additionalProperties": false
-                },
-                "outputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "device": { "type": "string" },
-                        "overall": { "type": "object" },
-                        "addresses": { "type": "object" }
-                    },
-                    "required": ["device", "overall", "addresses"]
-                },
-                "annotations": {
-                    "title": "Get a driver's trust",
-                    "readOnlyHint": true,
-                    "idempotentHint": true,
-                    "openWorldHint": false
-                }
-            },
-            {
-                "name": "report_mapping",
-                "description": "Teach the catalogue which MIDI message a control really sends: after the user moved one control on the device (see relay_listen), give the driver address it is (from list_routes) — or, for a control the driver lacks, its panel label — and the CC, NRPN or note it sent, with the firmware and the device's Identity Reply when you have them. When several accounts observe the same thing on one firmware the mapping is learned; get_trust shows learned mappings and where they differ from the driver. For a device with no driver, the first step of its first driver: after detect_hardware in learn mode (its next_step), the person gives its vendor, model and firmware (share_fingerprint), and you map its controls one by one with device set to its vendor and model as its fingerprint was shared (e.g. Behringer BCR-32), a device with a driver keeping its driver id; the mappings then make the first driver you send with submit_driver.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "device": { "type": "string", "description": "Driver id or OSC prefix; for a device with no driver yet, its vendor and model as its fingerprint was shared (e.g. Behringer BCR-32)." },
-                        "address": { "type": "string", "description": "The driver's OSC address for the control." },
-                        "label": { "type": "string", "description": "The control's panel label, when the driver has no address for it." },
-                        "cc": { "type": "integer", "minimum": 0, "maximum": 127 },
-                        "nrpn_msb": { "type": "integer", "minimum": 0, "maximum": 127 },
-                        "nrpn_lsb": { "type": "integer", "minimum": 0, "maximum": 127 },
-                        "note": { "type": "integer", "minimum": 0, "maximum": 127 },
-                        "channel": { "type": "integer", "minimum": 1, "maximum": 16 },
-                        "firmware": { "type": "string" },
-                        "identity_hex": { "type": "string", "description": "The device's reply to the MIDI Identity Request, in hex." }
-                    },
-                    "required": ["device"],
-                    "additionalProperties": false
-                },
-                "annotations": { "title": "Report what a control sends", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false }
-            },
-            {
-                "name": "submit_driver",
-                "description": "Contribute a driver for a device the catalogue lacks (or a better one): the full driver file as a JSON object, in the Open Synth Descriptors format (device.name, device.vendor, device.osc_prefix, and cc_params / params / commands / triggers — see https://synthhub.roomi-fields.com/osd/). It is checked, then merged into the SynthHub catalogue by the merge job if it parses, lints and passes the tests, as its own file of source 'agent-contributed'. Say where the data comes from (manual page, tested on the device). A first driver for a device with no driver: build it from the mappings sent with report_mapping, naming the device by the vendor and model its fingerprint was shared with, and give its source and its licence (e.g. 'mapped on the device by report_mapping; license CC0-1.0').",
-                "inputSchema": { "type": "object", "properties": {
-                    "driver": { "type": "object", "description": "The driver file." },
-                    "firmware": { "type": "string", "description": "Firmware the driver was written or tested for." },
-                    "source": { "type": "string", "description": "Where the mapping comes from (e.g. 'manual v1.2 p. 34, tested on the device')." },
-                    "note": { "type": "string" } },
-                    "required": ["driver"], "additionalProperties": false },
-                "annotations": { "title": "Contribute a driver", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
-            },
-            {
-                "name": "submit_fix",
-                "description": "Contribute a corrected variant of a driver from what the catalogue learned: where learned mappings (get_trust → mappings, differs: true) disagree with the driver on one firmware, builds a copy of the driver with the learned CC / NRPN numbers, as a new file for that firmware, and queues it for the merge job.",
-                "inputSchema": { "type": "object", "properties": {
-                    "device": { "type": "string", "description": "Driver id or OSC prefix." },
-                    "firmware": { "type": "string", "description": "Needed when learned mappings differ on several firmwares." } },
-                    "required": ["device"], "additionalProperties": false },
-                "annotations": { "title": "Contribute a fix from learned mappings", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
-            },
-            {
-                "name": "get_contribution",
-                "description": "Where a contribution stands: pending (waiting for the merge job), merged (with its pull request), rejected (with the reason), or held (its account is under review).",
-                "inputSchema": { "type": "object", "properties": { "id": { "type": "integer" } }, "required": ["id"], "additionalProperties": false },
-                "annotations": { "title": "Contribution status", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": false }
-            },
-            {
-                "name": "share_preset",
-                "description": "Share something the user made on a device with every SynthHub user, under CC BY-SA 4.0: a sound, a sequence or pattern, a kit, a project, a bank of their own sounds, or a MIDI clip any device can play. Its content: the device's own data (SysEx, e.g. from backup_presets), settings by driver address (from list_routes, e.g. {'/filter/cutoff': [90]}, which also works for devices without dumps), and/or a standard MIDI file. Only what the user made: never factory presets, nor sounds or sequences bought or downloaded from others — set own_sound only after asking the user. Made from someone else's shared preset? Pass derived_from: it credits them, as the licence requires. Describe it well (category, genres, tags, tempo, key, tips): that is how people find it. The same content shared twice returns the existing id; the author publishes new versions with update_preset and can withdraw it (withdraw_preset).",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "device": { "type": "string", "description": "Driver id (e.g. 'korg/minilogue') or OSC prefix." },
-                        "name": { "type": "string", "description": "Its name (80 characters at most)." },
-                        "own_sound": { "type": "boolean", "description": "Must be true: the user made it (not a factory preset, not someone else's)." },
-                        "kind": { "type": "string", "enum": ["sound", "sequence", "kit", "project", "bank", "clip"], "description": "What it is (default sound)." },
-                        "category": { "type": "string", "enum": ["bass", "lead", "pad", "pluck", "keys", "organ", "brass", "strings", "bell", "arp", "sequence", "drums", "percussion", "fx", "texture", "vocal", "other"], "description": "The kind of sound or part." },
-                        "genres": { "type": "array", "items": { "type": "string" }, "description": "Musical styles: 'techno', 'ambient'… (8 at most)." },
-                        "tags": { "type": "array", "items": { "type": "string" }, "description": "Character and free words: 'warm', 'dark', 'evolving'… (8 at most)." },
-                        "description": { "type": "string", "description": "What it sounds like (500 characters at most)." },
-                        "tips": { "type": "string", "description": "How to play it: mod wheel, aftertouch, register… (500 characters at most)." },
-                        "tempo": { "type": "number", "description": "BPM, for sequences and clips." },
-                        "key": { "type": "string", "description": "Musical key, e.g. 'A minor'." },
-                        "firmware": { "type": "string", "description": "Firmware version of the device it was made on." },
-                        "derived_from": { "type": "string", "description": "Id of the shared preset it was made from." },
-                        "hex": { "type": "string", "description": "The device data as SysEx, in hex (64 KB at most)." },
-                        "file": { "type": "string", "description": "A .syx file on this machine (e.g. written by backup_presets), instead of hex." },
-                        "settings": { "type": "object", "description": "Settings by driver address: {'/filter/cutoff': [90], '/amp/attack': [12]} (512 at most).", "additionalProperties": true },
-                        "midi_file": { "type": "string", "description": "A standard MIDI file (.mid) on this machine." },
-                        "audio_file": { "type": "string", "description": "A short recording of it (MP3, Ogg, M4A or WebM, 1 MB at most) on this machine, as its preview." },
-                        "librarian": { "type": "string", "description": "The synth the librarian took it from (take_sound's librarian): loading it then goes through the same exchange, fitted to the receiving synth." }
-                    },
-                    "required": ["device", "name", "own_sound"],
-                    "additionalProperties": false
-                },
-                "annotations": { "title": "Share a preset", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": true }
-            },
-            {
-                "name": "update_preset",
-                "description": "Publish a new version of a preset this account shared: new content (hex, file, settings or midi_file) makes a new version, kept with a change note — earlier versions stay available; the description fields alone change it in place. Someone else's preset: share yours with derived_from instead.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "id": { "type": "string" },
-                        "changelog": { "type": "string", "description": "What changed in this version (500 characters at most)." },
-                        "name": { "type": "string" }, "description": { "type": "string" }, "tips": { "type": "string" },
-                        "category": { "type": "string", "enum": ["bass", "lead", "pad", "pluck", "keys", "organ", "brass", "strings", "bell", "arp", "sequence", "drums", "percussion", "fx", "texture", "vocal", "other"] },
-                        "genres": { "type": "array", "items": { "type": "string" } }, "tags": { "type": "array", "items": { "type": "string" } },
-                        "tempo": { "type": "number" }, "key": { "type": "string" }, "firmware": { "type": "string" },
-                        "hex": { "type": "string" }, "file": { "type": "string" },
-                        "settings": { "type": "object", "additionalProperties": true }, "midi_file": { "type": "string" },
-                        "audio_file": { "type": "string", "description": "A new preview recording for the current version." }
-                    },
-                    "required": ["id"],
-                    "additionalProperties": false
-                },
-                "annotations": { "title": "Update a preset", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
-            },
-            {
-                "name": "find_presets",
-                "description": "Search what SynthHub users shared (CC BY-SA 4.0): sounds, sequences, kits, projects, banks, MIDI clips. Filter by device, kind, category, genre, tag, author (pseudonym) or words; sort by newest, most stars, most loaded into a device or most trusted (confirmed on real devices). Returns, per preset, its id, name, kind, device, description, author, version, whether it has device data, settings, a MIDI file or an audio preview (URL), and its counts. Get one with get_preset.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "device": { "type": "string", "description": "Driver id or OSC prefix (its other variants are included)." },
-                        "kind": { "type": "string", "enum": ["sound", "sequence", "kit", "project", "bank", "clip"] },
-                        "category": { "type": "string", "enum": ["bass", "lead", "pad", "pluck", "keys", "organ", "brass", "strings", "bell", "arp", "sequence", "drums", "percussion", "fx", "texture", "vocal", "other"] },
-                        "genre": { "type": "string" },
-                        "tag": { "type": "string" },
-                        "author": { "type": "string", "description": "An author's pseudonym (e.g. 'u1a2b3c4d')." },
-                        "query": { "type": "string", "description": "Words that must all appear in the name, description, tags, genres, category or device id ('dx7 piano')." },
-                        "sort": { "type": "string", "enum": ["new", "stars", "loads", "trusted"], "description": "new (default), most stars, most loaded into a device, or most confirmed on real devices." },
-                        "limit": { "type": "integer", "minimum": 1, "maximum": 50, "description": "At most this many (default 20)." },
-                        "offset": { "type": "integer", "minimum": 0, "description": "Skip this many: the next page (the reply's total says how many match)." }
-                    },
-                    "additionalProperties": false
-                },
-                "annotations": { "title": "Find presets", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": true }
-            },
-            {
-                "name": "get_preset",
-                "description": "One shared preset in full: its content (SysEx hex, settings by driver address, MIDI file), description and playing tips, versions with their change notes, what it was derived from and its derivatives (remixes), comments, preview URLs, author, licence and attribution line, trust and counts. Load it with load_preset; credit it as the attribution line says when you publish something made from it.",
-                "inputSchema": { "type": "object", "properties": {
-                    "id": { "type": "string", "description": "Preset id from find_presets (e.g. 'p3fa9c1d2e4b7')." },
-                    "version": { "type": "integer", "minimum": 1, "description": "An earlier version (default the current one)." } },
-                    "required": ["id"], "additionalProperties": false },
-                "annotations": { "title": "Get a preset", "readOnlyHint": true, "idempotentHint": true, "openWorldHint": true }
-            },
-            {
-                "name": "report_preset",
-                "description": "Tell SynthHub how a shared preset behaved once loaded on a real device: 'works' (it loaded and sounds as described), 'fails' (refused, wrong sound), or 'factory' (it is a factory preset or someone else's sound: presets that several users flag are hidden until reviewed). Give the firmware.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "id": { "type": "string" },
-                        "outcome": { "type": "string", "enum": ["works", "fails", "factory"] },
-                        "firmware": { "type": "string" },
-                        "note": { "type": "string", "description": "What happened, briefly (500 characters at most)." }
-                    },
-                    "required": ["id", "outcome"],
-                    "additionalProperties": false
-                },
-                "annotations": { "title": "Report on a preset", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false }
-            },
-            {
-                "name": "withdraw_preset",
-                "description": "Withdraw a preset this account shared: it is no longer listed nor served. Copies others already made stay under CC BY-SA.",
-                "inputSchema": { "type": "object", "properties": { "id": { "type": "string" } }, "required": ["id"], "additionalProperties": false },
-                "annotations": { "title": "Withdraw a preset", "readOnlyHint": false, "destructiveHint": true, "idempotentHint": true, "openWorldHint": false }
-            },
-            {
-                "name": "comment_preset",
-                "description": "Comment on a shared preset — how it sounds, how you used it, what you changed — optionally attaching your remix (a preset you shared with derived_from). Comments are public at once. Also: remove one of this account's comments (remove), or flag someone else's as abusive or off-topic (flag); comments several accounts flag are hidden until reviewed.",
-                "inputSchema": { "type": "object", "properties": {
-                    "id": { "type": "string", "description": "The preset to comment on." },
-                    "text": { "type": "string", "description": "The comment (2000 characters at most)." },
-                    "remix": { "type": "string", "description": "Id of your remix, to attach." },
-                    "remove": { "type": "integer", "description": "Id of this account's comment to remove (instead of commenting)." },
-                    "flag": { "type": "integer", "description": "Id of someone else's comment to flag (instead of commenting)." } },
-                    "additionalProperties": false },
-                "annotations": { "title": "Comment on a preset", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
-            },
-            {
-                "name": "star_preset",
-                "description": "Star a shared preset for this account, as on GitHub (on: false takes the star back). Without id, lists the presets this account starred.",
-                "inputSchema": { "type": "object", "properties": { "id": { "type": "string" }, "on": { "type": "boolean", "description": "Default true." } },
-                    "additionalProperties": false },
-                "annotations": { "title": "Star a preset", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false }
-            },
-            {
-                "name": "preset_collection",
-                "description": "Collections of shared presets, public, made by one account (e.g. 'Dark basses for minilogue'). action: create (name, description), rename (collection, name, description), add or remove (collection, id), delete (collection), get (collection: its presets), list (this account's collections, or author: someone's).",
-                "inputSchema": { "type": "object", "properties": {
-                    "action": { "type": "string", "enum": ["create", "rename", "add", "remove", "delete", "get", "list"] },
-                    "collection": { "type": "string", "description": "Collection id (e.g. 'c1a2b3c4d5e6')." },
-                    "name": { "type": "string" }, "description": { "type": "string" },
-                    "id": { "type": "string", "description": "Preset id to add or remove." },
-                    "author": { "type": "string", "description": "With list: an author's pseudonym." } },
-                    "required": ["action"], "additionalProperties": false },
-                "annotations": { "title": "Preset collections", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": false }
-            },
-            {
-                "name": "follow_author",
-                "description": "Follow an author of shared presets (by pseudonym), or stop (on: false); with author alone and on omitted, shows their page: profile, presets, followers. Without author, lists the newest presets of the authors this account follows.",
-                "inputSchema": { "type": "object", "properties": { "author": { "type": "string" }, "on": { "type": "boolean" },
-                    "limit": { "type": "integer", "minimum": 1, "maximum": 50 } }, "additionalProperties": false },
-                "annotations": { "title": "Follow an author", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false }
-            },
-            {
-                "name": "set_profile",
-                "description": "Set the public profile shown on this account's author page and with its shared presets and comments, instead of its pseudonym alone: display name, link (https), a few words, the presets put first, where they are, more links, their instruments and a README. A field left out stays as it is; an empty one is cleared. Ask the user what they want shown; all of it is public.",
-                "inputSchema": { "type": "object", "properties": { "name": { "type": "string", "description": "40 characters at most." },
-                    "link": { "type": "string", "description": "An https:// address: their site, SoundCloud, Bandcamp…" },
-                    "bio": { "type": "string", "description": "A few words about them and their sounds, 600 characters at most." },
-                    "featured": { "type": "array", "items": { "type": "string" }, "maxItems": 6,
-                        "description": "Ids of their own listed presets, shown first on their page, in this order." },
-                    "location": { "type": "string", "description": "Where they make music, 60 characters at most." },
-                    "links": { "type": "array", "items": { "type": "string" }, "maxItems": 8,
-                        "description": "More https:// pages of theirs: a channel, a shop, a band." },
-                    "gear": { "type": "array", "items": { "type": "string" }, "maxItems": 20,
-                        "description": "The instruments they play, e.g. 'Korg minilogue'." },
-                    "about": { "type": "string", "description": "Their README in Markdown: who they are, how they work, what they offer; 8000 characters at most." } },
-                    "additionalProperties": false },
-                "annotations": { "title": "Set the public profile", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false }
-            },
-            {
-                "name": "link_account",
-                "description": "Link this machine's SynthHub account to the user's account on the site: returns a one-time address (valid 15 minutes) for the user to open and sign in (passkey, e-mail, Google or Discord). Afterwards what this copy shared appears under their profile, and they manage it — and their stars, collections, comments — from the site.",
-                "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false },
-                "annotations": { "title": "Link to the user's account", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
-            },
-            {
-                "name": "take_sound",
-                "description": "Take the sound a hardware synth is playing — or one of its stored programs — straight from the synth, with its name, and save it as a .syx file. The synth is found among those SynthHub's librarian can talk to (the KnobKraft Orm adaptations, about 90 synths): every MIDI port gets the identity and detect messages, which change nothing on the synth, then the found synth is asked for its sound. To share it: ask the user whether they made this sound themselves (never a factory preset, nor one bought or downloaded), then call share_preset with the device, name, file, librarian and firmware returned here, and own_sound: true. When several synths answer, call again with port.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "port": { "type": "string", "description": "MIDI port of the synth: index or name fragment (detect_hardware). Default: every port." },
-                        "program": { "type": "integer", "minimum": 1, "description": "A stored program (from 1) instead of the sound being played." },
-                        "file": { "type": "string", "description": "Where to save the .syx file (default: the system's temporary folder)." }
-                    },
-                    "additionalProperties": false
-                },
-                "outputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "synth": { "type": "string" },
-                        "librarian": { "type": "string" },
-                        "device": { "type": ["string", "null"], "description": "The catalogue driver to share it under; null if the catalogue has none yet." },
-                        "name": { "type": "string" },
-                        "firmware": { "type": ["string", "null"] },
-                        "port": { "type": "string" },
-                        "file": { "type": "string" },
-                        "messages": { "type": "integer" },
-                        "bytes": { "type": "integer" },
-                        "note": { "type": ["string", "null"], "description": "What the user should know about this synth's sounds." }
-                    },
-                    "required": ["synth", "librarian", "name", "port", "file", "messages", "bytes"]
-                },
-                "annotations": { "title": "Take a synth's sound", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": true }
-            },
-            {
-                "name": "load_preset",
-                "description": "Load a shared preset (find_presets, get_preset) into a device plugged into this computer: its settings are sent by driver address, its patch data as SysEx. Patch data replaces the sound in the device's edit buffer or memory: ask the user, then pass confirm_overwrite: true. Afterwards, tell SynthHub how it went with report_preset.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "id": { "type": "string" },
-                        "out_port": { "type": "string", "description": "MIDI OUT port of the device: index or name fragment (detect_hardware)." },
-                        "gap_ms": { "type": "integer", "description": "Pause between messages, 0-2000 ms (default 50)." },
-                        "confirm_overwrite": { "type": "boolean", "description": "True once the user agreed; needed when the preset carries patch data." }
-                    },
-                    "required": ["id", "out_port"],
-                    "additionalProperties": false
-                },
-                "annotations": { "title": "Load a preset", "readOnlyHint": false, "destructiveHint": true, "idempotentHint": true, "openWorldHint": true }
-            }
-
         ]
     })
 }
@@ -1303,58 +866,32 @@ fn link_tool_output() -> Value {
     })
 }
 
-fn tool_names(opts: &McpOptions) -> Vec<&'static str> {
-    let local = ["list_devices", "get_device_docs", "list_routes", "export_device", "send", "get_status",
+/// The 16 tools the local server answers.
+pub(crate) fn tool_names(_opts: &McpOptions) -> Vec<&'static str> {
+    vec!["list_devices", "get_device_docs", "list_routes", "export_device", "send", "get_status",
          "add_link", "remove_link", "list_links", "detect_hardware", "backup_presets", "restore_presets", "install_export",
-         "list_roles", "set_by_role", "get_by_role"];
-    // Taking and loading sounds needs the server's librarian, like the forwarded tools.
-    let linked: &[&str] = if opts.online { &["take_sound", "load_preset"] } else { &[] };
-    let forwarded = if opts.online { crate::synthub::online::FORWARDED_TOOLS.as_slice() } else { &[] };
-    local.iter().chain(forwarded).chain(linked).copied().collect()
+         "list_roles", "set_by_role", "get_by_role"]
 }
 
-#[cfg(test)]
-fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, link: Option<&Link>) -> Result<Value, String> {
-    call_tool_with(name, args, opts, index, link, &crate::midi_port::open_hardware)
+/// What the service knows, given to the local answer as values: the trust of every reported
+/// driver, the service's answers about the ports of a detection, the status of a card, and
+/// whether a device is private on this machine. Without a service, nothing is known.
+// The local tools read the card status and the candidates; the trust and the private decision
+// are the link's own (its private-device branches) and ride along for the tools that learn them.
+#[allow(dead_code)]
+pub(crate) struct Known<'a> {
+    pub(crate) trust: Value,
+    pub(crate) candidates: Vec<Value>,
+    pub(crate) status: &'a dyn Fn(&str) -> Option<String>,
+    pub(crate) private: &'a dyn Fn(&str) -> bool,
 }
 
-fn call_tool_with(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex, link: Option<&Link>,
-                  open: crate::midi_port::Opener) -> Result<Value, String> {
+/// The local answer to one call of the 16 local tools, with what the service knows given as values;
+/// any other tool is unknown to it.
+pub(crate) fn call_local(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex,
+                         open: crate::midi_port::Opener, known: &Known) -> Result<Value, String> {
     if args.get("slug").is_some() { device_arg(args)?; }
-    if let Some(link) = link {
-        if crate::synthub::online::FORWARDED_TOOLS.contains(&name) {
-            if let Some(id) = private_device(index, opts, args) {
-                if name == "get_trust" {
-                    let trust = link.trust.read().map(|t| t["devices"][&id].clone()).unwrap_or(Value::Null);
-                    let structured = json!({ "device": id, "private": true,
-                        "overall": if trust.is_null() { json!({ "status": "unreported" }) } else { trust } });
-                    return Ok(content_structured(&format!("{id} is private on this machine: trust as fetched when osc-bridge \
-                        started, nothing asked of the server.\n{}", serde_json::to_string_pretty(&structured).unwrap_or_default()), structured));
-                }
-                if PRIVATE_REFUSED.contains(&name) {
-                    return Err(format!("{id} is private on this machine: {name} is not sent to the SynthHub server. \
-                        To share it, remove it from the private list (osc-bridge privacy shows the settings file)."));
-                }
-            }
-            if name == "share_preset" || name == "update_preset" {
-                return share_with_files(link, name, args);
-            }
-            return link.forward(name, args);
-        }
-        if name == "take_sound" {
-            return take_sound(args, link, open);
-        }
-        if name == "load_preset" {
-            return load_preset(args, link, open);
-        }
-    }
-    // Drivers from the server: it finds them, and matches the ports found here.
-    let server = link.filter(|_| opts.devices_dir.is_none());
-    if let (Some(link), "list_devices") = (server, name) {
-        return link.client.catalogue_call(name, args).map_err(|e| format!("list_devices asks the SynthHub server, \
-            which could not be reached: {e}. Offline, it lists the drivers cached on this machine."));
-    }
-    if let Some(done) = catalogue_tool(name, args, index, &|id| link.and_then(|l| l.status(id))) {
+    if let Some(done) = catalogue_tool(name, args, index, known.status) {
         return done;
     }
     match name {
@@ -1419,25 +956,8 @@ fn call_tool_with(name: &str, args: &Value, opts: &McpOptions, index: &DeviceInd
             let confirm = args.get("confirm_overwrite").and_then(Value::as_bool) == Some(true);
             install_export(&preset_device(index, wanted)?, &preset_device(index, on)?, wanted, on, confirm, open)
         }
-        "detect_hardware" if args.get("learn").and_then(Value::as_bool) == Some(true) => {
-            let text = |k: &str| args.get(k).and_then(Value::as_str);
-            let share = match text("share_fingerprint") {
-                None if ["vendor", "model", "firmware"].iter().any(|k| text(k).is_some()) =>
-                    return Err("vendor, model and firmware go with share_fingerprint: the port whose fingerprint is shared".into()),
-                None => None,
-                Some(port) => {
-                    let (vendor, model, firmware) = share_fields(text("vendor"), text("model"), text("firmware"), false)?;
-                    Some(Share { port, vendor, model, firmware, command: false, client: link.map(|l| &l.client), private: &opts.private })
-                }
-            };
-            learn_hardware(index, server.map(|l| &l.client), crate::detect::learn_listen(args.get("listen_ms").and_then(Value::as_u64))?, share, opts.tier_order)
-        }
-        "detect_hardware" => {
-            let probe = args.get("probe").and_then(Value::as_bool).unwrap_or(true);
-            let wait = args.get("timeout_ms").and_then(Value::as_u64).unwrap_or(800).clamp(100, 5000);
-            let consent = consent_arg(args)?;
-            detect_hardware(index, server.map(|l| &l.client), opts.devices_dir.is_some(), probe, std::time::Duration::from_millis(wait), None, &consent, opts.tier_order)
-        }
+        "detect_hardware" if args.get("learn").and_then(Value::as_bool) == Some(true) => learn_tool(args, index, opts, None, None),
+        "detect_hardware" => detect_tool(args, index, opts, None, &|_| Ok(known.candidates.clone())),
         other => Err(format!("unknown tool: {other}")),
     }
 }
@@ -1454,7 +974,7 @@ fn consent_arg(args: &Value) -> Result<Vec<String>, String> {
 
 /// The one reading of the argument that names a device: `device`. The former
 /// `slug`, alone or beside `device`, is refused before any device is read.
-fn device_arg(args: &Value) -> Result<&str, String> {
+pub(crate) fn device_arg(args: &Value) -> Result<&str, String> {
     if args.get("slug").is_some() {
         return Err("`slug` no longer exists: name the device by `device` (a catalogue id or an OSC prefix, see list_devices)".into());
     }
@@ -1473,31 +993,6 @@ pub fn catalogue_tool(name: &str, args: &Value, index: &DeviceIndex, status: &dy
         "export_device" => export_device(index, args),
         _ => return None,
     })
-}
-
-/// The driver a tool call is about, when the user keeps it private: the
-/// `device` argument, or the device of a submitted driver. A private id also
-/// covers the other variants of the same device (same slug).
-fn private_device(index: &DeviceIndex, opts: &McpOptions, args: &Value) -> Option<String> {
-    let private = &opts.private;
-    let covers = |id: &str, slug: &str| crate::synthub::online::Settings::covers(private, id, slug)
-        || private.iter().any(|p| index.find(p).is_some_and(|e| e.slug == slug));
-    if let Some(wanted) = args.get("device").and_then(Value::as_str) {
-        // Named as the private list names it, even when no driver of it is here.
-        if covers(wanted, wanted) {
-            return Some(index.find(wanted).map(|e| e.id.clone()).unwrap_or_else(|| wanted.to_string()));
-        }
-        if index.find(wanted).is_none() && covers_declared(private, wanted) {
-            return Some(wanted.to_string());
-        }
-        let entry = index.find(wanted)?;
-        return covers(&entry.id, &entry.slug).then(|| entry.id.clone());
-    }
-    let dev = args.get("driver")?.get("device")?;
-    let (vendor, name) = (dev.get("vendor")?.as_str()?, dev.get("name")?.as_str()?);
-    let slug = dev.get("osc_prefix")?.as_str()?.trim_start_matches('/');
-    let id = format!("{}/{}", vendor_dir(index, vendor), slugify(name, '_'));
-    covers(&id, slug).then_some(id)
 }
 
 /// `osc-bridge privacy`: change the settings at `path` — `offline`, devices
@@ -1650,17 +1145,62 @@ pub fn match_port(catalogue: &[crate::recognition::Candidate], port: &str, usb: 
     }).collect()
 }
 
+/// The requests the service says recognise devices.
+pub(crate) fn service_probes(server: &Online) -> Result<Vec<crate::recognition::Probe>, String> {
+    server.probes().map_err(|e| format!("detect_hardware asks the SynthHub server which \
+        requests recognise devices, and it could not be reached: {e}. Offline, the ports are matched against the drivers cached here."))
+}
+
+/// What the service says of each port of `found`, one answer per port in order.
+pub(crate) fn service_answers(server: &Online, found: &[crate::detect::Probed]) -> Result<Vec<Value>, String> {
+    let ports: Vec<Value> = found.iter().map(|d| detect_port(d.label(),
+        d.replies.iter().map(|r| hex_bytes(r)).collect(), d.usb)).collect();
+    server.detect(&ports).map_err(|e| format!("detect_hardware asks the SynthHub server to match \
+        the ports, and it could not be reached: {e}. Offline, the ports are matched against the drivers cached here."))
+}
+
+/// What a caller gives to know the requests that recognise devices: asked only when probing.
+type ProbesOf<'a> = &'a dyn Fn() -> Result<Vec<crate::recognition::Probe>, String>;
+
+/// What a caller gives to know what the service says of the ports found, one answer per port.
+type AnswersOf<'a> = &'a dyn Fn(&[crate::detect::Probed]) -> Result<Vec<Value>, String>;
+
+/// `detect_hardware` as the tool is called: the arguments read, then `detect_hardware`.
+pub(crate) fn detect_tool(args: &Value, index: &DeviceIndex, opts: &McpOptions, probes_of: Option<ProbesOf>, answers: AnswersOf) -> Result<Value, String> {
+    let probe = args.get("probe").and_then(Value::as_bool).unwrap_or(true);
+    let wait = args.get("timeout_ms").and_then(Value::as_u64).unwrap_or(800).clamp(100, 5000);
+    let consent = consent_arg(args)?;
+    detect_hardware(index, probes_of, answers, opts.devices_dir.is_some(), probe, std::time::Duration::from_millis(wait), None, &consent, opts.tier_order)
+}
+
+/// `detect_hardware` in learn mode as the tool is called: the arguments read, the fingerprint
+/// shared through `sharing` when a name is given, the ports matched by `server`.
+pub(crate) fn learn_tool(args: &Value, index: &DeviceIndex, opts: &McpOptions, sharing: Option<&Online>,
+                         server: Option<&Online>) -> Result<Value, String> {
+    let text = |k: &str| args.get(k).and_then(Value::as_str);
+    let share = match text("share_fingerprint") {
+        None if ["vendor", "model", "firmware"].iter().any(|k| text(k).is_some()) =>
+            return Err("vendor, model and firmware go with share_fingerprint: the port whose fingerprint is shared".into()),
+        None => None,
+        Some(port) => {
+            let (vendor, model, firmware) = share_fields(text("vendor"), text("model"), text("firmware"), false)?;
+            Some(Share { port, vendor, model, firmware, command: false, client: sharing, private: &opts.private })
+        }
+    };
+    learn_hardware(index, server, crate::detect::learn_listen(args.get("listen_ms").and_then(Value::as_u64))?, share, opts.tier_order)
+}
+
 /// Find the MIDI devices plugged into this machine and their drivers: those
-/// of `index`, or, given `server`, those of the SynthHub catalogue it
-/// matches the ports against. The command to run names the driver by its
+/// of `index`, or, given `answers`, those of the SynthHub catalogue the service
+/// matched the ports against. `probes_of`, when given, says which requests recognise devices
+/// (else the drivers of `index` do). The command to run names the driver by its
 /// file when `by_file` (a folder the user keeps), else by its id.
-#[allow(clippy::too_many_arguments)] // the caller's order of the cards is the eighth value
-fn detect_hardware(index: &DeviceIndex, server: Option<&crate::synthub::online::Online>, by_file: bool, probe: bool,
+#[allow(clippy::too_many_arguments)] // the caller's order of the cards is the ninth value
+fn detect_hardware(index: &DeviceIndex, probes_of: Option<ProbesOf>, answers: AnswersOf, by_file: bool, probe: bool,
                    wait: std::time::Duration, write: Option<&Path>, consent: &[String], order: crate::recognition::TierOrder) -> Result<Value, String> {
     let mut faults = Vec::new();
-    let probes = match server {
-        Some(server) if probe => server.probes().map_err(|e| format!("detect_hardware asks the SynthHub server which \
-            requests recognise devices, and it could not be reached: {e}. Offline, the ports are matched against the drivers cached here."))?,
+    let probes = match probes_of {
+        Some(probes_of) if probe => probes_of()?,
         _ => { let plan = detect_plan(index); faults = plan.faults; plan.probes }
     };
     let capture = crate::detect::observe(probe, wait, &probes, consent).map_err(|e| format!("MIDI scan: {e}"))?;
@@ -1668,7 +1208,9 @@ fn detect_hardware(index: &DeviceIndex, server: Option<&crate::synthub::online::
         capture.write(path).map_err(|e| e.to_string())?;
     }
     let plan = if probe { held_plan(&capture, &probes, consent)? } else { Vec::new() };
-    detection_report(index, server, by_file, probe, crate::detect::replay(&capture), faults, &plan, order)
+    let found = crate::detect::replay(&capture);
+    let said = answers(&found)?;
+    detection_report(index, &said, by_file, probe, found, faults, &plan, order)
 }
 
 /// What each output port of `capture` received of `probes`, and what was held back.
@@ -1682,7 +1224,7 @@ fn held_plan(capture: &crate::capture::Capture, probes: &[crate::recognition::Pr
 /// cards of one device.
 pub fn detect_capture(devices_dir: &Path, capture: &crate::capture::Capture, order: crate::recognition::TierOrder) -> Result<Vec<Value>, String> {
     let index = DeviceIndex::build(devices_dir, order);
-    let report = detection_report(&index, None, true, false, crate::detect::replay(capture), Vec::new(), &[], order)?;
+    let report = detection_report(&index, &[], true, false,crate::detect::replay(capture), Vec::new(), &[], order)?;
     Ok(report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default())
 }
 
@@ -1692,7 +1234,7 @@ pub fn detect_capture_held(devices_dir: &Path, capture: &crate::capture::Capture
                            consent: &[String], order: crate::recognition::TierOrder) -> Result<Vec<Value>, String> {
     let index = DeviceIndex::build(devices_dir, order);
     let plan = held_plan(capture, probes, consent)?;
-    let report = detection_report(&index, None, true, true, crate::detect::replay(capture), Vec::new(), &plan, order)?;
+    let report = detection_report(&index, &[], true, true,crate::detect::replay(capture), Vec::new(), &plan, order)?;
     Ok(report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default())
 }
 
@@ -1739,23 +1281,17 @@ fn software_cards_only(index: &DeviceIndex, candidates: Vec<Value>) -> Vec<Value
         .and_then(|id| index.find(id)).is_some_and(|e| e.kind == "software")).collect()
 }
 
-/// The report of `detect_hardware` over the devices `found`.
+/// The report of `detect_hardware` over the devices `found`. `answers` is what the service said of
+/// each port, one answer per port in order; without any, the ports are matched against `index`.
 #[allow(clippy::too_many_arguments)] // the caller's order of the cards is the eighth value
-fn detection_report(index: &DeviceIndex, server: Option<&crate::synthub::online::Online>, by_file: bool, probe: bool,
+fn detection_report(index: &DeviceIndex, answers: &[Value], by_file: bool, probe: bool,
                     found: Vec<crate::detect::Probed>, faults: Vec<crate::device::DeviceFault>,
                     plan: &[crate::recognition::PortSends], order: crate::recognition::TierOrder) -> Result<Value, String> {
-    let mut matched: Vec<Vec<Value>> = match server {
-        Some(server) => {
-            let ports: Vec<Value> = found.iter().map(|d| detect_port(d.label(),
-                d.replies.iter().map(|r| hex_bytes(r)).collect(), d.usb)).collect();
-            let answers = server.detect(&ports).map_err(|e| format!("detect_hardware asks the SynthHub server to match \
-                the ports, and it could not be reached: {e}. Offline, the ports are matched against the drivers cached here."))?;
-            (0..found.len()).map(|i| answers.get(i).map(port_answer).unwrap_or_default()).collect()
-        }
-        None => {
-            let catalogue = hardware_candidates(index);
-            found.iter().map(|d| match_port(&catalogue, d.label(), d.usb, &d.replies, order).into_iter().map(|mut c| { c["kind"] = json!("candidate"); c }).collect()).collect()
-        }
+    let mut matched: Vec<Vec<Value>> = if answers.is_empty() {
+        let catalogue = hardware_candidates(index);
+        found.iter().map(|d| match_port(&catalogue, d.label(), d.usb, &d.replies, order).into_iter().map(|mut c| { c["kind"] = json!("candidate"); c }).collect()).collect()
+    } else {
+        (0..found.len()).map(|i| answers.get(i).map(port_answer).unwrap_or_default()).collect()
     };
     // One answer per device: the ports of a device are judged together, a candidate keeping the
     // proofs of every port, each naming the port that gave it.
@@ -1847,7 +1383,7 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::synthub::online:
 
 /// `detect_hardware` in learn mode: a fingerprint per device, and its measures beside it. The
 /// report's text tells the person how long it listens and to move the controls.
-fn learn_hardware(index: &DeviceIndex, server: Option<&crate::synthub::online::Online>, listen: std::time::Duration, share: Option<Share>,
+fn learn_hardware(index: &DeviceIndex, server: Option<&Online>, listen: std::time::Duration, share: Option<Share>,
                   order: crate::recognition::TierOrder) -> Result<Value, String> {
     let learned = crate::detect::learn_all(listen).map_err(|e| format!("MIDI scan: {e}"))?;
     let sharing = share.map(|s| share_learned(&s, &learned)).transpose()?;
@@ -1984,7 +1520,7 @@ fn declared_name(vendor: &str, model: &str) -> String {
 
 /// Whether `private` covers a device named « maker model » without a card: its slug is compared
 /// to the list under each cut of the words into maker and model.
-fn covers_declared(private: &[String], name: &str) -> bool {
+pub(crate) fn covers_declared(private: &[String], name: &str) -> bool {
     let words: Vec<&str> = name.split_whitespace().collect();
     (1..=words.len()).any(|k| {
         let id = format!("{}/{}", slugify(&words[..k].join(" "), '-'), slugify(&words[k..].join(" "), '-'));
@@ -2184,144 +1720,6 @@ fn restore_presets(dev: &Device, out_port: &str, file: &Path, target: Option<(&s
     Ok(content_structured(&format!("Sent {sent} SysEx message(s), {bytes} bytes, from {}", file.display()), structured))
 }
 
-/// A shared preset's files on this machine, read: `file` (a .syx) sent as
-/// `hex`, `midi_file` as `midi_base64`; `audio_file` read for the upload
-/// that follows the call.
-fn read_local_files(args: &Value) -> Result<(Value, Option<Vec<u8>>), String> {
-    use base64::Engine;
-    let mut sent = args.clone();
-    let Some(o) = sent.as_object_mut() else { return Ok((sent, None)) };
-    if let Some(file) = o.remove("file") {
-        if o.contains_key("hex") {
-            return Err("give hex or file, not both".into());
-        }
-        let msgs = crate::librarian::read_syx(Path::new(file.as_str().unwrap_or_default())).map_err(|e| e.to_string())?;
-        o.insert("hex".into(), json!(msgs.iter().flatten().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ")));
-    }
-    if let Some(file) = o.remove("midi_file") {
-        let path = file.as_str().unwrap_or_default();
-        let bytes = std::fs::read(path).map_err(|e| format!("read {path}: {e}"))?;
-        o.insert("midi_base64".into(), json!(base64::engine::general_purpose::STANDARD.encode(bytes)));
-    }
-    let audio = match o.remove("audio_file") {
-        Some(file) => {
-            let path = file.as_str().unwrap_or_default();
-            Some(std::fs::read(path).map_err(|e| format!("read {path}: {e}"))?)
-        }
-        None => None,
-    };
-    Ok((sent, audio))
-}
-
-/// Share or update a preset with its files on this machine, then upload its
-/// audio preview, if any.
-fn share_with_files(link: &Link, name: &str, args: &Value) -> Result<Value, String> {
-    let (sent, audio) = read_local_files(args)?;
-    let mut result = link.forward(name, &sent)?;
-    if let Some(bytes) = audio {
-        let id = result["structuredContent"]["id"].as_str().or(args["id"].as_str()).unwrap_or_default().to_string();
-        let user = link.user(false).map_err(|e| e.to_string())?;
-        let note = match link.client.upload(&user, &id, "audio", &bytes) {
-            Ok(()) => "Audio preview attached.".to_string(),
-            Err(e) => format!("The audio preview was not attached: {e}"),
-        };
-        if let Some(text) = result.pointer_mut("/content/0/text") {
-            *text = json!(format!("{} {note}", text.as_str().unwrap_or_default()));
-        }
-    }
-    Ok(result)
-}
-
-/// The synths the server's librarian knows, and one librarian step, for
-/// `crate::synthub::take`.
-fn librarian_ask(link: &Link) -> impl Fn(&str, &Value) -> Result<Value, String> + '_ {
-    move |op, body| link.client.librarian(op, body).map_err(|e| format!("SynthHub's librarian: {e}"))
-}
-
-/// Take the sound a synth plays (or a program) through the server's
-/// librarian, saved as a .syx file for share_preset.
-fn take_sound(args: &Value, link: &Link, open: crate::midi_port::Opener) -> Result<Value, String> {
-    use crate::synthub::take::{find, take};
-    let lib = link.client.librarian_synths().map_err(|e| format!("SynthHub's librarian could not be reached: {e}"))?;
-    let ask = librarian_ask(link);
-    let mut midi = open().map_err(|e| e.to_string())?;
-    let found = find(midi.as_mut(), &lib, &ask, args["port"].as_str())?;
-    let f = match found.as_slice() {
-        [] => return Err("no synth the librarian knows answered: check that it is on, plugged in, and that SysEx is \
-            allowed in its MIDI settings. For another synth, back its sounds up with backup_presets.".into()),
-        [f] => f,
-        several => return Err(format!("several synths answered — call again with port: {}",
-            several.iter().map(|f| format!("{} on {:?}", f.name, f.port)).collect::<Vec<_>>().join(", "))),
-    };
-    let program = args["program"].as_u64().map(|p| p.saturating_sub(1));
-    let taken = take(midi.as_mut(), &ask, f, program, Duration::from_secs(10))?;
-    drop(midi);
-    let file = match args["file"].as_str() {
-        Some(p) => PathBuf::from(p),
-        // In the temporary folder, under a name of its own: kept, since it is the user's sound.
-        None => tempfile::Builder::new()
-            .prefix(&format!("{}-{}-", slugify(&f.name, '-'), slugify(if taken.name.is_empty() { "sound" } else { &taken.name }, '-')))
-            .suffix(".syx")
-            .tempfile()
-            .and_then(|t| t.keep().map_err(|e| e.error))
-            .map_err(|e| e.to_string())?
-            .1,
-    };
-    crate::librarian::write_syx(&file, &taken.messages).map_err(|e| e.to_string())?;
-    let synth = lib["synths"].as_array().into_iter().flatten().find(|s| s["synth"] == f.synth.as_str());
-    let note = synth.map(|s| s["note"].clone()).filter(|n| !n.is_null());
-    let bytes: usize = taken.messages.iter().map(Vec::len).sum();
-    let structured = json!({ "synth": f.name, "librarian": f.synth, "device": f.devices.first(), "name": taken.name,
-        "firmware": f.firmware, "port": f.port, "file": file.display().to_string(), "messages": taken.messages.len(),
-        "bytes": bytes, "note": note });
-    let share = match f.devices.first() {
-        Some(_) => "Ask the user whether they made it; if so, share_preset with device, name, file, librarian, firmware and own_sound: true.",
-        None => "The catalogue has no driver for this synth yet, so it cannot be shared.",
-    };
-    Ok(content_structured(&format!("Took {:?} from {} on {} ({} message(s), {bytes} bytes), saved to {}. {share}{}",
-        taken.name, f.name, f.port, taken.messages.len(), file.display(),
-        note.as_ref().and_then(Value::as_str).map(|n| format!(" Note: {n}")).unwrap_or_default()), structured))
-}
-
-/// Fetch a shared preset's messages from the server and play them into a
-/// local device (patch data only once the user agreed: it replaces what the
-/// device holds). A sound the librarian took is fitted to the receiving
-/// synth's MIDI channel, read from its answer to the detect messages.
-fn load_preset(args: &Value, link: &Link, open: crate::midi_port::Opener) -> Result<Value, String> {
-    let id = args.get("id").and_then(Value::as_str).ok_or("missing id")?;
-    let out_port = args.get("out_port").and_then(Value::as_str).ok_or("missing out_port")?;
-    let gap = Duration::from_millis(args.get("gap_ms").and_then(Value::as_u64).unwrap_or(50).min(2000));
-    let preset = link.forward("get_preset", &json!({ "id": id }))?["structuredContent"].clone();
-    let mut note = None;
-    let channel = match preset["librarian"].as_str().and_then(|l| l.split('@').next()) {
-        Some(synth) => {
-            let mut lib = link.client.librarian_synths().map_err(|e| format!("SynthHub's librarian could not be reached: {e}"))?;
-            if let Some(all) = lib["synths"].as_array_mut() { all.retain(|s| s["synth"] == synth); }
-            note = lib["synths"][0]["note"].as_str().map(str::to_string);
-            let mut midi = open().map_err(|e| e.to_string())?;
-            let found = crate::synthub::take::find(midi.as_mut(), &lib, &librarian_ask(link), Some(out_port))?;
-            Some(found.iter().find(|f| f.synth == synth).map(|f| f.channel)
-                .ok_or_else(|| format!("no {synth} answered on {out_port}: is it the synth this sound was taken from, on and plugged in?"))?)
-        }
-        None => None,
-    };
-    let r = link.client.preset_messages(id, channel).map_err(|e| e.to_string())?;
-    let messages: Vec<Vec<u8>> = r["messages"].as_array().into_iter().flatten().filter_map(Value::as_str)
-        .map(|h| crate::librarian::parse_hex(h).map_err(|e| e.to_string())).collect::<Result<_, _>>()?;
-    if messages.is_empty() {
-        return Err(format!("{id} is a MIDI clip: play its MIDI file from a sequencer (get_preset gives it)"));
-    }
-    if r["device_data"] == json!(true) && args.get("confirm_overwrite").and_then(Value::as_bool) != Some(true) {
-        return Err(format!("{id} carries patch data, which replaces the sound the device holds: ask the user, \
-            then pass confirm_overwrite: true"));
-    }
-    crate::librarian::send_messages(out_port, &messages, gap).map_err(|e| e.to_string())?;
-    let structured = json!({ "id": id, "name": preset["name"], "device": preset["device"], "messages": messages.len(),
-        "attribution": preset["attribution"], "note": note });
-    Ok(content_structured(&format!("Loaded {} ({} message(s)) on {out_port}.{} Tell SynthHub how it went with report_preset.",
-        preset["name"].as_str().unwrap_or(id), messages.len(), note.map(|n| format!(" Note: {n}")).unwrap_or_default()), structured))
-}
-
 /// `osc-bridge detect --learn`: the notice first (the person moves the controls while it
 /// listens), then the fingerprint of each port and its measures.
 /// With `share` (the port, then the vendor, model and firmware the person gives), that
@@ -2373,7 +1771,13 @@ pub fn print_detection(devices_dir: Option<&Path>, probe: bool, write: Option<&P
     } else {
         let index = DeviceIndex::build(&root, order);
         let server = (devices_dir.is_none() && crate::synthub::online::linked()).then(|| crate::synthub::online::Online::new(crate::synthub::online::SERVER));
-        let report = detect_hardware(&index, server.as_ref(), devices_dir.is_some(), probe, std::time::Duration::from_millis(800), write, consent, order)
+        let probes = || service_probes(server.as_ref().expect("asked only when linked"));
+        let answers = |found: &[crate::detect::Probed]| match &server {
+            Some(server) => service_answers(server, found),
+            None => Ok(Vec::new()),
+        };
+        let report = detect_hardware(&index, server.as_ref().map(|_| &probes as &dyn Fn() -> Result<Vec<crate::recognition::Probe>, String>),
+            &answers, devices_dir.is_some(), probe, std::time::Duration::from_millis(800), write, consent, order)
             .map_err(|e| anyhow::anyhow!(e))?;
         report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default()
     };

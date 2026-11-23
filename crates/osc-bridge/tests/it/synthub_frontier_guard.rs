@@ -10,13 +10,12 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 /// The submodules of the link.
-const SUBMODULES: &[&str] = &["online", "connect", "relay_protocol", "catalogue", "take"];
+const SUBMODULES: &[&str] = &["online", "connect", "relay_protocol", "catalogue", "take", "mcp"];
 
 /// (reader module, submodule of the link, number of readings).
 const INSCRIBED: &[(&str, &str, usize)] = &[
-    ("mcp", "online", 43),
-    ("mcp", "catalogue", 5),
-    ("mcp", "take", 2),
+    ("mcp", "online", 25),
+    ("mcp", "catalogue", 1),
 ];
 
 /// `(line, what)` pairs found in one source.
@@ -283,10 +282,23 @@ fn the_sources_read_the_link_only_as_inscribed() {
 fn the_first_list_is_the_readings_of_the_bridge_at_the_split() {
     let mut list: Vec<_> = INSCRIBED.iter().map(|(r, s, _)| (*r, *s)).collect();
     list.sort();
-    assert_eq!(
-        list,
-        [("mcp", "catalogue"), ("mcp", "online"), ("mcp", "take")]
-    );
+    assert_eq!(list, [("mcp", "catalogue"), ("mcp", "online")]);
+}
+
+#[test]
+fn guard_refuses_the_local_answer_reading_the_mcp_part_of_the_link() {
+    let dir = tree(&[("mcp.rs", "fn f() { crate::synthub::mcp::serve(a, b); }\n")]);
+    let found = problems(dir.path(), INSCRIBED);
+    assert!(found.iter().any(|f| f.contains("new reading") && f.contains("synthub::mcp")), "{found:?}");
+    assert!(readings("use crate::synthub::mcp::Link;\n").1.is_empty(), "the mcp part is a submodule of the link");
+}
+
+#[test]
+fn the_local_answer_reads_nothing_of_the_taking_of_sounds() {
+    assert!(!INSCRIBED.iter().any(|(r, s, _)| *r == "mcp" && (*s == "take" || *s == "mcp")));
+    let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("src");
+    let (counts, _) = tree_readings(&src);
+    assert!(!counts.keys().any(|(r, s)| r == "mcp" && (s == "take" || s == "mcp")), "{counts:?}");
 }
 
 #[test]

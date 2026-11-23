@@ -289,7 +289,7 @@ pub fn mcp_session_in(_home: &ConfigHome, base: &str, cache: &Path, requests: &[
     };
     let input: String = requests.iter().map(|r| format!("{r}\n")).collect();
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(opts, base, Some(cache.to_path_buf()), input.as_bytes(), &mut out).unwrap();
+    osc_bridge::synthub::mcp::serve(opts, base, Some(cache.to_path_buf()), input.as_bytes(), &mut out).unwrap();
     String::from_utf8(out).unwrap().lines().map(|l| serde_json::from_str(l).unwrap()).collect()
 }
 

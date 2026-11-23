@@ -158,7 +158,7 @@ fn call(root: &tempfile::TempDir, target: SocketAddr, tool: &str, args: Value) -
     };
     let input = format!("{}\n", crate::common::tool_call(1, tool, args));
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(opts, "http://127.0.0.1:1", None, input.as_bytes(), &mut out).unwrap();
+    osc_bridge::mcp::serve(opts, input.as_bytes(), &mut out).unwrap();
     let reply: Value = serde_json::from_str(String::from_utf8(out).unwrap().lines().next().unwrap()).unwrap();
     reply["result"].clone()
 }
@@ -364,7 +364,7 @@ fn set_by_role_refuses_a_control_whose_message_writes_the_devices_memory_naming_
 
 #[test]
 fn set_by_role_carries_no_consent_argument_and_the_tools_are_published_with_their_arguments() {
-    let tools = osc_bridge::mcp::tool_schemas();
+    let tools = osc_bridge::mcp::local_tool_schemas();
     let find = |name: &str| tools["tools"].as_array().unwrap().iter().find(|t| t["name"] == name).cloned()
         .unwrap_or_else(|| panic!("no tool {name}"));
     let props = |t: &Value| t["inputSchema"]["properties"].as_object().unwrap().keys().cloned().collect::<std::collections::BTreeSet<_>>();

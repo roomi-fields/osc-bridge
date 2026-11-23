@@ -189,7 +189,7 @@ fn detect_hardware_publishes_the_maker_model_and_firmware_arguments_and_says_wha
     };
     let input = format!("{}\n", json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" }));
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(opts, "http://127.0.0.1:1", None, input.as_bytes(), &mut out).unwrap();
+    osc_bridge::mcp::serve(opts, input.as_bytes(), &mut out).unwrap();
     let reply: Value = serde_json::from_str(String::from_utf8(out).unwrap().lines().next().unwrap()).unwrap();
     let tool = reply["result"]["tools"].as_array().unwrap().iter().find(|t| t["name"] == "detect_hardware").unwrap().clone();
     let props = &tool["inputSchema"]["properties"];

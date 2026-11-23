@@ -132,7 +132,7 @@ fn call(root: &tempfile::TempDir, tool: &str, args: Value) -> Value {
     };
     let input = format!("{}\n", crate::common::tool_call(1, tool, args));
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(opts, "http://127.0.0.1:1", None, input.as_bytes(), &mut out).unwrap();
+    osc_bridge::mcp::serve(opts, input.as_bytes(), &mut out).unwrap();
     let reply: Value = serde_json::from_str(String::from_utf8(out).unwrap().lines().next().unwrap()).unwrap();
     reply["result"].clone()
 }

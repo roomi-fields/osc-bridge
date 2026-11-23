@@ -28,6 +28,7 @@ mod midi_opening;
 mod learn_mode;
 mod learn_service_matches;
 mod link_chains;
+mod link_envelope;
 mod live_links;
 mod launch_control_xl_3;
 mod message_faults;

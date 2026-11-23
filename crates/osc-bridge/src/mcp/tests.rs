@@ -11,13 +11,27 @@ const FIXTURES: &str = "tests/fixtures/devices";
 /// An order that puts no card before another: these tests do not depend on which card wins.
 fn neutral(_: &str) -> u8 { 0 }
 
-/// An order that puts the tier whose name starts with the later letter first: the fixture
-/// folder's two cards of `acme/box` (`contributed`, `vendor-doc`) are then told apart without
-/// the test knowing the catalogue's tiers.
-fn later_letter_first(tier: &str) -> u8 { 255 - tier.bytes().next().unwrap_or(0) }
-
 fn fixtures() -> DeviceIndex {
     DeviceIndex::build(Path::new(FIXTURES), neutral)
+}
+
+fn no_status(_: &str) -> Option<String> { None }
+
+fn no_private(_: &str) -> bool { false }
+
+/// What the service knows when there is none: no trust, no candidates, no card status, no private device.
+fn nothing_known() -> Known<'static> {
+    Known { trust: Value::Null, candidates: Vec::new(), status: &no_status, private: &no_private }
+}
+
+/// The local answer to one call, with nothing known of the service and the machine's MIDI system.
+fn call_tool(name: &str, args: &Value, opts: &McpOptions, index: &DeviceIndex) -> Result<Value, String> {
+    call_local(name, args, opts, index, &crate::midi_port::open_hardware, &nothing_known())
+}
+
+/// The reply of the local server to one JSON-RPC message.
+fn handle_request(req: &Value, opts: &McpOptions, index: &DeviceIndex) -> Option<Value> {
+    rpc_reply(req, &tool_names(opts), || tools_list(opts), |name, args| call_tool(name, args, opts, index))
 }
 
 fn test_opts() -> McpOptions {
@@ -60,49 +74,6 @@ fn list_devices_filters_by_words_vendor_kind_and_limit() {
 }
 
 #[test]
-fn a_private_device_keeps_its_reports_on_the_machine() {
-    let index = fixtures();
-    let opts = McpOptions { online: true, private: vec!["korg/minilogue".into()], ..test_opts() };
-    // Never reached: the refusal comes first.
-    let link = Link::new("http://127.0.0.1:9");
-    let caller = Some(&link);
-    for (tool, args) in [("report_result", json!({"device": "korg/minilogue", "outcome": "works"})),
-                         ("report_mapping", json!({"device": "minilogue", "address": "/filter/cutoff", "cc": 43})),
-                         ("submit_fix", json!({"device": "korg/minilogue", "content": "{}"})),
-                         ("share_preset", json!({"device": "korg/minilogue", "name": "Warm", "own_sound": true, "hex": "F0 42 F7"}))] {
-        let err = call_tool(tool, &args, &opts, &index, caller).unwrap_err();
-        assert!(err.contains("private on this machine") && err.contains("private list"), "{tool}: {err}");
-    }
-    let driver = json!({"driver": {"device": {"name": "minilogue", "vendor": "KORG", "osc_prefix": "/minilogue"}}});
-    assert!(call_tool("submit_driver", &driver, &opts, &index, caller).unwrap_err().contains("private"));
-    let trust = call_tool("get_trust", &json!({"device": "korg/minilogue"}), &opts, &index, caller).unwrap();
-    assert_eq!(trust["structuredContent"]["private"], json!(true), "answered on the machine, the server is never asked");
-    let vendor = McpOptions { private: vec!["korg/*".into()], ..opts };
-    assert!(call_tool("report_result", &json!({"device": "korg/ms2000", "outcome": "works"}), &vendor, &index, caller)
-        .unwrap_err().contains("private"));
-    let other = call_tool("report_result", &json!({"device": "arturia/minilab3", "outcome": "works"}), &vendor, &index, caller).unwrap_err();
-    assert!(other.contains("could not be reached"), "another device is shared: {other}");
-}
-
-#[test]
-fn a_presets_files_on_this_machine_are_read_before_sharing() {
-    let dir = tempfile::Builder::new().prefix("osc-bridge-share-").tempdir().unwrap();
-    let (syx, mid, ogg) = (dir.path().join("p.syx"), dir.path().join("p.mid"), dir.path().join("p.ogg"));
-    std::fs::write(&syx, [0xF0, 0x42, 0x30, 0x01, 0xF7, 0xF0, 0x42, 0x30, 0x02, 0xF7]).unwrap();
-    std::fs::write(&mid, b"MThd").unwrap();
-    std::fs::write(&ogg, b"OggS").unwrap();
-    let p = |f: &PathBuf| f.display().to_string();
-    let (sent, audio) = read_local_files(&json!({"device": "korg/minilogue", "file": p(&syx), "midi_file": p(&mid),
-        "audio_file": p(&ogg)})).unwrap();
-    assert_eq!(sent, json!({"device": "korg/minilogue", "hex": "F0 42 30 01 F7 F0 42 30 02 F7", "midi_base64": "TVRoZA=="}));
-    assert_eq!(audio.as_deref(), Some(&b"OggS"[..]));
-    assert!(read_local_files(&json!({"file": p(&syx), "hex": "F0 F7"})).unwrap_err().contains("not both"));
-    let opts = McpOptions { online: true, ..test_opts() };
-    assert!(tool_names(&opts).contains(&"load_preset") && !tool_names(&test_opts()).contains(&"load_preset"),
-        "loading a shared preset is offered only when linked to the server");
-}
-
-#[test]
 fn the_privacy_command_records_choices_by_catalogue_id() {
     let dir = tempfile::Builder::new().prefix("osc-bridge-privacy-").tempdir().unwrap();
     let path = dir.path().join("settings.toml");
@@ -124,7 +95,7 @@ fn an_offline_copy_does_not_offer_the_server_tools() {
     let idx = fixtures();
     let resp = handle_request(&json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
         "params": {"name": "report_result", "arguments": {"device": "korg/minilogue", "outcome": "works"}}}),
-        &test_opts(), &idx, None).unwrap();
+        &test_opts(), &idx).unwrap();
     assert_eq!(resp["error"]["code"], json!(-32602));
 }
 
@@ -147,9 +118,8 @@ fn the_catalogue_tools_are_shared_with_the_hosted_server() {
     assert_eq!(ns["FULL_PATH"], "/");
     assert!(catalogue_tool("export_device", &json!({"device": "minilogue", "format": "ctrlr"}), &idx, &|_| None)
         .unwrap().is_err());
-    let names: Vec<String> = tool_schemas()["tools"].as_array().unwrap().iter()
+    let names: Vec<String> = local_tool_schemas()["tools"].as_array().unwrap().iter()
         .map(|t| t["name"].as_str().unwrap().to_string()).collect();
-    assert!(crate::synthub::online::FORWARDED_TOOLS.iter().all(|f| names.iter().any(|n| n == f)), "{names:?}");
     assert!(!names.iter().any(|n| n.starts_with("relay_")), "relay tools belong to the hosted server");
 }
 
@@ -231,7 +201,7 @@ fn tool_failure_is_a_result_and_unknown_tool_a_protocol_error() {
     let idx = fixtures();
     let opts = test_opts();
     let call = |name: &str| handle_request(&json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
-        "params": {"name": name, "arguments": {"device": "no-such-device"}}}), &opts, &idx, None).unwrap();
+        "params": {"name": name, "arguments": {"device": "no-such-device"}}}), &opts, &idx).unwrap();
     let failed = call("list_routes");
     assert_eq!(failed["result"]["isError"], json!(true));
     assert!(failed["result"]["content"][0]["text"].as_str().unwrap().contains("no-such-device"));
@@ -247,7 +217,7 @@ fn tool_failure_is_a_result_and_unknown_tool_a_protocol_error() {
 fn restore_refuses_without_explicit_confirmation() {
     let idx = fixtures();
     let opts = test_opts();
-    let err = call_tool("restore_presets", &json!({"device": "acme/box", "out_port": "0", "file": "x.syx"}), &opts, &idx, None).unwrap_err();
+    let err = call_tool("restore_presets", &json!({"device": "acme/box", "out_port": "0", "file": "x.syx"}), &opts, &idx).unwrap_err();
     assert!(err.contains("confirm_overwrite"), "{err}");
 }
 
@@ -287,7 +257,7 @@ fn init_advertises_tools_capability() {
 fn handle_initialize() {
     let req = json!({"jsonrpc":"2.0","id":1,"method":"initialize","params":{}});
     let opts = test_opts();
-    let resp = handle_request(&req, &opts, &empty_index(), None).unwrap();
+    let resp = handle_request(&req, &opts, &empty_index()).unwrap();
     assert_eq!(resp.get("id"), Some(&json!(1)));
     assert!(resp.get("result").is_some());
 }
@@ -296,152 +266,15 @@ fn handle_initialize() {
 fn handle_initialized_notification_returns_nothing() {
     let req = json!({"jsonrpc":"2.0","method":"notifications/initialized"});
     let opts = test_opts();
-    assert!(handle_request(&req, &opts, &empty_index(), None).is_none());
+    assert!(handle_request(&req, &opts, &empty_index()).is_none());
 }
 
 #[test]
 fn handle_unknown_method_returns_error() {
     let req = json!({"jsonrpc":"2.0","id":99,"method":"foo/bar","params":{}});
     let opts = test_opts();
-    let resp = handle_request(&req, &opts, &empty_index(), None).unwrap();
+    let resp = handle_request(&req, &opts, &empty_index()).unwrap();
     assert!(resp.get("error").is_some());
-}
-
-/// A stand-in for the hosted server, on a free local port: it delivers
-/// accounts by its challenge (answering 401 to an id it did not issue, like
-/// the real one), hands out the drivers under `root` one at a time (a file and
-/// its notes, a device's variants, the drivers matching MIDI ports), answers
-/// the catalogue tools, gives a fixed trust list, and answers every forwarded
-/// tool call with the tool's name. The forwarded calls it received are in the
-/// returned list.
-fn fake_server(root: &Path) -> (String, std::sync::Arc<std::sync::Mutex<Vec<String>>>) {
-    let server = tiny_http::Server::http("127.0.0.1:0").unwrap();
-    let base = format!("http://{}", server.server_addr());
-    let calls = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
-    let (root, seen) = (root.to_path_buf(), calls.clone());
-    std::thread::spawn(move || {
-        let index = DeviceIndex::build(&root, later_letter_first);
-        let mut issued: Vec<String> = Vec::new();
-        let challenge = json!({ "challenge": "fake", "algorithm": "sha256", "bits": 4, "deliver": "/v1/access/deliver" }).to_string();
-        for mut req in server.incoming_requests() {
-            let mut body = String::new();
-            let _ = std::io::Read::read_to_string(req.as_reader(), &mut body);
-            let url = req.url().to_string();
-            let file = |rel: &str| std::fs::read_to_string(root.join(rel)).ok();
-            let (status, reply) = match url.as_str() {
-                "/v1/access/challenge" => (200, challenge.clone()),
-                "/v1/access/deliver" => {
-                    let id = format!("{:032x}", issued.len() + 1);
-                    issued.push(id.clone());
-                    (200, json!({ "id": id, "user_id": id, "mcp_path": format!("/u/{id}/mcp"), "tier": "free" }).to_string())
-                }
-                "/v1/trust" => (200, json!({ "devices": { "korg/minilogue": { "status": "unconfirmed" } } }).to_string()),
-                u if u.starts_with("/api/v1/devices/") => match file(&u["/api/v1/devices/".len()..]) {
-                    Some(text) => (200, text),
-                    None => (404, "not found\n".into()),
-                },
-                u if u.starts_with("/v1/devices/") => match index.find(&u["/v1/devices/".len()..]) {
-                    Some(best) => {
-                        let variants: Vec<Value> = index.entries.iter().filter(|e| e.slug == best.slug)
-                            .map(|e| json!({ "id": e.id, "slug": e.slug })).collect();
-                        (200, json!({ "best": best.id, "variants": variants }).to_string())
-                    }
-                    None => (404, json!({ "error": "no such device" }).to_string()),
-                },
-                "/v1/detect" if req.method() == &tiny_http::Method::Get => (200, probes_json(&detect_probes(&index)).to_string()),
-                "/v1/detect" => {
-                    let asked: Value = serde_json::from_str(&body).unwrap();
-                    let cat = hardware_candidates(&index);
-                    let ports: Vec<Value> = asked["ports"].as_array().unwrap().iter().map(|p| {
-                        let replies: Vec<Vec<u8>> = p["replies_hex"].as_array().into_iter().flatten()
-                            .map(|h| crate::librarian::parse_hex(h.as_str().unwrap()).unwrap()).collect();
-                        json!({ "port": p["port"], "candidates": match_port(&cat, p["port"].as_str().unwrap(), None, &replies, neutral) })
-                    }).collect();
-                    (200, json!({ "ports": ports }).to_string())
-                }
-                "/mcp" => {
-                    let rpc: Value = serde_json::from_str(&body).unwrap();
-                    let result = catalogue_tool(rpc["params"]["name"].as_str().unwrap(), &rpc["params"]["arguments"], &index, &|_| None)
-                        .unwrap().unwrap();
-                    (200, json!({ "jsonrpc": "2.0", "id": 1, "result": result }).to_string())
-                }
-                u if u.starts_with("/u/") && u.ends_with("/mcp") => {
-                    let id = &u[3..u.len() - 4];
-                    if issued.iter().any(|i| i == id) {
-                        let rpc: Value = serde_json::from_str(&body).unwrap();
-                        let name = rpc["params"]["name"].as_str().unwrap().to_string();
-                        seen.lock().unwrap().push(name.clone());
-                        (200, json!({ "jsonrpc": "2.0", "id": 1, "result": { "content": [{ "type": "text", "text": name }] } }).to_string())
-                    } else {
-                        // Unknown account: the service answers 401 with the challenge itself.
-                        (401, challenge.clone())
-                    }
-                }
-                _ => (404, "{}".into()),
-            };
-            let _ = req.respond(tiny_http::Response::from_string(reply).with_status_code(status));
-        }
-    });
-    (base, calls)
-}
-
-#[test]
-fn a_call_names_the_driver_it_needs() {
-    let call = |name: &str, args: Value| json!({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
-        "params": {"name": name, "arguments": args}});
-    assert_eq!(driver_wanted(&call("list_routes", json!({"device": "minilogue"}))), Some("minilogue"));
-    assert_eq!(driver_wanted(&call("get_device_docs", json!({"device": "korg/minilogue"}))), Some("korg/minilogue"));
-    assert_eq!(driver_wanted(&call("list_routes", json!({"slug": "minilogue"}))), None, "slug no longer names a device");
-    assert_eq!(driver_wanted(&call("export_device", json!({"device": "korg/minilogue", "format": "midnam"}))), Some("korg/minilogue"));
-    assert_eq!(driver_wanted(&call("report_result", json!({"device": "minilogue", "outcome": "works"}))), Some("minilogue"));
-    assert_eq!(driver_wanted(&call("list_devices", json!({"query": "korg"}))), None, "the server lists them");
-    assert_eq!(driver_wanted(&json!({"jsonrpc": "2.0", "id": 1, "method": "tools/list"})), None);
-}
-
-#[test]
-fn a_local_copy_fetches_the_drivers_it_needs_and_forwards_reports() {
-    let dir = tempfile::Builder::new().prefix("osc-bridge-link-").tempdir().unwrap();
-    let tmp = dir.path();
-    let cache = tmp.join("cache");
-    let (base, calls) = fake_server(Path::new(FIXTURES));
-    let link = Link { client: crate::synthub::online::Online::keeping_account_in(&base, Some(tmp.join("user"))), ..Link::new("unused") };
-
-    // By slug, its best variant; with its notes and the driver it takes its MIDI from.
-    let fetched = crate::synthub::catalogue::fetch(&link.client, "microfreak_tools", &cache).unwrap();
-    assert_eq!(fetched, cache.join("arturia/microfreak.vendor.fw-microfreak-tools-0.1.0.json"));
-    assert!(fetched.with_extension("md").is_file() && cache.join("arturia/microfreak.json").is_file());
-    assert_eq!(crate::device::load(&fetched).unwrap().device.osc_prefix, "/microfreak_tools");
-    assert_eq!(crate::synthub::catalogue::fetch(&link.client, "box", &cache).unwrap(), cache.join("acme/box.vendor.fw-2.json"));
-    assert!(crate::synthub::catalogue::fetch(&link.client, "acme/none", &cache).unwrap_err().to_string().contains("no driver acme/none"));
-    assert!(link.client.fetch_driver("../secret", &cache).is_err());
-    assert_eq!(DeviceIndex::build(&cache, neutral).entries.len(), 3, "only what was asked for is on this machine");
-
-    // The server lists and matches the drivers; what is cached here is not the catalogue.
-    let opts = McpOptions { online: true, devices_dir: None, ..test_opts() };
-    let index = DeviceIndex::build(&cache, neutral);
-    let listed = call_tool("list_devices", &json!({"query": "minilogue"}), &opts, &index, Some(&link)).unwrap();
-    assert_eq!(listed["structuredContent"]["devices"][0]["device"], "korg/minilogue", "{listed}");
-    let matched = link.client.detect(&[json!({"port": "minilogue MIDI 1"})]).unwrap();
-    assert_eq!(matched[0]["candidates"][0]["id"], "korg/minilogue", "{matched:?}");
-    let acme = crate::recognition::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
-    let matched = link.client.detect(&[json!({"port": "USB MIDI", "replies_hex": [hex_bytes(&acme.reply())]})]).unwrap();
-    assert_eq!(matched[0]["candidates"][0]["firmware"], "2.0.0.0", "{matched:?}");
-    assert_eq!(link.client.probes().unwrap(), detect_probes(&DeviceIndex::build(Path::new(FIXTURES), neutral)));
-
-    // Reports go out under the account kept on this machine.
-    let user = link.user(false).unwrap();
-    assert_eq!(std::fs::read_to_string(tmp.join("user")).unwrap(), user, "the account is kept");
-    let reported = call_tool("report_result", &json!({"device": "korg/minilogue", "outcome": "works", "firmware": "2.10"}),
-        &opts, &index, Some(&link)).unwrap();
-    assert_eq!(reported["content"][0]["text"], "report_result", "{reported}");
-    assert!(tool_names(&opts).contains(&"submit_fix") && !tool_names(&test_opts()).contains(&"submit_fix"));
-
-    std::fs::write(tmp.join("user"), "0".repeat(32)).unwrap();
-    let relinked = Link { client: crate::synthub::online::Online::keeping_account_in(&base, Some(tmp.join("user"))), ..Link::new("unused") };
-    let trust = call_tool("get_trust", &json!({"device": "korg/minilogue"}), &opts, &index, Some(&relinked)).unwrap();
-    assert_eq!(trust["content"][0]["text"], "get_trust", "an account the server forgot is replaced: {trust}");
-    assert_ne!(std::fs::read_to_string(tmp.join("user")).unwrap(), "0".repeat(32));
-    assert_eq!(*calls.lock().unwrap(), ["report_result", "get_trust"]);
 }
 
 /// A stand-in orchestrator on a free UDP port: it answers the first message
@@ -473,7 +306,7 @@ fn add_link_sends_the_source_the_target_and_the_scaling_to_the_orchestrator_and_
     let (addr, got) = fake_orchestrator(vec![osc("/bridge/link/added", vec![ostr("/ctl/knob"), ostr("/synth/cutoff")])]);
     let args = json!({"from": "/ctl/knob", "to": "/synth/cutoff", "map": {"from": [0, 127], "to": [0, 1]},
         "target": addr.to_string()});
-    let res = call_tool("add_link", &args, &test_opts(), &empty_index(), None).unwrap();
+    let res = call_tool("add_link", &args, &test_opts(), &empty_index()).unwrap();
     let sent = got.recv_timeout(Duration::from_secs(5)).unwrap();
     use rosc::OscType::Float;
     assert_eq!(sent.addr, "/bridge/link/add");
@@ -489,7 +322,7 @@ fn add_link_sends_the_source_the_target_and_the_scaling_to_the_orchestrator_and_
 fn add_link_without_scaling_sends_only_the_two_addresses() {
     let (addr, got) = fake_orchestrator(vec![osc("/bridge/link/added", vec![])]);
     let args = json!({"from": "/a", "to": "/b", "target": addr.to_string()});
-    call_tool("add_link", &args, &test_opts(), &empty_index(), None).unwrap();
+    call_tool("add_link", &args, &test_opts(), &empty_index()).unwrap();
     let sent = got.recv_timeout(Duration::from_secs(5)).unwrap();
     assert_eq!(sent.args, vec![ostr("/a"), ostr("/b")]);
 }
@@ -498,7 +331,7 @@ fn add_link_without_scaling_sends_only_the_two_addresses() {
 fn add_link_gives_the_orchestrators_refusal_as_it_is() {
     let (addr, _got) = fake_orchestrator(vec![osc("/bridge/link/error", vec![ostr("no device owns /ghost/x")])]);
     let args = json!({"from": "/ghost/x", "to": "/b", "target": addr.to_string()});
-    let res = call_tool("add_link", &args, &test_opts(), &empty_index(), None).unwrap();
+    let res = call_tool("add_link", &args, &test_opts(), &empty_index()).unwrap();
     let sc = &res["structuredContent"];
     assert_eq!(sc["replied"], json!(true));
     assert_eq!(sc["replies"][0]["addr"], json!("/bridge/link/error"));
@@ -508,15 +341,15 @@ fn add_link_gives_the_orchestrators_refusal_as_it_is() {
 #[test]
 fn add_link_without_a_source_or_a_target_is_a_tool_error() {
     let opts = test_opts();
-    assert!(call_tool("add_link", &json!({"to": "/b"}), &opts, &empty_index(), None).unwrap_err().contains("from"));
-    assert!(call_tool("add_link", &json!({"from": "/a"}), &opts, &empty_index(), None).unwrap_err().contains("to"));
+    assert!(call_tool("add_link", &json!({"to": "/b"}), &opts, &empty_index()).unwrap_err().contains("from"));
+    assert!(call_tool("add_link", &json!({"from": "/a"}), &opts, &empty_index()).unwrap_err().contains("to"));
 }
 
 #[test]
 fn remove_link_sends_the_source_and_the_target_and_gives_the_reply() {
     let (addr, got) = fake_orchestrator(vec![osc("/bridge/link/removed", vec![ostr("/a"), ostr("/b")])]);
     let args = json!({"from": "/a", "to": "/b", "target": addr.to_string()});
-    let res = call_tool("remove_link", &args, &test_opts(), &empty_index(), None).unwrap();
+    let res = call_tool("remove_link", &args, &test_opts(), &empty_index()).unwrap();
     let sent = got.recv_timeout(Duration::from_secs(5)).unwrap();
     assert_eq!((sent.addr.as_str(), sent.args), ("/bridge/link/remove", vec![ostr("/a"), ostr("/b")]));
     assert_eq!(res["structuredContent"]["replies"][0]["addr"], json!("/bridge/link/removed"));
@@ -530,7 +363,7 @@ fn list_links_gives_every_reply_of_the_orchestrator() {
         osc("/bridge/link/list/item", vec![ostr("/c"), ostr("/d"), ostr("live"), Float(0.0), Float(127.0), Float(0.0), Float(1.0)]),
         osc("/bridge/link/list/end", vec![Int(2)]),
     ]);
-    let res = call_tool("list_links", &json!({"target": addr.to_string()}), &test_opts(), &empty_index(), None).unwrap();
+    let res = call_tool("list_links", &json!({"target": addr.to_string()}), &test_opts(), &empty_index()).unwrap();
     assert_eq!(got.recv_timeout(Duration::from_secs(5)).unwrap().addr, "/bridge/link/list");
     let replies = res["structuredContent"]["replies"].as_array().unwrap();
     assert_eq!(replies.len(), 3);
@@ -547,7 +380,7 @@ fn the_link_tools_say_no_orchestrator_answers_without_changing_anything() {
     for (tool, args) in [("add_link", json!({"from": "/a", "to": "/b", "target": target})),
                          ("remove_link", json!({"from": "/a", "to": "/b", "target": target})),
                          ("list_links", json!({"target": target}))] {
-        let res = call_tool(tool, &args, &opts, &empty_index(), None).unwrap();
+        let res = call_tool(tool, &args, &opts, &empty_index()).unwrap();
         let sc = &res["structuredContent"];
         assert_eq!(sc["replied"], json!(false), "{tool}");
         assert_eq!(sc["replies"], json!([]), "{tool}");
@@ -559,7 +392,7 @@ fn the_link_tools_say_no_orchestrator_answers_without_changing_anything() {
 fn the_link_tools_default_to_the_default_target() {
     let (addr, got) = fake_orchestrator(vec![osc("/bridge/link/list/end", vec![rosc::OscType::Int(0)])]);
     let opts = McpOptions { default_target: addr, ..test_opts() };
-    call_tool("list_links", &json!({}), &opts, &empty_index(), None).unwrap();
+    call_tool("list_links", &json!({}), &opts, &empty_index()).unwrap();
     assert_eq!(got.recv_timeout(Duration::from_secs(5)).unwrap().addr, "/bridge/link/list");
 }
 
@@ -628,7 +461,7 @@ fn send_args(addr: SocketAddr) -> Value {
 #[test]
 fn send_asks_the_bridge_for_its_acknowledgement_in_the_packet_of_the_message() {
     let (addr, got) = fake_bridge(vec![]);
-    call_tool("send", &send_args(addr), &test_opts(), &empty_index(), None).unwrap();
+    call_tool("send", &send_args(addr), &test_opts(), &empty_index()).unwrap();
     let seen = got.recv_timeout(Duration::from_secs(5)).unwrap();
     assert_eq!(seen.len(), 2, "{seen:?}");
     assert_eq!(seen[0].addr, "/synth/cutoff");
@@ -640,7 +473,7 @@ fn send_asks_the_bridge_for_its_acknowledgement_in_the_packet_of_the_message() {
 #[test]
 fn send_gives_sent_true_when_the_bridge_says_the_message_is_done() {
     let (addr, _got) = fake_bridge(vec![]);
-    let res = call_tool("send", &send_args(addr), &test_opts(), &empty_index(), None).unwrap();
+    let res = call_tool("send", &send_args(addr), &test_opts(), &empty_index()).unwrap();
     assert_ne!(res["isError"], json!(true), "{res}");
     let sc = &res["structuredContent"];
     assert_eq!(sc["sent"], json!(true), "{res}");
@@ -652,7 +485,7 @@ fn send_gives_sent_true_when_the_bridge_says_the_message_is_done() {
 fn send_gives_an_error_result_with_the_address_and_the_reason_of_a_fault_the_bridge_sends_back() {
     let fault = osc("/bridge/fault", vec![ostr("/synth/cutoff"), ostr("missing arg value for /synth/cutoff")]);
     let (addr, _got) = fake_bridge(vec![fault]);
-    let res = call_tool("send", &send_args(addr), &test_opts(), &empty_index(), None).unwrap();
+    let res = call_tool("send", &send_args(addr), &test_opts(), &empty_index()).unwrap();
     assert_eq!(res["isError"], json!(true), "{res}");
     let text = res["content"][0]["text"].as_str().unwrap();
     for part in ["/synth/cutoff", "missing arg value for /synth/cutoff"] {
@@ -669,7 +502,7 @@ fn send_says_the_bridge_does_not_answer_at_that_address_when_nothing_replies() {
     // A bound port nobody reads: the tool times out and says so.
     let silent = UdpSocket::bind("127.0.0.1:0").unwrap();
     let addr = silent.local_addr().unwrap();
-    let outcome = call_tool("send", &send_args(addr), &test_opts(), &empty_index(), None);
+    let outcome = call_tool("send", &send_args(addr), &test_opts(), &empty_index());
     let (is_error, text) = match &outcome {
         Err(e) => (true, e.clone()),
         Ok(v) => (v["isError"] == json!(true), v["content"][0]["text"].as_str().unwrap_or_default().to_string()),
@@ -680,7 +513,7 @@ fn send_says_the_bridge_does_not_answer_at_that_address_when_nothing_replies() {
 
 #[test]
 fn the_local_tools_that_name_a_device_take_device_and_no_slug() {
-    let schemas = tool_schemas();
+    let schemas = local_tool_schemas();
     let tools = schemas["tools"].as_array().unwrap();
     let tool = |n: &str| tools.iter().find(|t| t["name"] == n).unwrap_or_else(|| panic!("no tool {n}"));
     for name in ["get_device_docs", "list_routes"] {
@@ -711,7 +544,7 @@ fn a_call_that_passes_slug_is_refused_with_an_error_naming_device_before_any_dev
     let tools = ["get_device_docs", "list_routes", "export_device", "list_roles", "get_by_role", "set_by_role"];
     for tool in tools {
         for args in [json!({"slug": "minilogue", "format": "midnam"}), json!({"slug": "minilogue", "device": "minilogue", "format": "midnam"})] {
-            let err = call_tool(tool, &args, &opts, &idx, None).unwrap_err();
+            let err = call_tool(tool, &args, &opts, &idx).unwrap_err();
             assert!(err.contains("slug") && err.contains("device"), "{tool} {args}: {err}");
             assert!(err.contains("no longer"), "{tool}: {err}");
         }
@@ -861,35 +694,20 @@ fn detect_prints_no_usb_line_and_does_not_panic_on_malformed_usb_ids() {
 const BEING_CONFIRMED: &str = "being confirmed: not enough people agree yet, to confirm with the person";
 const IN_DISAGREEMENT: &str = "in disagreement: several devices are named for it, to confirm with the person";
 
-/// A service that answers each detect request with `answer(port)` and keeps the requests.
-fn detect_service(answer: fn(&Value) -> Value) -> (crate::synthub::online::Online, std::sync::Arc<std::sync::Mutex<Vec<Value>>>, tempfile::TempDir) {
-    let server = tiny_http::Server::http("127.0.0.1:0").unwrap();
-    let base = format!("http://{}", server.server_addr());
-    let bodies = std::sync::Arc::new(std::sync::Mutex::new(Vec::<Value>::new()));
-    let seen = bodies.clone();
-    std::thread::spawn(move || {
-        for mut req in server.incoming_requests() {
-            let mut body = String::new();
-            let _ = std::io::Read::read_to_string(req.as_reader(), &mut body);
-            let asked: Value = serde_json::from_str(&body).unwrap_or(Value::Null);
-            seen.lock().unwrap().push(asked.clone());
-            let ports: Vec<Value> = asked["ports"].as_array().into_iter().flatten().map(answer).collect();
-            let _ = req.respond(tiny_http::Response::from_string(json!({ "ports": ports }).to_string()));
-        }
-    });
-    let dir = tempfile::Builder::new().prefix("osc-bridge-detect-").tempdir().unwrap();
-    let account = dir.path().join("user");
-    std::fs::write(&account, "0123456789abcdef0123456789abcdef\n").unwrap();
-    (crate::synthub::online::Online::keeping_account_in(&base, Some(account)), bodies, dir)
-}
-
 fn probed(name: &str, usb: Option<(u16, u16)>) -> crate::detect::Probed {
     crate::detect::Probed { out_index: Some(0), out_name: Some(name.into()), in_index: Some(0), in_name: Some(name.into()),
         identity: None, usb, replies: Vec::new(), client_kind: crate::detect::ClientKind::Unknown }
 }
 
-fn report_devices(server: &crate::synthub::online::Online, found: Vec<crate::detect::Probed>) -> Vec<Value> {
-    let r = detection_report(&fixtures(), Some(server), true, true, found, Vec::new(), &[], neutral).unwrap();
+/// What the service says of each port of `found`, as the link hands it to the detection: the
+/// answers `answer(port)` in the order of the ports.
+fn service_says(answer: fn(&Value) -> Value, found: &[crate::detect::Probed]) -> Vec<Value> {
+    found.iter().map(|d| answer(&json!({ "port": d.label() }))).collect()
+}
+
+fn report_devices(answer: fn(&Value) -> Value, found: Vec<crate::detect::Probed>) -> Vec<Value> {
+    let said = service_says(answer, &found);
+    let r = detection_report(&fixtures(), &said, true, true, found, Vec::new(), &[], neutral).unwrap();
     r["structuredContent"]["devices"].as_array().unwrap().clone()
 }
 
@@ -899,20 +717,9 @@ fn bcr_unlisted(_: &Value) -> Value {
 }
 
 #[test]
-fn the_detection_sends_the_usb_ids_of_a_port_that_has_them_as_numbers_and_none_otherwise() {
-    let (client, bodies, _dir) = detect_service(|_| json!({ "candidates": [] }));
-    report_devices(&client, vec![probed("BCR32", Some((0x1397, 0x12cf))), probed("Virtual", None)]);
-    let sent = bodies.lock().unwrap().clone();
-    let ports = sent[0]["ports"].as_array().unwrap();
-    assert_eq!(ports[0]["usb"], json!({ "vendor_id": 5015, "product_id": 4815 }), "{sent:?}");
-    assert!(ports[1].get("usb").is_none(), "{sent:?}");
-    assert_eq!(ports[0]["replies_hex"], json!([]));
-}
-
-#[test]
 fn the_detection_returns_a_device_without_a_card_being_confirmed_with_all_its_fields() {
-    let (client, _bodies, _dir) = detect_service(bcr_unlisted);
-    let devices = report_devices(&client, vec![probed("BCR32", Some((0x1397, 0x12cf)))]);
+    let client: fn(&Value) -> Value = bcr_unlisted;
+    let devices = report_devices(client, vec![probed("BCR32", Some((0x1397, 0x12cf)))]);
     let u = &devices[0]["unlisted"][0];
     assert_eq!((u["vendor"].clone(), u["model"].clone(), u["firmware"].clone()), (json!("Behringer"), json!("BCR32"), json!("1.0.3")), "{devices:?}");
     assert_eq!(u["confirmations"], 1);
@@ -924,12 +731,12 @@ fn the_detection_returns_a_device_without_a_card_being_confirmed_with_all_its_fi
 
 #[test]
 fn the_detection_returns_every_device_without_a_card_and_their_dispute() {
-    let (client, _bodies, _dir) = detect_service(|_| json!({ "candidates": [], "unlisted": [
+    let client: fn(&Value) -> Value = |_| json!({ "candidates": [], "unlisted": [
         { "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3", "confirmations": 2, "disputed": true,
           "state": "confirming", "state_label": IN_DISAGREEMENT },
         { "vendor": "Behringer", "model": "BCR2000", "firmware": "1.0.3", "confirmations": 1, "disputed": true,
-          "state": "confirming", "state_label": IN_DISAGREEMENT }] }));
-    let devices = report_devices(&client, vec![probed("BCR32", None)]);
+          "state": "confirming", "state_label": IN_DISAGREEMENT }] });
+    let devices = report_devices(client, vec![probed("BCR32", None)]);
     let all = devices[0]["unlisted"].as_array().unwrap();
     assert_eq!(all.len(), 2, "{devices:?}");
     assert!(all.iter().all(|u| u["disputed"] == true && u["state_label"] == IN_DISAGREEMENT));
@@ -938,10 +745,10 @@ fn the_detection_returns_every_device_without_a_card_and_their_dispute() {
 
 #[test]
 fn the_detection_reports_catalogue_candidates_and_never_also_a_device_without_a_card() {
-    let (client, _bodies, _dir) = detect_service(|_| json!({
+    let client: fn(&Value) -> Value = |_| json!({
         "candidates": [{ "id": "acme/box", "slug": "box", "name": "Box", "vendor": "Acme", "source_tier": "official", "score": 90 }],
-        "unlisted": [{ "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3", "confirmations": 1, "disputed": false }] }));
-    let devices = report_devices(&client, vec![probed("Box", None)]);
+        "unlisted": [{ "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3", "confirmations": 1, "disputed": false }] });
+    let devices = report_devices(client, vec![probed("Box", None)]);
     assert_eq!(devices[0]["candidates"][0]["device"], "acme/box", "{devices:?}");
     assert!(devices[0].get("unlisted").is_none(), "{devices:?}");
 }
@@ -952,8 +759,8 @@ const POLYSYNTH: fn(&Value) -> Value = |_| json!({ "candidates": [
 
 #[test]
 fn a_catalogue_candidate_of_the_service_is_reported_as_a_candidate_under_its_catalogue_id_and_never_as_a_device_without_a_card() {
-    let (client, _bodies, _dir) = detect_service(POLYSYNTH);
-    let devices = report_devices(&client, vec![probed("FLUID Synth", None)]);
+    let client: fn(&Value) -> Value = POLYSYNTH;
+    let devices = report_devices(client, vec![probed("FLUID Synth", None)]);
     let cands = devices[0]["candidates"].as_array().unwrap();
     assert_eq!(cands.len(), 1, "{devices:?}");
     assert_eq!(cands[0]["device"], "polyend/synth", "{devices:?}");
@@ -963,8 +770,8 @@ fn a_catalogue_candidate_of_the_service_is_reported_as_a_candidate_under_its_cat
 
 #[test]
 fn the_command_prints_a_catalogue_candidate_of_the_service_by_its_name_and_id_with_no_empty_field() {
-    let (client, _bodies, _dir) = detect_service(POLYSYNTH);
-    let devices = report_devices(&client, vec![probed("FLUID Synth", None)]);
+    let client: fn(&Value) -> Value = POLYSYNTH;
+    let devices = report_devices(client, vec![probed("FLUID Synth", None)]);
     let text = format_detection(&devices, false);
     assert!(text.contains("polyend/synth") && text.contains("Synth"), "{text}");
     assert!(!text.contains("unlisted") && !text.contains('?') && !text.contains("null"), "{text}");
@@ -989,18 +796,18 @@ fn the_command_does_not_print_an_entry_without_vendor_or_model_as_a_device() {
 
 #[test]
 fn the_command_prints_the_bcr_32_with_its_maker_model_firmware_confirmations_and_state_label() {
-    let (client, _bodies, _dir) = detect_service(bcr_unlisted);
-    let devices = report_devices(&client, vec![probed("BCR32", None)]);
+    let client: fn(&Value) -> Value = bcr_unlisted;
+    let devices = report_devices(client, vec![probed("BCR32", None)]);
     let text = format_detection(&devices, false);
     assert!(text.contains("Behringer BCR32, firmware 1.0.3, 1 confirmation(s)") && text.contains(BEING_CONFIRMED), "{text}");
 }
 
 #[test]
 fn the_detection_reports_a_catalogue_candidate_the_service_gives_as_being_confirmed_so() {
-    let (client, _bodies, _dir) = detect_service(|_| json!({
+    let client: fn(&Value) -> Value = |_| json!({
         "candidates": [{ "id": "acme/box", "slug": "box", "name": "Box", "vendor": "Acme", "source_tier": "official", "score": 90 }],
-        "learned": [{ "id": "acme/box", "confirmations": 2, "disputed": false, "state": "confirming", "state_label": BEING_CONFIRMED }] }));
-    let devices = report_devices(&client, vec![probed("Box", None)]);
+        "learned": [{ "id": "acme/box", "confirmations": 2, "disputed": false, "state": "confirming", "state_label": BEING_CONFIRMED }] });
+    let devices = report_devices(client, vec![probed("Box", None)]);
     let c = &devices[0]["candidates"][0];
     assert_eq!(c["state"], "confirming", "{devices:?}");
     assert_eq!(c["state_label"], BEING_CONFIRMED);
@@ -1009,7 +816,7 @@ fn the_detection_reports_a_catalogue_candidate_the_service_gives_as_being_confir
 
 #[test]
 fn the_detection_without_a_service_reports_no_device_being_confirmed() {
-    let r = detection_report(&fixtures(), None, true, true, vec![probed("BCR32", Some((0x1397, 0x12cf)))], Vec::new(), &[], neutral).unwrap();
+    let r = detection_report(&fixtures(), &[], true, true, vec![probed("BCR32", Some((0x1397, 0x12cf)))], Vec::new(), &[], neutral).unwrap();
     assert!(r["structuredContent"]["devices"][0].get("unlisted").is_none(), "{r}");
 }
 
@@ -1024,9 +831,10 @@ fn a_device_being_confirmed_still_has_every_maker_request_held_back_without_cons
     let probes = vec![crate::recognition::Probe { request: vec![0xF0, 0x11, 0xF7], ports: vec![], usb: vec![(0x1c75, 0x020b)], match_ports: vec![] },
                       crate::recognition::Probe { request: vec![0xF0, 0x12, 0xF7], ports: vec![], usb: vec![], match_ports: vec![] }];
     let plan = held_plan(&capture, &probes, &[]).unwrap();
-    let (client, _bodies, _dir) = detect_service(bcr_unlisted);
-    let with = detection_report(&fixtures(), Some(&client), true, true, crate::detect::replay(&capture), Vec::new(), &plan, neutral).unwrap();
-    let without = detection_report(&fixtures(), None, true, true, crate::detect::replay(&capture), Vec::new(), &plan, neutral).unwrap();
+    let client: fn(&Value) -> Value = bcr_unlisted;
+    let said = service_says(client, &crate::detect::replay(&capture));
+    let with = detection_report(&fixtures(), &said, true, true, crate::detect::replay(&capture), Vec::new(), &plan, neutral).unwrap();
+    let without = detection_report(&fixtures(), &[], true, true, crate::detect::replay(&capture), Vec::new(), &plan, neutral).unwrap();
     let held = &with["structuredContent"]["devices"][0]["held_back"];
     assert_eq!(held, &json!([hex_bytes(&[0xF0, 0x11, 0xF7]), hex_bytes(&[0xF0, 0x12, 0xF7])]), "{with}");
     assert_eq!(held, &without["structuredContent"]["devices"][0]["held_back"]);
@@ -1099,7 +907,7 @@ fn the_command_prints_a_port_with_no_candidate_and_nothing_named_as_unknown_and_
 
 #[test]
 fn a_name_alone_never_proposes_a_run_command_in_the_detection_of_a_port() {
-    let r = detection_report(&fixtures(), None, true, true, vec![probed("minilogue MIDI 1", None)], Vec::new(), &[], neutral).unwrap();
+    let r = detection_report(&fixtures(), &[], true, true, vec![probed("minilogue MIDI 1", None)], Vec::new(), &[], neutral).unwrap();
     let d = &r["structuredContent"]["devices"][0];
     assert_eq!(d["candidates"][0]["device"], "korg/minilogue", "{r}");
     assert_eq!(d["candidates"][0]["state_label"], "possible, to confirm", "{r}");
@@ -1111,7 +919,7 @@ fn an_identity_reply_the_card_recognises_proposes_the_run_command_in_the_detecti
     let acme = crate::recognition::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
     let mut port = probed("Box", None);
     port.replies = vec![acme.reply()];
-    let r = detection_report(&fixtures(), None, true, true, vec![port], Vec::new(), &[], neutral).unwrap();
+    let r = detection_report(&fixtures(), &[], true, true, vec![port], Vec::new(), &[], neutral).unwrap();
     let d = &r["structuredContent"]["devices"][0];
     let file = d["candidates"][0]["file"].as_str().unwrap();
     assert!(file.contains("box.vendor.fw-2"), "{r}");
@@ -1121,8 +929,8 @@ fn an_identity_reply_the_card_recognises_proposes_the_run_command_in_the_detecti
 
 #[test]
 fn a_device_the_service_names_as_being_confirmed_still_proposes_no_run_command() {
-    let (client, _bodies, _dir) = detect_service(bcr_unlisted);
-    let devices = report_devices(&client, vec![probed("BCR32", None)]);
+    let client: fn(&Value) -> Value = bcr_unlisted;
+    let devices = report_devices(client, vec![probed("BCR32", None)]);
     assert!(devices[0]["run_command"].is_null(), "{devices:?}");
 }
 
@@ -1166,8 +974,8 @@ fn ids(device: &Value) -> Vec<Value> {
 
 #[test]
 fn a_port_of_a_program_keeps_only_the_candidates_whose_card_the_local_catalogue_knows_as_a_software() {
-    let (client, _bodies, _dir) = detect_service(THREE_CARDS);
-    let devices = report_devices(&client, vec![probed_as("FLUID Synth", crate::detect::ClientKind::User)]);
+    let client: fn(&Value) -> Value = THREE_CARDS;
+    let devices = report_devices(client, vec![probed_as("FLUID Synth", crate::detect::ClientKind::User)]);
     assert_eq!(ids(&devices[0]), vec![json!(SOFTWARE_CARD)], "{devices:?}");
     assert_eq!(devices[0]["client_kind"], "user");
 }
@@ -1175,9 +983,9 @@ fn a_port_of_a_program_keeps_only_the_candidates_whose_card_the_local_catalogue_
 #[test]
 fn a_port_of_a_program_with_no_software_card_among_the_candidates_is_unknown_and_proposes_nothing() {
     for answer in [TWO_HARDWARE_CARDS, POLYSYNTH] {
-        let (client, _bodies, _dir) = detect_service(answer);
+        let client: fn(&Value) -> Value = answer;
         let found = vec![probed_as("FLUID Synth", crate::detect::ClientKind::User)];
-        let devices = report_devices(&client, found);
+        let devices = report_devices(client, found);
         assert!(ids(&devices[0]).is_empty(), "{devices:?}");
         assert!(devices[0]["run_command"].is_null(), "{devices:?}");
         assert!(devices[0].get("unlisted").is_none(), "{devices:?}");
@@ -1189,8 +997,8 @@ fn a_port_of_a_program_with_no_software_card_among_the_candidates_is_unknown_and
 #[test]
 fn a_port_of_the_system_or_of_a_kind_unknown_gets_every_candidate_of_the_service_as_before() {
     for kind in [crate::detect::ClientKind::Kernel, crate::detect::ClientKind::Unknown] {
-        let (client, _bodies, _dir) = detect_service(THREE_CARDS);
-        let devices = report_devices(&client, vec![probed_as("FLUID Synth", kind)]);
+        let client: fn(&Value) -> Value = THREE_CARDS;
+        let devices = report_devices(client, vec![probed_as("FLUID Synth", kind)]);
         assert_eq!(ids(&devices[0]), vec![json!("polyend/synth"), json!("acme/box"), json!(SOFTWARE_CARD)], "{kind:?}: {devices:?}");
     }
 }
@@ -1200,15 +1008,16 @@ fn the_service_candidates_of_the_fluid_synth_capture_are_dropped_and_the_port_is
     use crate::capture::Capture;
     let text = std::fs::read_to_string("tests/fixtures/captures/2026-11-22-ports-logiciels.json").unwrap();
     let capture = Capture::parse(&text).unwrap();
-    let (client, _bodies, _dir) = detect_service(|p| if p["port"].as_str().unwrap_or("").starts_with("FLUID Synth") {
+    let client: fn(&Value) -> Value = |p| if p["port"].as_str().unwrap_or("").starts_with("FLUID Synth") {
         json!({ "candidates": [
             { "id": "polyend/synth", "slug": "synth", "name": "Synth", "vendor": "Polyend", "source_tier": "vendor-doc", "score": 35 },
             { "id": "polyend/synth.pencilresearch.fw-unknown", "slug": "synth.pencilresearch.fw-unknown", "name": "Synth",
               "vendor": "Polyend", "source_tier": "pencilresearch", "score": 35 },
             { "id": "electra-community/ay3_synth", "slug": "ay3_synth", "name": "AY3 Synth", "vendor": "Electra",
               "source_tier": "electra-preset", "score": 10 }] })
-    } else { json!({ "candidates": [] }) });
-    let r = detection_report(&fixtures(), Some(&client), true, false, crate::detect::replay(&capture), Vec::new(), &[], neutral).unwrap();
+    } else { json!({ "candidates": [] }) };
+    let said = service_says(client, &crate::detect::replay(&capture));
+    let r = detection_report(&fixtures(), &said, true, false, crate::detect::replay(&capture), Vec::new(), &[], neutral).unwrap();
     let devices = r["structuredContent"]["devices"].as_array().unwrap();
     let fluid = devices.iter().find(|d| d["port"].as_str().unwrap().starts_with("FLUID Synth")).unwrap();
     assert_eq!(fluid["client_kind"], "user", "{fluid}");
@@ -1222,7 +1031,7 @@ fn the_service_answers_for_the_minilab_3_and_the_bcr_32_of_the_bench_capture_are
     use crate::capture::Capture;
     let text = std::fs::read_to_string("tests/fixtures/captures/2026-11-21.json").unwrap();
     let capture = Capture::parse(&text).unwrap();
-    let (client, _bodies, _dir) = detect_service(|p| {
+    let client: fn(&Value) -> Value = |p| {
         let port = p["port"].as_str().unwrap_or("");
         if port.starts_with("Minilab3") {
             json!({ "candidates": [{ "id": "arturia/minilab3", "slug": "minilab3", "name": "MiniLab 3", "vendor": "Arturia",
@@ -1231,11 +1040,52 @@ fn the_service_answers_for_the_minilab_3_and_the_bcr_32_of_the_bench_capture_are
             json!({ "candidates": [], "unlisted": [{ "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3",
                 "confirmations": 1, "disputed": false }] })
         } else { json!({ "candidates": [] }) }
-    });
-    let r = detection_report(&fixtures(), Some(&client), true, false, crate::detect::replay(&capture), Vec::new(), &[], neutral).unwrap();
+    };
+    let said = service_says(client, &crate::detect::replay(&capture));
+    let r = detection_report(&fixtures(), &said, true, false, crate::detect::replay(&capture), Vec::new(), &[], neutral).unwrap();
     let devices = r["structuredContent"]["devices"].as_array().unwrap();
     let of = |name: &str| devices.iter().find(|d| d["port"].as_str().unwrap().starts_with(name)).unwrap();
     assert_eq!(of("Minilab3")["client_kind"], "kernel");
     assert_eq!(ids(of("Minilab3")), vec![json!("arturia/minilab3")], "{devices:?}");
     assert_eq!(of("Behringer BCR-32")["unlisted"][0]["model"], "BCR32", "{devices:?}");
+}
+
+#[test]
+fn the_local_answer_takes_what_the_service_knows_as_values_and_serves_the_16_tools_alone() {
+    let idx = fixtures();
+    let status = |id: &str| (id == "korg/minilogue").then(|| "confirmed".to_string());
+    let private = |id: &str| id == "korg/minilogue";
+    let known = Known { trust: json!({ "devices": { "korg/minilogue": { "status": "confirmed" } } }),
+        candidates: vec![json!({ "candidates": [] })], status: &status, private: &private };
+    let opts = test_opts();
+    let ask = |name: &str, args: Value| call_local(name, &args, &opts, &idx, &crate::midi_port::open_hardware, &known);
+
+    // The status of a card is the one the caller gives; without it the card has none.
+    let listed = ask("list_devices", json!({ "query": "minilogue", "limit": 1 })).unwrap();
+    assert_eq!(listed["structuredContent"]["devices"][0]["usage_status"], "confirmed", "{listed}");
+    let alone = call_tool("list_devices", &json!({ "query": "minilogue", "limit": 1 }), &opts, &idx).unwrap();
+    assert!(alone["structuredContent"]["devices"][0].get("usage_status").is_none_or(Value::is_null), "{alone}");
+
+    // The same texts as before, with the service absent.
+    assert_eq!(ask("get_device_docs", json!({ "device": "korg/minilogue" })), call_tool("get_device_docs", &json!({ "device": "korg/minilogue" }), &opts, &idx));
+    assert!(ask("restore_presets", json!({ "device": "acme/box", "out_port": "0", "file": "x.syx" })).unwrap_err().contains("confirm_overwrite"));
+    assert!(ask("add_link", json!({ "to": "/b" })).unwrap_err().contains("from"));
+    assert!(ask("list_routes", json!({ "slug": "minilogue" })).unwrap_err().contains("no longer"));
+
+    // The tools of the link are not the local answer's: it does not know them.
+    for tool in ["take_sound", "load_preset", "get_trust", "report_result", "share_preset"] {
+        assert_eq!(ask(tool, json!({})).unwrap_err(), format!("unknown tool: {tool}"));
+    }
+}
+
+#[test]
+fn the_local_server_offers_the_16_local_tools_whether_or_not_the_copy_is_linked() {
+    let linked = McpOptions { online: true, ..test_opts() };
+    assert_eq!(tool_names(&linked), tool_names(&test_opts()));
+    assert_eq!(tool_names(&test_opts()).len(), 16);
+    let schemas = local_tool_schemas();
+    let named: Vec<&str> = schemas["tools"].as_array().unwrap().iter().map(|t| t["name"].as_str().unwrap()).collect();
+    assert_eq!(named.len(), 16);
+    assert!(tool_names(&test_opts()).iter().all(|n| named.contains(n)), "{named:?}");
+    assert!(["take_sound", "load_preset", "get_trust", "report_result"].iter().all(|n| !named.contains(n)));
 }

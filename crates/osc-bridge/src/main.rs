@@ -340,7 +340,12 @@ fn main() -> Result<()> {
             };
             let online = !offline && !settings.offline && !osc_bridge::synthub::online::offline_by_env();
             let opts = osc_bridge::mcp::McpOptions { devices_dir, default_target, online, private: settings.private, tier_order: osc_bridge::synthub::catalogue::tier_rank };
-            osc_bridge::mcp::run(opts)
+            // Linked, the server of the link wraps the local one; otherwise the local one serves alone.
+            if opts.online {
+                osc_bridge::synthub::mcp::run(opts)
+            } else {
+                osc_bridge::mcp::run(opts, osc_bridge::synthub::online::cache_dir())
+            }
         }
     }
 }

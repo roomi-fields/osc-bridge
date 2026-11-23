@@ -56,7 +56,7 @@ fn linked_private(request: Value, private: &[&str]) -> (Value, Vec<Value>) {
     };
     let input = format!("{request}\n");
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(opts, &base, Some(dir.path().join("cache")), input.as_bytes(), &mut out).unwrap();
+    osc_bridge::synthub::mcp::serve(opts, &base, Some(dir.path().join("cache")), input.as_bytes(), &mut out).unwrap();
     let reply: Value = serde_json::from_str(String::from_utf8(out).unwrap().lines().next().unwrap()).unwrap();
     let seen = calls.lock().unwrap().clone();
     (reply, seen)

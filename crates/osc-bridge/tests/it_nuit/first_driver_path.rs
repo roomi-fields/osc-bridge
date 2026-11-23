@@ -129,7 +129,7 @@ fn an_agent_goes_from_a_device_with_no_driver_to_a_first_driver_on_a_fake_midi_d
     let input = format!("{}\n{}\n", call(1, "report_mapping", &mapping),
         call(2, "submit_driver", &json!({ "driver": driver, "source": source })));
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(opts, &base, Some(home.path().join("cache")), input.as_bytes(), &mut out).unwrap();
+    osc_bridge::synthub::mcp::serve(opts, &base, Some(home.path().join("cache")), input.as_bytes(), &mut out).unwrap();
     for line in String::from_utf8(out).unwrap().lines() {
         let reply: Value = serde_json::from_str(line).unwrap();
         assert!(reply.get("error").is_none() && reply["result"]["isError"] != true, "{reply}");
