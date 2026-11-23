@@ -1567,9 +1567,9 @@ pub fn privacy(path: &Path, index: &DeviceIndex, server: Option<&crate::synthub:
     Ok(out)
 }
 
-/// The hardware drivers of the catalogue, in the shape `detect::rank` scores.
-pub fn hardware_candidates(index: &DeviceIndex) -> Vec<crate::detect::Candidate> {
-    index.entries.iter().filter(|e| e.kind != "software").map(|e| crate::detect::Candidate {
+/// The hardware drivers of the catalogue, in the shape `recognition::rank` scores.
+pub fn hardware_candidates(index: &DeviceIndex) -> Vec<crate::recognition::Candidate> {
+    index.entries.iter().filter(|e| e.kind != "software").map(|e| crate::recognition::Candidate {
         id: e.id.clone(),
         slug: e.slug.clone(),
         name: e.name.clone(),
@@ -1585,13 +1585,13 @@ pub fn hardware_candidates(index: &DeviceIndex) -> Vec<crate::detect::Candidate>
 
 /// The maker requests the identity blocks of `index` name, sent while
 /// detecting after the Universal Identity Request.
-pub fn detect_probes(index: &DeviceIndex) -> Vec<crate::detect::Probe> {
+pub fn detect_probes(index: &DeviceIndex) -> Vec<crate::recognition::Probe> {
     detect_plan(index).probes
 }
 
 /// The requests of `detect_probes` with the faults of the identities set aside.
-fn detect_plan(index: &DeviceIndex) -> crate::detect::Probes {
-    crate::detect::probes(index.entries.iter().filter(|e| e.kind != "software")
+fn detect_plan(index: &DeviceIndex) -> crate::recognition::Probes {
+    crate::recognition::probes(index.entries.iter().filter(|e| e.kind != "software")
         .filter_map(|e| e.identity.as_ref().map(|i| (e.name.as_str(), i))))
 }
 
@@ -1608,8 +1608,8 @@ pub fn fault_blocks(faults: &[crate::device::DeviceFault]) -> Vec<String> {
 }
 
 /// The probes as the hosted server lists them (`GET /v1/detect`).
-pub fn probes_json(probes: &[crate::detect::Probe]) -> Value {
-    let one = |p: &crate::detect::Probe| {
+pub fn probes_json(probes: &[crate::recognition::Probe]) -> Value {
+    let one = |p: &crate::recognition::Probe| {
         let mut o = json!({ "request_hex": hex_bytes(&p.request), "ports": p.ports });
         if !p.usb.is_empty() {
             o["usb"] = p.usb.iter().map(|(v, d)| json!({ "vendor_id": v, "product_id": d })).collect();
@@ -1631,7 +1631,7 @@ pub fn hex_bytes(bytes: &[u8]) -> String {
 const POSSIBLE_LABEL: &str = "possible, to confirm";
 
 /// The proofs of a candidate as published: `{nature, kind}` each.
-fn proofs_json(proofs: &[crate::detect::Proof]) -> Value {
+fn proofs_json(proofs: &[crate::recognition::Proof]) -> Value {
     json!(proofs.iter().map(|p| json!({ "nature": p.nature.as_str(), "kind": p.kind })).collect::<Vec<_>>())
 }
 
@@ -1642,13 +1642,13 @@ fn has_strong(c: &Value) -> bool {
 
 /// The drivers of `catalogue` (`hardware_candidates`) that best match a MIDI
 /// port, by its name and the SysEx the device sent back while detected
-/// (`detect::rank`), best first: id, slug, name, vendor, source tier,
+/// (`recognition::rank`), best first: id, slug, name, vendor, source tier,
 /// score, and, when its identity block recognised the device, how, the
 /// firmware read from the reply and the drivers matching it equally. The hosted server answers
 /// `POST /v1/detect` with them.
-pub fn match_port(catalogue: &[crate::detect::Candidate], port: &str, usb: Option<(u16, u16)>,
+pub fn match_port(catalogue: &[crate::recognition::Candidate], port: &str, usb: Option<(u16, u16)>,
                   replies: &[Vec<u8>]) -> Vec<Value> {
-    crate::detect::rank(port, usb, replies, catalogue, 3).iter().map(|r| {
+    crate::recognition::rank(port, usb, replies, catalogue, 3).iter().map(|r| {
         let c = &catalogue[r.index];
         let mut out = json!({ "id": c.id, "slug": c.slug, "name": c.name, "vendor": c.vendor, "source_tier": c.tier, "score": r.score });
         out["proofs"] = proofs_json(&r.proofs);
@@ -1685,9 +1685,9 @@ fn detect_hardware(index: &DeviceIndex, server: Option<&crate::synthub::online::
 }
 
 /// What each output port of `capture` received of `probes`, and what was held back.
-fn held_plan(capture: &crate::capture::Capture, probes: &[crate::detect::Probe], consent: &[String]) -> Result<Vec<crate::detect::PortSends>, String> {
+fn held_plan(capture: &crate::capture::Capture, probes: &[crate::recognition::Probe], consent: &[String]) -> Result<Vec<crate::recognition::PortSends>, String> {
     let consented = crate::detect::consent_indexes(&capture.outputs, consent)?;
-    Ok(crate::detect::send_plan(&crate::detect::output_usbs(capture), probes, &consented))
+    Ok(crate::recognition::send_plan(&crate::detect::output_usbs(capture), probes, &consented))
 }
 
 /// The devices a capture shows, matched against the drivers of `devices_dir`: the report of
@@ -1700,7 +1700,7 @@ pub fn detect_capture(devices_dir: &Path, capture: &crate::capture::Capture) -> 
 
 /// `detect_capture` with the requests `probes` would go out as, given the `consent` of the person:
 /// each device lists the maker requests held back for its output port.
-pub fn detect_capture_held(devices_dir: &Path, capture: &crate::capture::Capture, probes: &[crate::detect::Probe],
+pub fn detect_capture_held(devices_dir: &Path, capture: &crate::capture::Capture, probes: &[crate::recognition::Probe],
                            consent: &[String]) -> Result<Vec<Value>, String> {
     let index = DeviceIndex::build(devices_dir);
     let plan = held_plan(capture, probes, consent)?;
@@ -1754,7 +1754,7 @@ fn software_cards_only(index: &DeviceIndex, candidates: Vec<Value>) -> Vec<Value
 /// The report of `detect_hardware` over the devices `found`.
 fn detection_report(index: &DeviceIndex, server: Option<&crate::synthub::online::Online>, by_file: bool, probe: bool,
                     found: Vec<crate::detect::Probed>, faults: Vec<crate::device::DeviceFault>,
-                    plan: &[crate::detect::PortSends]) -> Result<Value, String> {
+                    plan: &[crate::recognition::PortSends]) -> Result<Value, String> {
     let mut matched: Vec<Vec<Value>> = match server {
         Some(server) => {
             let ports: Vec<Value> = found.iter().map(|d| detect_port(d.label(),
@@ -1819,7 +1819,7 @@ fn detection_report(index: &DeviceIndex, server: Option<&crate::synthub::online:
             "client_kind": kind.word(),
             "identity": identity.map(|id| json!({
                 "manufacturer_id": id.manufacturer_hex(),
-                "manufacturer": crate::detect::manufacturer_name(&id.manufacturer),
+                "manufacturer": crate::recognition::manufacturer_name(&id.manufacturer),
                 "family": id.family,
                 "model": id.model,
                 "firmware": id.version.iter().map(u8::to_string).collect::<Vec<_>>().join("."),
@@ -2056,7 +2056,7 @@ pub fn learn_report(learned: &[(crate::detect::Unit, crate::detect::Learned)], c
         // Only a strong proof names a driver; a name alone leaves the device unknown.
         let program = d.client_kind == crate::detect::ClientKind::User;
         let local = d.inputs.iter().chain(&d.outputs).filter(|_| !program)
-            .find_map(|p| crate::detect::rank(p, d.usb, &replies, &candidates, 1).into_iter().find(|r| r.is_strong()))
+            .find_map(|p| crate::recognition::rank(p, d.usb, &replies, &candidates, 1).into_iter().find(|r| r.is_strong()))
             .map(|r| (&candidates[r.index], proofs_json(&r.proofs)));
         let named: Vec<Value> = match service {
             ServiceMatches::Answered(all) => all.get(at).cloned().unwrap_or_default(),

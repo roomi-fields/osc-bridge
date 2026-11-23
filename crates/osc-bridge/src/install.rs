@@ -95,7 +95,7 @@ pub fn install(
 fn port_of(target: &Device, outputs: &[String]) -> Option<String> {
     let named = target.identity.as_ref().and_then(|i| crate::device::kept(&i.ports).cloned()).filter(|p| !p.is_empty());
     let patterns = named.unwrap_or_else(|| vec![target.device.name.clone()]);
-    outputs.iter().find(|p| crate::detect::port_matches(&patterns, p)).cloned()
+    outputs.iter().find(|p| crate::recognition::port_matches(&patterns, p)).cloned()
 }
 
 /// The facts a message of a step is made of.

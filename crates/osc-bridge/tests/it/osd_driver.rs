@@ -195,7 +195,7 @@ fn the_signs_are_never_messages_the_engine_emits() {
     let root = catalogue(&[("acme/with.json", &with), ("acme/without.json", &without)]);
     let probe = |f: &str| {
         let dev = load(root.path().join(f)).unwrap();
-        osc_bridge::detect::probe_of(dev.identity.as_ref().unwrap()).unwrap().unwrap()
+        osc_bridge::recognition::probe_of(dev.identity.as_ref().unwrap()).unwrap().unwrap()
     };
     assert_eq!(probe("acme/with.json").request, probe("acme/without.json").request);
     assert_eq!(probe("acme/with.json").request, vec![0xF0, 0x41, 0x7F, 0x00, 0x01, 0xF7]);
@@ -211,7 +211,7 @@ fn recognising_a_reply_ignores_the_signs_a_device_gives_of_itself() {
     ]);
     let rec = |f: &str| {
         let dev = load(root.path().join(f)).unwrap();
-        osc_bridge::detect::recognise(dev.identity.as_ref().unwrap(), "Pad", None, &[reply.to_vec()]).is_some()
+        osc_bridge::recognition::recognise(dev.identity.as_ref().unwrap(), "Pad", None, &[reply.to_vec()]).is_some()
     };
     assert_eq!(rec("acme/with.json"), rec("acme/without.json"));
 }

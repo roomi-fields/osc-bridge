@@ -22,6 +22,7 @@ pub mod routing;
 pub mod mcp;
 pub mod ws;
 pub mod detect;
+pub mod recognition;
 pub mod capture;
 pub mod librarian;
 pub mod midi_port;

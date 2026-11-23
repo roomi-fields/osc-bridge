@@ -60,7 +60,7 @@ fn named(synth_name: &str, port: &str) -> bool {
 
 /// The firmware in a Universal Identity Reply, e.g. "1.0.2.0".
 fn firmware_of(m: &[u8]) -> Option<String> {
-    crate::detect::parse_identity_reply(m).map(|id| id.version.iter().map(u8::to_string).collect::<Vec<_>>().join("."))
+    crate::recognition::parse_identity_reply(m).map(|id| id.version.iter().map(u8::to_string).collect::<Vec<_>>().join("."))
 }
 
 fn messages_of(hexes: &str) -> Vec<Vec<u8>> {
@@ -107,7 +107,7 @@ pub fn find(midi: &mut dyn Midi, lib: &Value, ask: Ask, port: Option<&str>) -> R
                 }
                 wait = wait.max(s["detect_wait_ms"].as_u64().unwrap_or(200));
             }
-            if round != 2 { batch.push(crate::detect::IDENTITY_REQUEST.to_vec()); }
+            if round != 2 { batch.push(crate::recognition::IDENTITY_REQUEST.to_vec()); }
             if !batch.is_empty() {
                 midi.send(out, &batch, &format!("find which synth is on {out} (asks it who it is; changes nothing)"))?;
             }
@@ -207,7 +207,7 @@ mod tests {
     }
 
     fn lib() -> Value {
-        json!({ "synths": [{ "synth": "Test_Synth", "name": "Test Synth", "detect": [hex(&crate::detect::IDENTITY_REQUEST)],
+        json!({ "synths": [{ "synth": "Test_Synth", "name": "Test Synth", "detect": [hex(&crate::recognition::IDENTITY_REQUEST)],
             "detect_wait_ms": 100 }] })
     }
 

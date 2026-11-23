@@ -3,7 +3,7 @@
 //! back, and the tool publishes the argument that gives the consent.
 
 use osc_bridge::capture::{Capture, FORMAT_VERSION};
-use osc_bridge::detect::Probe;
+use osc_bridge::recognition::Probe;
 use osc_bridge::mcp::{detect_capture_held, hex_bytes};
 use serde_json::{json, Value};
 

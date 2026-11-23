@@ -269,7 +269,7 @@ fn port_names_and_identities_resolve_to_their_driver() {
         assert_eq!(best.first().map(|c| c["id"].clone()), Some(json!(want)), "{port}: {best:?}");
     }
     // An Identity Reply from the maker puts its driver first.
-    let acme = crate::detect::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
+    let acme = crate::recognition::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
     let best = match_port(&cat, "Box", None, &[acme.reply()]);
     assert_eq!(best[0]["slug"], "box", "{best:?}");
     // Its identity block names the firmware, which picks the variant for it.
@@ -280,7 +280,7 @@ fn port_names_and_identities_resolve_to_their_driver() {
     assert!(best[0].get("recognised_by").is_none(), "{best:?}");
     let nameless = match_port(&cat, "USB MIDI Interface", None, &[acme.reply()]);
     assert_eq!(nameless[0]["id"],"acme/box.vendor.fw-2", "behind a port named after nothing: {nameless:?}");
-    let other_fw = crate::detect::Identity { version: [3, 0, 0, 0], ..acme.clone() };
+    let other_fw = crate::recognition::Identity { version: [3, 0, 0, 0], ..acme.clone() };
     assert!(match_port(&cat, "Box", None, &[other_fw.reply()])[0]["score"].as_u64() < best[0]["score"].as_u64());
     assert!(best.iter().all(|c| c.get("file").is_none()), "no path of the machine that matched them");
 }
@@ -432,7 +432,7 @@ fn a_local_copy_fetches_the_drivers_it_needs_and_forwards_reports() {
     assert_eq!(listed["structuredContent"]["devices"][0]["device"], "korg/minilogue", "{listed}");
     let matched = link.client.detect(&[json!({"port": "minilogue MIDI 1"})]).unwrap();
     assert_eq!(matched[0]["candidates"][0]["id"], "korg/minilogue", "{matched:?}");
-    let acme = crate::detect::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
+    let acme = crate::recognition::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
     let matched = link.client.detect(&[json!({"port": "USB MIDI", "replies_hex": [hex_bytes(&acme.reply())]})]).unwrap();
     assert_eq!(matched[0]["candidates"][0]["firmware"], "2.0.0.0", "{matched:?}");
     assert_eq!(link.client.probes().unwrap(), detect_probes(&DeviceIndex::build(Path::new(FIXTURES))));
@@ -785,7 +785,7 @@ fn a_port_with_the_usb_ids_of_a_driver_is_recognised_by_usb() {
         osd::Descriptor::Device(d) => d.identity.unwrap(),
         _ => unreachable!(),
     };
-    let cat = vec![crate::detect::Candidate { id: "acme/box".into(), slug: "box".into(), name: "Box".into(),
+    let cat = vec![crate::recognition::Candidate { id: "acme/box".into(), slug: "box".into(), name: "Box".into(),
         vendor: "Acme".into(), file: "devices/box.json".into(), tier: "pencilresearch".into(),
         manufacturer_id: vec![], identity: Some(identity), firmware: None, midi_of: None }];
     let best = match_port(&cat, "USB MIDI Interface", Some((4660, 22136)), &[]);
@@ -1030,8 +1030,8 @@ fn a_device_being_confirmed_still_has_every_maker_request_held_back_without_cons
         "format_version": FORMAT_VERSION, "outputs": [MYSTERY], "inputs": [MYSTERY],
         "cards": "", "usbids": [], "clients": "", "requests": [], "received": [],
     }).to_string()).unwrap();
-    let probes = vec![crate::detect::Probe { request: vec![0xF0, 0x11, 0xF7], ports: vec![], usb: vec![(0x1c75, 0x020b)], match_ports: vec![] },
-                      crate::detect::Probe { request: vec![0xF0, 0x12, 0xF7], ports: vec![], usb: vec![], match_ports: vec![] }];
+    let probes = vec![crate::recognition::Probe { request: vec![0xF0, 0x11, 0xF7], ports: vec![], usb: vec![(0x1c75, 0x020b)], match_ports: vec![] },
+                      crate::recognition::Probe { request: vec![0xF0, 0x12, 0xF7], ports: vec![], usb: vec![], match_ports: vec![] }];
     let plan = held_plan(&capture, &probes, &[]).unwrap();
     let (client, _bodies, _dir) = detect_service(bcr_unlisted);
     let with = detection_report(&fixtures(), Some(&client), true, true, crate::detect::replay(&capture), Vec::new(), &plan).unwrap();
@@ -1117,7 +1117,7 @@ fn a_name_alone_never_proposes_a_run_command_in_the_detection_of_a_port() {
 
 #[test]
 fn an_identity_reply_the_card_recognises_proposes_the_run_command_in_the_detection_of_a_port() {
-    let acme = crate::detect::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
+    let acme = crate::recognition::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
     let mut port = probed("Box", None);
     port.replies = vec![acme.reply()];
     let r = detection_report(&fixtures(), None, true, true, vec![port], Vec::new(), &[]).unwrap();
@@ -1138,7 +1138,7 @@ fn a_device_the_service_names_as_being_confirmed_still_proposes_no_run_command()
 #[test]
 fn the_command_prints_one_device_with_its_other_ports_as_ports_of_it() {
     use crate::capture::{Capture, FORMAT_VERSION};
-    let reply = crate::detect::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] }.reply();
+    let reply = crate::recognition::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] }.reply();
     let ports = ["Box:Box A 20:0", "Box:Box B 20:1"];
     let capture = Capture::parse(&json!({
         "format_version": FORMAT_VERSION, "outputs": ports, "inputs": ports, "cards": "", "usbids": [], "clients": "",

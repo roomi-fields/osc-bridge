@@ -3,7 +3,7 @@
 
 use crate::common::{self, D05};
 
-use osc_bridge::detect::{self, probe_of, IDENTITY_REQUEST};
+use osc_bridge::recognition::{self, probe_of, IDENTITY_REQUEST};
 use osc_bridge::device::{faults, load};
 use osc_bridge::programs;
 
@@ -81,7 +81,7 @@ fn detection_returns_the_faults_of_the_identities_it_set_aside() {
     let (_a, broken) = loaded(BROKEN);
     let (_b, clean) = loaded(CLEAN);
     let (_c, plain) = loaded(r#"{"reply":[240]}"#);
-    let found = detect::probes([
+    let found = recognition::probes([
         ("Acme Box", broken.identity.as_ref().unwrap()),
         ("Clean", clean.identity.as_ref().unwrap()),
         ("Plain", plain.identity.as_ref().unwrap()),
@@ -96,7 +96,7 @@ fn detection_returns_the_faults_of_the_identities_it_set_aside() {
 #[test]
 fn recognising_a_broken_identity_says_no_own_request_was_sent() {
     let (_d, dev) = loaded(r#"{"request":[240,65,1,"{checksum:twos7@9}",247],"reply":[240,126,127,6,2]}"#);
-    let r = detect::recognise(dev.identity.as_ref().unwrap(), "x", None, &[vec![0xF0, 0x7E, 0x7F, 6, 2, 0xF7]]).unwrap();
+    let r = recognition::recognise(dev.identity.as_ref().unwrap(), "x", None, &[vec![0xF0, 0x7E, 0x7F, 6, 2, 0xF7]]).unwrap();
     assert!(r.by_reply);
     assert!(!r.own_request);
 }
@@ -104,7 +104,7 @@ fn recognising_a_broken_identity_says_no_own_request_was_sent() {
 /// The faults detection returns for a folder of one driver (no MIDI, no probe sent).
 fn detect_faults_of(identity: &str) -> Vec<osc_bridge::device::DeviceFault> {
     let (_d, dev) = loaded(identity);
-    detect::probes([("Acme Box", dev.identity.as_ref().unwrap())]).faults
+    recognition::probes([("Acme Box", dev.identity.as_ref().unwrap())]).faults
 }
 
 #[test]

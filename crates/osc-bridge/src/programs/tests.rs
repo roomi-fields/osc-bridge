@@ -63,7 +63,7 @@ fn the_same_addresses_on_every_device() {
     assert_eq!(call("/box/program/recall", vec![OscType::Int(1), OscType::Int(3), OscType::Int(9)]).unwrap().unwrap(), vec![vec![0xC9, 18]]);
     assert!(call("/box/program/recall", vec![OscType::String("B".into())]).unwrap().is_err());
     assert_eq!(call("/box/program/dump", vec![]).unwrap().unwrap(), vec![vec![0xF0, 1, 2, 0xF7]]);
-    assert_eq!(call("/box/identity", vec![]).unwrap().unwrap(), vec![crate::detect::IDENTITY_REQUEST.to_vec()]);
+    assert_eq!(call("/box/identity", vec![]).unwrap().unwrap(), vec![crate::recognition::IDENTITY_REQUEST.to_vec()]);
     assert!(call("/box/program_change", vec![]).is_none());
     let reply = [0xF0, 0x7E, 0x00, 0x06, 0x02, 0x41];
     let m = identity_reply(&d, &reply).unwrap();

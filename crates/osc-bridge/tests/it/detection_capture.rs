@@ -5,7 +5,8 @@
 
 use crate::common::{device05, files, temp};
 use osc_bridge::capture::{Asound, Capture, FORMAT_VERSION};
-use osc_bridge::detect::{replay, Identity};
+use osc_bridge::detect::replay;
+use osc_bridge::recognition::Identity;
 use serde_json::{json, Value};
 use std::path::Path;
 

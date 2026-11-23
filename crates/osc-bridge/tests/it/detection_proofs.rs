@@ -5,7 +5,8 @@
 
 use crate::common::{device05, files, temp};
 use osc_bridge::capture::Capture;
-use osc_bridge::detect::{Candidate, Identity, Learned, Unit};
+use osc_bridge::detect::{Learned, Unit};
+use osc_bridge::recognition::{Candidate, Identity};
 use osc_bridge::mcp::{detect_capture, learn_report, match_port, DeviceIndex, ServiceMatches};
 use serde_json::{json, Value};
 use std::path::Path;

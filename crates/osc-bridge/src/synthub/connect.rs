@@ -124,7 +124,7 @@ impl TestSynth {
     /// What the synth sends in answer to `msg`.
     pub fn answer(&mut self, msg: &[u8]) -> Option<Vec<u8>> {
         match msg.first()? {
-            0xF0 if msg == crate::detect::IDENTITY_REQUEST => Some(Self::IDENTITY_REPLY.to_vec()),
+            0xF0 if msg == crate::recognition::IDENTITY_REQUEST => Some(Self::IDENTITY_REPLY.to_vec()),
             0xF0 if msg == Self::DUMP_REQUEST => Some([&Self::PATCH[..], &self.sound, &[0xF7]].concat()),
             0xF0 if msg.len() == 10 && msg.starts_with(&Self::PATCH) && msg[9] == 0xF7 => {
                 self.sound.copy_from_slice(&msg[4..9]);
@@ -372,7 +372,7 @@ mod tests {
     #[test]
     fn the_test_synth_identifies_itself_and_echoes_what_it_receives() {
         let mut synth = TestSynth::default();
-        let id = crate::detect::parse_identity_reply(&synth.answer(&crate::detect::IDENTITY_REQUEST).unwrap()).unwrap();
+        let id = crate::recognition::parse_identity_reply(&synth.answer(&crate::recognition::IDENTITY_REQUEST).unwrap()).unwrap();
         assert_eq!((id.manufacturer, id.family, id.model, id.version), (vec![0x7D], 1, 1, [1, 0, 0, 0]));
         assert_eq!(synth.answer(&[0xB0, 74, 64]), Some(vec![0xB0, 74, 64]));
         assert_eq!(synth.answer(&[0xF8]), None);

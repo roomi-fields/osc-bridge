@@ -2,7 +2,7 @@
 //! `Online::probes` reads back to the same probes.
 
 use crate::common::temp;
-use osc_bridge::detect::Probe;
+use osc_bridge::recognition::Probe;
 use osc_bridge::mcp::probes_json;
 use osc_bridge::synthub::online::Online;
 use serde_json::{json, Value};

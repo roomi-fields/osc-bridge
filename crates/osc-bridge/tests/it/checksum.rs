@@ -20,7 +20,7 @@
 
 use crate::common;
 
-use osc_bridge::detect::probe_of;
+use osc_bridge::recognition::probe_of;
 use osc_bridge::device::{full_osc_path, load as load_driver};
 use osc_bridge::frame::{build_message, Bindings};
 use osc_bridge::programs;

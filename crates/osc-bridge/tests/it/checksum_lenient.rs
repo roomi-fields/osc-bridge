@@ -111,7 +111,7 @@ fn programs_and_dump_name_the_driver_and_the_block_when_a_checksum_cannot_be_com
 fn the_identity_request_names_its_block_when_its_checksum_cannot_be_computed() {
     let (_d, d) = ok("[]", r#","identity":{"request":[240,65,"{dev}",6,"{checksum:twos7@9}",247],
         "device_id":{"default":16},"reply":[240,65]}"#);
-    let err = osc_bridge::detect::probe_of(d.identity.as_ref().unwrap()).expect_err("an incoherent checksum").to_string();
+    let err = osc_bridge::recognition::probe_of(d.identity.as_ref().unwrap()).expect_err("an incoherent checksum").to_string();
     assert!(err.contains("identity.request") && err.contains("checksum"), "{err}");
 }
 

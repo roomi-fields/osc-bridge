@@ -184,7 +184,7 @@ pub struct DeviceFault {
 /// `probe_of` cannot build. Nothing refuses the driver for them; `lint` and
 /// `inspect` list them, and detection says when it fell back on the universal request.
 pub fn faults(dev: &Device) -> Vec<DeviceFault> {
-    dev.identity.as_ref().and_then(|i| crate::detect::probe_of(i).err())
+    dev.identity.as_ref().and_then(|i| crate::recognition::probe_of(i).err())
         .map(|e| DeviceFault { device: dev.device.name.clone(), field: "identity.request".into(), cause: e.to_string() })
         .into_iter().collect()
 }

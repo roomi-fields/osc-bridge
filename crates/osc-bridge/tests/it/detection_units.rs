@@ -4,7 +4,7 @@
 
 use crate::common::{device05, files, temp};
 use osc_bridge::capture::{Capture, FORMAT_VERSION};
-use osc_bridge::detect::Identity;
+use osc_bridge::recognition::Identity;
 use osc_bridge::mcp::detect_capture;
 use serde_json::{json, Value};
 use std::path::Path;

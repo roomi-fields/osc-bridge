@@ -25,7 +25,7 @@ fn fake_device(marker: &str) -> (Unit, Arc<Mutex<bool>>) {
     let on_request = conn.clone();
     let input = MidiInput::new(marker).unwrap();
     let listening = input.create_virtual(&format!("{marker} in"), move |_, msg, _| {
-        if msg == osc_bridge::detect::IDENTITY_REQUEST { let _ = on_request.lock().unwrap().send(&REPLY); }
+        if msg == osc_bridge::recognition::IDENTITY_REQUEST { let _ = on_request.lock().unwrap().send(&REPLY); }
     }, ()).unwrap();
     let (turning, flag) = (conn.clone(), stop.clone());
     std::thread::spawn(move || {

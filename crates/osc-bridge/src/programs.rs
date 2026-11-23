@@ -296,8 +296,8 @@ pub fn backup_filter(dev: &Device, received: &[Vec<u8>]) -> Vec<Vec<u8>> {
 /// device-id rule's default; the Universal Identity Request when the driver
 /// names none.
 pub fn identity_request(dev: &Device) -> SentRequest {
-    let universal = |fault| SentRequest { bytes: crate::detect::IDENTITY_REQUEST.to_vec(), own: false, fault };
-    match dev.identity.as_ref().map(crate::detect::probe_of) {
+    let universal = |fault| SentRequest { bytes: crate::recognition::IDENTITY_REQUEST.to_vec(), own: false, fault };
+    match dev.identity.as_ref().map(crate::recognition::probe_of) {
         Some(Ok(Some(p))) => SentRequest { bytes: p.request, own: true, fault: None },
         Some(Err(_)) => universal(crate::device::faults(dev).into_iter().next()),
         _ => universal(None),
@@ -317,7 +317,7 @@ pub struct SentRequest {
 /// `/<prefix>/identity/reply <firmware> <hex>` when `msg` is the device's
 /// identity reply, as its identity block reads it.
 pub fn identity_reply(dev: &Device, msg: &[u8]) -> Option<OscMessage> {
-    let r = crate::detect::recognise(dev.identity.as_ref()?, "", None, &[msg.to_vec()]).filter(|r| r.by_reply)?;
+    let r = crate::recognition::recognise(dev.identity.as_ref()?, "", None, &[msg.to_vec()]).filter(|r| r.by_reply)?;
     let hex = msg.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ");
     Some(OscMessage { addr: full_osc_path(dev, IDENTITY_REPLY),
                       args: vec![OscType::String(r.firmware.unwrap_or_default()), OscType::String(hex)] })
