@@ -135,6 +135,20 @@ fn rust_files(dir: &Path, into: &mut Vec<PathBuf>) {
     }
 }
 
+/// The name of a path relative to `src`, written with `/` on every platform.
+fn slash_name(rel: &Path) -> String {
+    rel.components()
+        .map(|c| c.as_os_str().to_string_lossy().into_owned())
+        .collect::<Vec<_>>()
+        .join("/")
+}
+
+#[test]
+fn a_file_is_named_with_a_slash_whatever_the_platform_separator() {
+    let rel: PathBuf = ["a", "b.rs"].iter().collect();
+    assert_eq!(slash_name(&rel), "a/b.rs");
+}
+
 /// Every refusal over the sources of `src`, as `path:line: what`, outside the module of the link.
 fn problems(src: &Path, inscribed: &[(&str, &str, &str)]) -> Vec<String> {
     let mut files = Vec::new();
@@ -153,7 +167,7 @@ fn problems(src: &Path, inscribed: &[(&str, &str, &str)]) -> Vec<String> {
         if first == "synthub.rs" || first == "synthub" {
             continue;
         }
-        let rel_s = rel.to_string_lossy().into_owned();
+        let rel_s = slash_name(rel);
         for (line, what) in
             refused_in(&rel_s, &std::fs::read_to_string(&file).unwrap(), inscribed)
         {
