@@ -756,7 +756,7 @@ fn derive(capture: &Capture) -> Vec<Probed> {
 /// requests sent (the Identity Request, then each of `probes` to its ports) with the SysEx
 /// received for `wait`.
 pub fn observe(probe: bool, wait: Duration, probes: &[Probe], consent: &[String]) -> Result<Capture> {
-    crate::synthub::take::guarded_open(|| observe_unguarded(probe, wait, probes, consent))
+    crate::midi_port::guarded_open(|| observe_unguarded(probe, wait, probes, consent))
 }
 
 /// `observe` without the guard of the opening, for a caller that guards the whole.
@@ -1101,7 +1101,7 @@ struct MidiWire {
 
 impl MidiWire {
     fn open(device: &Unit) -> Result<Self> {
-        crate::synthub::take::guarded_open(|| Self::open_unguarded(device))
+        crate::midi_port::guarded_open(|| Self::open_unguarded(device))
     }
 
     fn open_unguarded(device: &Unit) -> Result<Self> {

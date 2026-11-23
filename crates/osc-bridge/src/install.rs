@@ -17,7 +17,7 @@ use serde_json::Value;
 use crate::export::{self, Format, Loss};
 use crate::frame::{self, Bindings};
 use crate::programs::Clock;
-use crate::synthub::take::Midi;
+use crate::midi_port::Midi;
 
 /// What the gesture did, or, without consent, would do.
 #[derive(Debug, Clone, PartialEq)]
@@ -39,14 +39,14 @@ pub struct Installed {
 }
 
 /// The `export --on` command: load both descriptors, take the MIDI from `open` (the guarded
-/// `take::open_hardware` for the program, the shared fake hardware for a test), and put the
+/// `midi_port::open_hardware` for the program, the shared fake hardware for a test), and put the
 /// export of `source` on `target`. A MIDI system that cannot be opened is an error naming it
 /// and the cause.
 pub fn install_command(
     source: &std::path::Path,
     target: &std::path::Path,
     confirm_overwrite: bool,
-    open: crate::synthub::take::Opener,
+    open: crate::midi_port::Opener,
 ) -> anyhow::Result<Installed> {
     let source = crate::device::load(source)?;
     let target = crate::device::load(target)?;

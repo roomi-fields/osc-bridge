@@ -302,7 +302,7 @@ fn main() -> Result<()> {
                 &osc_bridge::synthub::catalogue::locate(&device)?,
                 &osc_bridge::synthub::catalogue::locate(&on)?,
                 yes,
-                &osc_bridge::synthub::take::open_hardware,
+                &osc_bridge::midi_port::open_hardware,
             )?;
             for l in &done.lost {
                 eprintln!("not carried: {}: {}", l.place, l.reason);

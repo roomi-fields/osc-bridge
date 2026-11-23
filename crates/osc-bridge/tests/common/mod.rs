@@ -325,12 +325,12 @@ impl FakeHardware {
         Self::default()
     }
     /// An opener (what the commands take their MIDI from) that hands this hardware over.
-    pub fn opener(&self) -> impl Fn() -> anyhow::Result<Box<dyn osc_bridge::synthub::take::Midi>> + '_ {
-        move || Ok(Box::new(self.clone()) as Box<dyn osc_bridge::synthub::take::Midi>)
+    pub fn opener(&self) -> impl Fn() -> anyhow::Result<Box<dyn osc_bridge::midi_port::Midi>> + '_ {
+        move || Ok(Box::new(self.clone()) as Box<dyn osc_bridge::midi_port::Midi>)
     }
 }
 
-impl osc_bridge::synthub::take::Midi for FakeHardware {
+impl osc_bridge::midi_port::Midi for FakeHardware {
     fn outputs(&self) -> Vec<String> {
         self.ports.clone()
     }
@@ -346,6 +346,6 @@ impl osc_bridge::synthub::take::Midi for FakeHardware {
 }
 
 /// An opener whose MIDI system cannot be opened, for the cause `why`.
-pub fn failing_opener(why: &'static str) -> impl Fn() -> anyhow::Result<Box<dyn osc_bridge::synthub::take::Midi>> {
+pub fn failing_opener(why: &'static str) -> impl Fn() -> anyhow::Result<Box<dyn osc_bridge::midi_port::Midi>> {
     move || Err(anyhow::anyhow!(why))
 }

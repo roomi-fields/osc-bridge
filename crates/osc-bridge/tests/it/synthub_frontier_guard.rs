@@ -15,11 +15,9 @@ const SUBMODULES: &[&str] = &["online", "connect", "relay_protocol", "catalogue"
 /// (reader module, submodule of the link, number of readings).
 const INSCRIBED: &[(&str, &str, usize)] = &[
     ("orchestrator", "catalogue", 1),
-    ("install", "take", 2),
-    ("detect", "take", 2),
     ("mcp", "online", 43),
     ("mcp", "catalogue", 5),
-    ("mcp", "take", 11),
+    ("mcp", "take", 2),
 ];
 
 /// `(line, what)` pairs found in one source.
@@ -288,6 +286,22 @@ fn the_first_list_is_the_readings_of_the_bridge_at_the_split() {
     list.sort();
     assert_eq!(
         list,
-        [("detect", "take"), ("install", "take"), ("mcp", "catalogue"), ("mcp", "online"), ("mcp", "take"), ("orchestrator", "catalogue")]
+        [("mcp", "catalogue"), ("mcp", "online"), ("mcp", "take"), ("orchestrator", "catalogue")]
     );
+}
+
+#[test]
+fn the_midi_port_module_reads_no_submodule_of_the_link() {
+    let dir = tree(&[("midi_port.rs", "use crate::synthub::catalogue::x;\n")]);
+    let found = problems(dir.path(), &[]);
+    assert!(found.iter().any(|f| f.contains("new reading") && f.contains("midi_port")), "{found:?}");
+}
+
+#[test]
+fn the_midi_port_source_of_the_bridge_reads_nothing_of_the_link() {
+    let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("src");
+    assert!(src.join("midi_port.rs").is_file(), "the MIDI port module is not src/midi_port.rs");
+    let (counts, refused) = tree_readings(&src);
+    assert!(refused.is_empty(), "{refused:?}");
+    assert!(!counts.keys().any(|(reader, _)| reader == "midi_port"), "{counts:?}");
 }

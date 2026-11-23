@@ -24,6 +24,7 @@ pub mod ws;
 pub mod detect;
 pub mod capture;
 pub mod librarian;
+pub mod midi_port;
 pub mod synthub;
 pub mod export;
 pub mod install;

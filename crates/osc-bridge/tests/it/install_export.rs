@@ -4,14 +4,14 @@
 //! by step). Nothing is sent without the person's consent; nothing names a device.
 //!
 //! The gesture is `osc_bridge::install::install(source, target, confirm_overwrite, midi, clock)`
-//! over the `take::Midi` ports and the `programs::Clock` of the other gestures: small tests,
+//! over the `midi_port::Midi` ports and the `programs::Clock` of the other gestures: small tests,
 //! the ports are a recorded exchange. The tool and the command refuse before touching any port
 //! when the target is not plugged.
 
 use crate::common::{files, temp, tool_call, FakeHardware};
 use osc_bridge::install::install;
 use osc_bridge::programs::Clock;
-use osc_bridge::synthub::take::Midi;
+use osc_bridge::midi_port::Midi;
 use serde_json::{json, Value};
 use std::time::Duration;
 

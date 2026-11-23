@@ -2,7 +2,7 @@
 //! panics when ALSA cannot allocate a queue), comes back as an error naming the MIDI system and
 //! the cause, never as a panic. Nothing here opens the machine's MIDI system.
 
-use osc_bridge::synthub::take::guarded_open;
+use osc_bridge::midi_port::guarded_open;
 
 #[test]
 fn an_opening_that_panics_comes_back_as_an_error_naming_the_midi_system_and_the_cause() {
