@@ -14,6 +14,12 @@ on:
   # A release plays the CI on the tagged commit before it publishes.
   workflow_call:
 
+# One run at a time on the runner of the project for this repository, the CI of the day and the night
+# (nuit.yml): a run that waits is never cancelled by the next one.
+concurrency:
+  group: pc2
+  cancel-in-progress: false
+
 # The pass of the verification in n + 2 jobs per version of Node, as Vitest shards a run
 # (https://vitest.dev/guide/improving-performance#sharding): `gardes` plays every task but the
 # tests (`npm run verifier -- --sans-tests`), each job of `tranches` the tests of its tranche

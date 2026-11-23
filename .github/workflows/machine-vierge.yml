@@ -1,0 +1,106 @@
+# Généré par `npx grillhouse maj` depuis le gabarit du cadre ; ne pas éditer : la mise à jour le réécrit. Un workflow sans cette ligne est au projet, et la mise à jour n'y touche pas.
+#
+# The clean machine: a machine GitHub hosts, new at each pass, replays the installation from
+# scratch and the complete verification (`npm run verifier`, no base). A lot is verified before main
+# on the project's own machine (ci.yml, the repository's variable RUNNER), where speed counts; this
+# flow catches what only a clean machine shows: a tool the project does not declare, a setting of
+# the poste that the code supposes, a machine smaller than the poste. Such a fault is the
+# installation's, not the product's.
+#
+# It starts once a day on the default branch, and at each release (a tag v*), by hand too. It starts
+# on no push to main, develop or a branch of a ticket, so a red pass never blocks the queue of the
+# lots: its red shows in GitHub, as the night's (nuit.yml). Nothing in the frame waits for it, not
+# the queue, not the release of the project.
+#
+# « Only if needed » (as the night plays only the project that moved since its last green night):
+# the schedule always starts, and its first job, `decision`, reads the last green pass of this
+# workflow on the repository, whatever its event; when that pass is the commit of the current one,
+# every job of verification is skipped. A search that fails judges nothing, and the pass plays. A red
+# pass leaves no green, so the flow plays again the next day on the same commit. A tag or a manual
+# start reads nothing and always plays.
+#
+# Every job plays on GitHub's ubuntu-latest, never on the repository's variable RUNNER: the point is
+# a machine that is not the project's. Linux and Node 26 alone, as the other workflows of the frame:
+# a project that wants another system (macOS, ARM) takes this workflow for itself, by removing the
+# mark of its first line; the update then leaves it as it is.
+name: Machine vierge
+
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  decision:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+    outputs:
+      saute: ${{ steps.lecture.outputs.saute }}
+
+    steps:
+      # The last green pass of this workflow, whatever its event: the same commit skips the pass.
+      # The current pass is not green yet, so it never reads itself.
+      - name: Last green pass
+        id: lecture
+        if: github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          dernier=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow machine-vierge.yml --status success --limit 1 --json headSha --jq '.[0].headSha' || true)
+          if [ -n "$dernier" ] && [ "$dernier" = "${{ github.sha }}" ]; then
+            echo "saute=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "saute=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  verification:
+    needs: decision
+    if: ${{ needs.decision.outputs.saute != 'true' }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['26.x']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          # The submodules of the project, a private one read by the repository's secret SOUS_MODULES
+          # (a token that reads it); without the secret, the workflow's own token.
+          submodules: recursive
+          token: ${{ secrets.SOUS_MODULES || github.token }}
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      # uv, which the frame's module python plays, for a project with packages of Python.
+      - name: Install uv
+        if: hashFiles('**/pyproject.toml') != ''
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies
+        run: npm ci
+
+      # The project's preparation (system packages, toolchains), when its package.json has the
+      # script `ci:preparer`; it may export variables to the next steps through $GITHUB_ENV.
+      - name: Prepare the project
+        run: npm run --if-present ci:preparer
+
+      # The binaries of the project's languages (cargo's sccache, nextest and cargo-deny, python's
+      # uv), each at its version; none for TypeScript alone.
+      - name: Install the binaries of the languages
+        run: npx --no-install grillhouse binaires
+
+      # The complete verification, with no base: every guard, the typing and every test.
+      - name: Verification
+        run: npm run verifier
