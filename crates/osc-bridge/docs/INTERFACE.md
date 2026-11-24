@@ -83,6 +83,15 @@ The library publishes, for a program that links it from another repository, thes
 - `mcp::Known` (fields `trust`, `candidates`, `status`, `private`) is what a caller knows beyond the library, given as values; `mcp::call_local(name, args, opts, index, open, known)` is the local answer to one tool call.
 - `mcp::detect_tool` and `mcp::detect_hardware` run a detection with the probes and the answers the caller gives; they reach the machine's MIDI ports.
 - `mcp::detect_port(port, replies_hex, usb)` writes one detected port; `mcp::port_answer(answer)` lists the candidates and the unlisted devices of an answer; `mcp::unlisted_text(u)` words an unlisted device; `mcp::format_detection(devices, probe)` words a detection; `mcp::proofs_json(proofs)` writes the proofs of a candidate; `mcp::software_cards_only(index, candidates)` keeps the software cards.
+- `commands` carries the bodies of the six commands that name a device, so the osc-bridge binary and the SyntHub program share one code. Each takes plain values (paths, port names, numbers, flags), no `clap` type, and returns `anyhow::Result<()>`; what a command writes goes in the `&mut dyn Write` the caller gives, with the texts of the command line:
+  - `commands::run(options, err)` with `commands::RunOptions` (`device`, `out_port`, `in_port`, `bind`, `osc_clients`, `ws_bind`, `ws_allow_origins`, `oscquery_bind`); the note `--in-port is ignored …` goes on `err`.
+  - `commands::inspect(device, out, err)`: the summary on `out`, the checksum alerts on `err`.
+  - `commands::backup(device, in_port, out_file, out_port, idle_secs, max_secs, err)` and `commands::restore(device, out_port, target, file, err)` (`target` is `Some((bank, number))` or `None`): `Listening …`, `Saved …` and `Sent N SysEx message(s) …` go on `err`.
+  - `commands::export(device, format, on, out, err)`: `on` is `Some((target_driver, yes))`; the document, or `wrote …` / `nothing sent: …`, goes on `out`, the `not carried: …` lines on `err`; neither format nor target fails with `--format is required without --on`.
+  - `commands::orchestrate(config)` runs `Orchestrator::run` and writes nothing more.
+  - `commands::checksum_warnings(device)` is one `WARN` line per checksum the engine cannot compute; `lint` reads it too.
+
+  These entries follow the version of the library; a program reads them by a git pin on a commit.
 
 ## The OSC addresses
 

@@ -26,6 +26,7 @@ mod install_export_fetch;
 mod isolated_config;
 mod midi_opening;
 mod learn_mode;
+mod library_commands;
 mod learn_service_matches;
 mod link_chains;
 mod link_envelope;

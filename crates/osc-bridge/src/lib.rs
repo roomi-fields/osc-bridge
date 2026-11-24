@@ -32,6 +32,7 @@ pub mod install;
 pub mod oscquery;
 pub mod bridge_routes;
 pub mod programs;
+pub mod commands;
 
 pub use osd::Device;
 pub use runtime::{Runtime, RuntimeOptions};

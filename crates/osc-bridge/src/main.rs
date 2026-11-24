@@ -3,7 +3,7 @@ use clap::{Args, Parser, Subcommand};
 use midir::{MidiInput, MidiOutput};
 use std::path::PathBuf;
 
-use osc_bridge::{Device, Runtime, RuntimeOptions};
+use osc_bridge::commands::{self, RunOptions};
 
 #[cfg(test)]
 mod tests;
@@ -264,18 +264,28 @@ struct RunArgs {
     oscquery_bind: Option<String>,
 }
 
+impl From<RunArgs> for RunOptions {
+    fn from(a: RunArgs) -> Self {
+        RunOptions {
+            device: a.device,
+            out_port: a.out_port,
+            in_port: a.in_port,
+            bind: a.bind,
+            osc_clients: a.osc_clients,
+            ws_bind: a.ws_bind,
+            ws_allow_origins: a.ws_allow_origins,
+            oscquery_bind: a.oscquery_bind,
+        }
+    }
+}
+
 fn main() -> Result<()> {
     match Cli::parse().cmd {
         Cmd::List => cmd_list(),
         Cmd::Backup { device, in_port, out, out_port, idle_secs, max_secs } =>
-            cmd_backup(device, in_port, out, out_port, idle_secs, max_secs),
-        Cmd::Restore { device, out_port, bank, number, file } => {
-            let dev = osc_bridge::device::load(osc_bridge::synthub::catalogue::locate(&device)?)?;
-            let target = bank.as_deref().zip(number);
-            let sent = osc_bridge::librarian::restore_to_device(&dev, &out_port, &file, target)?;
-            eprintln!("Sent {sent} SysEx message(s) from {}", file.display());
-            Ok(())
-        }
+            commands::backup(&device, &in_port, &out, out_port.as_deref(), idle_secs, max_secs, &mut std::io::stderr()),
+        Cmd::Restore { device, out_port, bank, number, file } =>
+            commands::restore(&device, &out_port, bank.as_deref().zip(number), &file, &mut std::io::stderr()),
         Cmd::Connect { server, no_share, test_synth, private_ports } =>
             osc_bridge::synthub::connect::run(&server, !no_share, test_synth, &private_ports),
         Cmd::Privacy { offline, private, public } => osc_bridge::synthub::command::privacy(offline, private, public),
@@ -288,60 +298,18 @@ fn main() -> Result<()> {
             osc_bridge::synthub::mcp::print_detection(devices_dir.as_deref(), !no_probe, write.as_deref(), read.as_deref(), &consent,
                 osc_bridge::synthub::catalogue::tier_rank)
         }
-        Cmd::Inspect { device } => cmd_inspect(device),
-        Cmd::Run(args) => cmd_run(args),
-        Cmd::Export { device, on: Some(on), yes, .. } => {
-            let done = osc_bridge::install::install_command(
-                &osc_bridge::synthub::catalogue::locate(&device)?,
-                &osc_bridge::synthub::catalogue::locate(&on)?,
-                yes,
-                &osc_bridge::midi_port::open_hardware,
-            )?;
-            for l in &done.lost {
-                eprintln!("not carried: {}: {}", l.place, l.reason);
-            }
-            if done.written {
-                println!("wrote {} ({} bytes, {}, by {}): {} message(s) sent", done.path, done.size, done.format, done.way, done.messages);
-            } else {
-                println!("nothing sent: it would write {} ({} bytes, {}, by {}) and may overwrite a file on the device; add --yes to send",
-                    done.path, done.size, done.format, done.way);
-            }
-            Ok(())
-        }
-        Cmd::Export { device, format, .. } => {
-            let dev = osc_bridge::device::load(osc_bridge::synthub::catalogue::locate(&device)?)?;
-            let format = format.ok_or_else(|| anyhow::anyhow!("--format is required without --on"))?;
-            let out = osc_bridge::export::export(&dev, format.parse()?)?;
-            for l in &out.lost {
-                eprintln!("not carried: {}: {}", l.place, l.reason);
-            }
-            print!("{}", out.value);
-            Ok(())
-        }
+        Cmd::Inspect { device } => commands::inspect(&device, &mut std::io::stdout(), &mut std::io::stderr()),
+        Cmd::Run(args) => commands::run(args.into(), &mut std::io::stderr()),
+        Cmd::Export { device, on: Some(on), yes, .. } =>
+            commands::export(&device, None, Some((&on, yes)), &mut std::io::stdout(), &mut std::io::stderr()),
+        Cmd::Export { device, format, .. } =>
+            commands::export(&device, format.as_deref(), None, &mut std::io::stdout(), &mut std::io::stderr()),
         Cmd::OscSend { target, addr, args, from_file } => cmd_osc_send(target, addr, args, from_file),
         Cmd::OscListen { bind } => cmd_osc_listen(bind),
         Cmd::Lint { device } => cmd_lint(device),
-        Cmd::Orchestrate { config } => osc_bridge::orchestrator::Orchestrator::run(&config, osc_bridge::synthub::catalogue::locate),
+        Cmd::Orchestrate { config } => commands::orchestrate(&config),
         Cmd::Mcp { devices_dir, default_target, offline } => osc_bridge::synthub::command::mcp(devices_dir, default_target, offline),
     }
-}
-
-fn cmd_backup(device: PathBuf, in_port: String, out: PathBuf, out_port: Option<String>,
-              idle_secs: u64, max_secs: u64) -> Result<()> {
-    use osc_bridge::librarian::{backup_from_device, write_syx};
-    use std::time::Duration;
-    let dev = osc_bridge::device::load(osc_bridge::synthub::catalogue::locate(&device)?)?;
-    if out_port.is_none() {
-        eprintln!("Listening — start the SysEx dump from the device's menu now.");
-    }
-    let cap = backup_from_device(&dev, &in_port, out_port.as_deref(),
-                                 Duration::from_secs(idle_secs), Duration::from_secs(max_secs))?;
-    if cap.messages.is_empty() {
-        anyhow::bail!("no SysEx received within {max_secs} s");
-    }
-    write_syx(&out, &cap.messages)?;
-    eprintln!("Saved {} message(s), {} bytes to {}", cap.messages.len(), cap.bytes, out.display());
-    Ok(())
 }
 
 fn cmd_lint(path: PathBuf) -> Result<()> {
@@ -352,7 +320,7 @@ fn cmd_lint(path: PathBuf) -> Result<()> {
         eprintln!("  WARN: scripted fallback at {where_} ({what}) — prefer declarative if possible.");
         *w += 1;
     };
-    for line in checksum_warnings(&dev) { eprintln!("{line}"); warnings += 1; }
+    for line in commands::checksum_warnings(&dev) { eprintln!("{line}"); warnings += 1; }
     for c in dev.commands.iter().flatten() {
         if c.script.is_some() { warn("command.script", &format!("/{}", osc_bridge::device::address_text(&c.osc)), &mut warnings); }
     }
@@ -385,15 +353,6 @@ fn cmd_lint(path: PathBuf) -> Result<()> {
     Ok(())
 }
 
-/// One `WARN` line per checksum the engine cannot compute; the build of that frame fails.
-fn checksum_warnings(dev: &Device) -> Vec<String> {
-    let faults = osc_bridge::device::faults(dev).into_iter()
-        .map(|f| format!("  WARN: {} {}: {} — detection sends the universal request instead.", f.device, f.field, f.cause));
-    let checksums = osc_bridge::device::checksum_problems(dev).into_iter()
-        .map(|(place, problem)| format!("  WARN: checksum at {place}: {problem} — building this frame fails."));
-    faults.chain(checksums).collect()
-}
-
 fn cmd_list() -> Result<()> {
     let input = MidiInput::new("osc-bridge-list")?;
     println!("=== MIDI inputs ===");
@@ -406,68 +365,6 @@ fn cmd_list() -> Result<()> {
         println!("  [{i}] {}", output.port_name(p).unwrap_or_else(|_| "?".into()));
     }
     Ok(())
-}
-
-fn cmd_inspect(path: PathBuf) -> Result<()> {
-    let dev = osc_bridge::device::load(osc_bridge::synthub::catalogue::locate(&path)?)?;
-    for line in checksum_warnings(&dev) { eprintln!("{line}"); }
-    let d = &dev.device;
-    println!("Device:   {} ({})", d.name, d.revision.as_deref().unwrap_or_default());
-    println!("Vendor:   {}", d.vendor.as_deref().unwrap_or_default());
-    println!("OSC prefix: {}", d.osc_prefix);
-    println!("MID:      {}", hex_vec(d.manufacturer_id.as_deref().unwrap_or_default()));
-    println!("Dev id:   {}", hex_vec(d.device_id.as_deref().unwrap_or_default()));
-    println!("Rate limit: {:?} Hz", d.rate_limit_hz);
-    let commands = dev.commands.as_deref().unwrap_or_default();
-    println!("Commands: {} entries", commands.len());
-    for c in commands {
-        println!("  {}  args={}", osc_bridge::device::address_text(&c.osc), c.args.as_ref().map_or(0, Vec::len));
-    }
-    if let Some(pt) = &dev.params {
-        println!("Params:   {} entries", pt.entries.len());
-        for e in pt.entries.iter().take(5) {
-            let [lo, hi] = e.range.unwrap_or([0, 127]);
-            println!("  {}  ({:#04x},{:#04x},{:#04x},{:#04x})  range=[{},{}]",
-                e.osc, e.pr.unwrap_or(0), e.p.unwrap_or(0), e.c.unwrap_or(0), e.r.unwrap_or(0), lo, hi);
-        }
-        if pt.entries.len() > 5 { println!("  ... +{} more", pt.entries.len() - 5); }
-    }
-    println!("Replies:  {} patterns", dev.replies.as_ref().map_or(0, Vec::len));
-    Ok(())
-}
-
-fn hex_vec(v: &[u8]) -> String {
-    v.iter().map(|b| format!("{:02X}", b)).collect::<Vec<_>>().join(" ")
-}
-
-fn cmd_run(args: RunArgs) -> Result<()> {
-    let RunArgs { device: path, out_port, in_port, bind, osc_clients: clients, ws_bind, ws_allow_origins, oscquery_bind } = args;
-    let dev = osc_bridge::device::load_with_docs(osc_bridge::synthub::catalogue::locate(&path)?)?;
-    let is_osc = dev.device.transport.as_ref().map(|t| t.kind) == Some(osd::TransportKind::Osc);
-    let out_port = match (out_port, is_osc) {
-        (Some(p), _) => p,
-        (None, true) => 0, // runtime branches early; value is unused.
-        (None, false) => anyhow::bail!(
-            "--out-port is required for hardware (MIDI/SysEx) drivers. Run `osc-bridge list` to find the index, then pass `--out-port <N>`."
-        ),
-    };
-    if is_osc && in_port.is_some() {
-        eprintln!("note: --in-port is ignored for OSC-transport drivers");
-    }
-    let client_addrs: Vec<std::net::SocketAddr> = clients.iter()
-        .map(|s| s.parse::<std::net::SocketAddr>()
-            .with_context(|| format!("parsing --osc-client {s}")))
-        .collect::<Result<Vec<_>>>()?;
-    Runtime::run(RuntimeOptions {
-        device: dev,
-        midi_out_port_idx: out_port,
-        midi_in_port_idx: if is_osc { None } else { in_port },
-        osc_bind: bind,
-        osc_clients: client_addrs,
-        ws_bind,
-        ws_allow_origins,
-        oscquery_bind,
-    })
 }
 
 fn cmd_osc_send(target: String, addr: String, args: Vec<String>, from_file: Option<PathBuf>) -> Result<()> {

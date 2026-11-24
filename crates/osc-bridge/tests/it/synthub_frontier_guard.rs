@@ -2,10 +2,11 @@
 //! (`src/synthub.rs`, `src/synthub/`) no file of `src/` reads that module, writes the name of the
 //! service in any case, or writes its host name, comments and strings included.
 //!
-//! Two exemptions only, told apart by tokens: the declaration `pub mod synthub;` of `lib.rs`, and in
+//! Three exemptions only, told apart by tokens: the declaration `pub mod synthub;` of `lib.rs`, in
 //! `main.rs` the call by full path `osc_bridge::synthub::<submodule>::…` in code position (never a
-//! `use`, a `mod`, a path without submodule, a rename or a glob). A word in a comment or a string,
-//! even written `synthub::x`, is refused.
+//! `use`, a `mod`, a path without submodule, a rename or a glob), and in `commands.rs` the one call
+//! `crate::synthub::catalogue::locate(` that resolves a catalogue id or slug. A word in a comment
+//! or a string, even written `synthub::x`, is refused.
 
 use crate::account_isolation_guard::{lex, Tok};
 use std::path::{Path, PathBuf};
@@ -76,6 +77,20 @@ fn exempt_lines(file: &str, src: &str) -> Vec<usize> {
                     && ident(Some(k + 3)).is_some()
                     && punct(k + 4, ':')
                     && punct(k + 5, ':')
+                    && !prefixed_by_use(&toks, k)
+            }
+            "commands.rs" => {
+                k >= 3
+                    && ident(Some(k - 3)) == Some("crate")
+                    && punct(k - 2, ':')
+                    && punct(k - 1, ':')
+                    && punct(k + 1, ':')
+                    && punct(k + 2, ':')
+                    && ident(Some(k + 3)) == Some("catalogue")
+                    && punct(k + 4, ':')
+                    && punct(k + 5, ':')
+                    && ident(Some(k + 6)) == Some("locate")
+                    && punct(k + 7, '(')
                     && !prefixed_by_use(&toks, k)
             }
             _ => false,
@@ -288,6 +303,22 @@ fn guard_allows_main_to_call_the_link_by_full_path_only() {
     assert!(refused(&[("main.rs", ok)]).is_empty());
     let attr = "#[arg(default_value = osc_bridge::synthub::connect::DEFAULT_RELAY)]\nstruct A;\n";
     assert!(refused(&[("main.rs", attr)]).is_empty());
+    // the same call elsewhere is refused
+    assert!(!refused(&[("orchestrator.rs", ok)]).is_empty());
+}
+
+#[test]
+fn guard_allows_commands_to_locate_a_catalogue_driver_and_nothing_else_of_the_link() {
+    let ok = "fn locate(d: &Path) -> R { crate::synthub::catalogue::locate(d) }\n";
+    assert!(refused(&[("commands.rs", ok)]).is_empty());
+    for body in [
+        "fn f() { crate::synthub::online::linked(); }\n",
+        "use crate::synthub::catalogue::locate;\n",
+        "fn f() { crate::synthub::catalogue::other(); }\n",
+        "// crate::synthub::catalogue::locate(d)\nfn f() {}\n",
+    ] {
+        assert!(!refused(&[("commands.rs", body)]).is_empty(), "not refused: {body}");
+    }
     // the same call elsewhere is refused
     assert!(!refused(&[("orchestrator.rs", ok)]).is_empty());
 }
