@@ -2,10 +2,12 @@
 #
 # The night of a shared machine: once a night, on the default branch, the project's night tests but
 # those that bear the tag @poste (a night test that depends on the poste: its envelope, its tools,
-# its session; the frame's guard `tests-du-poste` asks for the tag), on Node 26. No measure
-# of time plays here: a shared machine does not measure a time (the frame's charter, « Une mesure
-# de temps joue la nuit »). A green run here is never the last green: the night of the poste alone
-# keeps it, after it plays every night test, the tagged ones included, then the measures of time.
+# its session; the frame's guard `tests-du-poste` asks for the tag), on Node 26. This flow declares
+# no job that plays the measures of time (a command `tests-de-nuit --mesures`, which the night of
+# the poste reads, scripts/flux-de-la-nuit.mjs): a shared machine does not measure a time (the
+# frame's charter, « Une mesure de temps joue la nuit »), so the night of the poste plays them, on
+# its dedicated cores, after the tests tagged @poste. A green run here is never the last green: the
+# night of the poste alone keeps it, once the measures were played and are green.
 name: Nuit
 
 on:
