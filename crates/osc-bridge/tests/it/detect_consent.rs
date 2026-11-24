@@ -93,7 +93,7 @@ fn detect_hardware_publishes_the_consent_argument_and_the_safe_list_in_its_descr
     };
     let input = format!("{}\n", json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" }));
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(opts, input.as_bytes(), &mut out).unwrap();
+    osc_bridge::mcp::serve_with_midi(opts, input.as_bytes(), &mut out, &crate::common::refusing("detect_consent")).unwrap();
     let reply: Value = serde_json::from_str(String::from_utf8(out).unwrap().lines().next().unwrap()).unwrap();
     let tool = reply["result"]["tools"].as_array().unwrap().iter().find(|t| t["name"] == "detect_hardware").unwrap().clone();
     let consent = &tool["inputSchema"]["properties"]["consent_ports"];
@@ -159,7 +159,7 @@ fn detect_hardware_says_that_with_no_usb_id_read_only_the_universal_request_leav
     };
     let input = format!("{}\n", json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" }));
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(opts, input.as_bytes(), &mut out).unwrap();
+    osc_bridge::mcp::serve_with_midi(opts, input.as_bytes(), &mut out, &crate::common::refusing("detect_consent")).unwrap();
     let reply: Value = serde_json::from_str(String::from_utf8(out).unwrap().lines().next().unwrap()).unwrap();
     let tool = reply["result"]["tools"].as_array().unwrap().iter().find(|t| t["name"] == "detect_hardware").unwrap().clone();
     let description = tool["description"].as_str().unwrap().to_lowercase();

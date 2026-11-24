@@ -82,7 +82,7 @@ fn the_report_leaves_out_a_port_of_the_system_and_keeps_a_real_device_beside_it(
 #[test]
 fn the_learn_mode_listens_to_no_port_of_the_system() {
     let through = unit("Midi Through:Midi Through Port-0 14:0");
-    let learned = learn_units(&[through], Duration::from_millis(1000)).unwrap();
+    let learned = learn_units(&crate::common::refusing("learn_service_matches"), &[through], Duration::from_millis(1000)).unwrap();
     assert!(learned.is_empty());
 }
 

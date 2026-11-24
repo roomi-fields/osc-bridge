@@ -28,7 +28,7 @@ fn offline_tools() -> BTreeMap<String, String> {
     let request = serde_json::json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" });
     let input = format!("{request}\n");
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(opts, input.as_bytes(), &mut out).unwrap();
+    osc_bridge::mcp::serve_with_midi(opts, input.as_bytes(), &mut out, &crate::common::refusing("published_tool_lists")).unwrap();
     let reply: Value = serde_json::from_str(String::from_utf8(out).unwrap().lines().next().unwrap()).unwrap();
     reply["result"]["tools"].as_array().unwrap().iter()
         .map(|t| (t["name"].as_str().unwrap().to_string(), t["description"].as_str().unwrap().to_string()))
@@ -100,7 +100,7 @@ fn code_schema(tool: &str) -> (BTreeSet<String>, BTreeSet<String>) {
     let request = serde_json::json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" });
     let input = format!("{request}\n");
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(opts, input.as_bytes(), &mut out).unwrap();
+    osc_bridge::mcp::serve_with_midi(opts, input.as_bytes(), &mut out, &crate::common::refusing("published_tool_lists")).unwrap();
     let reply: Value = serde_json::from_str(String::from_utf8(out).unwrap().lines().next().unwrap()).unwrap();
     let t = reply["result"]["tools"].as_array().unwrap().iter().find(|t| t["name"] == tool).unwrap().clone();
     schema_names(&t)

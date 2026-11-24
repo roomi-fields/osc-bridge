@@ -27,6 +27,7 @@ mod identity_usb_only;
 mod install_export_fetch;
 mod isolated_config;
 mod midi_opening;
+mod midi_through_opener;
 mod learn_mode;
 mod library_commands;
 mod learn_service_matches;

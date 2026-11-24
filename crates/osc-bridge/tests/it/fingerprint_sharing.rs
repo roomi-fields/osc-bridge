@@ -188,7 +188,7 @@ fn detect_hardware_publishes_the_maker_model_and_firmware_arguments_and_says_wha
     };
     let input = format!("{}\n", json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" }));
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(opts, input.as_bytes(), &mut out).unwrap();
+    osc_bridge::mcp::serve_with_midi(opts, input.as_bytes(), &mut out, &crate::common::refusing("fingerprint_sharing")).unwrap();
     let reply: Value = serde_json::from_str(String::from_utf8(out).unwrap().lines().next().unwrap()).unwrap();
     let tool = reply["result"]["tools"].as_array().unwrap().iter().find(|t| t["name"] == "detect_hardware").unwrap().clone();
     let props = &tool["inputSchema"]["properties"];
@@ -256,21 +256,23 @@ fn the_tool_refuses_a_share_before_listening_and_names_every_missing_field_in_it
     assert!(["vendor", "model", "firmware"].iter().all(|w| text.contains(w)), "{text}");
 }
 
-fn detect_learn(args: &[&str]) -> std::process::Output {
-    std::process::Command::new(env!("CARGO_BIN_EXE_osc-bridge")).args(["detect", "--learn"]).args(args).output().unwrap()
+/// What `detect --learn` prints or says for a share the person gave, the MIDI system refusing to open:
+/// an error that is not the refusal of the opener says the share was refused before any port was touched.
+fn learn_command(share: [Option<&str>; 3]) -> String {
+    let refusing = crate::common::refusing("fingerprint_sharing");
+    let result = osc_bridge::synthub::learn::print_learning(&refusing, None, Some(("bcr", share)), osc_bridge::synthub::catalogue::tier_rank);
+    format!("{:#}", result.expect_err("a share with a field missing is refused"))
 }
 
 #[test]
 fn the_command_refuses_a_share_before_listening_and_names_every_missing_field_with_its_flag() {
-    let out = detect_learn(&["--share-fingerprint", "bcr", "--vendor", "Behringer"]);
-    assert!(!out.status.success());
-    let shown = String::from_utf8_lossy(&out.stderr).to_string() + &String::from_utf8_lossy(&out.stdout);
+    let shown = learn_command([Some("Behringer"), None, None]);
     assert!(shown.contains("--model") && shown.contains("--firmware"), "{shown}");
     assert!(!shown.contains("--device-name"), "{shown}");
-    let out = detect_learn(&["--share-fingerprint", "bcr", "--vendor", "Behringer", "--model", "BCR-32", "--firmware", ""]);
-    assert!(!out.status.success());
-    let shown = String::from_utf8_lossy(&out.stderr).to_string() + &String::from_utf8_lossy(&out.stdout);
+    assert!(!shown.contains("opened the machine's MIDI"), "refused only after the MIDI was opened: {shown}");
+    let shown = learn_command([Some("Behringer"), Some("BCR-32"), Some("")]);
     assert!(shown.contains("--firmware"), "{shown}");
+    assert!(!shown.contains("opened the machine's MIDI"), "refused only after the MIDI was opened: {shown}");
 }
 
 #[test]

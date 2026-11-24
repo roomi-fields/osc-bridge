@@ -3,9 +3,7 @@
 //! the link's work; the bridge keeps the recognition against the cards it is given.
 
 use anyhow::{anyhow, Result};
-use midir::{Ignore, MidiInput, MidiInputConnection, MidiOutput};
 use serde_json::{json, Value};
-use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use super::online::{Online, Settings};
@@ -13,6 +11,7 @@ use crate::capture::Capture;
 use crate::detect::{client_key, client_kind, observe, usb_cards, usb_of_port, ClientKey, ClientKind};
 use crate::mcp::{content_structured, hardware_candidates, proofs_json, slugify, software_cards_only, unlisted_text,
                  DeviceIndex, McpOptions};
+pub use crate::midi_port::{Heard, Unit, Wire};
 use crate::recognition::{parse_identity_reply, IDENTITY_REQUEST};
 
 // ---- the listening ----
@@ -52,26 +51,6 @@ pub fn port_words(name: &str) -> String {
     words.join(" ")
 }
 
-/// One physical device as its ports show it: all its inputs and outputs (raw names, with their
-/// indexes in the capture) and the USB ids of its card, when it has one.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Unit {
-    pub inputs: Vec<String>,
-    pub outputs: Vec<String>,
-    pub in_indexes: Vec<usize>,
-    pub out_indexes: Vec<usize>,
-    pub usb: Option<(u16, u16)>,
-    /// Whether its client is a device of the system or a program, as the list of clients says.
-    pub client_kind: ClientKind,
-}
-
-impl Unit {
-    /// A name for the device: its first output, else its first input.
-    pub fn label(&self) -> &str {
-        self.outputs.first().or(self.inputs.first()).map(String::as_str).unwrap_or("?")
-    }
-}
-
 /// The devices of a capture, pure: the ports of one ALSA client number are one device; a name
 /// without number groups by its client name (the text before the first `:`, squashed). The card
 /// only gives the USB ids.
@@ -104,21 +83,6 @@ pub fn units(capture: &Capture) -> Vec<Unit> {
             else { kinds.first().copied().unwrap_or(ClientKind::Unknown) };
         u
     }).collect()
-}
-
-/// One message a device sent on one of its inputs, with the time since the request went out.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Heard {
-    pub port: String,
-    pub at: Duration,
-    pub msg: Vec<u8>,
-}
-
-/// What the learn mode reads and writes of one device: the universal identity request goes
-/// out on each output, then everything every input sends is heard for the time given.
-pub trait Wire {
-    fn send(&mut self, port: &str, msg: &[u8]);
-    fn heard(&mut self, listen: Duration) -> Vec<Heard>;
 }
 
 /// The fingerprint of a device (a valid OSD 0.6 fingerprint) and, beside it, what was measured.
@@ -251,58 +215,6 @@ fn controls_heard(heard: &[Heard]) -> Vec<serde_json::Value> {
     found
 }
 
-/// A device's ports on the machine: every input listened to, every output asked.
-struct MidiWire {
-    outs: Vec<(String, midir::MidiOutputConnection)>,
-    _inputs: Vec<MidiInputConnection<()>>,
-    got: Arc<Mutex<Vec<Heard>>>,
-    since: Arc<Mutex<Option<std::time::Instant>>>,
-}
-
-impl MidiWire {
-    fn open(device: &Unit) -> Result<Self> {
-        crate::midi_port::guarded_open(|| Self::open_unguarded(device))
-    }
-
-    fn open_unguarded(device: &Unit) -> Result<Self> {
-        let got: Arc<Mutex<Vec<Heard>>> = Arc::new(Mutex::new(Vec::new()));
-        let since: Arc<Mutex<Option<std::time::Instant>>> = Arc::new(Mutex::new(None));
-        let mut inputs = Vec::new();
-        for (ii, name) in device.in_indexes.iter().zip(&device.inputs) {
-            let mut inp = MidiInput::new("osc-bridge-learn-in")?;
-            inp.ignore(Ignore::None);
-            if let Some(port) = inp.ports().get(*ii).cloned() {
-                let (sink, t0, port_name) = (got.clone(), since.clone(), name.clone());
-                if let Ok(conn) = inp.connect(&port, "osc-bridge-learn-in", move |_, msg, _| {
-                    let at = t0.lock().ok().and_then(|t| t.map(|t| t.elapsed())).unwrap_or_default();
-                    if let Ok(mut g) = sink.lock() { g.push(Heard { port: port_name.clone(), at, msg: msg.to_vec() }); }
-                }, ()) {
-                    inputs.push(conn);
-                }
-            }
-        }
-        let mut outs = Vec::new();
-        for (oi, name) in device.out_indexes.iter().zip(&device.outputs) {
-            let o = MidiOutput::new("osc-bridge-learn-out")?;
-            if let Some(port) = o.ports().get(*oi) {
-                if let Ok(conn) = o.connect(port, "osc-bridge-learn-out") { outs.push((name.clone(), conn)); }
-            }
-        }
-        Ok(MidiWire { outs, _inputs: inputs, got, since })
-    }
-}
-
-impl Wire for MidiWire {
-    fn send(&mut self, port: &str, msg: &[u8]) {
-        if let Ok(mut t) = self.since.lock() { t.get_or_insert_with(std::time::Instant::now); }
-        if let Some((_, out)) = self.outs.iter_mut().find(|(n, _)| n == port) { let _ = out.send(msg); }
-    }
-    fn heard(&mut self, listen: Duration) -> Vec<Heard> {
-        std::thread::sleep(listen);
-        self.got.lock().map(|mut g| std::mem::take(&mut *g)).unwrap_or_default()
-    }
-}
-
 /// Today as `YYYY-MM-DD` (UTC).
 fn today() -> String {
     let days = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)
@@ -321,8 +233,8 @@ fn today() -> String {
 
 /// The learn mode on every device plugged in: each is asked the universal identity request on
 /// each of its outputs and heard on each of its inputs for `listen`, all at the same time.
-pub fn learn_all(listen: Duration) -> Result<Vec<(Unit, Learned)>> {
-    learn_units(&units(&observe(false, Duration::ZERO, &[], &[])?), listen)
+pub fn learn_all(open: crate::midi_port::Opener, listen: Duration) -> Result<Vec<(Unit, Learned)>> {
+    learn_units(open, &units(&observe(open, false, Duration::ZERO, &[], &[])?), listen)
 }
 
 /// Whether a port label is a port of the system and no device: the ALSA "Midi Through" kernel
@@ -341,17 +253,22 @@ pub fn is_system_unit(unit: &Unit) -> bool {
 
 /// The learn mode on the `devices` given and no other, the ports of the system left out: the
 /// same listening as `learn_all`.
-pub fn learn_units(devices: &[Unit], listen: Duration) -> Result<Vec<(Unit, Learned)>> {
+pub fn learn_units(open: crate::midi_port::Opener, devices: &[Unit], listen: Duration) -> Result<Vec<(Unit, Learned)>> {
     let devices: Vec<Unit> = devices.iter().filter(|d| !is_system_unit(d)).cloned().collect();
     let devices = devices.as_slice();
+    if devices.is_empty() {
+        return Ok(Vec::new());
+    }
     let observed = today();
+    let mut midi = crate::midi_port::guarded_open(open)?;
+    let wires = devices.iter().map(|d| midi.open_wire(d)).collect::<Result<Vec<_>>>()?;
     std::thread::scope(|s| {
-        let tasks: Vec<_> = devices.iter().map(|d| {
+        let tasks: Vec<_> = devices.iter().zip(wires).map(|(d, mut wire)| {
             let observed = observed.as_str();
-            s.spawn(move || MidiWire::open(d).map(|mut w| learn(d, &mut w, listen, observed)))
+            s.spawn(move || learn(d, &mut *wire, listen, observed))
         }).collect();
         devices.iter().zip(tasks).map(|(d, t)| {
-            let learned = t.join().map_err(|_| anyhow!("learn thread panicked"))??;
+            let learned = t.join().map_err(|_| anyhow!("learn thread panicked"))?;
             Ok((d.clone(), learned))
         }).collect()
     })
@@ -388,14 +305,14 @@ fn not_linked_share(port: &str, _vendor: &str, _model: &str, _firmware: &str, le
 /// `detect_hardware` with `learn: true` on a server with no link: the ports matched against the
 /// local catalogue only, and a share that says it is not sent. The server receives it as its
 /// `detect_mode`.
-pub fn detect_offline(args: &Value, index: &DeviceIndex, opts: &McpOptions) -> Result<Value, String> {
-    learn_tool(args, index, opts, &not_linked_share, &|_| ServiceMatches::NotLinked)
+pub fn detect_offline(args: &Value, index: &DeviceIndex, opts: &McpOptions, open: crate::midi_port::Opener) -> Result<Value, String> {
+    learn_tool(args, index, opts, &not_linked_share, &|_| ServiceMatches::NotLinked, open)
 }
 
 /// `detect_hardware` in learn mode as the tool is called: the arguments read, the fingerprint
 /// shared through `shares` when a name is given, the ports matched through `matches`.
 pub(crate) fn learn_tool(args: &Value, index: &DeviceIndex, opts: &McpOptions, shares: SharesFingerprint,
-                         matches: MatchesOf) -> Result<Value, String> {
+                         matches: MatchesOf, open: crate::midi_port::Opener) -> Result<Value, String> {
     let text = |k: &str| args.get(k).and_then(Value::as_str);
     let named = match text("share_fingerprint") {
         None if ["vendor", "model", "firmware"].iter().any(|k| text(k).is_some()) =>
@@ -409,15 +326,15 @@ pub(crate) fn learn_tool(args: &Value, index: &DeviceIndex, opts: &McpOptions, s
     let share = named.map(|(port, vendor, model, firmware)| move |learned: &[(Unit, Learned)]|
         shares(port, vendor, model, firmware, learned));
     learn_hardware(index, matches, learn_listen(args.get("listen_ms").and_then(Value::as_u64))?,
-        share.as_ref().map(|s| s as SharesLearned), opts.tier_order)
+        share.as_ref().map(|s| s as SharesLearned), opts.tier_order, open)
 }
 
 /// `detect_hardware` in learn mode: a fingerprint per device, and its measures beside it. The
 /// report's text tells the person how long it listens and to move the controls.
 pub(crate) fn learn_hardware(index: &DeviceIndex, matches: MatchesOf, listen: Duration,
                              share: Option<SharesLearned>,
-                             order: crate::recognition::TierOrder) -> Result<Value, String> {
-    let learned = learn_all(listen).map_err(|e| format!("MIDI scan: {e}"))?;
+                             order: crate::recognition::TierOrder, open: crate::midi_port::Opener) -> Result<Value, String> {
+    let learned = learn_all(open, listen).map_err(|e| format!("MIDI scan: {e}"))?;
     let sharing = share.map(|s| s(&learned)).transpose()?;
     let service = matches(&learned);
     let mut report = learn_report(&learned, index, listen, &service, order);
@@ -661,7 +578,7 @@ pub(super) fn share_learned(share: &Share, learned: &[(Unit, Learned)]) -> Resul
 /// With `share` (the port, then the vendor, model and firmware the person gives), that
 /// fingerprint is sent to SynthHub when linked and not private; naming the port is the person's
 /// agreement. A missing vendor, model or firmware is refused before anything is listened to.
-pub fn print_learning(listen_ms: Option<u64>, share: Option<(&str, [Option<&str>; 3])>, order: crate::recognition::TierOrder) -> Result<()> {
+pub fn print_learning(open: crate::midi_port::Opener, listen_ms: Option<u64>, share: Option<(&str, [Option<&str>; 3])>, order: crate::recognition::TierOrder) -> Result<()> {
     let share = share.map(|(port, [vendor, model, firmware])| {
         share_fields(vendor, model, firmware, true).map(|(vendor, model, firmware)| (port, vendor, model, firmware))
     }).transpose().map_err(|e| anyhow::anyhow!(e))?;
@@ -674,7 +591,7 @@ pub fn print_learning(listen_ms: Option<u64>, share: Option<(&str, [Option<&str>
         share_learned(&Share { port, vendor, model, firmware, command: true, client: linked, private: kept }, learned));
     let catalogue = DeviceIndex::build(&super::online::cache_dir().unwrap_or_default(), order);
     let matches = |learned: &[(Unit, Learned)]| learn_service_matches(client.as_ref(), learned);
-    let report = learn_hardware(&catalogue, &matches, listen, share.as_ref().map(|s| s as SharesLearned), order)
+    let report = learn_hardware(&catalogue, &matches, listen, share.as_ref().map(|s| s as SharesLearned), order, open)
         .map_err(|e| anyhow::anyhow!(e))?;
     if let Some(said) = report["structuredContent"]["sharing"].as_str() { println!("Sharing: {said}"); }
     let devices = report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default();

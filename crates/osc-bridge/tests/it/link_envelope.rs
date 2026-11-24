@@ -28,7 +28,7 @@ fn lines(requests: &[Value]) -> String {
 /// The local server: no service, no account, no address of a service.
 fn local_session(devices: &std::path::Path, requests: &[Value]) -> Vec<Value> {
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(options(Some(devices)), lines(requests).as_bytes(), &mut out).unwrap();
+    osc_bridge::mcp::serve_with_midi(options(Some(devices)), lines(requests).as_bytes(), &mut out, &crate::common::refusing("link_envelope")).unwrap();
     replies(out)
 }
 
@@ -36,7 +36,7 @@ fn local_session(devices: &std::path::Path, requests: &[Value]) -> Vec<Value> {
 fn linked_session(devices: Option<&std::path::Path>, base: &str, cache: &std::path::Path, private: &[&str], requests: &[Value]) -> Vec<Value> {
     let mut out = Vec::new();
     let private: Vec<String> = private.iter().map(|p| p.to_string()).collect();
-    osc_bridge::synthub::mcp::serve(options(devices), base, Some(cache.to_path_buf()), &private, lines(requests).as_bytes(), &mut out).unwrap();
+    osc_bridge::synthub::mcp::serve_with_midi(options(devices), base, Some(cache.to_path_buf()), &private, lines(requests).as_bytes(), &mut out, &crate::common::refusing("link_envelope")).unwrap();
     replies(out)
 }
 
@@ -71,7 +71,7 @@ fn the_local_server_without_a_folder_of_cards_serves_an_empty_index() {
     let _home = ConfigHome::new();
     let mut out = Vec::new();
     let request = tool_call(1, "list_devices", json!({}));
-    osc_bridge::mcp::serve(options(None), lines(&[request]).as_bytes(), &mut out).unwrap();
+    osc_bridge::mcp::serve_with_midi(options(None), lines(&[request]).as_bytes(), &mut out, &crate::common::refusing("link_envelope")).unwrap();
     let reply = &replies(out)[0];
     assert_eq!(reply["result"]["structuredContent"]["count"], json!(0), "{reply}");
 }

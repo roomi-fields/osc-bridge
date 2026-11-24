@@ -38,7 +38,7 @@ fn fake_device(marker: &str) -> (Unit, Arc<Mutex<bool>>) {
     });
     std::thread::sleep(Duration::from_millis(300));
     // The ports the bridge lists for it, and only them.
-    let seen = units(&osc_bridge::detect::observe(false, Duration::ZERO, &[], &[]).unwrap());
+    let seen = units(&osc_bridge::detect::observe(&osc_bridge::midi_port::open_hardware, false, Duration::ZERO, &[], &[]).unwrap());
     let mut mine = Unit { inputs: vec![], outputs: vec![], in_indexes: vec![], out_indexes: vec![], usb: None,
         client_kind: osc_bridge::detect::ClientKind::Unknown };
     for u in seen {
@@ -89,7 +89,7 @@ fn an_agent_goes_from_a_device_with_no_driver_to_a_first_driver_on_a_fake_midi_d
     let (mine, stop) = fake_device(&marker);
 
     // 1. Learn only this device: the result tells the next step.
-    let learned = learn_units(std::slice::from_ref(&mine), Duration::from_millis(1500)).unwrap();
+    let learned = learn_units(&osc_bridge::midi_port::open_hardware, std::slice::from_ref(&mine), Duration::from_millis(1500)).unwrap();
     *stop.lock().unwrap() = true;
     assert_eq!(learned.len(), 1);
     let fp = &learned[0].1.fingerprint;

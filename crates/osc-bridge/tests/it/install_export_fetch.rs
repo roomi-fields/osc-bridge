@@ -34,7 +34,7 @@ fn install(private: &[&str], args: Value) -> (FakeSynthHub, Value, tempfile::Tem
     let private: Vec<String> = private.iter().map(|p| p.to_string()).collect();
     let input = format!("{}\n", tool_call(1, "install_export", args));
     let mut out = Vec::new();
-    osc_bridge::synthub::mcp::serve(opts, &server.base, Some(dir.path().join("cache")), &private, input.as_bytes(), &mut out).unwrap();
+    osc_bridge::synthub::mcp::serve_with_midi(opts, &server.base, Some(dir.path().join("cache")), &private, input.as_bytes(), &mut out, &crate::common::refusing("install_export_fetch")).unwrap();
     let reply: Value = serde_json::from_str(String::from_utf8(out).unwrap().lines().next().unwrap()).unwrap();
     let result = reply["result"].clone();
     (server, result, dir)

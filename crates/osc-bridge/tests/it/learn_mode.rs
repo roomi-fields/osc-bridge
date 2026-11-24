@@ -18,7 +18,7 @@ fn ask_with(request: Value, detect_mode: Option<osc_bridge::mcp::DetectMode>) ->
     };
     let input = format!("{request}\n");
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(opts, input.as_bytes(), &mut out).unwrap();
+    osc_bridge::mcp::serve_with_midi(opts, input.as_bytes(), &mut out, &crate::common::refusing("learn_mode")).unwrap();
     String::from_utf8(out).unwrap()
 }
 

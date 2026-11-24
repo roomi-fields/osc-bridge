@@ -233,12 +233,12 @@ fn call_tool_with(name: &str, args: &Value, opts: &McpOptions, index: &DeviceInd
             let shares = |port: &str, vendor: &str, model: &str, firmware: &str, learned: &[(Unit, Learned)]|
                 share_learned(&Share { port, vendor, model, firmware, command: false, client: Some(&link.client), private: &link.private }, learned);
             let matches = |learned: &[(Unit, Learned)]| learn_service_matches(server.map(|l| &l.client), learned);
-            return learn_tool(args, index, opts, &shares, &matches);
+            return learn_tool(args, index, opts, &shares, &matches, open);
         }
         if let Some(server) = server {
             let probes = || service_probes(&server.client);
             let answers = |found: &[crate::detect::Probed]| detect_answers(&server.client, found);
-            return crate::mcp::detect_tool(args, index, opts, Some(&probes), &answers);
+            return crate::mcp::detect_tool(args, index, opts, Some(&probes), &answers, open);
         }
     }
     let status = |id: &str| link.status(id);
@@ -336,7 +336,7 @@ pub fn privacy(path: &Path, index: &DeviceIndex, server: Option<&Online>, offlin
 /// With `write`, the observation is also written to that file as a capture. With `read`, the
 /// capture of that file is replayed instead of scanning: no device, nothing sent; it refuses
 /// `probe` off and `write`, a replay sending and writing nothing.
-pub fn print_detection(devices_dir: Option<&Path>, probe: bool, write: Option<&Path>, read: Option<&Path>, consent: &[String],
+pub fn print_detection(open: crate::midi_port::Opener, devices_dir: Option<&Path>, probe: bool, write: Option<&Path>, read: Option<&Path>, consent: &[String],
                        order: crate::recognition::TierOrder) -> Result<()> {
     let root = devices_dir.map(Path::to_path_buf).or_else(super::online::cache_dir).unwrap_or_default();
     let devices = if let Some(read) = read {
@@ -354,7 +354,7 @@ pub fn print_detection(devices_dir: Option<&Path>, probe: bool, write: Option<&P
             None => Ok(Vec::new()),
         };
         let report = crate::mcp::detect_hardware(&index, server.as_ref().map(|_| &probes as &dyn Fn() -> Result<Vec<crate::recognition::Probe>, String>),
-            &answers, devices_dir.is_some(), probe, std::time::Duration::from_millis(800), write, consent, order)
+            &answers, devices_dir.is_some(), probe, std::time::Duration::from_millis(800), write, consent, order, open)
             .map_err(|e| anyhow::anyhow!(e))?;
         report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default()
     };

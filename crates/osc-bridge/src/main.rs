@@ -279,6 +279,20 @@ impl From<RunArgs> for RunOptions {
     }
 }
 
+/// The environment variable a test sets to `failing` so the binary takes an opener that fails by
+/// construction instead of the machine's MIDI.
+const MIDI_ENV: &str = "OSC_BRIDGE_TEST_MIDI";
+
+fn failing_midi() -> Result<Box<dyn osc_bridge::midi_port::Midi>> {
+    anyhow::bail!("{MIDI_ENV}=failing asks for a MIDI system that cannot be opened")
+}
+
+/// What the commands take their MIDI from: the machine's hardware, unless the test variable asks
+/// for the opener that fails.
+fn midi_opener() -> osc_bridge::midi_port::Opener<'static> {
+    if std::env::var(MIDI_ENV).as_deref() == Ok("failing") { &failing_midi } else { &osc_bridge::midi_port::open_hardware }
+}
+
 fn main() -> Result<()> {
     match Cli::parse().cmd {
         Cmd::List => cmd_list(),
@@ -290,12 +304,12 @@ fn main() -> Result<()> {
             osc_bridge::synthub::connect::run(&server, !no_share, test_synth, &private_ports),
         Cmd::Privacy { offline, private, public } => osc_bridge::synthub::command::privacy(offline, private, public),
         Cmd::Detect { learn: true, listen_ms, share_fingerprint, vendor, model, firmware, .. } => {
-            osc_bridge::synthub::learn::print_learning(listen_ms, share_fingerprint.as_deref()
+            osc_bridge::synthub::learn::print_learning(midi_opener(), listen_ms, share_fingerprint.as_deref()
                 .map(|port| (port, [vendor.as_deref(), model.as_deref(), firmware.as_deref()])),
                 osc_bridge::synthub::catalogue::tier_rank)
         }
         Cmd::Detect { no_probe, devices_dir, write, read, consent, .. } => {
-            osc_bridge::synthub::mcp::print_detection(devices_dir.as_deref(), !no_probe, write.as_deref(), read.as_deref(), &consent,
+            osc_bridge::synthub::mcp::print_detection(midi_opener(), devices_dir.as_deref(), !no_probe, write.as_deref(), read.as_deref(), &consent,
                 osc_bridge::synthub::catalogue::tier_rank)
         }
         Cmd::Inspect { device } => commands::inspect(&device, &mut std::io::stdout(), &mut std::io::stderr()),

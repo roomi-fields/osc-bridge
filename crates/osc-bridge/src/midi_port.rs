@@ -6,6 +6,8 @@
 //! the link to the service reads it too, never the reverse.
 
 use anyhow::{anyhow, Result};
+use crate::detect::ClientKind;
+use std::sync::{Arc, Mutex};
 use midir::{Ignore, MidiInput, MidiInputConnection, MidiOutput, MidiOutputConnection};
 use std::sync::mpsc::{channel, Receiver};
 use std::time::{Duration, Instant};
@@ -24,6 +26,17 @@ pub trait Midi {
     /// synths the ports' names point at did not answer. A relay asks before
     /// each port's batch, so there the user names the port instead.
     fn searches_everywhere(&self) -> bool { true }
+    /// What a detection observes through these ports, raw: the ports, the system's listings of
+    /// its cards and clients, and, when `probe` is true, the requests sent (the Identity Request,
+    /// then each of `probes` to its ports, held back where `consent` is wanted) with the SysEx
+    /// received for `wait`. The hardware reads the machine; a fake device carries its own listings.
+    fn capture(&mut self, _probe: bool, _wait: Duration, _probes: &[crate::recognition::Probe], _consent: &[String]) -> Result<crate::capture::Capture> {
+        Err(anyhow!("these MIDI ports cannot be observed"))
+    }
+    /// The wire of one device (its inputs listened to, its outputs asked) for the learn mode.
+    fn open_wire(&mut self, _device: &Unit) -> Result<Box<dyn Wire + Send>> {
+        Err(anyhow!("these MIDI ports cannot be listened to"))
+    }
 }
 
 /// The MIDI ports of this machine: every output, and the input of the same
@@ -65,7 +78,7 @@ impl Hardware {
     }
 
     fn open_unguarded() -> Result<Self> {
-        let pairs = crate::detect::replay(&crate::detect::observe_unguarded(false, Duration::ZERO, &[], &[])?);
+        let pairs = crate::detect::replay(&crate::detect::observe_hardware(false, Duration::ZERO, &[], &[])?);
         let probe = MidiOutput::new("osc-bridge-take")?;
         let out_ports = probe.ports();
         let in_ports = MidiInput::new("osc-bridge-take")?.ports();
@@ -114,5 +127,98 @@ impl Midi for Hardware {
             }
         }
         got
+    }
+    fn capture(&mut self, probe: bool, wait: Duration, probes: &[crate::recognition::Probe], consent: &[String]) -> Result<crate::capture::Capture> {
+        guarded_open(|| crate::detect::observe_hardware(probe, wait, probes, consent))
+    }
+    fn open_wire(&mut self, device: &Unit) -> Result<Box<dyn Wire + Send>> {
+        Ok(Box::new(MidiWire::open(device)?))
+    }
+}
+
+/// One physical device as its ports show it: all its inputs and outputs (raw names, with their
+/// indexes in the capture) and the USB ids of its card, when it has one.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Unit {
+    pub inputs: Vec<String>,
+    pub outputs: Vec<String>,
+    pub in_indexes: Vec<usize>,
+    pub out_indexes: Vec<usize>,
+    pub usb: Option<(u16, u16)>,
+    /// Whether its client is a device of the system or a program, as the list of clients says.
+    pub client_kind: ClientKind,
+}
+
+impl Unit {
+    /// A name for the device: its first output, else its first input.
+    pub fn label(&self) -> &str {
+        self.outputs.first().or(self.inputs.first()).map(String::as_str).unwrap_or("?")
+    }
+}
+
+/// One message a device sent on one of its inputs, with the time since the request went out.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Heard {
+    pub port: String,
+    pub at: Duration,
+    pub msg: Vec<u8>,
+}
+
+/// What the learn mode reads and writes of one device: the universal identity request goes
+/// out on each output, then everything every input sends is heard for the time given.
+pub trait Wire {
+    fn send(&mut self, port: &str, msg: &[u8]);
+    fn heard(&mut self, listen: Duration) -> Vec<Heard>;
+}
+
+/// A device's ports on the machine: every input listened to, every output asked.
+pub struct MidiWire {
+    outs: Vec<(String, midir::MidiOutputConnection)>,
+    _inputs: Vec<MidiInputConnection<()>>,
+    got: Arc<Mutex<Vec<Heard>>>,
+    since: Arc<Mutex<Option<std::time::Instant>>>,
+}
+
+impl MidiWire {
+    pub fn open(device: &Unit) -> Result<Self> {
+        crate::midi_port::guarded_open(|| Self::open_unguarded(device))
+    }
+
+    fn open_unguarded(device: &Unit) -> Result<Self> {
+        let got: Arc<Mutex<Vec<Heard>>> = Arc::new(Mutex::new(Vec::new()));
+        let since: Arc<Mutex<Option<std::time::Instant>>> = Arc::new(Mutex::new(None));
+        let mut inputs = Vec::new();
+        for (ii, name) in device.in_indexes.iter().zip(&device.inputs) {
+            let mut inp = MidiInput::new("osc-bridge-learn-in")?;
+            inp.ignore(Ignore::None);
+            if let Some(port) = inp.ports().get(*ii).cloned() {
+                let (sink, t0, port_name) = (got.clone(), since.clone(), name.clone());
+                if let Ok(conn) = inp.connect(&port, "osc-bridge-learn-in", move |_, msg, _| {
+                    let at = t0.lock().ok().and_then(|t| t.map(|t| t.elapsed())).unwrap_or_default();
+                    if let Ok(mut g) = sink.lock() { g.push(Heard { port: port_name.clone(), at, msg: msg.to_vec() }); }
+                }, ()) {
+                    inputs.push(conn);
+                }
+            }
+        }
+        let mut outs = Vec::new();
+        for (oi, name) in device.out_indexes.iter().zip(&device.outputs) {
+            let o = MidiOutput::new("osc-bridge-learn-out")?;
+            if let Some(port) = o.ports().get(*oi) {
+                if let Ok(conn) = o.connect(port, "osc-bridge-learn-out") { outs.push((name.clone(), conn)); }
+            }
+        }
+        Ok(MidiWire { outs, _inputs: inputs, got, since })
+    }
+}
+
+impl Wire for MidiWire {
+    fn send(&mut self, port: &str, msg: &[u8]) {
+        if let Ok(mut t) = self.since.lock() { t.get_or_insert_with(std::time::Instant::now); }
+        if let Some((_, out)) = self.outs.iter_mut().find(|(n, _)| n == port) { let _ = out.send(msg); }
+    }
+    fn heard(&mut self, listen: Duration) -> Vec<Heard> {
+        std::thread::sleep(listen);
+        self.got.lock().map(|mut g| std::mem::take(&mut *g)).unwrap_or_default()
     }
 }

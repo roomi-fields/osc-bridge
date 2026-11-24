@@ -297,12 +297,12 @@ const REPLIES_KEPT: usize = 32;
 /// Gap between two requests on one port.
 const PROBE_GAP: Duration = Duration::from_millis(10);
 
-/// List MIDI ports, pair inputs with outputs by name, and — when `probe` is
+/// List the MIDI ports `open` gives, pair inputs with outputs by name, and — when `probe` is
 /// true — send the Identity Request, then each of `probes` (the maker
 /// requests the catalogue's identity blocks name, each to its ports), on
 /// every output and collect the SysEx that comes back for `wait`.
-pub fn scan(probe: bool, wait: Duration, probes: &[Probe]) -> Result<Vec<Probed>> {
-    Ok(replay(&observe(probe, wait, probes, &[])?))
+pub fn scan(open: crate::midi_port::Opener, probe: bool, wait: Duration, probes: &[Probe]) -> Result<Vec<Probed>> {
+    Ok(replay(&observe(open, probe, wait, probes, &[])?))
 }
 
 /// Replay a capture: the derivation `scan` runs over what it observed, with no device and no
@@ -379,12 +379,14 @@ fn derive(capture: &Capture) -> Vec<Probed> {
 /// Observe the system, raw: the ports, the listing of its cards and, when `probe` is true, the
 /// requests sent (the Identity Request, then each of `probes` to its ports) with the SysEx
 /// received for `wait`.
-pub fn observe(probe: bool, wait: Duration, probes: &[Probe], consent: &[String]) -> Result<Capture> {
-    crate::midi_port::guarded_open(|| observe_unguarded(probe, wait, probes, consent))
+pub fn observe(open: crate::midi_port::Opener, probe: bool, wait: Duration, probes: &[Probe], consent: &[String]) -> Result<Capture> {
+    let mut midi = crate::midi_port::guarded_open(open)?;
+    midi.capture(probe, wait, probes, consent)
 }
 
-/// `observe` without the guard of the opening, for a caller that guards the whole.
-pub(crate) fn observe_unguarded(probe: bool, wait: Duration, probes: &[Probe], consent: &[String]) -> Result<Capture> {
+/// The observation of this machine's own MIDI system, through midir and the machine's listings:
+/// what the hardware's `capture` does, with no guard of the opening (the caller guards).
+pub(crate) fn observe_hardware(probe: bool, wait: Duration, probes: &[Probe], consent: &[String]) -> Result<Capture> {
     let output = MidiOutput::new("osc-bridge-detect")?;
     let out_ports = output.ports();
     let out_names: Vec<String> = out_ports.iter()

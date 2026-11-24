@@ -46,7 +46,7 @@ pub const SERVER_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// How `detect_hardware` answers a call that asks for a listening mode (`learn: true`): the
 /// arguments, the cards and the options of the server give the result or the refusal.
-pub type DetectMode = fn(&Value, &DeviceIndex, &McpOptions) -> Result<Value, String>;
+pub type DetectMode = fn(&Value, &DeviceIndex, &McpOptions, crate::midi_port::Opener) -> Result<Value, String>;
 
 pub struct McpOptions {
     /// Which of two cards of one device wins: the caller's order (`recognition::TierOrder`).
@@ -950,10 +950,10 @@ pub fn call_local(name: &str, args: &Value, opts: &McpOptions, index: &DeviceInd
             install_export(&preset_device(index, wanted)?, &preset_device(index, on)?, wanted, on, confirm, open)
         }
         "detect_hardware" if args.get("learn").and_then(Value::as_bool) == Some(true) => match opts.detect_mode {
-            Some(handler) => handler(args, index, opts),
+            Some(handler) => handler(args, index, opts, open),
             None => Err("detect_hardware with learn: true is not available: the mode is not given to this server.".into()),
         },
-        "detect_hardware" => detect_tool(args, index, opts, None, &|_| Ok(known.candidates.clone())),
+        "detect_hardware" => detect_tool(args, index, opts, None, &|_| Ok(known.candidates.clone()), open),
         other => Err(format!("unknown tool: {other}")),
     }
 }
@@ -1095,11 +1095,12 @@ type ProbesOf<'a> = &'a dyn Fn() -> Result<Vec<crate::recognition::Probe>, Strin
 type AnswersOf<'a> = &'a dyn Fn(&[crate::detect::Probed]) -> Result<Vec<Value>, String>;
 
 /// `detect_hardware` as the tool is called: the arguments read, then `detect_hardware`.
-pub fn detect_tool(args: &Value, index: &DeviceIndex, opts: &McpOptions, probes_of: Option<ProbesOf>, answers: AnswersOf) -> Result<Value, String> {
+pub fn detect_tool(args: &Value, index: &DeviceIndex, opts: &McpOptions, probes_of: Option<ProbesOf>, answers: AnswersOf,
+                   open: crate::midi_port::Opener) -> Result<Value, String> {
     let probe = args.get("probe").and_then(Value::as_bool).unwrap_or(true);
     let wait = args.get("timeout_ms").and_then(Value::as_u64).unwrap_or(800).clamp(100, 5000);
     let consent = consent_arg(args)?;
-    detect_hardware(index, probes_of, answers, opts.devices_dir.is_some(), probe, std::time::Duration::from_millis(wait), None, &consent, opts.tier_order)
+    detect_hardware(index, probes_of, answers, opts.devices_dir.is_some(), probe, std::time::Duration::from_millis(wait), None, &consent, opts.tier_order, open)
 }
 
 /// Find the MIDI devices plugged into this machine and their drivers: those
@@ -1109,13 +1110,14 @@ pub fn detect_tool(args: &Value, index: &DeviceIndex, opts: &McpOptions, probes_
 /// file when `by_file` (a folder the user keeps), else by its id.
 #[allow(clippy::too_many_arguments)] // the caller's order of the cards is the ninth value
 pub fn detect_hardware(index: &DeviceIndex, probes_of: Option<ProbesOf>, answers: AnswersOf, by_file: bool, probe: bool,
-                   wait: std::time::Duration, write: Option<&Path>, consent: &[String], order: crate::recognition::TierOrder) -> Result<Value, String> {
+                   wait: std::time::Duration, write: Option<&Path>, consent: &[String], order: crate::recognition::TierOrder,
+                   open: crate::midi_port::Opener) -> Result<Value, String> {
     let mut faults = Vec::new();
     let probes = match probes_of {
         Some(probes_of) if probe => probes_of()?,
         _ => { let plan = detect_plan(index); faults = plan.faults; plan.probes }
     };
-    let capture = crate::detect::observe(probe, wait, &probes, consent).map_err(|e| format!("MIDI scan: {e}"))?;
+    let capture = crate::detect::observe(open, probe, wait, &probes, consent).map_err(|e| format!("MIDI scan: {e}"))?;
     if let Some(path) = write {
         capture.write(path).map_err(|e| e.to_string())?;
     }

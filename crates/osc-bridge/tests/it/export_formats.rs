@@ -94,7 +94,7 @@ fn call(root: &tempfile::TempDir, tool: &str, args: Value) -> Value {
     };
     let input = format!("{}\n", tool_call(1, tool, args));
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(opts, input.as_bytes(), &mut out).unwrap();
+    osc_bridge::mcp::serve_with_midi(opts, input.as_bytes(), &mut out, &crate::common::refusing("export_formats")).unwrap();
     let reply: Value = serde_json::from_str(String::from_utf8(out).unwrap().lines().next().unwrap()).unwrap();
     reply["result"].clone()
 }
@@ -141,7 +141,7 @@ fn export_device_takes_no_consent_and_install_export_alone_carries_it() {
     };
     let input = format!("{}\n", json!({"jsonrpc": "2.0", "id": 1, "method": "tools/list"}));
     let mut out = Vec::new();
-    osc_bridge::mcp::serve(opts, input.as_bytes(), &mut out).unwrap();
+    osc_bridge::mcp::serve_with_midi(opts, input.as_bytes(), &mut out, &crate::common::refusing("export_formats")).unwrap();
     let reply: Value = serde_json::from_str(String::from_utf8(out).unwrap().lines().next().unwrap()).unwrap();
     let tools = reply["result"]["tools"].as_array().unwrap();
     let props = |name: &str| tools.iter().find(|t| t["name"] == name).unwrap_or_else(|| panic!("no tool {name}"))["inputSchema"]["properties"].clone();

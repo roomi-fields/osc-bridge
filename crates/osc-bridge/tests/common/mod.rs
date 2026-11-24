@@ -55,6 +55,13 @@ impl FakeSynthHub {
                     let id = "0123456789abcdef0123456789abcdef";
                     (200, serde_json::json!({ "id": id, "user_id": id, "mcp_path": format!("/u/{id}/mcp"), "tier": "free" })
                         .to_string().into_bytes(), None)
+                } else if url == "/v1/librarian" {
+                    // The synths the librarian knows: one, whose messages ask nothing of a port.
+                    (200, serde_json::json!({ "synths": [{ "synth": "acme-box", "name": "Acme Box", "detect": [], "detect_wait_ms": 100 }] })
+                        .to_string().into_bytes(), None)
+                } else if url == "/v1/librarian/recognize" {
+                    (200, serde_json::json!({ "found": [{ "synth": "acme-box", "name": "Acme Box", "channel": 0, "devices": ["acme/box"] }] })
+                        .to_string().into_bytes(), None)
                 } else { match url.strip_prefix("/api/v1/devices/") {
                     Some(rel) => match std::fs::read(root.join(rel)) {
                         Ok(bytes) => {
@@ -288,7 +295,21 @@ pub fn mcp_session_in(_home: &ConfigHome, base: &str, cache: &Path, requests: &[
     };
     let input: String = requests.iter().map(|r| format!("{r}\n")).collect();
     let mut out = Vec::new();
-    osc_bridge::synthub::mcp::serve(opts, base, Some(cache.to_path_buf()), &[], input.as_bytes(), &mut out).unwrap();
+    osc_bridge::synthub::mcp::serve_with_midi(opts, base, Some(cache.to_path_buf()), &[], input.as_bytes(), &mut out, &refusing("mcp_session")).unwrap();
+    String::from_utf8(out).unwrap().lines().map(|l| serde_json::from_str(l).unwrap()).collect()
+}
+
+/// `mcp_session_in` with the MIDI the session takes from `open`.
+pub fn mcp_session_midi(_home: &ConfigHome, open: osc_bridge::midi_port::Opener, base: &str, cache: &Path, requests: &[Value]) -> Vec<Value> {
+    let opts = osc_bridge::mcp::McpOptions {
+        devices_dir: None,
+        default_target: "127.0.0.1:9000".parse().unwrap(),
+        tier_order: osc_bridge::synthub::catalogue::tier_rank,
+        detect_mode: Some(osc_bridge::synthub::learn::detect_offline),
+    };
+    let input: String = requests.iter().map(|r| format!("{r}\n")).collect();
+    let mut out = Vec::new();
+    osc_bridge::synthub::mcp::serve_with_midi(opts, base, Some(cache.to_path_buf()), &[], input.as_bytes(), &mut out, open).unwrap();
     String::from_utf8(out).unwrap().lines().map(|l| serde_json::from_str(l).unwrap()).collect()
 }
 
@@ -307,22 +328,79 @@ pub fn texts(reply: &Value) -> Vec<String> {
         .filter_map(|c| c["text"].as_str().map(str::to_string)).collect()
 }
 
-/// The shared fake MIDI hardware: the named output ports are plugged, every send is recorded in
-/// `sent`, and nothing ever answers. A test never opens the machine's MIDI system.
+/// The shared fake MIDI hardware: the named output ports (and inputs) are plugged, every send is
+/// recorded in `sent`, and only what a device was told to answer ever comes back. A test never
+/// opens the machine's MIDI system: it gives this hardware as the opener, or `refusing`.
+///
+/// The fake also stands for the machine's listings: its own ALSA cards, USB ids and clients
+/// (empty by default), so a real device plugged into the machine changes nothing in a test.
 pub type SentLog = std::sync::Arc<std::sync::Mutex<Vec<(String, Vec<u8>)>>>;
+
+/// What a fake device sends back on one of its inputs when `request` goes out on one of its outputs.
+#[derive(Clone)]
+pub struct Answer {
+    pub output: String,
+    pub input: String,
+    pub request: Vec<u8>,
+    pub reply: Vec<u8>,
+}
 
 #[derive(Clone, Default)]
 pub struct FakeHardware {
+    /// The output ports, by name.
     pub ports: Vec<String>,
+    /// The input ports, by name.
+    pub inputs: Vec<String>,
+    pub answers: Vec<Answer>,
+    /// What an input sends by itself while it is listened to (a control moved).
+    pub chatter: Vec<(String, Vec<u8>)>,
+    /// The machine's listings this fake stands for: empty unless a test gives them.
+    pub asound: osc_bridge::capture::Asound,
     pub sent: SentLog,
+    delivered: usize,
 }
 
 impl FakeHardware {
     pub fn with_ports(ports: &[&str]) -> Self {
-        Self { ports: ports.iter().map(|p| p.to_string()).collect(), sent: Default::default() }
+        Self { ports: ports.iter().map(|p| p.to_string()).collect(), ..Self::default() }
     }
     pub fn none() -> Self {
         Self::default()
+    }
+    /// One device on the port `label` (an output and an input of that name) that answers the
+    /// Universal Identity Request with `identity_reply`.
+    pub fn device(label: &str, identity_reply: &[u8]) -> Self {
+        Self::none().with_device(label, identity_reply)
+    }
+    /// Another such device.
+    pub fn with_device(mut self, label: &str, identity_reply: &[u8]) -> Self {
+        self.ports.push(label.to_string());
+        self.inputs.push(label.to_string());
+        self.with_answer(label, label, &osc_bridge::recognition::IDENTITY_REQUEST, identity_reply)
+    }
+    /// `reply` comes back on `input` when `request` is sent on `output` (a maker request, say).
+    pub fn with_answer(mut self, output: &str, input: &str, request: &[u8], reply: &[u8]) -> Self {
+        self.answers.push(Answer { output: output.into(), input: input.into(), request: request.to_vec(), reply: reply.to_vec() });
+        self
+    }
+    /// `msg` arrives on `input` by itself while the input is listened to.
+    pub fn with_chatter(mut self, input: &str, msg: &[u8]) -> Self {
+        self.chatter.push((input.into(), msg.to_vec()));
+        self
+    }
+    /// The machine's listings this hardware carries: `/proc/asound/cards`, the `usbid` of each card
+    /// by number, and `/proc/asound/seq/clients`.
+    pub fn with_asound(mut self, cards: &str, usbids: &[(u32, &str)], clients: &str) -> Self {
+        self.asound = osc_bridge::capture::Asound {
+            cards: cards.into(),
+            usbids: usbids.iter().map(|(card, text)| osc_bridge::capture::UsbId { card: *card, text: text.to_string() }).collect(),
+            clients: clients.into(),
+        };
+        self
+    }
+    /// The sends recorded so far, port and bytes.
+    pub fn sent_messages(&self) -> Vec<(String, Vec<u8>)> {
+        self.sent.lock().unwrap().clone()
     }
     /// An opener (what the commands take their MIDI from) that hands this hardware over.
     pub fn opener(&self) -> impl Fn() -> anyhow::Result<Box<dyn osc_bridge::midi_port::Midi>> + '_ {
@@ -341,7 +419,70 @@ impl osc_bridge::midi_port::Midi for FakeHardware {
         Ok(())
     }
     fn received(&mut self, _wait: std::time::Duration) -> Vec<(String, Vec<u8>)> {
-        Vec::new()
+        let sent = self.sent.lock().unwrap().clone();
+        let mut got = Vec::new();
+        for (port, bytes) in sent.iter().skip(self.delivered) {
+            for a in self.answers.iter().filter(|a| a.output == *port && a.request == *bytes) {
+                got.push((a.output.clone(), a.reply.clone()));
+            }
+        }
+        self.delivered = sent.len();
+        got
+    }
+    fn capture(&mut self, probe: bool, _wait: std::time::Duration, probes: &[osc_bridge::recognition::Probe],
+               consent: &[String]) -> anyhow::Result<osc_bridge::capture::Capture> {
+        let mut capture = osc_bridge::capture::Capture::new(self.ports.clone(), self.inputs.clone(), self.asound.clone());
+        if !probe {
+            return Ok(capture);
+        }
+        let consented = osc_bridge::detect::consent_indexes(&self.ports, consent).map_err(|e| anyhow::anyhow!(e))?;
+        let plan = osc_bridge::recognition::send_plan(&osc_bridge::detect::output_usbs(&capture), probes, &consented);
+        let rounds = plan.iter().map(|p| p.sent.len()).max().unwrap_or(0);
+        for round in 0..rounds {
+            for (oi, port) in self.ports.iter().enumerate() {
+                let Some(bytes) = plan[oi].sent.get(round) else { continue };
+                self.sent.lock().unwrap().push((port.clone(), bytes.clone()));
+                capture.requests.push(osc_bridge::capture::Request { port: port.clone(), bytes: bytes.clone() });
+                for a in self.answers.iter().filter(|a| a.output == *port && a.request == *bytes) {
+                    capture.received.push(osc_bridge::capture::Received { port: a.input.clone(), bytes: a.reply.clone(), ms: 5 * (round as u64 + 1) });
+                }
+            }
+        }
+        Ok(capture)
+    }
+    fn open_wire(&mut self, device: &osc_bridge::synthub::learn::Unit) -> anyhow::Result<Box<dyn osc_bridge::synthub::learn::Wire + Send>> {
+        Ok(Box::new(FakeWire {
+            inputs: device.inputs.clone(),
+            answers: self.answers.clone(),
+            chatter: self.chatter.iter().filter(|(p, _)| device.inputs.contains(p)).cloned().collect(),
+            sent: self.sent.clone(),
+            queue: Vec::new(),
+        }))
+    }
+}
+
+/// The wire of one fake device: what it is sent is recorded, and its answers and chatter are heard.
+struct FakeWire {
+    inputs: Vec<String>,
+    answers: Vec<Answer>,
+    chatter: Vec<(String, Vec<u8>)>,
+    sent: SentLog,
+    queue: Vec<(String, Vec<u8>)>,
+}
+
+impl osc_bridge::synthub::learn::Wire for FakeWire {
+    fn send(&mut self, port: &str, msg: &[u8]) {
+        self.sent.lock().unwrap().push((port.to_string(), msg.to_vec()));
+        for a in self.answers.iter().filter(|a| a.output == port && a.request == msg && self.inputs.contains(&a.input)) {
+            self.queue.push((a.input.clone(), a.reply.clone()));
+        }
+    }
+    fn heard(&mut self, _listen: std::time::Duration) -> Vec<osc_bridge::synthub::learn::Heard> {
+        let mut all = std::mem::take(&mut self.queue);
+        all.extend(self.chatter.iter().cloned());
+        all.into_iter().enumerate().map(|(n, (port, msg))| osc_bridge::synthub::learn::Heard {
+            port, at: std::time::Duration::from_millis(5 * (n as u64 + 1)), msg,
+        }).collect()
     }
 }
 
@@ -349,3 +490,13 @@ impl osc_bridge::midi_port::Midi for FakeHardware {
 pub fn failing_opener(why: &'static str) -> impl Fn() -> anyhow::Result<Box<dyn osc_bridge::midi_port::Midi>> {
     move || Err(anyhow::anyhow!(why))
 }
+
+/// The guard of the MIDI system in a day test: an opener that refuses, naming `test`, the test that
+/// would have opened the machine's MIDI. Every day test that calls the library and does not need
+/// MIDI passes it; one that needs MIDI passes `FakeHardware::opener()`.
+pub fn refusing(test: &'static str) -> impl Fn() -> anyhow::Result<Box<dyn osc_bridge::midi_port::Midi>> {
+    move || Err(anyhow::anyhow!("the test {test} opened the machine's MIDI system: give it a fake opener (FakeHardware::opener())"))
+}
+
+/// The environment variable that makes the binary take an opener that fails by construction.
+pub const MIDI_ENV: &str = "OSC_BRIDGE_TEST_MIDI";
