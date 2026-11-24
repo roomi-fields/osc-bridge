@@ -146,7 +146,7 @@ And the reverse, the service's client reading the engine: `online.rs:667` (`dete
 
 **Is it OSD's alone?** Measured: the contract mixes both.
 - OSD's: the JSON file, its resolution by `osd`, `osc_prefix`, the `sources` list (`mcp.rs:162`). Whether `osc_prefix` and `sources[].kind` are fields of the OSD specification and which values `kind` takes is not verified here against the OSD specification; the code reads them through `osd` types.
-- Specific to SyntHub: the `<maker>/<name>` identifier and its file layout (`driver_path`, `is_driver_id` at `online.rs:236`), the `.etag` files, the `.md` notes fetched from `/api/v1/devices/<id>.md` (`online.rs:640`), and the ranking `tier_rank` (`mcp.rs:210-221`), whose values (`hardware-verified`, `vendor-doc`, `agent-contributed`, `test-fixture`…) are the catalogue's tiers; a driver with a `kind` not in the list ranks 7.
+- Specific to SyntHub: the `<maker>/<name>` identifier and its file layout (`driver_path`, `is_driver_id` at `online.rs:236`), the `.etag` files, the `.md` notes fetched from `/api/v1/devices/<id>.md` (`online.rs:640`), and the ranking `tier_rank` (`mcp.rs:210-221`), whose values (`hardware-verified`, `vendor-doc`, `contributed`, `test-fixture`…) are the catalogue's tiers; a driver with a `kind` not in the list ranks 7.
 
 So the folder that `--devices-dir` reads is nearly OSD's alone; the shape of the cache and the tier order are the service's. This is question 1.
 

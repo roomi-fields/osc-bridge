@@ -261,3 +261,10 @@ fn the_link_sends_the_usb_ids_of_a_port_that_has_them_as_numbers_and_none_otherw
     assert!(ports[1].get("usb").is_none(), "{sent:?}");
     assert_eq!(ports[0]["replies_hex"], json!([]));
 }
+
+#[test]
+fn the_driver_submission_tool_names_the_source_the_format_calls_contributed() {
+    let text = linked_tool_schemas().to_string();
+    assert!(!text.contains("agent-contributed"), "the format does not name agent-contributed");
+    assert!(text.contains("source 'contributed'"), "the tool must say the file carries source 'contributed'");
+}

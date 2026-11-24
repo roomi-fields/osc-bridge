@@ -65,17 +65,18 @@ pub fn fetch(online: &Online, name: &str, cache: &Path) -> Result<PathBuf> {
     online.fetch_driver(&id, cache)
 }
 
-/// Lower is more trustworthy: tested on the device, then the vendor's own
-/// documentation, then curated OSC surfaces, then community sources, then
-/// what agents contributed (checked automatically, not reviewed).
+/// Lower is more trustworthy: tested on the device, then observed on it or
+/// described by the vendor, then curated OSC surfaces, then community sources,
+/// then what was contributed (checked automatically, not reviewed). Every type
+/// of the OSD 0.6 format has its rank; an `x-` extension or unknown term ranks last.
 pub fn tier_rank(tier: &str) -> u8 {
     match tier {
         "hardware-verified" | "software-verified" => 0,
-        "vendor-doc" | "vendor" => 1,
+        "hardware-observed" | "vendor-doc" | "vendor-self-described" => 1,
         "vendor-osc-api" | "third-party-osc" => 2,
         "electra-preset" => 3,
-        "pencilresearch" | "knobkraft" => 4,
-        "agent-contributed" => 5,
+        "pencilresearch" | "knobkraft" | "midnam" | "community-re" => 4,
+        "contributed" => 5,
         "test-fixture" => 6,
         _ => 7,
     }

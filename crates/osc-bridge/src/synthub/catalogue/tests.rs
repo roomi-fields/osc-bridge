@@ -34,3 +34,33 @@ fn an_unreachable_server_falls_back_to_the_cache() {
     assert_eq!(from_cache_or_server("acme/box", root, Some(&server)).unwrap(), root.join("acme/box.json"));
     assert!(from_cache_or_server("acme/other", root, Some(&server)).is_err());
 }
+
+#[test]
+fn each_source_type_of_the_format_has_its_rank() {
+    let ranks = [
+        ("hardware-verified", 0), ("software-verified", 0),
+        ("hardware-observed", 1), ("vendor-doc", 1), ("vendor-self-described", 1),
+        ("vendor-osc-api", 2), ("third-party-osc", 2),
+        ("electra-preset", 3),
+        ("pencilresearch", 4), ("knobkraft", 4), ("midnam", 4), ("community-re", 4),
+        ("contributed", 5),
+        ("test-fixture", 6),
+    ];
+    for (tier, rank) in ranks {
+        assert_eq!(tier_rank(tier), rank, "{tier}");
+    }
+}
+
+#[test]
+fn an_extension_or_unknown_source_type_ranks_lowest() {
+    for tier in ["x-my-source", "x-", "nonsense", ""] {
+        assert_eq!(tier_rank(tier), 7, "{tier:?}");
+    }
+}
+
+#[test]
+fn terms_the_format_does_not_name_rank_lowest() {
+    for tier in ["vendor", "agent-contributed"] {
+        assert_eq!(tier_rank(tier), 7, "{tier}");
+    }
+}

@@ -37,7 +37,7 @@ The reference is the [Open Synth Descriptors](https://github.com/roomi-fields/op
 
 ### Sending it to SynthHub
 
-- From an MCP client linked to SynthHub (`osc-bridge mcp`, or the hosted server): `submit_driver` with the file and its source. It is parsed, linted and tested, then added to the catalogue as an `agent-contributed` driver.
+- From an MCP client linked to SynthHub (`osc-bridge mcp`, or the hosted server): `submit_driver` with the file and its source. It is parsed, linted and tested, then added to the catalogue as a `contributed` driver (the format's source type, ranked below community and vendor sources).
 - Or open a [device request](https://github.com/roomi-fields/osc-bridge/issues/new?template=new_device_request.yml) here with the file attached.
 
 ### Correcting one, or confirming it on hardware

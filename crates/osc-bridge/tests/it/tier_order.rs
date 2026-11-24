@@ -14,7 +14,7 @@ fn reversed(tier: &str) -> u8 { 255 - tier_rank(tier) }
 #[test]
 fn the_catalogue_order_ranks_a_tested_device_before_a_vendor_doc_before_the_unknown() {
     assert!(tier_rank("hardware-verified") < tier_rank("vendor-doc"));
-    assert!(tier_rank("vendor-doc") < tier_rank("agent-contributed"));
+    assert!(tier_rank("vendor-doc") < tier_rank("contributed"));
     assert_eq!(tier_rank("no-such-tier"), 7, "an unknown tier comes last");
 }
 
