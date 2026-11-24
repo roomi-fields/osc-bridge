@@ -10,6 +10,7 @@ mod checksum_lenient;
 mod custom_commands;
 mod detect_consent;
 mod detect_probes_wire;
+mod detect_served_requests_consent;
 mod detection_capture;
 mod detection_proofs;
 mod detection_units;
