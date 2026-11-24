@@ -1,3 +1,4 @@
+// @equipee: le séquenceur ALSA (une paire de ports MIDI virtuels)
 //! The whole path of a device with no driver to its first driver, on a fake MIDI device: a
 //! virtual port pair this test makes through midir (the ALSA sequencer) and speaks to alone,
 //! never to a port it did not create (real devices may be plugged into the night machine).
