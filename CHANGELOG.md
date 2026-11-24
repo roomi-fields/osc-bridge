@@ -11,6 +11,17 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Added — the USB ids of a port are read on macOS and Windows
+
+- A device plugged in over USB is recognised by its USB ids on macOS and Windows as on Linux. The
+  capture holds the ids the system read for each port (`system_usb`, by port name; captures
+  recorded before read unchanged), and the detection takes them first, else the sound cards.
+  macOS reads CoreMIDI's `USBVendorProduct`; Windows reads the device interface path from WinMM
+  (`VID_`/`PID_`), kept only when WinMM's device name matches midir's port name.
+- Limit: the CI runners have no USB device, so `platforms.yml` proves the build, clippy and the
+  pure functions on macOS and Windows, not the reading on a real device; the owner confirms it by
+  hand on each system.
+
 ### Changed — the reading of device cards comes from the registry
 
 - `osd` and `osd-formats` come from crates.io in 0.6.0 (they were pinned to a git commit), so the

@@ -34,9 +34,136 @@ pub fn consent_indexes(names: &[String], fragments: &[String]) -> Result<Vec<usi
 
 /// The USB ids read for each output port of `capture`, once.
 pub fn output_usbs(capture: &Capture) -> Vec<(String, Option<(u16, u16)>)> {
+    let cards = capture_cards(capture);
+    capture.outputs.iter().map(|n| (n.clone(), usb_of_capture(capture, &cards, n))).collect()
+}
+
+/// The sound cards of a capture, with their USB ids.
+fn capture_cards(capture: &Capture) -> Vec<(String, u16, u16)> {
     let ids: Vec<(u32, &str)> = capture.usbids.iter().map(|u| (u.card, u.text.as_str())).collect();
-    let cards = usb_cards(&capture.cards, &ids);
-    capture.outputs.iter().map(|n| (n.clone(), usb_of_port(n, &cards))).collect()
+    usb_cards(&capture.cards, &ids)
+}
+
+/// The USB ids of the port `name` of a capture: the ids the system read for it first, else
+/// those of the sound cards.
+fn usb_of_capture(capture: &Capture, cards: &[(String, u16, u16)], name: &str) -> Option<(u16, u16)> {
+    capture.system_usb.get(name).copied().or_else(|| usb_of_port(name, cards))
+}
+
+/// The USB ids a CoreMIDI `kMIDIPropertyUSBVendorProduct` value holds: the vendor on the 16 high
+/// bits, the product on the 16 low ones; zero (no USB device) gives none.
+pub fn usb_from_coremidi(value: i32) -> Option<(u16, u16)> {
+    let bits = value as u32;
+    (bits != 0).then_some(((bits >> 16) as u16, (bits & 0xffff) as u16))
+}
+
+/// The USB ids a Windows device interface path names (`VID_xxxx&PID_yyyy`, any case, with or
+/// without `&MI_nn`); a path without them gives none.
+pub fn usb_from_interface_path(path: &str) -> Option<(u16, u16)> {
+    let lower = path.to_ascii_lowercase();
+    let hex4 = |marker: &str| -> Option<u16> {
+        let at = lower.find(marker)? + marker.len();
+        let digits = lower.get(at..at + 4)?;
+        digits.chars().all(|c| c.is_ascii_hexdigit()).then(|| u16::from_str_radix(digits, 16).ok()).flatten()
+    };
+    Some((hex4("vid_")?, hex4("pid_")?))
+}
+
+/// The longest device name WinMM gives (`MAXPNAMELEN` - 1).
+const WINMM_NAME_MAX: usize = 31;
+
+/// Whether the WinMM device name `winmm` and the midir port name name the same device: equal, or
+/// one is the other cut at WinMM's 31 characters.
+pub fn winmm_name_matches(winmm: &str, port: &str) -> bool {
+    if winmm.is_empty() || port.is_empty() {
+        return false;
+    }
+    if winmm == port {
+        return true;
+    }
+    let (short, long) = if winmm.chars().count() <= port.chars().count() { (winmm, port) } else { (port, winmm) };
+    short.chars().count() == WINMM_NAME_MAX && long.starts_with(short)
+}
+
+/// The USB ids the system itself reads for the ports `outputs` and `inputs` (CoreMIDI on macOS,
+/// WinMM on Windows), by port name; empty elsewhere and for a port the system gives none for.
+#[cfg(target_os = "macos")]
+fn read_system_usb(outputs: &[String], inputs: &[String]) -> std::collections::BTreeMap<String, (u16, u16)> {
+    let mut found = std::collections::BTreeMap::new();
+    let mut note = |name: Option<String>, object: &coremidi::Object| {
+        let Some(name) = name else { return };
+        if !outputs.contains(&name) && !inputs.contains(&name) {
+            return;
+        }
+        if let Some(ids) = object.get_property_integer("USBVendorProduct").ok().and_then(usb_from_coremidi) {
+            found.insert(name, ids);
+        }
+    };
+    for d in coremidi::Destinations {
+        note(d.display_name(), &d);
+    }
+    for s in coremidi::Sources {
+        note(s.display_name(), &s);
+    }
+    found
+}
+
+#[cfg(windows)]
+fn read_system_usb(outputs: &[String], inputs: &[String]) -> std::collections::BTreeMap<String, (u16, u16)> {
+    use windows::Win32::Media::Audio::{
+        midiInGetDevCapsW, midiInGetNumDevs, midiInMessage, midiOutGetDevCapsW, midiOutGetNumDevs,
+        midiOutMessage, HMIDIIN, HMIDIOUT, MIDIINCAPSW, MIDIOUTCAPSW,
+    };
+    const DRV_QUERYDEVICEINTERFACE: u32 = 0x080C;
+    const DRV_QUERYDEVICEINTERFACESIZE: u32 = 0x080D;
+    let name_of = |raw: &[u16]| String::from_utf16_lossy(&raw[..raw.iter().position(|&c| c == 0).unwrap_or(raw.len())]);
+    // The device interface path WinMM gives for `query` (a closure over the message call).
+    let path_of = |ask: &dyn Fn(u32, usize, usize) -> u32| -> Option<String> {
+        let mut bytes: u32 = 0;
+        if ask(DRV_QUERYDEVICEINTERFACESIZE, &mut bytes as *mut u32 as usize, 0) != 0 || bytes < 2 {
+            return None;
+        }
+        let mut buf = vec![0u16; (bytes as usize + 1) / 2];
+        if ask(DRV_QUERYDEVICEINTERFACE, buf.as_mut_ptr() as usize, bytes as usize) != 0 {
+            return None;
+        }
+        Some(name_of(&buf))
+    };
+    let mut found = std::collections::BTreeMap::new();
+    // SAFETY: the calls pass buffers of the sizes WinMM asked for, and a device id as the handle,
+    // as the DRV_QUERYDEVICEINTERFACE messages define.
+    unsafe {
+        for id in 0..midiOutGetNumDevs() as usize {
+            let mut caps = MIDIOUTCAPSW::default();
+            if midiOutGetDevCapsW(id, &mut caps, std::mem::size_of::<MIDIOUTCAPSW>() as u32) != 0 {
+                continue;
+            }
+            let device = name_of(&caps.szPname);
+            let Some(port) = outputs.iter().find(|p| winmm_name_matches(&device, p)) else { continue };
+            let path = path_of(&|m, a, b| midiOutMessage(HMIDIOUT(id as isize), m, a, b));
+            if let Some(ids) = path.and_then(|p| usb_from_interface_path(&p)) {
+                found.insert(port.clone(), ids);
+            }
+        }
+        for id in 0..midiInGetNumDevs() as usize {
+            let mut caps = MIDIINCAPSW::default();
+            if midiInGetDevCapsW(id, &mut caps, std::mem::size_of::<MIDIINCAPSW>() as u32) != 0 {
+                continue;
+            }
+            let device = name_of(&caps.szPname);
+            let Some(port) = inputs.iter().find(|p| winmm_name_matches(&device, p)) else { continue };
+            let path = path_of(&|m, a, b| midiInMessage(HMIDIIN(id as isize), m, a, b));
+            if let Some(ids) = path.and_then(|p| usb_from_interface_path(&p)) {
+                found.insert(port.clone(), ids);
+            }
+        }
+    }
+    found
+}
+
+#[cfg(not(any(target_os = "macos", windows)))]
+fn read_system_usb(_outputs: &[String], _inputs: &[String]) -> std::collections::BTreeMap<String, (u16, u16)> {
+    std::collections::BTreeMap::new()
 }
 
 /// The output of the device whose input is `input`: the same name, else the
@@ -216,11 +343,10 @@ fn derive(capture: &Capture) -> Vec<Probed> {
                                   client_kind: client_kind(&capture.clients, iname) });
         }
     }
-    let ids: Vec<(u32, &str)> = capture.usbids.iter().map(|u| (u.card, u.text.as_str())).collect();
-    let cards = usb_cards(&capture.cards, &ids);
+    let cards = capture_cards(capture);
     for d in devices.iter_mut() {
-        d.usb = d.out_name.as_deref().and_then(|n| usb_of_port(n, &cards))
-            .or_else(|| d.in_name.as_deref().and_then(|n| usb_of_port(n, &cards)));
+        d.usb = d.out_name.as_deref().and_then(|n| usb_of_capture(capture, &cards, n))
+            .or_else(|| d.in_name.as_deref().and_then(|n| usb_of_capture(capture, &cards, n)));
     }
     for r in &capture.received {
         if r.bytes.first() != Some(&0xF0) { continue; }
@@ -252,6 +378,7 @@ pub(crate) fn observe_unguarded(probe: bool, wait: Duration, probes: &[Probe], c
     let in_names: Vec<String> = in_ports.iter()
         .map(|p| input.port_name(p).unwrap_or_else(|_| "?".into())).collect();
     let mut capture = Capture::new(out_names.clone(), in_names.clone(), Asound::machine());
+    capture.system_usb = read_system_usb(&out_names, &in_names);
     if !probe {
         return Ok(capture);
     }

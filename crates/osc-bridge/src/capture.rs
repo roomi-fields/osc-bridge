@@ -11,6 +11,7 @@
 
 use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 use std::path::Path;
 
 /// The version of the capture format this build reads and writes.
@@ -82,6 +83,10 @@ pub struct Capture {
     pub usbids: Vec<UsbId>,
     /// The text of `/proc/asound/seq/clients`, raw; empty where the system gives none.
     pub clients: String,
+    /// The USB ids (vendor, product) the system itself read for a port, by port name (CoreMIDI,
+    /// WinMM); absent from a capture that holds none.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub system_usb: BTreeMap<String, (u16, u16)>,
     pub requests: Vec<Request>,
     pub received: Vec<Received>,
 }
@@ -96,6 +101,7 @@ impl Capture {
             cards: asound.cards,
             usbids: asound.usbids,
             clients: asound.clients,
+            system_usb: BTreeMap::new(),
             requests: Vec::new(),
             received: Vec::new(),
         }

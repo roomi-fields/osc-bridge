@@ -1,6 +1,7 @@
 use super::*;
 
 mod consent;
+mod system_usb;
 
 #[test]
 fn an_input_is_paired_with_its_device_output() {
