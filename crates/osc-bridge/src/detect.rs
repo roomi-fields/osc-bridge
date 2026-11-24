@@ -86,7 +86,7 @@ pub fn winmm_name_matches(winmm: &str, port: &str) -> bool {
 }
 
 /// The USB ids the system itself reads for the ports `outputs` and `inputs` (CoreMIDI on macOS,
-/// WinMM on Windows), by port name; empty elsewhere and for a port the system gives none for.
+/// the WinRT device enumeration on Windows), by port name; empty elsewhere and for a port the system gives none for.
 #[cfg(target_os = "macos")]
 fn read_system_usb(outputs: &[String], inputs: &[String]) -> std::collections::BTreeMap<String, (u16, u16)> {
     let mut found = std::collections::BTreeMap::new();
@@ -110,52 +110,68 @@ fn read_system_usb(outputs: &[String], inputs: &[String]) -> std::collections::B
 
 #[cfg(windows)]
 fn read_system_usb(outputs: &[String], inputs: &[String]) -> std::collections::BTreeMap<String, (u16, u16)> {
-    use windows::Win32::Media::Audio::{
-        midiInGetDevCapsW, midiInGetNumDevs, midiInMessage, midiOutGetDevCapsW, midiOutGetNumDevs,
-        midiOutMessage, HMIDIIN, HMIDIOUT, MIDIINCAPSW, MIDIOUTCAPSW,
-    };
-    const DRV_QUERYDEVICEINTERFACE: u32 = 0x080C;
-    const DRV_QUERYDEVICEINTERFACESIZE: u32 = 0x080D;
-    let name_of = |raw: &[u16]| String::from_utf16_lossy(&raw[..raw.iter().position(|&c| c == 0).unwrap_or(raw.len())]);
-    // The device interface path WinMM gives for `query` (a closure over the message call).
-    let path_of = |ask: &dyn Fn(u32, usize, usize) -> u32| -> Option<String> {
-        let mut bytes: u32 = 0;
-        if ask(DRV_QUERYDEVICEINTERFACESIZE, &mut bytes as *mut u32 as usize, 0) != 0 || bytes < 2 {
-            return None;
+    let all: Vec<String> = outputs.iter().chain(inputs).cloned().collect();
+    usb_of_winrt_devices(&all, &enumerate_winrt_midi().unwrap_or_default())
+}
+
+/// The MIDI devices WinRT lists (the ports of `MidiInPort` and `MidiOutPort`), each with the
+/// instance ids of the devices of its container; an enumeration that fails gives none.
+#[cfg(windows)]
+fn enumerate_winrt_midi() -> windows::core::Result<Vec<WinrtDevice>> {
+    use windows::core::{IInspectable, Interface, GUID, HSTRING};
+    use windows::Devices::Enumeration::{DeviceInformation, DeviceInformationKind};
+    use windows::Devices::Midi::{MidiInPort, MidiOutPort};
+    use windows::Foundation::Collections::IIterable;
+    use windows::Foundation::IReference;
+    let container_key = HSTRING::from("System.Devices.ContainerId");
+    let with_container = || IIterable::<HSTRING>::try_from(vec![container_key.clone()]);
+    let mut devices = Vec::new();
+    for selector in [MidiInPort::GetDeviceSelector()?, MidiOutPort::GetDeviceSelector()?] {
+        let ports = DeviceInformation::FindAllAsyncAqsFilterAndAdditionalProperties(&selector, &with_container()?)?.get()?;
+        for port in ports {
+            let container = port.Properties()?.Lookup(&container_key).ok()
+                .and_then(|v: IInspectable| v.cast::<IReference<GUID>>().ok())
+                .and_then(|r| r.Value().ok());
+            let mut instance_ids = Vec::new();
+            if let Some(guid) = container {
+                let filter = HSTRING::from(format!("System.Devices.ContainerId:=\"{{{guid:?}}}\""));
+                let none = IIterable::<HSTRING>::try_from(Vec::new())?;
+                let members = DeviceInformation::FindAllAsyncWithKindAqsFilterAndAdditionalProperties(&filter, &none, DeviceInformationKind::Device)
+                    .and_then(|op| op.get());
+                for member in members.into_iter().flatten() {
+                    if let Ok(id) = member.Id() {
+                        instance_ids.push(id.to_string());
+                    }
+                }
+            }
+            devices.push(WinrtDevice { name: port.Name()?.to_string(), id: port.Id()?.to_string(), instance_ids });
         }
-        let mut buf = vec![0u16; (bytes as usize + 1) / 2];
-        if ask(DRV_QUERYDEVICEINTERFACE, buf.as_mut_ptr() as usize, bytes as usize) != 0 {
-            return None;
-        }
-        Some(name_of(&buf))
-    };
+    }
+    Ok(devices)
+}
+
+/// A MIDI device as WinRT lists it: its full name, its id, and the instance ids of the devices
+/// of its container (the USB device that carries `VID_xxxx&PID_yyyy` among them).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct WinrtDevice {
+    pub name: String,
+    pub id: String,
+    pub instance_ids: Vec<String>,
+}
+
+/// The USB ids of each of `ports` (WinMM names, cut at 31 characters) from the WinRT `devices`
+/// whose name matches: the first of the device's paths (its id, then its instance ids) that
+/// carries them. A port none of whose devices has ids gets none, and so does one whose devices
+/// with ids disagree.
+pub fn usb_of_winrt_devices(ports: &[String], devices: &[WinrtDevice]) -> std::collections::BTreeMap<String, (u16, u16)> {
     let mut found = std::collections::BTreeMap::new();
-    // SAFETY: the calls pass buffers of the sizes WinMM asked for, and a device id as the handle,
-    // as the DRV_QUERYDEVICEINTERFACE messages define.
-    unsafe {
-        for id in 0..midiOutGetNumDevs() as usize {
-            let mut caps = MIDIOUTCAPSW::default();
-            if midiOutGetDevCapsW(id, &mut caps, std::mem::size_of::<MIDIOUTCAPSW>() as u32) != 0 {
-                continue;
-            }
-            let device = name_of(&caps.szPname);
-            let Some(port) = outputs.iter().find(|p| winmm_name_matches(&device, p)) else { continue };
-            let path = path_of(&|m, a, b| midiOutMessage(HMIDIOUT(id as isize), m, a, b));
-            if let Some(ids) = path.and_then(|p| usb_from_interface_path(&p)) {
-                found.insert(port.clone(), ids);
-            }
-        }
-        for id in 0..midiInGetNumDevs() as usize {
-            let mut caps = MIDIINCAPSW::default();
-            if midiInGetDevCapsW(id, &mut caps, std::mem::size_of::<MIDIINCAPSW>() as u32) != 0 {
-                continue;
-            }
-            let device = name_of(&caps.szPname);
-            let Some(port) = inputs.iter().find(|p| winmm_name_matches(&device, p)) else { continue };
-            let path = path_of(&|m, a, b| midiInMessage(HMIDIIN(id as isize), m, a, b));
-            if let Some(ids) = path.and_then(|p| usb_from_interface_path(&p)) {
-                found.insert(port.clone(), ids);
-            }
+    for port in ports {
+        let mut ids = devices.iter().filter(|d| winmm_name_matches(&d.name, port)).filter_map(|d| {
+            std::iter::once(&d.id).chain(&d.instance_ids).find_map(|path| usb_from_interface_path(path))
+        });
+        let Some(first) = ids.next() else { continue };
+        if ids.all(|i| i == first) {
+            found.insert(port.clone(), first);
         }
     }
     found

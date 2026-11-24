@@ -117,3 +117,87 @@ fn a_capture_recorded_without_system_ids_is_read_unchanged_and_written_without_t
     assert!(c.system_usb.is_empty());
     assert!(!c.to_json().contains("system_usb"));
 }
+
+fn winrt(name: &str, id: &str, instance_ids: &[&str]) -> WinrtDevice {
+    WinrtDevice { name: name.into(), id: id.into(), instance_ids: instance_ids.iter().map(|s| s.to_string()).collect() }
+}
+
+fn ports(names: &[&str]) -> Vec<String> {
+    names.iter().map(|s| s.to_string()).collect()
+}
+
+const SOFTWARE_ID: &str = r"\\?\SWD#MMDEVAPI#MIDII_00000001.P_0000#{abc}";
+
+#[test]
+fn a_winrt_device_gives_its_port_the_ids_of_its_own_id_path() {
+    let devices = [winrt("Minilab3 MIDI", r"\\?\USB#VID_1C75&PID_020B#ABC", &[])];
+    let found = usb_of_winrt_devices(&ports(&["Minilab3 MIDI"]), &devices);
+    assert_eq!(found.get("Minilab3 MIDI"), Some(&(0x1c75, 0x020b)));
+    assert_eq!(found.len(), 1);
+}
+
+#[test]
+fn a_winrt_device_whose_id_is_a_software_path_takes_the_ids_of_its_container_instance() {
+    let devices = [winrt("Minilab3 MIDI", SOFTWARE_ID, &["SWD\\X\\1", r"USB\VID_1C75&PID_020B&MI_03\7&1a2b&0&0002"])];
+    let found = usb_of_winrt_devices(&ports(&["Minilab3 MIDI"]), &devices);
+    assert_eq!(found.get("Minilab3 MIDI"), Some(&(0x1c75, 0x020b)));
+}
+
+#[test]
+fn the_first_winrt_path_that_carries_ids_wins() {
+    let devices = [winrt("Pad", r"\\?\USB#VID_0001&PID_0002#a", &[r"USB\VID_0003&PID_0004\b"])];
+    assert_eq!(usb_of_winrt_devices(&ports(&["Pad"]), &devices).get("Pad"), Some(&(1, 2)));
+    let devices = [winrt("Pad", SOFTWARE_ID, &[r"USB\VID_0003&PID_0004\b", r"USB\VID_0005&PID_0006\c"])];
+    assert_eq!(usb_of_winrt_devices(&ports(&["Pad"]), &devices).get("Pad"), Some(&(3, 4)));
+}
+
+#[test]
+fn a_winrt_device_with_no_ids_in_any_path_gives_its_port_nothing() {
+    let devices = [winrt("Loop Port", SOFTWARE_ID, &["SWD\\MMDEVAPI\\MIDII_1", ""])];
+    assert!(usb_of_winrt_devices(&ports(&["Loop Port"]), &devices).is_empty());
+    let devices = [winrt("Loop Port", SOFTWARE_ID, &[])];
+    assert!(usb_of_winrt_devices(&ports(&["Loop Port"]), &devices).is_empty());
+}
+
+#[test]
+fn no_winrt_devices_or_no_ports_give_an_empty_table() {
+    assert!(usb_of_winrt_devices(&ports(&["Pad"]), &[]).is_empty());
+    let devices = [winrt("Pad", r"\\?\USB#VID_0001&PID_0002#a", &[])];
+    assert!(usb_of_winrt_devices(&[], &devices).is_empty());
+}
+
+#[test]
+fn a_winrt_device_is_matched_to_a_port_name_cut_at_31_characters() {
+    let long = "Arturia KeyLab mkII 61 Extended Name";
+    let cut: String = long.chars().take(31).collect();
+    let devices = [winrt(long, r"\\?\USB#VID_1C75&PID_0001#a", &[])];
+    let found = usb_of_winrt_devices(&[cut.clone(), "Digitakt".into()], &devices);
+    assert_eq!(found.get(&cut), Some(&(0x1c75, 1)));
+    assert_eq!(found.len(), 1);
+}
+
+#[test]
+fn each_port_takes_the_ids_of_its_own_winrt_device() {
+    let devices = [
+        winrt("Pad", r"\\?\USB#VID_0001&PID_0002#a", &[]),
+        winrt("Keys", r"\\?\USB#VID_0003&PID_0004#a", &[]),
+    ];
+    let found = usb_of_winrt_devices(&ports(&["Keys", "Pad", "Other"]), &devices);
+    assert_eq!(found.get("Pad"), Some(&(1, 2)));
+    assert_eq!(found.get("Keys"), Some(&(3, 4)));
+    assert_eq!(found.get("Other"), None);
+}
+
+#[test]
+fn two_winrt_devices_named_like_one_port_give_ids_only_when_they_agree() {
+    let agree = [
+        winrt("Pad", r"\\?\USB#VID_0001&PID_0002#a", &[]),
+        winrt("Pad", SOFTWARE_ID, &[r"USB\VID_0001&PID_0002\b"]),
+    ];
+    assert_eq!(usb_of_winrt_devices(&ports(&["Pad"]), &agree).get("Pad"), Some(&(1, 2)));
+    let differ = [
+        winrt("Pad", r"\\?\USB#VID_0001&PID_0002#a", &[]),
+        winrt("Pad", r"\\?\USB#VID_0003&PID_0004#a", &[]),
+    ];
+    assert!(usb_of_winrt_devices(&ports(&["Pad"]), &differ).is_empty());
+}

@@ -16,8 +16,11 @@ is tracked explicitly under each release.
 - A device plugged in over USB is recognised by its USB ids on macOS and Windows as on Linux. The
   capture holds the ids the system read for each port (`system_usb`, by port name; captures
   recorded before read unchanged), and the detection takes them first, else the sound cards.
-  macOS reads CoreMIDI's `USBVendorProduct`; Windows reads the device interface path from WinMM
-  (`VID_`/`PID_`), kept only when WinMM's device name matches midir's port name.
+  macOS reads CoreMIDI's `USBVendorProduct`; Windows enumerates the MIDI ports with WinRT
+  (`DeviceInformation`, no `unsafe`) and reads `VID_`/`PID_` from the port's id, then from the
+  instance ids of the devices of its container; a device counts for a port when its name matches
+  midir's port name (cut at 31 characters), and the ids are kept only when the matching devices
+  agree. A port with no `VID_`/`PID_` (a virtual port) has no ids.
 - Limit: the CI runners have no USB device, so `platforms.yml` proves the build, clippy and the
   pure functions on macOS and Windows, not the reading on a real device; the owner confirms it by
   hand on each system.
