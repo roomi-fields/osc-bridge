@@ -30,6 +30,18 @@ tempfile.workspace = true
 osd.workspace = true
 osd-formats.workspace = true
 
+[target.'cfg(target_os = "macos")'.dependencies]
+coremidi = "0.8"
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.56", features = [
+  "Win32_Foundation",
+  "Win32_Media_Audio",
+  "Win32_Media_Multimedia",
+  "Win32_Devices_Properties",
+  "Win32_Devices_DeviceAndDriverInstallation",
+] }
+
 [[bin]]
 name = "osc-bridge"
 path = "src/main.rs"
