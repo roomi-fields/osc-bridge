@@ -2,7 +2,7 @@
 //!
 //! The catalogue lives on the SynthHub server, which hands it out one driver
 //! at a time (`crate::synthub::online`). A driver is named by a file on this machine,
-//! or by its catalogue id (`korg/minilogue`) or slug (`minilogue`, the best
+//! or by its catalogue id (`korg/minilogue`) or OSC prefix (`minilogue`, the best
 //! variant of the device): linked to the server, the driver is fetched into
 //! the cache (`online::cache_dir`), downloaded again only when the server's
 //! copy changed, and loaded from there; offline, only the cached drivers are
@@ -14,14 +14,14 @@ use std::path::{Path, PathBuf};
 use crate::synthub::online::{driver_path, is_driver_id, Online};
 
 /// The file of the driver `spec` names: a file on this machine, else a
-/// catalogue id or slug, fetched when linked (`online::linked`), from the
+/// catalogue id or OSC prefix, fetched when linked (`online::linked`), from the
 /// cache otherwise or when the server cannot be reached.
 pub fn locate(spec: &Path) -> Result<PathBuf> {
     if spec.exists() {
         return Ok(spec.to_path_buf());
     }
     let name = spec.to_str().filter(|s| is_driver_id(s) || is_slug(s))
-        .with_context(|| format!("{}: no such file, nor a driver id (<maker>/<name>) or slug", spec.display()))?;
+        .with_context(|| format!("{}: no such file, nor a device (a catalogue id <maker>/<name>, or an OSC prefix)", spec.display()))?;
     let cache = crate::synthub::online::cache_dir().context("no cache directory (HOME is not set)")?;
     let online = crate::synthub::online::linked().then(|| Online::new(crate::synthub::online::SERVER));
     from_cache_or_server(name, &cache, online.as_ref())

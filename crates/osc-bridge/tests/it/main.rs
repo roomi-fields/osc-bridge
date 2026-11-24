@@ -4,6 +4,7 @@ mod common;
 mod account_isolation_guard;
 mod bridge_status_and_broadcast;
 mod checksum;
+mod cli_help_names_device;
 mod checksum_after_script;
 mod checksum_lenient;
 mod custom_commands;

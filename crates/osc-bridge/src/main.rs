@@ -23,7 +23,7 @@ enum Cmd {
     /// Start the dump from the device's menu, or pass --out-port to send the
     /// driver's dump request.
     Backup {
-        /// The device: a driver file, catalogue id or slug. Its driver says
+        /// The device: a driver file, catalogue id or OSC prefix. Its driver says
         /// which messages are its sounds and how to ask for them.
         #[arg(long)]
         device: PathBuf,
@@ -45,7 +45,7 @@ enum Cmd {
     },
     /// Restore presets from a .syx file. Overwrites the device's memory.
     Restore {
-        /// The device: a driver file, catalogue id or slug. Its driver sets
+        /// The device: a driver file, catalogue id or OSC prefix. Its driver sets
         /// the pauses and refuses a bank that cannot be written.
         #[arg(long)]
         device: PathBuf,
@@ -89,7 +89,7 @@ enum Cmd {
         /// are used, nothing is sent); `off` restores it.
         #[arg(long, value_parser = ["on", "off"])]
         offline: Option<String>,
-        /// Keep this device private (catalogue id, slug, or `vendor/*` for a
+        /// Keep this device private (catalogue id, OSC prefix, or `vendor/*` for a
         /// whole vendor): nothing about it is sent to the server (repeatable).
         /// The same list can be edited in the settings file it prints.
         #[arg(long, value_name = "DEVICE")]
@@ -148,7 +148,7 @@ enum Cmd {
     },
     /// Print summary of a device JSON spec without starting the bridge.
     Inspect {
-        /// A driver file, or a catalogue id or slug (see `run --device`).
+        /// A driver file, or a catalogue id or OSC prefix (see `run --device`).
         device: PathBuf,
     },
     /// Run the bridge for a given device JSON.
@@ -159,13 +159,13 @@ enum Cmd {
     /// the path and the way come from that device's own driver. Without
     /// `--yes` nothing is sent and what would be written is shown.
     Export {
-        /// The driver: a JSON file, or its catalogue id or slug (see `run`).
+        /// The driver: a JSON file, or its catalogue id or OSC prefix (see `run`).
         #[arg(long)]
         device: PathBuf,
         /// The format to write on stdout (not with `--on`: the target's driver gives it).
         #[arg(long, required_unless_present = "on", conflicts_with = "on")]
         format: Option<String>,
-        /// The device that receives the export: its driver file, catalogue id or slug.
+        /// The device that receives the export: its driver file, catalogue id or OSC prefix.
         #[arg(long)]
         on: Option<PathBuf>,
         /// With `--on`: the file may be overwritten on the target; send.
@@ -226,7 +226,7 @@ enum Cmd {
 #[derive(Args)]
 struct RunArgs {
     /// The driver: a JSON file, or its catalogue id (arturia/minilab3)
-    /// or slug (minilab3), fetched from the SynthHub server and kept in
+    /// or OSC prefix (minilab3), fetched from the SynthHub server and kept in
     /// the cache (offline: the cached copy).
     #[arg(long)]
     device: PathBuf,

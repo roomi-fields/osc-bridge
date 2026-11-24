@@ -76,7 +76,7 @@ at [synthhub.roomi-fields.com](https://synthhub.roomi-fields.com/). osc-bridge
 asks the SynthHub server for one driver at a time, when it needs it:
 
 - `osc-bridge run --device korg/minilogue` (a driver id) or `--device minilogue`
-  (a slug: the device's best variant) fetches that driver and keeps it in the
+  (an OSC prefix: the device's best variant) fetches that driver and keeps it in the
   cache (`~/.cache/osc-bridge/drivers/`, or `$XDG_CACHE_HOME`, `%LOCALAPPDATA%`),
   then downloads it again only when the server's copy changed;
 - `osc-bridge detect` and the MCP tool `detect_hardware` ask the server which
@@ -346,7 +346,7 @@ name only.
 osc-bridge backup  --device arturia/minilab3 --in-port minilab --out backups/minilab3.syx   # then start the dump on the device
 osc-bridge restore --device arturia/minilab3 --out-port minilab backups/minilab3.syx        # overwrites the device's memory
 ```
-`--device` is required (a driver file, id or slug): its driver says which
+`--device` is required (a driver file, catalogue id or OSC prefix): its driver says which
 messages are the device's sounds, the pauses between messages, and which banks
 can be written. Ports take an index or a name fragment. `backup --out-port …`
 sends the driver's dump request first; `restore --bank … --number …` gives the
@@ -463,7 +463,7 @@ clients = ["127.0.0.1:8888"]
 # ws_bind = "127.0.0.1:7890"   # optional — browser clients over WebSocket
 
 [[devices]]
-spec = "arturia/minilab3"      # a driver id or slug, or a JSON file
+spec = "arturia/minilab3"      # a catalogue id or OSC prefix, or a JSON file
 midi_out_port = 4
 midi_in_port = 0
 

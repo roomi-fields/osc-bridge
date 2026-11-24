@@ -14,7 +14,7 @@ other users and agents fixed and confirmed them:
 
 - **At startup** it fetches the trust of each driver.
 - **When a driver is needed** (to run a device, read its routes or notes,
-  report on it), it fetches that one driver, by its id or slug, and keeps it in
+  report on it), it fetches that one driver, by its id or OSC prefix, and keeps it in
   a cache on your machine (`<cache>/osc-bridge/drivers`: `~/.cache` on Linux,
   `%LOCALAPPDATA%` on Windows). **Detecting your hardware**
   (`osc-bridge detect`, `detect_hardware`) first asks the server which
@@ -60,7 +60,7 @@ offline = false
 # Devices kept private: nothing about them is sent to the server.
 private = [
   "korg/minilogue",   # one driver (and the other variants of that device)
-  "minilab3",         # a device by its slug
+  "minilab3",         # a device by its OSC prefix
   "elektron/*",       # a whole vendor
 ]
 ```

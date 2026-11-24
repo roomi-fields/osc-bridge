@@ -14,8 +14,8 @@ The application offers three published surfaces: its command line, its MCP tools
 | `orchestrate` | a `bridge.toml` | several devices with routes between them |
 | `mcp` | `--offline`, `--devices-dir` | the MCP server |
 | `connect` | the relay address, private ports | a relay door |
-| `export` | `--device` (a driver) and either `--format` (any format of `osd-formats`; an unknown name lists them), or `--on` (the target device, a driver file, id or slug) with `--yes` | the exported file on the standard output; with `--on`, the export put on the plugged target by the way its descriptor declares, or, without `--yes`, what would be written (nothing is sent) |
-| `backup`, `restore` | `--device` (required: a driver file, id or slug), ports, a `.syx` file; `restore` also `--bank` and `--number` for a sound that carries no place | a dump taken (the sounds the driver recognises, on any channel) or sent (the driver's pauses; a bank it says cannot be written refused before any message; channel and device number written as configured) |
+| `export` | `--device` (a driver) and either `--format` (any format of `osd-formats`; an unknown name lists them), or `--on` (the target device, a driver file, catalogue id or OSC prefix) with `--yes` | the exported file on the standard output; with `--on`, the export put on the plugged target by the way its descriptor declares, or, without `--yes`, what would be written (nothing is sent) |
+| `backup`, `restore` | `--device` (required: a driver file, catalogue id or OSC prefix), ports, a `.syx` file; `restore` also `--bank` and `--number` for a sound that carries no place | a dump taken (the sounds the driver recognises, on any channel) or sent (the driver's pauses; a bank it says cannot be written refused before any message; channel and device number written as configured) |
 | `privacy` | `--offline`, `--private`, `--public` | the installation's settings |
 | `inspect`, `lint` | a driver | its summary, its warnings |
 | `osc-send`, `osc-listen` | an address and arguments, a bind address | one OSC message, the messages received |

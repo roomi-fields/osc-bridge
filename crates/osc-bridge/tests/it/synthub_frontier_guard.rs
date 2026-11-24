@@ -29,7 +29,7 @@ const INSCRIBED: &[(&str, &str, &str)] = &[
     ),
     ("main.rs", "/// the SynthHub catalogue (fetched one at a time and cached).", PUBLISHED),
     ("main.rs", "/// Do not contact the SynthHub server for this run (also", PUBLISHED),
-    ("main.rs", "/// or slug (minilab3), fetched from the SynthHub server and kept in", PUBLISHED),
+    ("main.rs", "/// or OSC prefix (minilab3), fetched from the SynthHub server and kept in", PUBLISHED),
     (
         "mcp.rs",
         r#""share_fingerprint": { "type": "string", "description": "Learn mode only: the port (a part of its name) whose fingerprint is sent to SynthHub, so that everyone recognises this device. Giving it, with vendor, model and firmware, sends that device's fingerprint to SynthHub (POST /v1/fingerprints): the vendor, model and firmware, the USB vendor and product ids, the identity_reply, the ports (names without machine numbers), what the device sends and its controls; never a serial number, a host name, a measure or anything about the person. Nothing is sent for a private device or when offline. Ask the person first. Needs vendor, model and firmware, none empty." },"#,

@@ -10,7 +10,7 @@ use std::path::{Path, PathBuf};
 /// The options of `run`.
 #[derive(Debug, Clone)]
 pub struct RunOptions {
-    /// The driver: a JSON file, or its catalogue id or slug.
+    /// The driver: a JSON file, or its catalogue id or OSC prefix.
     pub device: PathBuf,
     /// MIDI OUT port index; required for a MIDI/SysEx driver.
     pub out_port: Option<usize>,
@@ -28,7 +28,7 @@ pub struct RunOptions {
     pub oscquery_bind: Option<String>,
 }
 
-/// The driver file of a path, a catalogue id or a slug (the one place the commands read the catalogue).
+/// The driver file of a path, a catalogue id or an OSC prefix (the one place the commands read the catalogue).
 fn locate(device: &Path) -> Result<PathBuf> {
     crate::synthub::catalogue::locate(device)
 }

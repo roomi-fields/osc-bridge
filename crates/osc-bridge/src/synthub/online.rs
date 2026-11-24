@@ -4,8 +4,8 @@
 //!
 //! - the drivers: the catalogue lives on the server and is handed out one
 //!   driver at a time, never whole. A local copy asks for the driver it needs
-//!   — by id (`GET /api/v1/devices/<id>.json`, its notes `<id>.md`), by slug
-//!   (`GET /v1/devices/<slug>`: the device's variants, best first) or for
+//!   — by id (`GET /api/v1/devices/<id>.json`, its notes `<id>.md`), by OSC prefix
+//!   (`GET /v1/devices/<prefix>`: the device's variants, best first) or for
 //!   the MIDI ports it found (`POST /v1/detect`) — and keeps it in a cache
 //!   (`cache_dir`), which is all it has offline. Each kept file has the ETag
 //!   the server gave beside it (`<file>.etag`); the next fetch sends it in
@@ -89,7 +89,7 @@ pub struct Settings {
     #[serde(default)]
     pub offline: bool,
     /// Devices whose reports, fixes and trust lookups stay on this machine:
-    /// a catalogue id (`korg/minilogue`), a slug (`minilogue`, every variant
+    /// a catalogue id (`korg/minilogue`), an OSC prefix (`minilogue`, every variant
     /// of the device) or a whole vendor (`korg/*`).
     #[serde(default)]
     pub private: Vec<String>,
@@ -126,7 +126,7 @@ offline = {}
 
 # Devices kept private: nothing about them is sent to the server (reports,
 # fixes, trust lookups). Each entry is a catalogue id (\"korg/minilogue\"), a
-# slug for every variant of a device (\"minilogue\"), or a vendor (\"korg/*\").
+# OSC prefix for every variant of a device (\"minilogue\"), or a vendor (\"korg/*\").
 private = [
 {list}]
 ", self.offline)
@@ -146,7 +146,7 @@ private = [
         Self::load(Some(path))
     }
 
-    /// Whether `private` covers a driver, by its id and slug.
+    /// Whether `private` covers a driver, by its id and OSC prefix.
     pub fn covers(private: &[String], id: &str, slug: &str) -> bool {
         private.iter().any(|p| match p.strip_suffix("/*") {
             Some(vendor) => id.starts_with(&format!("{vendor}/")),
@@ -651,7 +651,7 @@ impl Online {
     }
 
     /// The variants of a device, by one of its ids or its slug, best first
-    /// (`GET /v1/devices/<id or slug>`): `{ "best": id, "variants": [...] }`.
+    /// (`GET /v1/devices/<id or OSC prefix>`): `{ "best": id, "variants": [...] }`.
     pub fn variants(&self, id_or_slug: &str) -> Result<Value> {
         let (status, v) = self.get(&format!("/v1/devices/{id_or_slug}"))?;
         match status {

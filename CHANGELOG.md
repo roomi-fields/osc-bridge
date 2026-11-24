@@ -11,6 +11,10 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed — the command-line help and the documents name a device `device`, without « slug »
+
+- The help of the root and of every sub-command, the bridge's `INTERFACE.md`, the README and the error of a device found nowhere name the device `device` (a catalogue id or an OSC prefix); the word « slug » is gone from them.
+
 ### Added — the USB ids of a port are read on macOS and Windows
 
 - A device plugged in over USB is recognised by its USB ids on macOS and Windows as on Linux. The
