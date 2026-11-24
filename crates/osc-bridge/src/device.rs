@@ -285,8 +285,8 @@ pub fn check_blocks(dev: &Device) -> Result<()> {
                 bail!("identity.firmware without a reply");
             }
         }
-        if kept_list(&id.reply).is_empty() && kept(&id.script).is_none() && !ports {
-            bail!("identity: a reply, a script or ports");
+        if kept_list(&id.reply).is_empty() && kept(&id.script).is_none() && !ports && kept_list(&id.usb).is_empty() {
+            bail!("identity: a reply, a script, ports or USB ids");
         }
         let frames: Vec<FrameToken> = kept_list(&id.reply).iter().chain(kept_list(&id.request)).cloned().collect();
         let family_empty = kept_list(&id.family).is_empty();

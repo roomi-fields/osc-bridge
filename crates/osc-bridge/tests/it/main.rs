@@ -22,6 +22,7 @@ mod electra_lua_runtime;
 mod electra_one;
 mod electra_one_driver;
 mod identity_request_fault;
+mod identity_usb_only;
 mod install_export_fetch;
 mod isolated_config;
 mod midi_opening;
