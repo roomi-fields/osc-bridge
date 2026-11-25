@@ -7,7 +7,6 @@
 # If not set, bd init will auto-detect from directory name
 # Example: issue-prefix: "myproject" creates issues like "myproject-1", "myproject-2", etc.
 issue-prefix: "OB"
-
 # Use no-db mode: JSONL-only, no Dolt database
 # When true, .beads/issues.jsonl is the only local store
 # no-db: false
@@ -64,8 +63,8 @@ issue-prefix: "OB"
 # Secret keys (stored in this file but prefer env vars to avoid git exposure):
 # - linear.api_key  → use LINEAR_API_KEY env var instead
 # - github.token    → use GITHUB_TOKEN env var instead
-
 sync.remote: "git+https://github.com/roomi-fields/osc-bridge.git"
 external_projects:
     open-synth-descriptors: ../open-synth-descriptors
     synthhub: ../synthhub
+    synthub-server: ../synthub-server
