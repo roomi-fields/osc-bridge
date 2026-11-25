@@ -1,7 +1,7 @@
 # osc-bridge MCP server — a MIDI MCP and OSC MCP
 
 `osc-bridge` ships a [Model Context Protocol](https://modelcontextprotocol.io)
-server. It lets Claude — or any MCP client — search the SynthHub catalogue of
+server. It lets Claude — or any MCP client — search the SyntHub catalogue of
 music devices, read each device's OSC surface, and send OSC to control
 synthesizers and DAWs.
 
@@ -20,17 +20,17 @@ usable from OSC clients, the CLI, and the multi-device orchestrator. See the
 
 ## Hosted, nothing to install
 
-The SynthHub server runs this MCP server for you, with the catalogue, trust
+The SyntHub server runs this MCP server for you, with the catalogue, trust
 from real use, and a relay to the hardware on your machine:
 
 - **Claude** (web, desktop): Settings → Connectors → *Add custom connector* →
-  `https://mcp.synthhub.roomi-fields.com/mcp`
-- **Claude Code**: `claude mcp add --transport http synthhub https://mcp.synthhub.roomi-fields.com/mcp`
-- **Cursor and other clients**: `{"mcpServers": {"synthhub": {"url": "https://mcp.synthhub.roomi-fields.com/mcp"}}}`
+  `https://mcp.synthub.roomi-fields.com/mcp`
+- **Claude Code**: `claude mcp add --transport http synthub https://mcp.synthub.roomi-fields.com/mcp`
+- **Cursor and other clients**: `{"mcpServers": {"synthub": {"url": "https://mcp.synthub.roomi-fields.com/mcp"}}}`
 
 Your synth joins through the relay page,
-[synthhub.roomi-fields.com/connect](https://synthhub.roomi-fields.com/connect/).
-Tools and what the server records: [API for agents](https://synthhub.roomi-fields.com/api/).
+[synthub.roomi-fields.com/connect](https://synthub.roomi-fields.com/connect/).
+Tools and what the server records: [API for agents](https://synthub.roomi-fields.com/api/).
 
 ## On your machine
 
@@ -68,12 +68,12 @@ The server speaks JSON-RPC 2.0 over stdio.
 `osc-bridge mcp` accepts:
 
 - `--devices-dir <path>` — serve the drivers of this folder, as they are,
-  instead of those of the SynthHub catalogue.
+  instead of those of the SyntHub catalogue.
 - `--default-target <host:port>` — where `send` / `get_status` point when no
   `target` argument is given (default `127.0.0.1:7777`, the standard
   `osc-bridge run` bind).
-- `--offline` — do not contact the SynthHub server (also
-  `OSC_BRIDGE_OFFLINE=1`); see *Linked to the SynthHub server* below.
+- `--offline` — do not contact the SyntHub server (also
+  `OSC_BRIDGE_OFFLINE=1`); see *Linked to the SyntHub server* below.
 
 ## The tools
 
@@ -92,16 +92,16 @@ The server speaks JSON-RPC 2.0 over stdio.
 | `add_link` | Link an address of one device to an address of another on a running bridge, optionally scaling the first argument (`map`: input range, output range); effective at the next message, no restart. Refused, naming the address or the chain, for an unknown device, an address its driver does not have, a loop or more than four hops. |
 | `remove_link` | Remove a link from a running bridge; refused, naming it, when it does not exist. |
 | `list_links` | List a running bridge's links, from the configuration file and added live, each with its source, target, scaling and origin. |
-| `detect_hardware` | Find the MIDI devices plugged into this computer: list ports, read the USB ids (`usb`: `vendor_id`, `product_id`) of each USB device's card (Linux), ask each device who it is (standard MIDI Identity Request, only that request leaves without consent; every maker request is held back and listed in `held_back` unless the person agreed for that port: `consent_ports`, to be passed only after asking them), have the SynthHub server match the answers against the catalogue (offline: the drivers cached here), with the firmware read from them (drivers matching equally are listed in `equally_matching`, the one the others share their MIDI with first), and return a ready-to-run `osc-bridge run` command with the right port numbers. |
+| `detect_hardware` | Find the MIDI devices plugged into this computer: list ports, read the USB ids (`usb`: `vendor_id`, `product_id`) of each USB device's card (Linux), ask each device who it is (standard MIDI Identity Request, only that request leaves without consent; every maker request is held back and listed in `held_back` unless the person agreed for that port: `consent_ports`, to be passed only after asking them), have the SyntHub server match the answers against the catalogue (offline: the drivers cached here), with the firmware read from them (drivers matching equally are listed in `equally_matching`, the one the others share their MIDI with first), and return a ready-to-run `osc-bridge run` command with the right port numbers. |
 | `backup_presets` | Record a device's SysEx dump (its presets) into a `.syx` file. Argument `device` is required (a catalogue id or OSC prefix; a device the catalogue does not know is refused, with the invitation to describe it). The driver says which messages are its sounds, taken on any channel or device number; the dump is started from the device's menu, or, with `out_port`, by the driver's dump request. |
 | `restore_presets` | Send a `.syx` file back to a device. Argument `device` is required. Overwrites its memory, so the tool refuses unless `confirm_overwrite: true` (the client should ask the user). The driver sets the pauses between messages; a bank it says cannot be written is refused before any message, naming the bank; the channel and device number are written as configured. `bank` and `number` give the place of a sound that carries none. |
 
 The drivers on this machine (the cache, or `--devices-dir`) are indexed at
 startup, and the cache again each time a driver is fetched into it.
 
-## Linked to the SynthHub server
+## Linked to the SyntHub server
 
-The catalogue lives on the SynthHub server; unless `--offline`, your copy is
+The catalogue lives on the SyntHub server; unless `--offline`, your copy is
 linked to it.
 
 - **One driver at a time.** `list_devices` searches the catalogue on the
@@ -129,19 +129,19 @@ linked to it.
   firmware?), `report_mapping` (which message a control really sends),
   `get_trust`, `submit_driver`, `submit_fix` and `get_contribution`. What you
   report improves the drivers for everyone; see
-  [API for agents](https://synthhub.roomi-fields.com/api/#reports-and-trust).
+  [API for agents](https://synthub.roomi-fields.com/api/#reports-and-trust).
 - **Shared presets** (CC BY-SA 4.0): sounds, sequences, kits, projects,
   banks and MIDI clips other users made. `find_presets` and `get_preset`
   search them, `load_preset` plays one into a device plugged into your
   computer (device data only once you agreed), `report_preset` says how it
   went; `take_sound` takes the sound your synth is playing, with its name,
-  straight from the synth (about 90 synths, through SynthHub's librarian);
+  straight from the synth (about 90 synths, through SyntHub's librarian);
   `share_preset` shares what you made (from a `.syx`, a `.mid`,
   settings by driver address, with an audio preview), `update_preset`
   publishes a new version, `withdraw_preset` takes it back; `comment_preset`,
   `star_preset`, `preset_collection`, `follow_author` and `set_profile`
   for the rest. See
-  [shared presets](https://synthhub.roomi-fields.com/api/#shared-presets).
+  [shared presets](https://synthub.roomi-fields.com/api/#shared-presets).
 
 Your MIDI ports and your devices' traffic never leave your machine. Sharing
 is on by default; you choose what stays on your machine in a commented
@@ -191,4 +191,4 @@ DrivenByMoss, Reaper's OSC control surface, etc.
 - [Open Synth Descriptors](https://github.com/roomi-fields/open-synth-descriptors) — how device drivers are written.
 - [`TUTORIAL_FIRST_DEVICE.md`](TUTORIAL_FIRST_DEVICE.md) — write your first driver in 30 minutes.
 - [Main README](../README.md) — osc-bridge as a standalone bridge, the orchestrator, the device catalogue.
-- Interactive device browser: <https://synthhub.roomi-fields.com/>
+- Interactive device browser: <https://synthub.roomi-fields.com/>

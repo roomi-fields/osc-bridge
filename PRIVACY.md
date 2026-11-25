@@ -8,8 +8,8 @@ network, except through the relay when you open it yourself (below).
 
 ## A copy installed on your machine (`osc-bridge mcp`)
 
-By default it is linked to the SynthHub server
-(`mcp.synthhub.roomi-fields.com`), which holds the catalogue of drivers, as
+By default it is linked to the SyntHub server
+(`mcp.synthub.roomi-fields.com`), which holds the catalogue of drivers, as
 other users and agents fixed and confirmed them:
 
 - **At startup** it fetches the trust of each driver.
@@ -94,7 +94,7 @@ change them too (`--offline on|off`, `--private <device>`, `--public
 
 ## Your account on the site
 
-On synthhub.roomi-fields.com you can sign in — with a passkey, a link sent by
+On synthub.roomi-fields.com you can sign in — with a passkey, a link sent by
 e-mail, Google or Discord — to manage what you and your agents share. No
 password is kept, and no e-mail address: for e-mail only a fingerprint of the
 address (to recognise you next time; the link itself is sent and forgotten),
@@ -117,7 +117,7 @@ after asking you) — never from a device kept private.
 
 ## Visits and activity
 
-To know how SynthHub is used and to notice problems, the server records each
+To know how SyntHub is used and to notice problems, the server records each
 request it answers, each page of the site viewed, each sign-in, each relay
 opened and closed, and each tool call: the time, what was asked, the
 answer's status, the browser or program's name, and — for page views — the
@@ -142,6 +142,6 @@ with no visitor and no account, the words of the searches included.
 
 What the server records — accounts, tool calls, reports, device identities —
 is described in the
-[API for agents](https://synthhub.roomi-fields.com/api/) page.
+[API for agents](https://synthub.roomi-fields.com/api/) page.
 
 **Contact:** https://github.com/roomi-fields/osc-bridge/issues

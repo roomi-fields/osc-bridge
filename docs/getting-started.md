@@ -38,7 +38,7 @@ osc-bridge detect
 It lists MIDI ports, asks each device who it is (the standard MIDI Identity
 Request, then the makers' own requests the drivers name — they change nothing
 on the device) and prints the matching driver, the firmware it read, and a
-ready-to-run line. Search the [catalogue](https://synthhub.roomi-fields.com/catalogue/) if your device does
+ready-to-run line. Search the [catalogue](https://synthub.roomi-fields.com/catalogue/) if your device does
 not answer.
 
 ## 3. Start the bridge
@@ -76,7 +76,7 @@ Then ask: *“What synth is plugged in, and what can it do?”* — see the
 
 With an assistant that only reaches the internet (Claude on the web, a phone,
 an agent on a server), the hosted server can drive your hardware through a
-relay. Open [the connect page](https://synthhub.roomi-fields.com/connect/) in Chrome or Edge, or run:
+relay. Open [the connect page](https://synthub.roomi-fields.com/connect/) in Chrome or Edge, or run:
 
 ```bash
 osc-bridge connect
@@ -92,4 +92,4 @@ then detect your devices, set parameters by name and hear what you play
 
 - [Add your own device](TUTORIAL_FIRST_DEVICE.md) in about 30 minutes.
 - [Open Synth Descriptors](https://github.com/roomi-fields/open-synth-descriptors) (OSD) for everything a driver can say.
-- [Blog](https://synthhub.roomi-fields.com/blog/) for worked examples.
+- [Blog](https://synthub.roomi-fields.com/blog/) for worked examples.

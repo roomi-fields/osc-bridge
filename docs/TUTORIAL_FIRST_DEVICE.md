@@ -45,7 +45,7 @@ For this tutorial, assume we have the synth's one-page MIDI chart in hand.
 
 ## Step 2 — Create the file (1 min)
 
-In the SynthHub catalogue a driver's id is `<vendor>/<slug>`: the vendor
+In the SyntHub catalogue a driver's id is `<vendor>/<slug>`: the vendor
 folder is the manufacturer in lowercase-kebab, the slug is the model. Write
 yours wherever you like, under that name:
 
@@ -204,9 +204,9 @@ dispatches.
 
 ---
 
-## Step 8 — Send it to SynthHub (1 min)
+## Step 8 — Send it to SyntHub (1 min)
 
-The catalogue lives on [SynthHub](https://synthhub.roomi-fields.com/). From an
+The catalogue lives on [SyntHub](https://synthub.roomi-fields.com/). From an
 MCP client linked to it (`osc-bridge mcp`, or the hosted server), ask your
 agent to contribute the driver: the `submit_driver` tool takes the file and
 where its mapping comes from. It is parsed, linted and tested, then added to

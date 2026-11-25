@@ -12,7 +12,7 @@ the music world:
   SuperCollider, Pure Data, TouchDesigner, VCV Rack.
 
 Each device is one declarative JSON file — no recompile to add a synth. The
-catalogue of drivers lives on [SynthHub](https://synthhub.roomi-fields.com/):
+catalogue of drivers lives on [SyntHub](https://synthub.roomi-fields.com/):
 osc-bridge fetches each driver when it needs it and keeps it in a cache
 (offline, the cached ones). Drive it
 from a live-coding environment, a DAW, a script, the CLI — or from **Claude (or
@@ -21,10 +21,10 @@ any MCP client) via the built-in MCP server**.
 ## Install
 
 **Hosted MCP server, nothing to install** — add
-`https://mcp.synthhub.roomi-fields.com/mcp` as a remote MCP server (a custom
-connector in Claude; `claude mcp add --transport http synthhub https://mcp.synthhub.roomi-fields.com/mcp`
+`https://mcp.synthub.roomi-fields.com/mcp` as a remote MCP server (a custom
+connector in Claude; `claude mcp add --transport http synthub https://mcp.synthub.roomi-fields.com/mcp`
 in Claude Code). It serves the catalogue, trust from real use, and
-a relay to your own hardware: <https://synthhub.roomi-fields.com/>.
+a relay to your own hardware: <https://synthub.roomi-fields.com/>.
 
 **On your machine**, as an MCP server over stdio:
 
@@ -62,7 +62,7 @@ The local tools — `list_devices`, `get_device_docs`, `list_routes`, `export_de
 `send`, `get_status`, `add_link`, `remove_link`, `list_links`, `detect_hardware`,
 `backup_presets`, `restore_presets`, `install_export`, `list_roles`, `set_by_role`, `get_by_role` — plus
 the server's (reports, trust, contributions, shared presets, sounds taken from the synth), so the model can search
-the SynthHub catalogue, read a device's OSC surface, and drive your devices.
+the SyntHub catalogue, read a device's OSC surface, and drive your devices.
 
 It's both a **MIDI MCP** (hardware synths over MIDI/SysEx) and an **OSC MCP**
 (DAWs and live-coding environments over OSC).

@@ -1,8 +1,8 @@
 //! The relay protocol: how a "door" — the browser door (Web MIDI), which is
-//! the SyntHub service's, on its page https://synthhub.roomi-fields.com/connect ;
+//! the SyntHub service's, on its page https://synthub.roomi-fields.com/connect ;
 //! `osc-bridge connect` (`crate::synthub::connect`), a plugin, any program
 //! speaking it — lets an agent reach the MIDI ports of a machine it does not
-//! run on, through the SynthHub server.
+//! run on, through the SyntHub server.
 //!
 //! The reference frames, one per kind, are in `tests/fixtures/relay_frames.json`:
 //! the contract the other doors read. A test builds and reads each frame

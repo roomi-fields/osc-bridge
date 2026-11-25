@@ -11,7 +11,7 @@ Hardware synthesizers over MIDI / SysEx, plus DAWs and live-coding
 environments over OSC (Ableton, Bitwig, Reaper, Sonic Pi, SuperCollider, Pure
 Data, TouchDesigner, VCV Rack). Every device gets a clean, named OSC surface
 described by one JSON file, its driver; the catalogue of drivers lives on
-[SynthHub](https://synthhub.roomi-fields.com/), which hands them out one at a
+[SyntHub](https://synthub.roomi-fields.com/), which hands them out one at a
 time. Drive it from a live-coding client, a DAW, a
 script, the CLI — or from Claude via the built-in **MCP server** (a **MIDI MCP**
 *and* **OSC MCP**).
@@ -20,17 +20,17 @@ script, the CLI — or from Claude via the built-in **MCP server** (a **MIDI MCP
 
 ## Install
 
-**Hosted MCP server, nothing to install** — the SynthHub server, run by the
+**Hosted MCP server, nothing to install** — the SyntHub server, run by the
 maintainer of osc-bridge, with the catalogue, trust from real use and the
 relay to your own hardware:
 
 - **Claude** (web, desktop): Settings → Connectors → *Add custom connector* →
-  `https://mcp.synthhub.roomi-fields.com/mcp`
-- **Claude Code**: `claude mcp add --transport http synthhub https://mcp.synthhub.roomi-fields.com/mcp`
-- **Cursor and other clients**: `{"mcpServers": {"synthhub": {"url": "https://mcp.synthhub.roomi-fields.com/mcp"}}}`
+  `https://mcp.synthub.roomi-fields.com/mcp`
+- **Claude Code**: `claude mcp add --transport http synthub https://mcp.synthub.roomi-fields.com/mcp`
+- **Cursor and other clients**: `{"mcpServers": {"synthub": {"url": "https://mcp.synthub.roomi-fields.com/mcp"}}}`
 
 **On your machine** — the MCP server over stdio, with hardware detection and
-OSC to a running bridge (each driver fetched from SynthHub when needed and
+OSC to a running bridge (each driver fetched from SyntHub when needed and
 kept in a cache; you choose what it shares):
 
 ```bash
@@ -71,9 +71,9 @@ Each synth is described by one JSON file. No Rust recompile required to add a de
 
 ## Where the drivers come from
 
-The catalogue lives on SynthHub, not in this repository: browse and search it
-at [synthhub.roomi-fields.com](https://synthhub.roomi-fields.com/). osc-bridge
-asks the SynthHub server for one driver at a time, when it needs it:
+The catalogue lives on SyntHub, not in this repository: browse and search it
+at [synthub.roomi-fields.com](https://synthub.roomi-fields.com/). osc-bridge
+asks the SyntHub server for one driver at a time, when it needs it:
 
 - `osc-bridge run --device korg/minilogue` (a driver id) or `--device minilogue`
   (an OSC prefix: the device's best variant) fetches that driver and keeps it in the
@@ -92,9 +92,9 @@ These requests present the anonymous account of this machine. A JSON file on you
 ## What makes it different
 
 - **One JSON = one driver.** Adding a synth is ~30 lines of declarative JSON — CC numbers, SysEx frame templates, optional parameter tables. No Rust, no bindings, no build step. Ship a PR, `osc-bridge run` picks it up.
-- **A shared catalogue.** Prophets, Oberheims, the Yamaha DX family, MatrixBrute, Hydrasynth, Virus TI, Digitone, Matrix-1000… the SynthHub catalogue covers most synths, drum machines and DAWs, and grows with what users and agents contribute. Searchable at [synthhub.roomi-fields.com](https://synthhub.roomi-fields.com/).
+- **A shared catalogue.** Prophets, Oberheims, the Yamaha DX family, MatrixBrute, Hydrasynth, Virus TI, Digitone, Matrix-1000… the SyntHub catalogue covers most synths, drum machines and DAWs, and grows with what users and agents contribute. Searchable at [synthub.roomi-fields.com](https://synthub.roomi-fields.com/).
 - **Hardware *and* software.** The same named OSC surface drives a hardware synth over MIDI/SysEx *or* a DAW / live-coding environment over OSC — Ableton, Bitwig, Reaper, Sonic Pi, SuperCollider, Pure Data, TouchDesigner, VCV Rack. See [§ Software targets](#software-targets--daws-and-live-coding-environments).
-- **An MCP server built in.** `osc-bridge mcp` exposes the SynthHub catalogue to Claude (or any MCP client) — a MIDI MCP *and* OSC MCP. Discover devices, read a device's OSC surface, send OSC to synths and DAWs. See [`docs/MCP.md`](docs/MCP.md).
+- **An MCP server built in.** `osc-bridge mcp` exposes the SyntHub catalogue to Claude (or any MCP client) — a MIDI MCP *and* OSC MCP. Discover devices, read a device's OSC surface, send OSC to synths and DAWs. See [`docs/MCP.md`](docs/MCP.md).
 - **Honest provenance.** Each device declares its source in `_sources[]`: `✅ hardware-verified`, `✅ software-verified`, `📘 vendor-doc`, `📡 vendor-osc-api` / `📡 third-party-osc`, `🎛️ electra-preset`, `📦 pencilresearch`. You always know whether a mapping was tested on the device or lifted from a spec sheet.
 - **Bidirectional out of the box.** Incoming MIDI (knob turns, SysEx replies, NRPN) is decoded and re-emitted as OSC. Multi-client fan-out is a `--osc-client` flag.
 - **N-to-N orchestration.** One process can drive several synths at once (`osc-bridge orchestrate --config bridge.toml`), each reachable under its own OSC prefix — so two MatrixBrutes live side-by-side as `/matrixbrute-1` and `/matrixbrute-2`.
@@ -106,10 +106,10 @@ These requests present the anonymous account of this machine. A JSON file on you
 
 The catalogue — synths, drum machines, controllers, DAWs and live-coding
 environments, with each driver's source and how far users confirmed it — is
-on SynthHub:
+on SyntHub:
 
-- 🔎 Interactive browser → **<https://synthhub.roomi-fields.com/>** (live search by vendor / model / author / source).
-- 🤖 For scripts and AI agents → JSON API at <https://synthhub.roomi-fields.com/api/v1/index.json> (each driver at `/api/v1/devices/<vendor>/<driver>.json`), or the hosted MCP server at <https://mcp.synthhub.roomi-fields.com/mcp> — see [API for agents](https://synthhub.roomi-fields.com/api/).
+- 🔎 Interactive browser → **<https://synthub.roomi-fields.com/>** (live search by vendor / model / author / source).
+- 🤖 For scripts and AI agents → JSON API at <https://synthub.roomi-fields.com/api/v1/index.json> (each driver at `/api/v1/devices/<vendor>/<driver>.json`), or the hosted MCP server at <https://mcp.synthub.roomi-fields.com/mcp> — see [API for agents](https://synthub.roomi-fields.com/api/).
 
 Each driver declares its source in `_sources[]`: `✅ hardware-verified`, `✅ software-verified`, `📘 vendor-doc`, `📡 vendor-osc-api` / `📡 third-party-osc`, `🎛️ electra-preset`, `📦 pencilresearch`.
 
@@ -118,13 +118,13 @@ Each driver declares its source in `_sources[]`: `✅ hardware-verified`, `✅ s
 New here? The [30-minute tutorial](docs/TUTORIAL_FIRST_DEVICE.md) builds a
 working driver end to end. Otherwise — three common cases, pick yours:
 
-**Your synth isn't listed** → write its driver and send it to SynthHub.
+**Your synth isn't listed** → write its driver and send it to SyntHub.
   1. Find a source: vendor programmer's reference, MIDI implementation PDF, or a canonical CSV.
-  2. Follow the [Open Synth Descriptors](https://github.com/roomi-fields/open-synth-descriptors) (OSD) format, which osc-bridge reads; the driver of a similar device (`/api/v1/devices/<id>.json` on SynthHub, or the copy in your cache) is a good template.
+  2. Follow the [Open Synth Descriptors](https://github.com/roomi-fields/open-synth-descriptors) (OSD) format, which osc-bridge reads; the driver of a similar device (`/api/v1/devices/<id>.json` on SyntHub, or the copy in your cache) is a good template.
   3. Check it: `osc-bridge lint my-synth.json`, then `osc-bridge run --device my-synth.json` on the device.
   4. Contribute it: from an MCP client, the `submit_driver` tool (it is checked, then added to the catalogue); or open an issue here with the file.
 
-**A driver is wrong, or you tested it on the hardware** → tell SynthHub: `report_result` and `report_mapping` (MCP) record what works on which firmware, and `submit_fix` turns learned mappings into a corrected driver.
+**A driver is wrong, or you tested it on the hardware** → tell SyntHub: `report_result` and `report_mapping` (MCP) record what works on which firmware, and `submit_fix` turns learned mappings into a corrected driver.
 
 Full contributor guide (schema extensions, bug reports, Lua escape hatch) → [`CONTRIBUTING.md`](CONTRIBUTING.md). For devices whose protocol can't be expressed declaratively, see [`docs/scripting.md`](docs/scripting.md) — use sparingly; `osc-bridge lint` warns on every use.
 
@@ -336,7 +336,7 @@ osc-bridge detect
 Lists MIDI ports, asks each device who it is (the standard MIDI Identity
 Request; the makers' own requests the drivers name are all held back and
 listed, and `--consent <port>` sends them to that port after you agreed), has the
-SynthHub server match the answers against the drivers' identity blocks
+SyntHub server match the answers against the drivers' identity blocks
 (offline: the drivers cached here), with the firmware read from them, and
 prints a ready-to-run `osc-bridge run` line. `--no-probe` matches by port
 name only.
@@ -447,7 +447,7 @@ Currently supported:
 | TouchDesigner 2023 | passthrough | 📡 vendor-osc-api |
 | VCV Rack 2 + [vcv-osc](https://github.com/roomi-fields/vcv-osc) plugin | passthrough | 📡 third-party-osc |
 
-Each driver comes with its `.md` notes on SynthHub that document the
+Each driver comes with its `.md` notes on SyntHub that document the
 required setup on the host side (Remote Script installation, ports, conventions).
 
 Combined with `osc-bridge orchestrate`, you can drive a hardware MiniLab 3,
@@ -481,12 +481,12 @@ map.to = [0, 1]
 
 osc-bridge ships a [Model Context Protocol](https://modelcontextprotocol.io)
 server — a **MIDI MCP** *and* **OSC MCP**. Point any MCP client at it and the
-model can browse the SynthHub catalogue, read a device's OSC surface, and
+model can browse the SyntHub catalogue, read a device's OSC surface, and
 send OSC to synths and DAWs.
 
-**Hosted** — add `https://mcp.synthhub.roomi-fields.com/mcp` as a remote MCP server (see
+**Hosted** — add `https://mcp.synthub.roomi-fields.com/mcp` as a remote MCP server (see
 [Install](#install)). Nothing to install; your synth joins through the relay
-page, [synthhub.roomi-fields.com/connect](https://synthhub.roomi-fields.com/connect/).
+page, [synthub.roomi-fields.com/connect](https://synthub.roomi-fields.com/connect/).
 
 **On your machine**:
 
@@ -529,7 +529,7 @@ which GPL-3.0 section 13 allows to combine with AGPL-3.0 code.
 
 ### Third-party device data
 
-The driver catalogue is SynthHub's, each driver with the credit and licence of
+The driver catalogue is SyntHub's, each driver with the credit and licence of
 its sources in `_sources[]`. The few drivers kept here for the tests
 (`crates/osc-bridge/tests/fixtures/devices/`) keep theirs: those of type `pencilresearch` are
 adapted from [MIDI Guide](https://midi.guide) by Pencil Research and

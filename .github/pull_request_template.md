@@ -1,5 +1,5 @@
 <!--
-Pull requests here change the engine. Drivers live in the SynthHub catalogue:
+Pull requests here change the engine. Drivers live in the SyntHub catalogue:
 send one with the submit_driver tool, or attach it to a device request issue
 (see CONTRIBUTING.md).
 -->

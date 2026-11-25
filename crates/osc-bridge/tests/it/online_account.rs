@@ -1,8 +1,8 @@
 //! OB-62b — every request of the online catalogue presents the machine's
-//! account (SynthHub service contract, `crates/service/docs/INTERFACE.md`,
+//! account (SyntHub service contract, `crates/service/docs/INTERFACE.md`,
 //! « Rien sans identifiant »):
 //!
-//! - the id goes in `X-Synthhub-Id` on every request that does not carry it
+//! - the id goes in `X-Synthub-Id` on every request that does not carry it
 //!   in its path (`/u/<id>/…`);
 //! - a machine without an id gets one first: `GET /v1/access/challenge`
 //!   gives `{challenge, algorithm: "sha256", bits, deliver}`, the client finds
@@ -91,7 +91,7 @@ impl Fake {
             for mut req in server.incoming_requests() {
                 let url = req.url().to_string();
                 let method = req.method().to_string();
-                let id_header = req.headers().iter().find(|h| h.field.equiv("X-Synthhub-Id")).map(|h| h.value.to_string());
+                let id_header = req.headers().iter().find(|h| h.field.equiv("X-Synthub-Id")).map(|h| h.value.to_string());
                 let if_none_match = req.headers().iter().find(|h| h.field.equiv("If-None-Match")).map(|h| h.value.to_string());
                 let mut body = String::new();
                 let _ = std::io::Read::read_to_string(req.as_reader(), &mut body);

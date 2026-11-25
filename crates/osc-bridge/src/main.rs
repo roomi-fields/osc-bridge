@@ -81,7 +81,7 @@ enum Cmd {
         #[arg(long = "private-port", value_name = "NAME")]
         private_ports: Vec<String>,
     },
-    /// Show or change what this machine shares with the SynthHub server.
+    /// Show or change what this machine shares with the SyntHub server.
     /// Sharing is on by default: drivers come from the server as they are
     /// needed, and reports and fixes go to it under an anonymous account.
     Privacy {
@@ -104,7 +104,7 @@ enum Cmd {
         /// Only list ports and match by name; send nothing.
         #[arg(long)]
         no_probe: bool,
-        /// Match against the drivers of this folder instead of the SynthHub
+        /// Match against the drivers of this folder instead of the SyntHub
         /// catalogue (offline: the drivers cached on this machine).
         #[arg(long)]
         devices_dir: Option<PathBuf>,
@@ -115,7 +115,7 @@ enum Cmd {
         /// With --learn: how long to listen, 1000-30000 ms (default 5000).
         #[arg(long, requires = "learn")]
         listen_ms: Option<u64>,
-        /// With --learn: the port (a part of its name) whose fingerprint is sent to SynthHub, so that
+        /// With --learn: the port (a part of its name) whose fingerprint is sent to SyntHub, so that
         /// everyone recognises the device. Naming it sends to POST /v1/fingerprints: the vendor, model and firmware, USB vendor and product
         /// ids, identity reply, ports, what it sends and its controls; no serial number or host name
         /// is sent, and a private device never is. Needs --vendor, --model and --firmware.
@@ -202,7 +202,7 @@ enum Cmd {
     /// catalogue and OSC surface to LLM clients (Claude Desktop, etc.).
     Mcp {
         /// Serve the drivers of this folder, as they are, instead of those of
-        /// the SynthHub catalogue (fetched one at a time and cached).
+        /// the SyntHub catalogue (fetched one at a time and cached).
         #[arg(long)]
         devices_dir: Option<PathBuf>,
         /// Default OSC target for the `send` and `get_status` tools when no
@@ -210,7 +210,7 @@ enum Cmd {
         /// (matching the standard `osc-bridge run` bind).
         #[arg(long, default_value = "127.0.0.1:7777")]
         default_target: String,
-        /// Do not contact the SynthHub server for this run (also
+        /// Do not contact the SyntHub server for this run (also
         /// OSC_BRIDGE_OFFLINE=1; `osc-bridge privacy --offline on` for good).
         /// By default a local copy fetches each driver it needs from the
         /// server — as other users and agents fixed and confirmed it — and
@@ -226,7 +226,7 @@ enum Cmd {
 #[derive(Args)]
 struct RunArgs {
     /// The driver: a JSON file, or its catalogue id (arturia/minilab3)
-    /// or OSC prefix (minilab3), fetched from the SynthHub server and kept in
+    /// or OSC prefix (minilab3), fetched from the SyntHub server and kept in
     /// the cache (offline: the cached copy).
     #[arg(long)]
     device: PathBuf,

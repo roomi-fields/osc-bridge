@@ -18,7 +18,7 @@
 //!   machine (`account_file`, the same one `osc-bridge connect` uses).
 //!
 //! The server serves nothing without an account. Every request goes through
-//! `Online::send`, which presents the account in `X-Synthhub-Id` (a request to
+//! `Online::send`, which presents the account in `X-Synthub-Id` (a request to
 //! `/u/<id>/…` carries it in its path), only to the base address. A machine
 //! without one has it delivered first (`GET /v1/access/challenge`, a proof of
 //! work, `POST` of the answer); a 401 gets a new account and one replay; a 429
@@ -41,7 +41,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::OnceLock;
 use std::time::Duration;
 
-pub const SERVER: &str = "https://mcp.synthhub.roomi-fields.com";
+pub const SERVER: &str = "https://mcp.synthub.roomi-fields.com";
 
 /// The tools a local copy forwards to the server.
 pub const FORWARDED_TOOLS: [&str; 18] = ["report_result", "report_mapping", "get_trust",
@@ -96,7 +96,7 @@ pub struct Settings {
 }
 
 const SETTINGS_HELP: &str = "\
-# osc-bridge — what this machine shares with the SynthHub server.
+# osc-bridge — what this machine shares with the SyntHub server.
 # Edit this file freely, or use `osc-bridge privacy`. Read when osc-bridge starts.
 #
 # Sharing is on by default: the drivers your devices need come from the
@@ -177,7 +177,7 @@ static NEWER: OnceLock<String> = OnceLock::new();
 static NEWER_TOLD: AtomicBool = AtomicBool::new(false);
 
 fn newer_notice(url: &str) -> String {
-    format!("A newer osc-bridge exists: {url} (the SynthHub server marks this one, {}, as deprecated).",
+    format!("A newer osc-bridge exists: {url} (the SyntHub server marks this one, {}, as deprecated).",
         env!("CARGO_PKG_VERSION"))
 }
 
@@ -316,7 +316,7 @@ pub fn driver_path(root: &Path, id: &str) -> PathBuf {
 
 /// The header that presents the machine's account on every request that
 /// does not carry it in its path (`/u/<id>/…`).
-const ACCOUNT_HEADER: &str = "X-Synthhub-Id";
+const ACCOUNT_HEADER: &str = "X-Synthub-Id";
 /// Redirects followed per request.
 const MAX_REDIRECTS: usize = 5;
 /// The most zero bits a delivery challenge may ask for (about a minute of work).
@@ -625,7 +625,7 @@ impl Online {
             Err(fault) => {
                 if let Some(e) = files.failed.take() { return Err(e); }
                 if files.got.borrow().get(id).is_some_and(Option::is_none) {
-                    bail!("the SynthHub catalogue has no driver {id}");
+                    bail!("the SyntHub catalogue has no driver {id}");
                 }
                 return Err(anyhow::Error::from(fault).context(format!("driver {id} from the server")));
             }
@@ -656,7 +656,7 @@ impl Online {
         let (status, v) = self.get(&format!("/v1/devices/{id_or_slug}"))?;
         match status {
             200 => Ok(v),
-            404 => bail!("the SynthHub catalogue has no device {id_or_slug:?} (see list_devices)"),
+            404 => bail!("the SyntHub catalogue has no device {id_or_slug:?} (see list_devices)"),
             s => bail!("{}", v["error"].as_str().map(str::to_string).unwrap_or_else(|| format!("device {id_or_slug}: HTTP {s}"))),
         }
     }

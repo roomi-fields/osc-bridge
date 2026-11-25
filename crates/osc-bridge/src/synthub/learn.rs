@@ -299,7 +299,7 @@ pub(crate) fn sharing_target<'a>(port: &str, learned: &'a [(Unit, Learned)]) -> 
 /// The sharing of a copy with no link: nothing goes out.
 fn not_linked_share(port: &str, _vendor: &str, _model: &str, _firmware: &str, learned: &[(Unit, Learned)]) -> Result<String, String> {
     sharing_target(port, learned)?;
-    Ok("not sent: this copy is not linked to the SynthHub server".into())
+    Ok("not sent: this copy is not linked to the SyntHub server".into())
 }
 
 /// `detect_hardware` with `learn: true` on a server with no link: the ports matched against the
@@ -381,7 +381,7 @@ fn next_step(service: &ServiceMatches, proposed_firmware: Option<&str>) -> Strin
     let ask = format!("{NEXT_STEP_ASK}{} Then map its controls one by one with report_mapping, device being its vendor and model as shared (e.g. Behringer BCR-32); a first driver built from the mappings goes to submit_driver.",
         firmware_ask(proposed_firmware));
     match service {
-        ServiceMatches::Answered(_) => format!("Neither the local catalogue nor SynthHub knows this device. {ask}"),
+        ServiceMatches::Answered(_) => format!("Neither the local catalogue nor SyntHub knows this device. {ask}"),
         _ => format!("Only the local catalogue was looked at, and no driver in it matches this device. {ask}"),
     }
 }
@@ -391,7 +391,7 @@ fn next_step(service: &ServiceMatches, proposed_firmware: Option<&str>) -> Strin
 fn being_confirmed_step(unlisted: &[Value]) -> String {
     let named: Vec<String> = unlisted.iter().map(unlisted_text).collect();
     let said = unlisted.iter().find_map(|u| u["state_label"].as_str()).unwrap_or("being confirmed");
-    format!("SynthHub names this device without a card: {}; {said}. Ask the person to confirm which it is, and do not ask them to name it again. \
+    format!("SyntHub names this device without a card: {}; {said}. Ask the person to confirm which it is, and do not ask them to name it again. \
         Nothing is sent to the device on this account without the person's consent.", named.join(" or "))
 }
 
@@ -509,7 +509,7 @@ pub fn learn_report(learned: &[(Unit, Learned)], catalogue: &DeviceIndex, listen
     }).collect();
     let mut notice = learn_notice(listen);
     if matches!(service, ServiceMatches::Unreachable) {
-        notice.push_str(" The SynthHub service did not answer: only the local catalogue was looked at.");
+        notice.push_str(" The SyntHub service did not answer: only the local catalogue was looked at.");
     }
     let structured = json!({ "probed": true, "learn": true, "listen_ms": listen.as_millis() as u64,
         "notice": notice, "devices": devices });
@@ -559,10 +559,10 @@ pub(super) fn share_learned(share: &Share, learned: &[(Unit, Learned)]) -> Resul
         return Ok(format!("not sent: {name} is private on this machine"));
     }
     let (Some(client), Some(file)) = (share.client, super::online::settings_file()) else {
-        return Ok("not sent: this copy is not linked to the SynthHub server".into());
+        return Ok("not sent: this copy is not linked to the SyntHub server".into());
     };
     Ok(match client.share_fingerprint(&file, share.vendor, share.model, share.firmware, &one.fingerprint) {
-        super::online::Sharing::Sent => format!("the fingerprint of {name} (firmware {}, {}) was sent to SynthHub ({}). {}",
+        super::online::Sharing::Sent => format!("the fingerprint of {name} (firmware {}, {}) was sent to SyntHub ({}). {}",
             share.firmware, unit.label(), SENT_FIELDS, shared_next_step(share.vendor, share.model)),
         super::online::Sharing::Withheld(why) => format!("not sent: {why}"),
         super::online::Sharing::Failed(why) => {
@@ -576,7 +576,7 @@ pub(super) fn share_learned(share: &Share, learned: &[(Unit, Learned)]) -> Resul
 /// `osc-bridge detect --learn`: the notice first (the person moves the controls while it
 /// listens), then the fingerprint of each port and its measures.
 /// With `share` (the port, then the vendor, model and firmware the person gives), that
-/// fingerprint is sent to SynthHub when linked and not private; naming the port is the person's
+/// fingerprint is sent to SyntHub when linked and not private; naming the port is the person's
 /// agreement. A missing vendor, model or firmware is refused before anything is listened to.
 pub fn print_learning(open: crate::midi_port::Opener, listen_ms: Option<u64>, share: Option<(&str, [Option<&str>; 3])>, order: crate::recognition::TierOrder) -> Result<()> {
     let share = share.map(|(port, [vendor, model, firmware])| {

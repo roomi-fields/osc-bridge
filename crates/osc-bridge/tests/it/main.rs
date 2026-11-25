@@ -58,6 +58,7 @@ mod roles;
 mod script_log_and_checksum;
 mod scripting;
 mod scripting_integration;
+mod service_address;
 mod single_executable;
 mod synthub_frontier_guard;
 mod sounds_stored;

@@ -32,7 +32,7 @@ fn the_privacy_command_records_choices_by_catalogue_id() {
     let path = dir.path().join("settings.toml");
     let devices = fixtures();
     let shown = privacy(&path, &devices, None, None, &[], &[]).unwrap();
-    assert!(shown.contains("Linked to the SynthHub server") && shown.contains("Private devices: none"), "{shown}");
+    assert!(shown.contains("Linked to the SyntHub server") && shown.contains("Private devices: none"), "{shown}");
     assert!(!path.exists(), "showing writes nothing");
     let shown = privacy(&path, &devices, None, Some(true), &["minilogue".into()], &[]).unwrap();
     assert!(shown.contains("Offline") && shown.contains("korg/minilogue"), "{shown}");

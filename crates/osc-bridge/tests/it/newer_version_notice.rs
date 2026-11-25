@@ -1,4 +1,4 @@
-//! When the SynthHub server marks this osc-bridge as deprecated
+//! When the SyntHub server marks this osc-bridge as deprecated
 //! (`Deprecation` with `Link: <url>; rel="deprecation"`, RFC 9745),
 //! osc-bridge says once per run, on standard error and in the result of the
 //! next MCP tool call, that a newer osc-bridge exists and where. The MCP
@@ -12,7 +12,7 @@ use crate::common;
 use common::{catalogue, mcp_session, temp, texts, tool_call, FakeSynthHub};
 use serde_json::json;
 
-const NEWER: &str = "https://synthhub.roomi-fields.com/osc-bridge/";
+const NEWER: &str = "https://synthub.roomi-fields.com/osc-bridge/";
 
 #[test]
 fn a_newer_osc_bridge_is_announced_once_per_run() {

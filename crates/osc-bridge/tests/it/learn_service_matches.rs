@@ -135,11 +135,11 @@ fn a_device_the_local_catalogue_names_only_by_its_port_name_is_unknown_and_the_l
 // ---- the next step is worded by what was looked at ----
 
 #[test]
-fn linked_and_unknown_the_next_step_says_neither_the_local_catalogue_nor_synthhub_knows_it() {
+fn linked_and_unknown_the_next_step_says_neither_the_local_catalogue_nor_synthub_knows_it() {
     let r = report(&[UNKNOWN], &ServiceMatches::Answered(vec![vec![]]));
     let step = device(&r, 0)["next_step"].as_str().unwrap_or_else(|| panic!("{r}")).to_string();
     let low = step.to_lowercase();
-    assert!(low.contains("neither the local catalogue nor synthhub"), "{step}");
+    assert!(low.contains("neither the local catalogue nor synthub"), "{step}");
     assert!(low.contains("name") && step.contains("report_mapping") && step.contains("submit_driver"), "{step}");
     assert!(device(&r, 0).get("driver").is_none(), "{r}");
 }

@@ -21,7 +21,7 @@ described yet (at most written in `_limitations`).
 | SysEx parameters and commands, checksums, address maps | `params`, `commands`, frame grammar | yes | Electra, Ctrlr |
 | Sounds: request, recognise, name, rename, identity, send back | `programs.dump` (how one is read back); the rest by the KnobKraft adaptations on the hosted server | part | KnobKraft, Edisyn |
 | Programs and banks: bank select scheme, numbering, bank names, recall sequence | `programs` | yes | MIDNAM, OSCQuery, MIDI-CI PE ProgramList |
-| Sound names: factory banks, user banks | shared sounds on SynthHub | part | MIDNAM |
+| Sound names: factory banks, user banks | shared sounds on SyntHub | part | MIDNAM |
 | Drum and note maps | `triggers` | yes | MIDNAM (note name lists) |
 | What the device sends: knob CCs, replies, state broadcasts | `midi_in`, `replies` | part | MIDI-CI PE |
 | Timing: message gap, reply wait, rate limit | `rate_limit_hz` | part | KnobKraft |
@@ -57,7 +57,7 @@ back (to its edit buffer or a given place), as it does for sounds.
 | Scripts | Electra One Lua, norns scripts | norns scripts as firmware variants | part |
 | The whole device state | MIDI-CI Property Exchange State resource, full backups | none | no |
 
-SynthHub already shares contents by kind (sound, kit, sequence, bank,
+SyntHub already shares contents by kind (sound, kit, sequence, bank,
 project, clip); what is missing is each device's way to ask for, recognise
 and send back each kind.
 

@@ -1,4 +1,4 @@
-//! The MCP server of a copy linked to the SynthHub service: the envelope of the local server.
+//! The MCP server of a copy linked to the SyntHub service: the envelope of the local server.
 //!
 //! The link answers its own 20 tools first — the 18 the service serves (`online::FORWARDED_TOOLS`),
 //! `take_sound` and `load_preset`, and the branches of `list_devices`, `detect_hardware` and
@@ -51,7 +51,7 @@ impl Link {
     }
 
     fn forward(&self, name: &str, args: &Value) -> Result<Value, String> {
-        let unreachable = |e: anyhow::Error| format!("{name} goes to the SynthHub server, which could not be reached: {e}");
+        let unreachable = |e: anyhow::Error| format!("{name} goes to the SyntHub server, which could not be reached: {e}");
         let user = self.user(false).map_err(|e| unreachable(anyhow::anyhow!(e)))?;
         match self.client.call_tool(&user, name, args) {
             Err(e) if e.to_string() == "unknown account" => {
@@ -71,8 +71,8 @@ impl Link {
 }
 
 /// Sent with `initialize` by a linked local copy.
-const LINKED_INSTRUCTIONS: &str = "osc-bridge with the SynthHub catalogue of MIDI implementations (CC, NRPN, \
-    SysEx, drum maps) of synths, drum machines and DAWs: each driver is fetched from the SynthHub server when a \
+const LINKED_INSTRUCTIONS: &str = "osc-bridge with the SyntHub catalogue of MIDI implementations (CC, NRPN, \
+    SysEx, drum maps) of synths, drum machines and DAWs: each driver is fetched from the SyntHub server when a \
     tool needs it, as other users and agents fixed and confirmed it. Start with list_devices (or detect_hardware), \
     then list_routes with the device; usage_status and get_trust tell how far other users confirmed a driver, per \
     firmware. After testing a driver on the real device, call report_result with the firmware and the device's \
@@ -84,7 +84,7 @@ const LINKED_INSTRUCTIONS: &str = "osc-bridge with the SynthHub catalogue of MID
 fn trust_in_background(link: std::sync::Arc<Link>) -> std::thread::JoinHandle<()> {
     std::thread::spawn(move || match link.client.trust() {
         Ok(t) => if let Ok(mut g) = link.trust.write() { *g = t },
-        Err(e) => eprintln!("SynthHub server unreachable ({e}): only the drivers cached on this machine"),
+        Err(e) => eprintln!("SyntHub server unreachable ({e}): only the drivers cached on this machine"),
     })
 }
 
@@ -207,7 +207,7 @@ fn call_tool_with(name: &str, args: &Value, opts: &McpOptions, index: &DeviceInd
                     started, nothing asked of the server.\n{}", serde_json::to_string_pretty(&structured).unwrap_or_default()), structured));
             }
             if PRIVATE_REFUSED.contains(&name) {
-                return Err(format!("{id} is private on this machine: {name} is not sent to the SynthHub server. \
+                return Err(format!("{id} is private on this machine: {name} is not sent to the SyntHub server. \
                     To share it, remove it from the private list (osc-bridge privacy shows the settings file)."));
             }
         }
@@ -225,7 +225,7 @@ fn call_tool_with(name: &str, args: &Value, opts: &McpOptions, index: &DeviceInd
     // Drivers from the server: it finds them, and matches the ports found here.
     let server = opts.devices_dir.is_none().then_some(link);
     if let (Some(link), "list_devices") = (server, name) {
-        return link.client.catalogue_call(name, args).map_err(|e| format!("list_devices asks the SynthHub server, \
+        return link.client.catalogue_call(name, args).map_err(|e| format!("list_devices asks the SyntHub server, \
             which could not be reached: {e}. Offline, it lists the drivers cached on this machine."));
     }
     if name == "detect_hardware" {
@@ -254,7 +254,7 @@ pub fn detect_answers(client: &Online, found: &[crate::detect::Probed]) -> Resul
 
 /// The requests the service says recognise devices.
 fn service_probes(server: &Online) -> Result<Vec<crate::recognition::Probe>, String> {
-    server.probes().map_err(|e| format!("detect_hardware asks the SynthHub server which \
+    server.probes().map_err(|e| format!("detect_hardware asks the SyntHub server which \
         requests recognise devices, and it could not be reached: {e}. Offline, the ports are matched against the drivers cached here."))
 }
 
@@ -262,7 +262,7 @@ fn service_probes(server: &Online) -> Result<Vec<crate::recognition::Probe>, Str
 fn service_answers(server: &Online, found: &[crate::detect::Probed]) -> Result<Vec<Value>, String> {
     let ports: Vec<Value> = found.iter().map(|d| crate::mcp::detect_port(d.label(),
         d.replies.iter().map(|r| crate::mcp::hex_bytes(r)).collect(), d.usb)).collect();
-    server.detect(&ports).map_err(|e| format!("detect_hardware asks the SynthHub server to match \
+    server.detect(&ports).map_err(|e| format!("detect_hardware asks the SyntHub server to match \
         the ports, and it could not be reached: {e}. Offline, the ports are matched against the drivers cached here."))
 }
 
@@ -306,10 +306,10 @@ pub fn privacy(path: &Path, index: &DeviceIndex, server: Option<&Online>, offlin
     }
     if changed { settings.save(path)?; }
     let mut out = if settings.offline {
-        "Offline: this copy does not contact the SynthHub server and uses only the drivers cached on this machine \
+        "Offline: this copy does not contact the SyntHub server and uses only the drivers cached on this machine \
          (osc-bridge privacy --offline off to link it again).\n".to_string()
     } else {
-        "Linked to the SynthHub server: drivers come from it one at a time under the anonymous account of this machine, and reports \
+        "Linked to the SyntHub server: drivers come from it one at a time under the anonymous account of this machine, and reports \
          and fixes are shared under that account (osc-bridge privacy --offline on to stop).\n".to_string()
     };
     if settings.private.is_empty() {
@@ -330,7 +330,7 @@ pub fn privacy(path: &Path, index: &DeviceIndex, server: Option<&Online>, offlin
 }
 
 /// `osc-bridge detect`: the same report as the `detect_hardware` tool, for a
-/// terminal: drivers of `devices_dir`, else of the SynthHub catalogue when
+/// terminal: drivers of `devices_dir`, else of the SyntHub catalogue when
 /// linked, else those cached on this machine.
 ///
 /// With `write`, the observation is also written to that file as a capture. With `read`, the
@@ -437,14 +437,14 @@ fn share_with_files(link: &Link, name: &str, args: &Value) -> Result<Value, Stri
 /// The synths the server's librarian knows, and one librarian step, for
 /// `super::take`.
 fn librarian_ask(link: &Link) -> impl Fn(&str, &Value) -> Result<Value, String> + '_ {
-    move |op, body| link.client.librarian(op, body).map_err(|e| format!("SynthHub's librarian: {e}"))
+    move |op, body| link.client.librarian(op, body).map_err(|e| format!("SyntHub's librarian: {e}"))
 }
 
 /// Take the sound a synth plays (or a program) through the server's
 /// librarian, saved as a .syx file for share_preset.
 fn take_sound(args: &Value, link: &Link, open: crate::midi_port::Opener) -> Result<Value, String> {
     use super::take::{find, take};
-    let lib = link.client.librarian_synths().map_err(|e| format!("SynthHub's librarian could not be reached: {e}"))?;
+    let lib = link.client.librarian_synths().map_err(|e| format!("SyntHub's librarian could not be reached: {e}"))?;
     let ask = librarian_ask(link);
     let mut midi = open().map_err(|e| e.to_string())?;
     let found = find(midi.as_mut(), &lib, &ask, args["port"].as_str())?;
@@ -498,7 +498,7 @@ fn load_preset(args: &Value, link: &Link, open: crate::midi_port::Opener) -> Res
     let mut note = None;
     let channel = match preset["librarian"].as_str().and_then(|l| l.split('@').next()) {
         Some(synth) => {
-            let mut lib = link.client.librarian_synths().map_err(|e| format!("SynthHub's librarian could not be reached: {e}"))?;
+            let mut lib = link.client.librarian_synths().map_err(|e| format!("SyntHub's librarian could not be reached: {e}"))?;
             if let Some(all) = lib["synths"].as_array_mut() { all.retain(|s| s["synth"] == synth); }
             note = lib["synths"][0]["note"].as_str().map(str::to_string);
             let mut midi = open().map_err(|e| e.to_string())?;
@@ -521,7 +521,7 @@ fn load_preset(args: &Value, link: &Link, open: crate::midi_port::Opener) -> Res
     crate::librarian::send_messages(out_port, &messages, gap).map_err(|e| e.to_string())?;
     let structured = json!({ "id": id, "name": preset["name"], "device": preset["device"], "messages": messages.len(),
         "attribution": preset["attribution"], "note": note });
-    Ok(content_structured(&format!("Loaded {} ({} message(s)) on {out_port}.{} Tell SynthHub how it went with report_preset.",
+    Ok(content_structured(&format!("Loaded {} ({} message(s)) on {out_port}.{} Tell SyntHub how it went with report_preset.",
         preset["name"].as_str().unwrap_or(id), messages.len(), note.map(|n| format!(" Note: {n}")).unwrap_or_default()), structured))
 }
 
@@ -615,7 +615,7 @@ pub fn linked_tool_schemas() -> Value {
             },
             {
                 "name": "submit_driver",
-                "description": "Contribute a driver for a device the catalogue lacks (or a better one): the full driver file as a JSON object, in the Open Synth Descriptors format (device.name, device.vendor, device.osc_prefix, and cc_params / params / commands / triggers — see https://synthhub.roomi-fields.com/osd/). It is checked, then merged into the SynthHub catalogue by the merge job if it parses, lints and passes the tests, as its own file of source 'contributed'. Say where the data comes from (manual page, tested on the device). A first driver for a device with no driver: build it from the mappings sent with report_mapping, naming the device by the vendor and model its fingerprint was shared with, and give its source and its licence (e.g. 'mapped on the device by report_mapping; license CC0-1.0').",
+                "description": "Contribute a driver for a device the catalogue lacks (or a better one): the full driver file as a JSON object, in the Open Synth Descriptors format (device.name, device.vendor, device.osc_prefix, and cc_params / params / commands / triggers — see https://synthub.roomi-fields.com/osd/). It is checked, then merged into the SyntHub catalogue by the merge job if it parses, lints and passes the tests, as its own file of source 'contributed'. Say where the data comes from (manual page, tested on the device). A first driver for a device with no driver: build it from the mappings sent with report_mapping, naming the device by the vendor and model its fingerprint was shared with, and give its source and its licence (e.g. 'mapped on the device by report_mapping; license CC0-1.0').",
                 "inputSchema": { "type": "object", "properties": {
                     "driver": { "type": "object", "description": "The driver file." },
                     "firmware": { "type": "string", "description": "Firmware the driver was written or tested for." },
@@ -641,7 +641,7 @@ pub fn linked_tool_schemas() -> Value {
             },
             {
                 "name": "share_preset",
-                "description": "Share something the user made on a device with every SynthHub user, under CC BY-SA 4.0: a sound, a sequence or pattern, a kit, a project, a bank of their own sounds, or a MIDI clip any device can play. Its content: the device's own data (SysEx, e.g. from backup_presets), settings by driver address (from list_routes, e.g. {'/filter/cutoff': [90]}, which also works for devices without dumps), and/or a standard MIDI file. Only what the user made: never factory presets, nor sounds or sequences bought or downloaded from others — set own_sound only after asking the user. Made from someone else's shared preset? Pass derived_from: it credits them, as the licence requires. Describe it well (category, genres, tags, tempo, key, tips): that is how people find it. The same content shared twice returns the existing id; the author publishes new versions with update_preset and can withdraw it (withdraw_preset).",
+                "description": "Share something the user made on a device with every SyntHub user, under CC BY-SA 4.0: a sound, a sequence or pattern, a kit, a project, a bank of their own sounds, or a MIDI clip any device can play. Its content: the device's own data (SysEx, e.g. from backup_presets), settings by driver address (from list_routes, e.g. {'/filter/cutoff': [90]}, which also works for devices without dumps), and/or a standard MIDI file. Only what the user made: never factory presets, nor sounds or sequences bought or downloaded from others — set own_sound only after asking the user. Made from someone else's shared preset? Pass derived_from: it credits them, as the licence requires. Describe it well (category, genres, tags, tempo, key, tips): that is how people find it. The same content shared twice returns the existing id; the author publishes new versions with update_preset and can withdraw it (withdraw_preset).",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -693,7 +693,7 @@ pub fn linked_tool_schemas() -> Value {
             },
             {
                 "name": "find_presets",
-                "description": "Search what SynthHub users shared (CC BY-SA 4.0): sounds, sequences, kits, projects, banks, MIDI clips. Filter by device, kind, category, genre, tag, author (pseudonym) or words; sort by newest, most stars, most loaded into a device or most trusted (confirmed on real devices). Returns, per preset, its id, name, kind, device, description, author, version, whether it has device data, settings, a MIDI file or an audio preview (URL), and its counts. Get one with get_preset.",
+                "description": "Search what SyntHub users shared (CC BY-SA 4.0): sounds, sequences, kits, projects, banks, MIDI clips. Filter by device, kind, category, genre, tag, author (pseudonym) or words; sort by newest, most stars, most loaded into a device or most trusted (confirmed on real devices). Returns, per preset, its id, name, kind, device, description, author, version, whether it has device data, settings, a MIDI file or an audio preview (URL), and its counts. Get one with get_preset.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -723,7 +723,7 @@ pub fn linked_tool_schemas() -> Value {
             },
             {
                 "name": "report_preset",
-                "description": "Tell SynthHub how a shared preset behaved once loaded on a real device: 'works' (it loaded and sounds as described), 'fails' (refused, wrong sound), or 'factory' (it is a factory preset or someone else's sound: presets that several users flag are hidden until reviewed). Give the firmware.",
+                "description": "Tell SyntHub how a shared preset behaved once loaded on a real device: 'works' (it loaded and sounds as described), 'fails' (refused, wrong sound), or 'factory' (it is a factory preset or someone else's sound: presets that several users flag are hidden until reviewed). Give the firmware.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -800,13 +800,13 @@ pub fn linked_tool_schemas() -> Value {
             },
             {
                 "name": "link_account",
-                "description": "Link this machine's SynthHub account to the user's account on the site: returns a one-time address (valid 15 minutes) for the user to open and sign in (passkey, e-mail, Google or Discord). Afterwards what this copy shared appears under their profile, and they manage it — and their stars, collections, comments — from the site.",
+                "description": "Link this machine's SyntHub account to the user's account on the site: returns a one-time address (valid 15 minutes) for the user to open and sign in (passkey, e-mail, Google or Discord). Afterwards what this copy shared appears under their profile, and they manage it — and their stars, collections, comments — from the site.",
                 "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false },
                 "annotations": { "title": "Link to the user's account", "readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true }
             },
             {
                 "name": "take_sound",
-                "description": "Take the sound a hardware synth is playing — or one of its stored programs — straight from the synth, with its name, and save it as a .syx file. The synth is found among those SynthHub's librarian can talk to (the KnobKraft Orm adaptations, about 90 synths): every MIDI port gets the identity and detect messages, which change nothing on the synth, then the found synth is asked for its sound. To share it: ask the user whether they made this sound themselves (never a factory preset, nor one bought or downloaded), then call share_preset with the device, name, file, librarian and firmware returned here, and own_sound: true. When several synths answer, call again with port.",
+                "description": "Take the sound a hardware synth is playing — or one of its stored programs — straight from the synth, with its name, and save it as a .syx file. The synth is found among those SyntHub's librarian can talk to (the KnobKraft Orm adaptations, about 90 synths): every MIDI port gets the identity and detect messages, which change nothing on the synth, then the found synth is asked for its sound. To share it: ask the user whether they made this sound themselves (never a factory preset, nor one bought or downloaded), then call share_preset with the device, name, file, librarian and firmware returned here, and own_sound: true. When several synths answer, call again with port.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -836,7 +836,7 @@ pub fn linked_tool_schemas() -> Value {
             },
             {
                 "name": "load_preset",
-                "description": "Load a shared preset (find_presets, get_preset) into a device plugged into this computer: its settings are sent by driver address, its patch data as SysEx. Patch data replaces the sound in the device's edit buffer or memory: ask the user, then pass confirm_overwrite: true. Afterwards, tell SynthHub how it went with report_preset.",
+                "description": "Load a shared preset (find_presets, get_preset) into a device plugged into this computer: its settings are sent by driver address, its patch data as SysEx. Patch data replaces the sound in the device's edit buffer or memory: ask the user, then pass confirm_overwrite: true. Afterwards, tell SyntHub how it went with report_preset.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {

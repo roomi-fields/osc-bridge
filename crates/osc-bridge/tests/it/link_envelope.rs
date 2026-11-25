@@ -171,7 +171,7 @@ fn the_link_asks_the_service_to_list_devices_unless_the_person_keeps_a_folder_of
     catalogue(&devices);
     let asked = &linked_session(None, &server.base, &dir.path().join("cache"), &[], &[tool_call(1, "list_devices", json!({}))])[0];
     let text = asked["result"]["content"][0]["text"].as_str().unwrap();
-    assert!(asked["result"]["isError"] == true && text.contains("asks the SynthHub server"), "the service is asked: {asked}");
+    assert!(asked["result"]["isError"] == true && text.contains("asks the SyntHub server"), "the service is asked: {asked}");
     let kept = &linked_session(Some(&devices), &server.base, &dir.path().join("cache"), &[], &[tool_call(1, "list_devices", json!({}))])[0];
     assert_eq!(kept["result"]["structuredContent"]["count"], json!(2), "the kept folder answers locally: {kept}");
 }

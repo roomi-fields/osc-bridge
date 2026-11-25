@@ -1,7 +1,7 @@
 //! `osc-bridge connect`: a relay door on this machine's MIDI ports.
 //!
 //! The command-line twin of the SyntHub service's browser door
-//! (https://synthhub.roomi-fields.com/connect), for Safari users,
+//! (https://synthub.roomi-fields.com/connect), for Safari users,
 //! servers without a browser, and agents that run next to the hardware. It
 //! opens a WebSocket to the hosted relay (protocol in `crate::synthub::relay_protocol`), shows
 //! the pairing code, and moves bytes: `midi_out` frames to the named output
@@ -31,7 +31,7 @@ use std::time::{Duration, Instant};
 use tungstenite::stream::MaybeTlsStream;
 use tungstenite::{Message, WebSocket};
 
-pub const DEFAULT_RELAY: &str = "wss://mcp.synthhub.roomi-fields.com/relay";
+pub const DEFAULT_RELAY: &str = "wss://mcp.synthub.roomi-fields.com/relay";
 const RESCAN: Duration = Duration::from_secs(3);
 const READ_TIMEOUT: Duration = Duration::from_millis(5);
 

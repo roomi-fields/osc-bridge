@@ -1,4 +1,4 @@
-//! Take the sound a synth is playing, through the SynthHub librarian.
+//! Take the sound a synth is playing, through the SyntHub librarian.
 //!
 //! The server knows how to talk to each synth (it runs the KnobKraft Orm
 //! adaptations); this side only carries MIDI: it sends what the server says
@@ -191,7 +191,7 @@ mod tests {
     }
 
     /// The server's librarian for the test synth, as the Test_Synth
-    /// adaptation in SynthHub's tests answers.
+    /// adaptation in SyntHub's tests answers.
     fn server(op: &str, body: &Value) -> Result<Value, String> {
         let msg = crate::librarian::parse_hex(body["message"].as_str().unwrap_or_default()).unwrap_or_default();
         Ok(match op {

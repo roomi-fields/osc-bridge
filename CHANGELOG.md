@@ -11,6 +11,22 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+## [0.25.0] — 2026-11-25
+
+### Changed — the service is renamed SyntHub: install 0.25.0
+
+- The service refuses every earlier copy: a copy older than 0.25.0 no longer reaches it. Install
+  the current osc-bridge, 0.25.0 or later (`npx -y @roomi-fields/osc-bridge@latest mcp`).
+- The server is `https://mcp.synthub.roomi-fields.com` and the relay
+  `wss://mcp.synthub.roomi-fields.com/relay`; the pages of the site are at
+  `https://synthub.roomi-fields.com`, at the same paths. The former address is not kept as an alias.
+- The identifier of the machine's account goes in the header `X-Synthub-Id`; the former header is no
+  longer sent.
+- The product is written « SyntHub » in the help of the commands, the descriptions of the tools, the
+  instructions, the messages, the generated `settings.toml` and the published documents. A hosted
+  server added under the former name is added again under `synthub`
+  (`claude mcp add --transport http synthub https://mcp.synthub.roomi-fields.com/mcp`).
+
 ### Changed — the command-line help and the documents name a device `device`, without « slug »
 
 - The help of the root and of every sub-command, the bridge's `INTERFACE.md`, the README and the error of a device found nowhere name the device `device` (a catalogue id or an OSC prefix); the word « slug » is gone from them.

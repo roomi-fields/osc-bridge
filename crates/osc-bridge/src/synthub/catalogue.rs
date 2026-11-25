@@ -1,6 +1,6 @@
 //! Where a driver comes from.
 //!
-//! The catalogue lives on the SynthHub server, which hands it out one driver
+//! The catalogue lives on the SyntHub server, which hands it out one driver
 //! at a time (`crate::synthub::online`). A driver is named by a file on this machine,
 //! or by its catalogue id (`korg/minilogue`) or OSC prefix (`minilogue`, the best
 //! variant of the device): linked to the server, the driver is fetched into
@@ -48,7 +48,7 @@ pub fn from_cache_or_server(name: &str, cache: &Path, online: Option<&Online>) -
         None => {}
     }
     cached(name, cache).with_context(|| format!("{name} is not in the drivers cached on this machine ({}), \
-        and this copy is offline (osc-bridge privacy --offline off links it to the SynthHub server)", cache.display()))
+        and this copy is offline (osc-bridge privacy --offline off links it to the SyntHub server)", cache.display()))
 }
 
 /// Fetch driver `name` (an id, or a slug: its best variant) into `cache`.
@@ -59,7 +59,7 @@ pub fn fetch(online: &Online, name: &str, cache: &Path) -> Result<PathBuf> {
         let found = online.variants(name)?;
         match found["best"].as_str() {
             Some(id) => id.to_string(),
-            None => bail!("the SynthHub server named no driver for {name:?}"),
+            None => bail!("the SyntHub server named no driver for {name:?}"),
         }
     };
     online.fetch_driver(&id, cache)

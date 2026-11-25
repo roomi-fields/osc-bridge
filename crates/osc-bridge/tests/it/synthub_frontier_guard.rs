@@ -20,27 +20,27 @@ const PUBLISHED: &str =
 /// `src/`, the exact text of the line (indentation trimmed) and its reason. It holds published
 /// texts only (`--help` of `main.rs`, the schema of the local tool `detect_hardware`).
 const INSCRIBED: &[(&str, &str, &str)] = &[
-    ("main.rs", "/// Show or change what this machine shares with the SynthHub server.", PUBLISHED),
-    ("main.rs", "/// Match against the drivers of this folder instead of the SynthHub", PUBLISHED),
+    ("main.rs", "/// Show or change what this machine shares with the SyntHub server.", PUBLISHED),
+    ("main.rs", "/// Match against the drivers of this folder instead of the SyntHub", PUBLISHED),
     (
         "main.rs",
-        "/// With --learn: the port (a part of its name) whose fingerprint is sent to SynthHub, so that",
+        "/// With --learn: the port (a part of its name) whose fingerprint is sent to SyntHub, so that",
         PUBLISHED,
     ),
-    ("main.rs", "/// the SynthHub catalogue (fetched one at a time and cached).", PUBLISHED),
-    ("main.rs", "/// Do not contact the SynthHub server for this run (also", PUBLISHED),
-    ("main.rs", "/// or OSC prefix (minilab3), fetched from the SynthHub server and kept in", PUBLISHED),
+    ("main.rs", "/// the SyntHub catalogue (fetched one at a time and cached).", PUBLISHED),
+    ("main.rs", "/// Do not contact the SyntHub server for this run (also", PUBLISHED),
+    ("main.rs", "/// or OSC prefix (minilab3), fetched from the SyntHub server and kept in", PUBLISHED),
     (
         "mcp.rs",
-        r#""share_fingerprint": { "type": "string", "description": "Learn mode only: the port (a part of its name) whose fingerprint is sent to SynthHub, so that everyone recognises this device. Giving it, with vendor, model and firmware, sends that device's fingerprint to SynthHub (POST /v1/fingerprints): the vendor, model and firmware, the USB vendor and product ids, the identity_reply, the ports (names without machine numbers), what the device sends and its controls; never a serial number, a host name, a measure or anything about the person. Nothing is sent for a private device or when offline. Ask the person first. Needs vendor, model and firmware, none empty." },"#,
+        r#""share_fingerprint": { "type": "string", "description": "Learn mode only: the port (a part of its name) whose fingerprint is sent to SyntHub, so that everyone recognises this device. Giving it, with vendor, model and firmware, sends that device's fingerprint to SyntHub (POST /v1/fingerprints): the vendor, model and firmware, the USB vendor and product ids, the identity_reply, the ports (names without machine numbers), what the device sends and its controls; never a serial number, a host name, a measure or anything about the person. Nothing is sent for a private device or when offline. Ask the person first. Needs vendor, model and firmware, none empty." },"#,
         PUBLISHED,
     ),
 ];
 
 /// The host name of the service, as `online::SERVER` writes it.
-const HOST: &str = "mcp.synthhub.roomi-fields.com";
+const HOST: &str = "mcp.synthub.roomi-fields.com";
 
-/// The names of the service, lower-cased: its spelling in the code and its spelling in prose.
+/// The names of the service, lower-cased: its name, and its former spelling.
 const NAMES: &[&str] = &["synthub", "synthhub"];
 
 fn occurrences(line: &str) -> usize {
@@ -212,14 +212,14 @@ fn refused_with(files: &[(&str, &str)], inscribed: &[(&str, &str, &str)]) -> Vec
 
 #[test]
 fn guard_list_is_frozen_both_ways() {
-    let body = "/// Talks to the SynthHub server.\nfn f() {}\n";
-    let entry = [("main.rs", "/// Talks to the SynthHub server.", "reason")];
+    let body = "/// Talks to the SyntHub server.\nfn f() {}\n";
+    let entry = [("main.rs", "/// Talks to the SyntHub server.", "reason")];
     // an inscribed line passes
     assert!(refused_with(&[("main.rs", body)], &entry).is_empty());
     // the same text in another file is refused
     assert!(!refused_with(&[("orchestrator.rs", body)], &entry).is_empty());
     // a line that is not inscribed is refused
-    let other = "/// Talks to the SynthHub server.\n/// Another SynthHub line.\n";
+    let other = "/// Talks to the SyntHub server.\n/// Another SyntHub line.\n";
     assert!(!refused_with(&[("main.rs", other)], &entry).is_empty());
     // an entry that matches no line is refused
     let stale = refused_with(&[("main.rs", "fn f() {}\n")], &entry);
@@ -253,14 +253,14 @@ fn guard_refuses_a_reading_of_the_link_from_a_module_of_the_bridge() {
 #[test]
 fn guard_refuses_a_name_of_the_service_in_any_case_in_code_comments_and_strings() {
     for body in [
-        "// the SynthHub catalogue\nfn f() {}\n",
+        "// the SyntHub catalogue\nfn f() {}\n",
         "/* synthub */ fn f() {}\n",
         "//! Link to synthub.\n",
         "fn f() -> &'static str { \"the SYNTHHUB service\" }\n",
         "// crate::synthub::online::linked()\n",
         "let s = \"crate::synthub::take::open\";\n",
         "fn synthub() {}\n",
-        "fn f() { SynthHub::x(); }\n",
+        "fn f() { SyntHub::x(); }\n",
     ] {
         let found = refused(&[("orchestrator.rs", body)]);
         assert!(!found.is_empty(), "not refused: {body}");
@@ -270,9 +270,9 @@ fn guard_refuses_a_name_of_the_service_in_any_case_in_code_comments_and_strings(
 #[test]
 fn guard_refuses_the_host_name_of_the_service() {
     for (file, body) in [
-        ("orchestrator.rs", "const S: &str = \"https://mcp.synthhub.roomi-fields.com\";\n"),
-        ("main.rs", "const S: &str = \"https://mcp.synthhub.roomi-fields.com\";\n"),
-        ("mcp.rs", "// see mcp.synthhub.roomi-fields.com\n"),
+        ("orchestrator.rs", "const S: &str = \"https://mcp.synthub.roomi-fields.com\";\n"),
+        ("main.rs", "const S: &str = \"https://mcp.synthub.roomi-fields.com\";\n"),
+        ("mcp.rs", "// see mcp.synthub.roomi-fields.com\n"),
     ] {
         let found = refused(&[(file, body)]);
         assert!(found.iter().any(|f| f.contains("host name")), "{file}: {found:?}");
@@ -282,8 +282,8 @@ fn guard_refuses_the_host_name_of_the_service() {
 #[test]
 fn guard_leaves_the_link_itself_unread() {
     let found = refused(&[
-        ("synthub.rs", "//! The link to SynthHub.\npub mod online;\nuse crate::synthub::online::X;\n"),
-        ("synthub/online.rs", "pub const SERVER: &str = \"https://mcp.synthhub.roomi-fields.com\";\n"),
+        ("synthub.rs", "//! The link to SyntHub.\npub mod online;\nuse crate::synthub::online::X;\n"),
+        ("synthub/online.rs", "pub const SERVER: &str = \"https://mcp.synthub.roomi-fields.com\";\n"),
         ("synthub/take.rs", "use crate::synthub::catalogue::y;\n"),
     ]);
     assert!(found.is_empty(), "{found:?}");
@@ -347,7 +347,7 @@ fn guard_refuses_in_main_a_word_in_a_comment_or_a_string_even_written_as_a_path(
     for body in [
         "// osc_bridge::synthub::online::linked()\nfn main() {}\n",
         "fn main() { println!(\"osc_bridge::synthub::online::linked\"); }\n",
-        "/// Connect to SynthHub.\nstruct A;\n",
+        "/// Connect to SyntHub.\nstruct A;\n",
         "fn main() { osc_bridge::synthub::online::linked(); } // synthub\n",
     ] {
         assert!(!refused(&[("main.rs", body)]).is_empty(), "not refused: {body}");

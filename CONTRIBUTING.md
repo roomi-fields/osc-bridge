@@ -2,14 +2,14 @@
 
 Thanks for wanting to help. This repository is the engine: the bridge, its
 driver schema, the MCP server and the tools around them. The catalogue of
-drivers lives on [SynthHub](https://synthhub.roomi-fields.com/), which hands
+drivers lives on [SyntHub](https://synthub.roomi-fields.com/), which hands
 them out one at a time; drivers are contributed there, not here.
 
 Ways to contribute:
 
 1. **Fix a bug** in the engine or the runtime.
 2. **Extend the schema** for a device class the declarative surface can't yet describe.
-3. **Write a driver** for a device the catalogue lacks, or correct one, and send it to SynthHub (below).
+3. **Write a driver** for a device the catalogue lacks, or correct one, and send it to SyntHub (below).
 4. **Test a driver on your hardware** and report it: that is how the catalogue gains credibility.
 
 Code changes follow the usual workflow: fork → branch → commit → PR.
@@ -35,9 +35,9 @@ The reference is the [Open Synth Descriptors](https://github.com/roomi-fields/op
 - **OSC names:** `/snake_case/section/param`, close to the vendor's terminology, without repeating the section (`/oscillator_1/octave`).
 - **Check it:** `osc-bridge lint my-synth.json` (zero warnings unless you deliberately used `transform` / `script`), then `osc-bridge run --device my-synth.json` on the device.
 
-### Sending it to SynthHub
+### Sending it to SyntHub
 
-- From an MCP client linked to SynthHub (`osc-bridge mcp`, or the hosted server): `submit_driver` with the file and its source. It is parsed, linted and tested, then added to the catalogue as a `contributed` driver (the format's source type, ranked below community and vendor sources).
+- From an MCP client linked to SyntHub (`osc-bridge mcp`, or the hosted server): `submit_driver` with the file and its source. It is parsed, linted and tested, then added to the catalogue as a `contributed` driver (the format's source type, ranked below community and vendor sources).
 - Or open a [device request](https://github.com/roomi-fields/osc-bridge/issues/new?template=new_device_request.yml) here with the file attached.
 
 ### Correcting one, or confirming it on hardware
