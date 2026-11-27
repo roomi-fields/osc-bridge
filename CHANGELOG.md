@@ -11,7 +11,9 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
-### Changed — osc-bridge reads and writes Open Synth Descriptors 0.7 (candidate)
+## [0.26.0] — 2026-11-27
+
+### Changed — breaking: osc-bridge reads and writes Open Synth Descriptors 0.7 (candidate)
 
 - Every driver and profile is converted to 0.7 as it is read, the kept file left as received. A
   document the converter or the reader refuses (a message two controls claim, say) is no longer
@@ -26,6 +28,8 @@ is tracked explicitly under each release.
 - `midi_out.note_offset`, which 0.7 removes, no longer moves a note.
 - Port rules apply as 0.7 defines them.
 - The fingerprint of the learn mode is an OSD 0.7 fingerprint.
+- To check on hardware: a control that mixed a CC and an NRPN or RPN now sends the CC; its effect on
+  the device has not yet been verified.
 
 ## [0.25.0] — 2026-11-25
 
