@@ -38,7 +38,7 @@ fn load(header: &str, rest: &str) -> (tempfile::TempDir, anyhow::Result<osd::Dev
     );
     let path = dir.path().join("box.json");
     // The driver as the converter writes it in 0.6.
-    std::fs::write(&path, common::to06(&json)).unwrap();
+    std::fs::write(&path, common::to07(&json)).unwrap();
     let dev = load_driver(&path);
     (dir, dev)
 }

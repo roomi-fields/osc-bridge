@@ -1,70 +1,108 @@
 {
-  "$schema": "https://w3id.org/osd/0.5/device.schema.json",
+  "$schema": "https://w3id.org/osd/0.7/device.schema.json",
   "device": {
     "name": "Test Synth",
     "vendor": "osc-bridge",
-    "revision": "1.0",
-    "osc_prefix": "/test_synth",
-    "manufacturer_id": [
-      125
-    ],
-    "device_id": []
+    "device_id": [],
+    "osc_prefix": "/test_synth"
   },
   "sysex": {
-    "header": [],
-    "footer": []
+    "header": []
   },
   "cc_params": {
     "channel": 0,
     "entries": [
       {
         "osc": "/filter/cutoff",
-        "cc": 74,
-        "range": [
-          0,
-          127
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              74
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
         ]
       },
       {
         "osc": "/filter/resonance",
-        "cc": 71,
-        "range": [
-          0,
-          127
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              71
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
         ]
       },
       {
         "osc": "/amp/attack",
-        "cc": 73,
-        "range": [
-          0,
-          127
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              73
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
         ]
       },
       {
         "osc": "/amp/release",
-        "cc": 72,
-        "range": [
-          0,
-          127
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              72
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
         ]
       },
       {
         "osc": "/osc/waveform",
-        "cc": 70,
-        "range": [
-          0,
-          3
-        ],
-        "expects": "discrete"
+        "expects": "discrete",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              70
+            ],
+            "range": [
+              0,
+              3
+            ]
+          }
+        ]
       },
       {
         "osc": "/lfo/rate",
-        "nrpn_msb": 0,
-        "nrpn_lsb": 1,
-        "range": [
-          0,
-          16383
+        "ways": [
+          {
+            "ctrlType": "nrpn",
+            "ctrlIndex": [
+              0,
+              1
+            ],
+            "value_bits": 14,
+            "range": [
+              0,
+              16383
+            ]
+          }
         ]
       }
     ]
@@ -108,8 +146,7 @@
     ]
   },
   "midi_out": {
-    "default_channel": 0,
-    "note_offset": 0
+    "default_channel": 0
   },
   "midi_in": [
     "note_on",
@@ -119,12 +156,17 @@
     "aftertouch"
   ],
   "replies": [],
-  "_sources": [
+  "sources": [
     {
       "type": "test-fixture",
       "url": "https://synthub.roomi-fields.com/connect/",
       "firmware": "1.0",
       "note": "Not a real device: the virtual synth of osc-bridge connect --test-synth and of the connect page, for testing the relay, detection, reports, learned mappings and contributions without hardware."
     }
-  ]
+  ],
+  "identity": {
+    "manufacturerId": [
+      125
+    ]
+  }
 }

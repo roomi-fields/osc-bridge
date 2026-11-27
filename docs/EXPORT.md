@@ -52,8 +52,9 @@ output.
 
 ## Credit and licence
 
-Both documents carry the credit and licence of the driver's `_sources`. A
-driver with no source is not written (`NoSources`): its credit cannot be.
+Both documents carry the credit and licence of the driver's `sources`, and of
+`midi_of_sources`, the sources of the MIDI it shares. A driver with no source
+is not written (`NoSources`): its credit cannot be.
 
 - OSCQuery: in the `DESCRIPTION` of the device's node.
 - MIDNAM: in the `<Author>` element.
@@ -90,7 +91,7 @@ types, ranges, `VALS` of the bank names and `OVERLOADS` they had.
 
 ## A driver with no source
 
-No source is made up. The export of a driver with no `_sources` is refused with
+No source is made up. The export of a driver with no `sources` is refused with
 the fault of `osd-formats` (`NoSources`). The running bridge names that fault at
 start-up and does not serve that driver's OSCQuery namespace; the rest of the
 driver works as before, and a link under its prefix is not judged against a
@@ -113,6 +114,6 @@ These differences are accepted:
   triggers (what it does not carry is in the list of what is lost);
 - MIDNAM: a driver without banks has no empty `PatchBank`;
 - MIDNAM: the named values of a control come from its `values` field; the free
-  text `_usage` is no longer read.
+  text (`value_description`) is not carried.
 
 What `osd-formats` could not carry is shown to the person who exports.

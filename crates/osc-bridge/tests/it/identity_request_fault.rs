@@ -12,7 +12,7 @@ fn loaded(identity: &str) -> (tempfile::TempDir, osd::Device) {
     let dir = common::temp("identity-request-fault");
     let path = dir.path().join("box.json");
     let json = format!(r#"{{"device":{{"name":"Acme Box","osc_prefix":"/b"}},"identity":{identity}}}"#);
-    std::fs::write(&path, common::to06(&json)).unwrap();
+    std::fs::write(&path, common::to07(&json)).unwrap();
     let dev = load(&path).unwrap_or_else(|e| panic!("driver refused at load: {e:#}"));
     (dir, dev)
 }

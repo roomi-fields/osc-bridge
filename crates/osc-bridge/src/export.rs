@@ -55,10 +55,10 @@ pub fn export(dev: &Device, format: Format) -> Result<Translated<String>> {
     if format.0 == osd_formats::Format::Midnam && dev.device.transport.as_ref().is_some_and(|t| t.kind == osd::TransportKind::Osc) {
         bail!("{} speaks OSC, not MIDI: it has no MIDI names", device_title(dev));
     }
+    // The credit of the MIDI taken from other drivers stands beside the driver's own.
     let mut device = dev.clone();
-    let shared = shared_sources(dev);
-    if !shared.is_empty() {
-        device.sources.get_or_insert_with(Vec::new).extend(shared);
+    if let Some(shared) = &dev.midi_of_sources {
+        device.sources.get_or_insert_with(Vec::new).extend(shared.iter().cloned());
     }
     let resolved = osd::Resolved { device, files: Vec::new(), capabilities: Vec::new(), inherited: Vec::new() };
     let mut out = osd_formats::export(&resolved, format.0)?;
@@ -70,31 +70,11 @@ pub fn export(dev: &Device, format: Format) -> Result<Translated<String>> {
     Ok(out)
 }
 
-/// The sources of the file whose MIDI a driver shares: `osd` keeps them, once
-/// resolved, in the driver's `_midi_of_sources` remark. They are credited
-/// beside the driver's own sources.
-fn shared_sources(dev: &Device) -> Vec<osd::Source> {
-    let Some(list) = dev.remarks.get("_midi_of_sources") else { return Vec::new() };
-    let text = serde_json::json!({
-        "$schema": "https://w3id.org/osd/0.5/device.schema.json",
-        "device": { "name": "shared", "osc_prefix": "/shared" },
-        "_sources": list,
-    });
-    match osd::read(&text.to_string(), osd::Kind::Device) {
-        Ok(osd::Descriptor::Device(d)) => d.sources.unwrap_or_default(),
-        _ => Vec::new(),
-    }
-}
-
-/// "Vendor Name (revision)", the revision left out when empty.
+/// "Vendor Name", the vendor left out when the driver gives none.
 pub fn device_title(dev: &Device) -> String {
     let d = &dev.device;
     let vendor = d.vendor.as_deref().unwrap_or_default();
-    let mut out = if vendor.is_empty() { d.name.clone() } else { format!("{vendor} {}", d.name) };
-    if let Some(rev) = d.revision.as_deref().filter(|r| !r.is_empty()) {
-        out.push_str(&format!(" ({rev})"));
-    }
-    out
+    if vendor.is_empty() { d.name.clone() } else { format!("{vendor} {}", d.name) }
 }
 
 #[cfg(test)]

@@ -29,8 +29,8 @@ New to this? Start with [`docs/TUTORIAL_FIRST_DEVICE.md`](docs/TUTORIAL_FIRST_DE
 — a 30-minute hands-on walkthrough that builds a working CC driver end to end.
 The reference is the [Open Synth Descriptors](https://github.com/roomi-fields/open-synth-descriptors) (OSD) format, which osc-bridge reads through the `osd` crate.
 
-- **Cite a source.** In decreasing order of preference: the vendor's programmer's reference / MIDI implementation; a canonical community table (e.g. [pencilresearch/midi](https://github.com/pencilresearch/midi)); your own reverse-engineering, with the captures. It goes in `_sources[]`.
-- **One source, one file — no silent fusion.** A MIDI implementation changes between firmware versions, and community sources are often tied to a firmware they don't record. Fusing two sources into one JSON hides contradictions: two sources make two files. Pin the firmware in `_sources[].firmware` (`"unknown"` explicitly rather than omitting it).
+- **Cite a source.** In decreasing order of preference: the vendor's programmer's reference / MIDI implementation; a canonical community table (e.g. [pencilresearch/midi](https://github.com/pencilresearch/midi)); your own reverse-engineering, with the captures. It goes in `sources[]`.
+- **One source, one file — no silent fusion.** A MIDI implementation changes between firmware versions, and community sources are often tied to a firmware they don't record. Fusing two sources into one JSON hides contradictions: two sources make two files. Pin the firmware in `sources[].firmware` (`"unknown"` explicitly rather than omitting it).
 - **File names:** `<vendor>/<device>.<source-tier>.fw-<version>.json` (e.g. `moog/subsequent-37.pencilresearch.fw-1.1.json`); its notes, if any, sit next to it with the same stem (`.md`). The catalogue id is that path without `.json`.
 - **OSC names:** `/snake_case/section/param`, close to the vendor's terminology, without repeating the section (`/oscillator_1/octave`).
 - **Check it:** `osc-bridge lint my-synth.json` (zero warnings unless you deliberately used `transform` / `script`), then `osc-bridge run --device my-synth.json` on the device.

@@ -1,16 +1,10 @@
 {
-  "$schema": "https://w3id.org/osd/0.5/device.schema.json",
+  "$schema": "https://w3id.org/osd/0.7/device.schema.json",
   "device": {
     "name": "Electra One MK2",
     "vendor": "Electra One",
-    "revision": "firmware 4.x",
-    "osc_prefix": "/electra1",
-    "manufacturer_id": [
-      0,
-      33,
-      69
-    ],
     "device_id": [],
+    "osc_prefix": "/electra1",
     "rate_limit_hz": 0
   },
   "capabilities": [
@@ -22,9 +16,6 @@
       0,
       33,
       69
-    ],
-    "footer": [
-      247
     ]
   },
   "commands": [
@@ -823,11 +814,11 @@
       "wrap_sysex": false
     }
   ],
-  "_sources": [
+  "sources": [
     {
       "type": "vendor-doc",
       "url": "https://docs.electra.one/developers/midiimplementation.html",
-      "imported_at": "2026-04-13",
+      "_imported_at": "2026-04-13",
       "notes": "Electra One SysEx Implementation Reference, firmware 4.x"
     },
     {
@@ -835,5 +826,12 @@
       "url": "local-test-2026-04-19",
       "notes": "End-to-end validation on Electra One MK2 firmware 4.1.4. Scope: preset upload (/preset/upload), live mutation (/control/update), Lua scripting (/lua + /lua_script/upload), dynamic CC routes, preset arm/upload/switch flow, real-time CC push with smooth 100 Hz sweeps. Validated the full scripting.rs subsystem (ob.json_decode/encode, ob.send_sysex, ob.register_route, ob.set_current_page) against physical hardware."
     }
-  ]
+  ],
+  "identity": {
+    "manufacturerId": [
+      0,
+      33,
+      69
+    ]
+  }
 }

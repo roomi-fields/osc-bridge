@@ -85,7 +85,7 @@ pub fn units(capture: &Capture) -> Vec<Unit> {
     }).collect()
 }
 
-/// The fingerprint of a device (a valid OSD 0.6 fingerprint) and, beside it, what was measured.
+/// The fingerprint of a device (a valid OSD 0.7 fingerprint) and, beside it, what was measured.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Learned {
     pub fingerprint: serde_json::Value,
@@ -130,7 +130,7 @@ pub fn learn(device: &Unit, wire: &mut dyn Wire, listen: Duration, observed: &st
     let heard = wire.heard(listen);
 
     let mut fp = serde_json::Map::new();
-    fp.insert("$schema".into(), "https://w3id.org/osd/0.6/fingerprint.schema.json".into());
+    fp.insert("$schema".into(), "https://w3id.org/osd/0.7/fingerprint.schema.json".into());
     fp.insert("observed".into(), observed.into());
     fp.insert("via".into(), "native".into());
     // One entry per port, in the order the system lists them; a name may repeat.

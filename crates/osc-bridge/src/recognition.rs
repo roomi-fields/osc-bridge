@@ -13,7 +13,8 @@
 
 use anyhow::{anyhow, Result};
 use crate::device::{kept, kept_list};
-use osd::{FirmwareRule, FrameToken};
+use osd::{FirmwareRule, FrameToken, PortRule};
+use std::sync::LazyLock;
 use std::collections::HashSet;
 
 pub const IDENTITY_REQUEST: [u8; 6] = [0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7];
@@ -66,7 +67,7 @@ pub fn parse_identity_reply(msg: &[u8]) -> Option<Identity> {
 }
 
 /// Vendor name for the manufacturer IDs most often met on synths. Unknown IDs
-/// still match drivers that declare the same `manufacturer_id`.
+/// still match drivers that declare the same `manufacturerId`.
 pub fn manufacturer_name(id: &[u8]) -> Option<&'static str> {
     Some(match id {
         [0x01] => "Sequential",
@@ -196,9 +197,11 @@ pub fn probe_of(id: &osd::Identity) -> Result<Option<Probe>> {
     if bytes == IDENTITY_REQUEST {
         return Ok(None);
     }
-    let ports = if kept(&id.to) == Some(&osd::IdentityTo::NamedPorts) { kept_list(&id.ports).to_vec() } else { vec![] };
+    // A probe holds the texts of the port rules.
+    let match_ports: Vec<String> = kept_list(&id.ports).iter().map(|r| r.value.clone()).collect();
+    let ports = if kept(&id.to) == Some(&osd::IdentityTo::NamedPorts) { match_ports.clone() } else { vec![] };
     let usb = kept_list(&id.usb).iter().map(|u| (u.vendor_id, u.product_id)).collect();
-    Ok(Some(Probe { request: bytes, ports, usb, match_ports: kept_list(&id.ports).to_vec() }))
+    Ok(Some(Probe { request: bytes, ports, usb, match_ports }))
 }
 
 /// Every distinct request the identities name, in a stable order.
@@ -224,6 +227,48 @@ pub fn probes<'a>(identities: impl IntoIterator<Item = (&'a str, &'a osd::Identi
 pub struct Probes {
     pub probes: Vec<Probe>,
     pub faults: Vec<crate::device::DeviceFault>,
+}
+
+/// Whether one of the port rules of a driver names a port of this machine whose
+/// names are `inputs` and `output`, as `osd` judges them: case ignored, a rule of
+/// another platform or of a naming stack (the machine's is not known) naming
+/// nothing. Without `inputs`, a rule of the input direction names nothing.
+pub(crate) fn rules_match(rules: &[PortRule], inputs: Option<&str>, output: &str) -> bool {
+    // The signs `osd` judges are those of a device and of a fingerprint: blank
+    // ones, given the rules and the names.
+    static BLANK: LazyLock<Option<(osd::Device, osd::Fingerprint)>> = LazyLock::new(|| {
+        let blank = |text: &str, kind| osd::read(text, kind).ok();
+        let device = blank(r#"{"$schema":"https://w3id.org/osd/0.7/device.schema.json",
+            "device":{"name":"-","osc_prefix":"/-"},"identity":{"ports":[]}}"#, osd::Kind::Device)?;
+        let fingerprint = blank(r#"{"$schema":"https://w3id.org/osd/0.7/fingerprint.schema.json","observed":"1970-01-01",
+            "device":{"vendor":"-","model":"-","firmware":"-"},"ports":{}}"#, osd::Kind::Fingerprint)?;
+        match (device, fingerprint) {
+            (osd::Descriptor::Device(d), osd::Descriptor::Fingerprint(f)) => Some((*d, *f)),
+            _ => None,
+        }
+    });
+    let Some((mut device, mut fingerprint)) = BLANK.clone() else { return false };
+    let Some(identity) = device.identity.as_mut() else { return false };
+    identity.ports = Some(Some(rules.to_vec()));
+    fingerprint.platform = machine_platform();
+    if let Some(ports) = fingerprint.ports.as_mut() {
+        ports.inputs = inputs.map(|name| vec![name.to_string()]);
+        ports.outputs = Some(vec![output.to_string()]);
+    }
+    osd::match_identity(&device, &fingerprint).iter().any(|m| m.verdict == osd::MatchVerdict::Matched)
+}
+
+/// The platform of this machine, in OSD's words.
+fn machine_platform() -> Option<osd::Platform> {
+    if cfg!(target_os = "windows") {
+        Some(osd::Platform::Windows)
+    } else if cfg!(target_os = "macos") {
+        Some(osd::Platform::Macos)
+    } else if cfg!(target_os = "linux") {
+        Some(osd::Platform::Linux)
+    } else {
+        None
+    }
 }
 
 /// A port name holds one of `patterns`, any case.
@@ -257,7 +302,7 @@ pub fn recognise(id: &osd::Identity, port: &str, usb: Option<(u16, u16)>, replie
     let reply = kept_list(&id.reply);
     let ports = kept_list(&id.ports);
     let matching = (!reply.is_empty() || kept(&id.script).is_some()).then(|| read.iter().find(|r| reply_matches(id, r))).flatten();
-    let by_port = !ports.is_empty() && port_matches(ports, port);
+    let by_port = !ports.is_empty() && rules_match(ports, Some(port), port);
     let by_usb = usb.is_some_and(|(vendor, product)| kept_list(&id.usb).iter()
         .any(|u| u.vendor_id == vendor && u.product_id == product));
     if matching.is_none() && !by_port && !by_usb {

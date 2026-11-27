@@ -25,7 +25,7 @@ use std::time::{Duration, Instant};
 
 use std::collections::HashMap;
 
-use osd::Device;
+use osd::{Command, Device};
 use crate::routing::{CcRoute, DynamicRoutes};
 
 const DEFAULT_MEMORY_LIMIT_BYTES: usize = 1_024 * 1_024; // 1 MiB
@@ -69,7 +69,7 @@ impl Profile {
 }
 
 /// A SysEx block a Lua script asked the runtime to enqueue via
-/// `ob.emit_sysex`. `wrap = true` means "wrap with device sysex header/footer";
+/// `ob.emit_sysex`. `wrap = true` means "wrap in the device's sysex header, closed";
 /// `wrap = false` means the bytes are already a complete F0…F7 frame.
 #[derive(Debug, Clone)]
 pub struct EmitBlock {
@@ -495,11 +495,32 @@ fn install_emit_osc_fn(lua: &Lua, ob: &Table, queue: Arc<Mutex<Vec<EmitOsc>>>) -
     Ok(())
 }
 
+/// Electra One's own note on a command (a free `_` key of the command): the
+/// parameter type and number a preset's Lua reads it by, SysEx ones excepted,
+/// whose number is the command's `id`.
+const ELECTRA_KEY: &str = "_electra";
+
+/// The parameter (type, number) `parameterMap.get` reads `cmd` by: its `id` as
+/// a SysEx number, and what Electra's note says for the other types.
+fn electra_parameters(cmd: &Command) -> impl Iterator<Item = (String, i64)> + '_ {
+    let id = cmd.id.map(|id| ("sysex".to_string(), id));
+    let noted = cmd.remarks.get(ELECTRA_KEY).and_then(|a| a.get("parameter")).and_then(|p| {
+        let ty = p.get("type").and_then(|t| t.as_str())?.to_ascii_lowercase();
+        Some((ty, p.get("number").and_then(|n| n.as_i64())?)).filter(|(ty, _)| ty != "sysex")
+    });
+    id.into_iter().chain(noted)
+}
+
+/// Whether `parameterMap.get` reads the value of `cmd`.
+pub(crate) fn is_electra_parameter(cmd: &Command) -> bool {
+    electra_parameters(cmd).next().is_some()
+}
+
 /// Electra One's Lua API, under the names Electra gives it
 /// (https://docs.electra.one/developers/luaext.html):
 /// - `parameterMap.get(deviceId, parameterType, parameterNumber)` reads a
-///   parameter's current value. Here: the value held for the command whose
-///   `_electra.parameter` is (type, number) — last sent or received, else its
+///   parameter's current value. Here: the value held for the command numbered
+///   (type, number) (see `electra_parameters`) — last sent or received, else its
 ///   default, else the low end of its range, else 0; 0 when no command is so
 ///   numbered. The `PT_*` constants name the parameter types.
 /// - `devices.get(deviceId):getChannel()` gives the device's MIDI channel,
@@ -510,16 +531,14 @@ fn install_electra_api(lua: &Lua, dev: &Device, values: Arc<Mutex<HashMap<String
     let e = |what: &str| { let what = what.to_string(); move |er: mlua::Error| anyhow!("{what}: {er}") };
     let mut table: HashMap<(String, i64), ParamEntry> = HashMap::new();
     for cmd in dev.commands.iter().flatten() {
-        // The Electra annotation is a note `osd` keeps in the command's remarks.
-        let Some(p) = cmd.remarks.get("_electra").and_then(|a| a.get("parameter")) else { continue };
-        let (Some(ty), Some(number)) = (p.get("type").and_then(|t| t.as_str()), p.get("number").and_then(|n| n.as_i64())) else { continue };
         let arg = cmd.args.iter().flatten().next();
         let fallback = arg
             .and_then(|a| a.default.as_ref().and_then(|d| d.as_i64().or_else(|| d.as_f64().map(|f| f as i64))))
             .or_else(|| arg.and_then(|a| a.range.map(|r| r[0])))
             .unwrap_or(0);
-        table.entry((ty.to_ascii_lowercase(), number))
-            .or_insert(ParamEntry { osc: crate::device::address_text(&cmd.osc), fallback });
+        for key in electra_parameters(cmd) {
+            table.entry(key).or_insert(ParamEntry { osc: crate::device::address_text(&cmd.osc), fallback });
+        }
     }
     let g = lua.globals();
     for t in ELECTRA_PARAM_TYPES {

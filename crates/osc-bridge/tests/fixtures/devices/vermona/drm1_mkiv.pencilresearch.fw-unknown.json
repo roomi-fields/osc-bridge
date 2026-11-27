@@ -1,17 +1,14 @@
 {
-  "$schema": "https://w3id.org/osd/0.5/device.schema.json",
+  "$schema": "https://w3id.org/osd/0.7/device.schema.json",
   "device": {
     "name": "DRM1 MKIV",
     "vendor": "Vermona",
-    "revision": "per pencilresearch canonical CSV",
-    "osc_prefix": "/drm1_mkiv",
-    "manufacturer_id": [],
     "device_id": [],
+    "osc_prefix": "/drm1_mkiv",
     "rate_limit_hz": 1000
   },
   "sysex": {
-    "header": [],
-    "footer": []
+    "header": []
   },
   "cc_params": {
     "channel": 0,
@@ -143,8 +140,7 @@
     ]
   },
   "midi_out": {
-    "default_channel": 0,
-    "note_offset": 0
+    "default_channel": 0
   },
   "midi_in": [
     "note_on",
@@ -154,15 +150,17 @@
     "aftertouch"
   ],
   "replies": [],
-  "_sources": [
+  "sources": [
     {
-      "type": "pencilresearch",
+      "type": "contributed",
       "url": "https://github.com/pencilresearch/midi/blob/91299d6/Vermona/DRM1 MKIV.csv",
       "firmware": "unknown",
       "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
       "license": "CC-BY-SA-4.0",
       "commit": "91299d6",
-      "imported_at": "2026-10-22"
+      "_imported_at": "2026-10-22",
+      "provider": "pencilresearch",
+      "notes": "type in 0.6: pencilresearch"
     }
   ],
   "_coverage": {
@@ -172,5 +170,8 @@
     "nrpn_entries": 0,
     "triggers": 10
   },
-  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template."
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "identity": {
+    "manufacturerId": []
+  }
 }

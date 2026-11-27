@@ -78,10 +78,11 @@ pub fn inspect(path: &Path, out: &mut dyn Write, err: &mut dyn Write) -> Result<
     let dev = crate::device::load(locate(path)?)?;
     for line in checksum_warnings(&dev) { writeln!(err, "{line}")?; }
     let d = &dev.device;
-    writeln!(out, "Device:   {} ({})", d.name, d.revision.as_deref().unwrap_or_default())?;
+    writeln!(out, "Device:   {}", d.name)?;
     writeln!(out, "Vendor:   {}", d.vendor.as_deref().unwrap_or_default())?;
     writeln!(out, "OSC prefix: {}", d.osc_prefix)?;
-    writeln!(out, "MID:      {}", hex_vec(d.manufacturer_id.as_deref().unwrap_or_default()))?;
+    let maker = dev.identity.as_ref().map(|i| crate::device::kept_list(&i.manufacturer_id)).unwrap_or_default();
+    writeln!(out, "MID:      {}", hex_vec(maker))?;
     writeln!(out, "Dev id:   {}", hex_vec(d.device_id.as_deref().unwrap_or_default()))?;
     writeln!(out, "Rate limit: {:?} Hz", d.rate_limit_hz)?;
     let commands = dev.commands.as_deref().unwrap_or_default();
@@ -92,9 +93,14 @@ pub fn inspect(path: &Path, out: &mut dyn Write, err: &mut dyn Write) -> Result<
     if let Some(pt) = &dev.params {
         writeln!(out, "Params:   {} entries", pt.entries.len())?;
         for e in pt.entries.iter().take(5) {
-            let [lo, hi] = e.range.unwrap_or([0, 127]);
-            writeln!(out, "  {}  ({:#04x},{:#04x},{:#04x},{:#04x})  range=[{},{}]",
-                e.osc, e.pr.unwrap_or(0), e.p.unwrap_or(0), e.c.unwrap_or(0), e.r.unwrap_or(0), lo, hi)?;
+            let [lo, hi] = e.reference_scale();
+            match crate::device::sendable_way(&e.ways, &["sysex"]) {
+                Ok(way) => {
+                    let [pr, p, c, r] = crate::frame::sysex_numbers(pt, way);
+                    writeln!(out, "  {}  ({pr:#04x},{p:#04x},{c:#04x},{r:#04x})  range=[{lo},{hi}]", e.osc)?;
+                }
+                Err(why) => writeln!(out, "  {}  range=[{lo},{hi}]  not sent: {why}", e.osc)?,
+            }
         }
         if pt.entries.len() > 5 { writeln!(out, "  ... +{} more", pt.entries.len() - 5)?; }
     }

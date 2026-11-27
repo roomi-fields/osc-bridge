@@ -1,14 +1,9 @@
 {
-  "$schema": "https://w3id.org/osd/0.5/device.schema.json",
+  "$schema": "https://w3id.org/osd/0.7/device.schema.json",
   "device": {
     "name": "Box",
     "vendor": "Acme",
-    "osc_prefix": "/box",
-    "manufacturer_id": [
-      0,
-      33,
-      9
-    ]
+    "osc_prefix": "/box"
   },
   "identity": {
     "profile": "acme",
@@ -21,7 +16,15 @@
       0
     ],
     "ports": [
-      "Acme Box"
+      {
+        "operator": "contains",
+        "value": "Acme Box"
+      }
+    ],
+    "manufacturerId": [
+      0,
+      33,
+      9
     ]
   },
   "programs": {
@@ -49,15 +52,29 @@
     "entries": [
       {
         "osc": "/filter/cutoff",
-        "cc": 74
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              74
+            ]
+          }
+        ]
       },
       {
         "osc": "/filter/resonance",
-        "cc": 71
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              71
+            ]
+          }
+        ]
       }
     ]
   },
-  "_sources": [
+  "sources": [
     {
       "type": "vendor-doc",
       "firmware": "2",

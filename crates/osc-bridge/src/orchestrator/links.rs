@@ -128,7 +128,7 @@ struct KnownAddresses {
 impl KnownAddresses {
     fn new(devices: &[LoadedDevice]) -> Self {
         let devs: Vec<Device> = devices.iter().map(|d| d.device().clone()).collect();
-        // A device with no namespace (no `_sources`, faulted when the namespace is served) has
+        // A device with no namespace (no `sources`, faulted when the namespace is served) has
         // no address to judge a link by: what lies under its prefix is passed as it is.
         let served = crate::oscquery::namespace(&devs);
         Self {

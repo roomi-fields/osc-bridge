@@ -1,19 +1,13 @@
 {
-  "$schema": "https://w3id.org/osd/0.5/device.schema.json",
+  "$schema": "https://w3id.org/osd/0.7/device.schema.json",
   "device": {
     "name": "Launch Control XL 3",
     "vendor": "Novation",
-    "revision": "firmware 1.x (2024-2026)",
-    "osc_prefix": "/lcxl3",
-    "manufacturer_id": [
-      0,
-      32,
-      41
-    ],
     "device_id": [
       2,
       21
     ],
+    "osc_prefix": "/lcxl3",
     "rate_limit_hz": 0
   },
   "sysex": {
@@ -24,9 +18,6 @@
       41,
       2,
       21
-    ],
-    "footer": [
-      247
     ]
   },
   "cc_params": {
@@ -34,622 +25,1105 @@
     "entries": [
       {
         "osc": "/feature/surface_mode",
-        "cc": 30,
-        "range": [
-          1,
-          29
+        "polarity": "unipolar",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              30
+            ],
+            "range": [
+              1,
+              29
+            ]
+          }
         ],
-        "orientation": "0-based",
         "_values": "1=DAW Mixer, 2=DAW Control, 6-9=Custom 1-4, 18-29=Custom 5-16"
       },
       {
         "osc": "/feature/shift",
-        "cc": 63,
-        "range": [
-          0,
-          1
-        ],
-        "expects": "switch"
+        "expects": "switch",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              63
+            ],
+            "range": [
+              0,
+              1
+            ]
+          }
+        ]
       },
       {
         "osc": "/feature/row1/relative",
-        "cc": 69,
-        "range": [
-          0,
-          1
-        ],
-        "expects": "switch"
+        "expects": "switch",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              69
+            ],
+            "range": [
+              0,
+              1
+            ]
+          }
+        ]
       },
       {
         "osc": "/feature/row2/relative",
-        "cc": 72,
-        "range": [
-          0,
-          1
-        ],
-        "expects": "switch"
+        "expects": "switch",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              72
+            ],
+            "range": [
+              0,
+              1
+            ]
+          }
+        ]
       },
       {
         "osc": "/feature/row3/relative",
-        "cc": 73,
-        "range": [
-          0,
-          1
-        ],
-        "expects": "switch"
+        "expects": "switch",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              73
+            ],
+            "range": [
+              0,
+              1
+            ]
+          }
+        ]
       },
       {
         "osc": "/feature/fader_pickup",
-        "cc": 70,
-        "range": [
-          0,
-          1
-        ],
-        "expects": "switch"
+        "expects": "switch",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              70
+            ],
+            "range": [
+              0,
+              1
+            ]
+          }
+        ]
       },
       {
         "osc": "/feature/touch_events",
-        "cc": 71,
-        "range": [
-          0,
-          1
-        ],
-        "expects": "switch"
+        "expects": "switch",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              71
+            ],
+            "range": [
+              0,
+              1
+            ]
+          }
+        ]
       },
       {
         "osc": "/feature/led_brightness",
-        "cc": 111,
-        "range": [
-          0,
-          127
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              111
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
         ]
       },
       {
         "osc": "/feature/screen_brightness",
-        "cc": 112,
-        "range": [
-          0,
-          127
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              112
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
         ]
       },
       {
         "osc": "/feature/display_timeout",
-        "cc": 113,
-        "range": [
-          0,
-          99
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              113
+            ],
+            "range": [
+              0,
+              99
+            ]
+          }
         ],
         "_note": "1/10 sec units, minimum 1 sec at 0"
       },
       {
         "osc": "/feature/out2_midi_thru",
-        "cc": 120,
-        "range": [
-          0,
-          1
-        ],
-        "expects": "switch"
+        "expects": "switch",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              120
+            ],
+            "range": [
+              0,
+              1
+            ]
+          }
+        ]
       },
       {
         "osc": "/feature/global_midi_channel",
-        "cc": 100,
-        "range": [
-          0,
-          15
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              100
+            ],
+            "range": [
+              0,
+              15
+            ]
+          }
         ]
       },
       {
         "osc": "/led/palette/fader/1",
-        "cc": 5,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              5
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/fader/2",
-        "cc": 6,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              6
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/fader/3",
-        "cc": 7,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              7
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/fader/4",
-        "cc": 8,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              8
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/fader/5",
-        "cc": 9,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              9
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/fader/6",
-        "cc": 10,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              10
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/fader/7",
-        "cc": 11,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              11
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/fader/8",
-        "cc": 12,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              12
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row1/1",
-        "cc": 13,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              13
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row1/2",
-        "cc": 14,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              14
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row1/3",
-        "cc": 15,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              15
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row1/4",
-        "cc": 16,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              16
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row1/5",
-        "cc": 17,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              17
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row1/6",
-        "cc": 18,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              18
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row1/7",
-        "cc": 19,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              19
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row1/8",
-        "cc": 20,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              20
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row2/1",
-        "cc": 21,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              21
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row2/2",
-        "cc": 22,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              22
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row2/3",
-        "cc": 23,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              23
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row2/4",
-        "cc": 24,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              24
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row2/5",
-        "cc": 25,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              25
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row2/6",
-        "cc": 26,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              26
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row2/7",
-        "cc": 27,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              27
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row2/8",
-        "cc": 28,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              28
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row3/1",
-        "cc": 29,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              29
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row3/2",
-        "cc": 30,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              30
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row3/3",
-        "cc": 31,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              31
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row3/4",
-        "cc": 32,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              32
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row3/5",
-        "cc": 33,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              33
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row3/6",
-        "cc": 34,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              34
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row3/7",
-        "cc": 35,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              35
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/encoder/row3/8",
-        "cc": 36,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              36
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/solo_arm/1",
-        "cc": 37,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              37
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/solo_arm/2",
-        "cc": 38,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              38
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/solo_arm/3",
-        "cc": 39,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              39
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/solo_arm/4",
-        "cc": 40,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              40
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/solo_arm/5",
-        "cc": 41,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              41
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/solo_arm/6",
-        "cc": 42,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              42
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/solo_arm/7",
-        "cc": 43,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              43
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/solo_arm/8",
-        "cc": 44,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              44
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/mute_select/1",
-        "cc": 45,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              45
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/mute_select/2",
-        "cc": 46,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              46
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/mute_select/3",
-        "cc": 47,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              47
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/mute_select/4",
-        "cc": 48,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              48
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/mute_select/5",
-        "cc": 49,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              49
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/mute_select/6",
-        "cc": 50,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              50
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/mute_select/7",
-        "cc": 51,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              51
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/mute_select/8",
-        "cc": 52,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              52
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/solo_arm_toggle",
-        "cc": 65,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              65
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/mute_select_toggle",
-        "cc": 66,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              66
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/settings",
-        "cc": 104,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              104
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/track_prev",
-        "cc": 103,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              103
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/track_next",
-        "cc": 102,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              102
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/page_up",
-        "cc": 106,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              106
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/page_down",
-        "cc": 107,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              107
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/record",
-        "cc": 118,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              118
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/led/palette/play",
-        "cc": 116,
-        "range": [
-          0,
-          127
-        ],
-        "channel": 0
+        "channel": 0,
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              116
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       }
     ],
     "_note": "Feature controls (sent to DAW-in port on channel 7 = channel index 6). Query a current value by sending the same CC on channel 8 (pass 7 as second OSC arg for a one-shot query). All entries marked _nonvolatile persist across power cycles."
@@ -801,13 +1275,20 @@
       "emit_osc": "/display/bitmap/ack"
     }
   ],
-  "_sources": [
+  "sources": [
     {
       "type": "vendor-doc",
       "url": "https://userguides.novationmusic.com/hc/en-gb/sections/27840433446546-Launch-Control-XL-3-programmer-s-reference-guide",
-      "imported_at": "2026-04-13",
+      "_imported_at": "2026-04-13",
       "notes": "Novation Launch Control XL 3 Programmer's Reference Guide, firmware 1.x",
       "title": "Novation Launch Control XL 3"
     }
-  ]
+  ],
+  "identity": {
+    "manufacturerId": [
+      0,
+      32,
+      41
+    ]
+  }
 }

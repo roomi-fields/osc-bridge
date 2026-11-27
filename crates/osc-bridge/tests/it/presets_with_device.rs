@@ -16,10 +16,7 @@ fn driver(programs: &str, extra: &str) -> String {
 }
 
 fn dev06(programs: &str, extra: &str) -> osd::Device {
-    match osd::read(&driver(programs, extra), osd::Kind::Device).unwrap() {
-        osd::Descriptor::Device(d) => *d,
-        _ => unreachable!(),
-    }
+    crate::common::device_of(&driver(programs, extra))
 }
 
 #[derive(Default)]

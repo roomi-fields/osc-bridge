@@ -69,7 +69,7 @@ fn export_writes_the_document_on_the_output_and_the_losses_on_the_error_writer()
     let (out, err) = (text(out), text(err));
     assert!(out.contains("<MIDINameDocument>"), "{out}");
     assert!(err.contains("not carried: "), "{err}");
-    assert!(err.contains("/_sources/0/firmware"), "{err}");
+    assert!(err.contains("/sources/0/firmware"), "{err}");
     assert!(!out.contains("not carried"), "the document holds no list of losses");
 }
 

@@ -147,11 +147,11 @@ pub fn files(root: &Path, files: &[(&str, &str)]) {
     }
 }
 
-/// The OSD 0.6 text of a 0.4 driver, as `osd::convert` writes it (the published
-/// version). A checksum is written `{checksum:twos7@5}` in the tests, as the
-/// catalogue writes it, and the converter reads it as is.
-pub fn to06(text: &str) -> String {
-    osd::convert(text, osd::Kind::Device).unwrap_or_else(|e| panic!("convert: {e}\n{text}"))
+/// The OSD 0.7 text of a driver of an earlier version, as `osd::convert_to` writes it. A
+/// checksum is written `{checksum:twos7@5}` in the tests, as the catalogue writes it, and the
+/// converter reads it as is.
+pub fn to07(text: &str) -> String {
+    osd::convert_to(text, osd::Kind::Device, osd::Version::V0_7).unwrap_or_else(|e| panic!("convert: {e}\n{text}"))
 }
 
 /// The device a text holds, read by `osd` (no file, no resolution).
@@ -162,12 +162,12 @@ pub fn read_device(text: &str) -> osd::Device {
     }
 }
 
-/// A device from the text of a 0.4 or 0.5 driver, in its 0.6 form.
+/// A device from the text of a driver of an earlier version, in its 0.7 form.
 pub fn device_of(text: &str) -> osd::Device {
-    read_device(&to06(text))
+    read_device(&to07(text))
 }
 
-/// The frame a JSON list of 0.4 elements stands for, in its 0.6 form.
+/// The frame a JSON list of 0.4 elements stands for, in its 0.7 form.
 pub fn frame(json: &str) -> Vec<osd::FrameToken> {
     let d = device_of(&format!(r#"{{"device":{{"name":"F","osc_prefix":"/f"}},"commands":[{{"osc":"/x","frame":{json}}}]}}"#));
     d.commands.unwrap().remove(0).frame.unwrap()

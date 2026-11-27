@@ -11,10 +11,7 @@ fn source(extra: &str) -> osd::Device {
         "device":{{"name":"Box","vendor":"Acme","osc_prefix":"/box"}},
         "cc_params":{{"entries":[{{"osc":"/cutoff","cc":74}},{{"osc":"/res","cc":71}}]}}{extra}}}"#
     );
-    match osd::read(&text, osd::Kind::Device).unwrap_or_else(|e| panic!("{e}")) {
-        osd::Descriptor::Device(d) => *d,
-        _ => unreachable!(),
-    }
+    crate::common::device_of(&text)
 }
 
 const CREDIT: &str = r#","_sources":[{"type":"community-re","url":"https://example.org/box","author":"A maker","license":"CC-BY-4.0"}]"#;

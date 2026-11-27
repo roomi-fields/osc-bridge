@@ -2,9 +2,10 @@ use super::*;
 
 const SCHEMA: &str = "https://w3id.org/osd/0.5/device.schema.json";
 
-/// A 0.5 driver from the keys after `device` (leading comma included).
+/// A 0.5 driver from the keys after `device` (leading comma included), in its 0.7 form.
 fn device(body: &str) -> osd::Device {
     let text = format!(r#"{{"$schema":"{SCHEMA}","device":{{"name":"n","vendor":"v","osc_prefix":"/n"}}{body}}}"#);
+    let text = osd::convert_to(&text, osd::Kind::Device, osd::Version::V0_7).unwrap_or_else(|e| panic!("{e}\n{text}"));
     match osd::read(&text, osd::Kind::Device).unwrap_or_else(|e| panic!("{e}\n{text}")) {
         osd::Descriptor::Device(d) => *d,
         _ => unreachable!(),
@@ -14,37 +15,6 @@ fn device(body: &str) -> osd::Device {
 /// The `forward` of the one command `/c` of a driver.
 fn forward(forward: &str) -> osd::Forward {
     device(&format!(r#","commands":[{{"osc":"/c","forward":{forward}}}]"#)).commands.unwrap().remove(0).forward.unwrap()
-}
-
-/// The one entry of a `cc_params` table.
-fn entry(json: &str) -> osd::CcEntry {
-    device(&format!(r#","cc_params":{{"entries":[{json}]}}"#)).cc_params.unwrap().entries.remove(0)
-}
-
-// ---- control messages ----
-
-#[test]
-fn rpn_sends_101_100_then_data_entry() {
-    let e = entry(r#"{"osc":"/pb_sens","rpn_msb":0,"rpn_lsb":0,"range":[0,24]}"#);
-    assert_eq!(cc_messages(&e, 2, 12, &[OscType::Int(12)]).unwrap(),
-        vec![vec![0xB2, 101, 0], vec![0xB2, 100, 0], vec![0xB2, 6, 12]]);
-}
-
-#[test]
-fn nrpn_lsb_comes_from_the_call_then_the_channel() {
-    let e = entry(r#"{"osc":"/drum/cutoff","nrpn_msb":20,"nrpn_lsb_range":[12,108],"range":[0,127]}"#);
-    assert_eq!(cc_messages(&e, 0, 90, &[OscType::Int(90), OscType::Int(36), OscType::Int(9)]).unwrap(),
-        vec![vec![0xB9, 99, 20], vec![0xB9, 98, 36], vec![0xB9, 6, 90]]);
-    assert_eq!(cc_messages(&e, 0, 90, &[OscType::Int(90), OscType::Int(5)]).unwrap()[1], vec![0xB0, 98, 12]);
-    assert!(cc_messages(&e, 0, 90, &[OscType::Int(90)]).is_err());
-}
-
-#[test]
-fn fourteen_bit_nrpn_and_cc_pairs_split_the_value() {
-    let n = entry(r#"{"osc":"/x","nrpn_msb":3,"nrpn_lsb":75,"range":[0,16383]}"#);
-    assert_eq!(cc_messages(&n, 0, 300, &[]).unwrap().last().unwrap(), &vec![0xB0, 38, 44]);
-    let c = entry(r#"{"osc":"/y","cc":9,"cc_lsb":41,"range":[0,16383]}"#);
-    assert_eq!(cc_messages(&c, 0, 300, &[]).unwrap(), vec![vec![0xB0, 9, 2], vec![0xB0, 41, 44]]);
 }
 
 // ---- expressions and paths ----

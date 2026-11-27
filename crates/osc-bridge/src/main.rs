@@ -344,13 +344,11 @@ fn cmd_lint(path: PathBuf) -> Result<()> {
     if let Some(pt) = &dev.params {
         for e in &pt.entries {
             if e.transform.is_some() { warn("param.transform", &e.osc, &mut warnings); }
-            if e.transform_reverse.is_some() { warn("param.transform_reverse", &e.osc, &mut warnings); }
         }
     }
     if let Some(pt) = &dev.cc_params {
         for e in &pt.entries {
             if e.transform.is_some() { warn("cc_param.transform", &e.osc, &mut warnings); }
-            if e.transform_reverse.is_some() { warn("cc_param.transform_reverse", &e.osc, &mut warnings); }
         }
     }
     println!("{}: parsed OK — {} commands, {} replies, {} params, {} cc_params",

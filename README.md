@@ -95,7 +95,7 @@ These requests present the anonymous account of this machine. A JSON file on you
 - **A shared catalogue.** Prophets, Oberheims, the Yamaha DX family, MatrixBrute, Hydrasynth, Virus TI, Digitone, Matrix-1000… the SyntHub catalogue covers most synths, drum machines and DAWs, and grows with what users and agents contribute. Searchable at [synthub.roomi-fields.com](https://synthub.roomi-fields.com/).
 - **Hardware *and* software.** The same named OSC surface drives a hardware synth over MIDI/SysEx *or* a DAW / live-coding environment over OSC — Ableton, Bitwig, Reaper, Sonic Pi, SuperCollider, Pure Data, TouchDesigner, VCV Rack. See [§ Software targets](#software-targets--daws-and-live-coding-environments).
 - **An MCP server built in.** `osc-bridge mcp` exposes the SyntHub catalogue to Claude (or any MCP client) — a MIDI MCP *and* OSC MCP. Discover devices, read a device's OSC surface, send OSC to synths and DAWs. See [`docs/MCP.md`](docs/MCP.md).
-- **Honest provenance.** Each device declares its source in `_sources[]`: `✅ hardware-verified`, `✅ software-verified`, `📘 vendor-doc`, `📡 vendor-osc-api` / `📡 third-party-osc`, `🎛️ electra-preset`, `📦 pencilresearch`. You always know whether a mapping was tested on the device or lifted from a spec sheet.
+- **Honest provenance.** Each device declares its source in `sources[]`: `✅ hardware-verified`, `✅ software-verified`, `📘 vendor-doc`, `📡 vendor-osc-api` / `📡 third-party-osc`, `🎛️ electra-preset`, `📦 pencilresearch` (a `contributed` source whose `provider` is `electra-one` or `pencilresearch`). You always know whether a mapping was tested on the device or lifted from a spec sheet.
 - **Bidirectional out of the box.** Incoming MIDI (knob turns, SysEx replies, NRPN) is decoded and re-emitted as OSC. Multi-client fan-out is a `--osc-client` flag.
 - **N-to-N orchestration.** One process can drive several synths at once (`osc-bridge orchestrate --config bridge.toml`), each reachable under its own OSC prefix — so two MatrixBrutes live side-by-side as `/matrixbrute-1` and `/matrixbrute-2`.
 - **First-class reconfigurable controllers (Electra One MK2).** Upload a generated preset as one OSC call; the bridge parses the JSON, reconfigures the device over SysEx, and *dynamically* rewires its own CC↔OSC routing so each knob on the new layout is reachable by name. Self-describing over OSC: `/bridge/docs` returns the integration guide, `/electra1/routes/list` returns the authoritative address table, so clients (or LLM-driven integrators) never hardcode slugification or protocol details. See [§ Reconfigurable controllers](#reconfigurable-controllers-electra-one-mk2--the-scripts-stress-test) below.
@@ -111,7 +111,7 @@ on SyntHub:
 - 🔎 Interactive browser → **<https://synthub.roomi-fields.com/>** (live search by vendor / model / author / source).
 - 🤖 For scripts and AI agents → JSON API at <https://synthub.roomi-fields.com/api/v1/index.json> (each driver at `/api/v1/devices/<vendor>/<driver>.json`), or the hosted MCP server at <https://mcp.synthub.roomi-fields.com/mcp> — see [API for agents](https://synthub.roomi-fields.com/api/).
 
-Each driver declares its source in `_sources[]`: `✅ hardware-verified`, `✅ software-verified`, `📘 vendor-doc`, `📡 vendor-osc-api` / `📡 third-party-osc`, `🎛️ electra-preset`, `📦 pencilresearch`.
+Each driver declares its source in `sources[]`: `✅ hardware-verified`, `✅ software-verified`, `📘 vendor-doc`, `📡 vendor-osc-api` / `📡 third-party-osc`, `🎛️ electra-preset`, `📦 pencilresearch` (a `contributed` source whose `provider` is `electra-one` or `pencilresearch`).
 
 ### Share your own device
 
@@ -378,7 +378,7 @@ osc-bridge osc-send /minilab3/raw/syx "F0 00 20 6B 7F 42 02 00 16 04 7F 00 00 F7
 
 A device file declares three things:
 
-1. **Framing** — the SysEx header/footer bytes.
+1. **Framing** — the SysEx header bytes (osc-bridge closes the message with F7).
 2. **Commands** — high-level OSC routes (pad colors, display text, preset recall) that build frames by substituting OSC args into placeholder templates.
 3. **Params** — a flat table of parameter addresses for bulk GET/SET via a shared opcode.
 
@@ -388,7 +388,7 @@ Example snippet (the `arturia/minilab3` driver):
 {
   "commands": [
     {
-      "osc": "/pad/{pad}/color",
+      "osc": ["/pad/", {"capture": "pad"}, "/color"],   // /pad/{pad}/color
       "args": [
         {"name":"pad","type":"u7","range":[0,7]},
         {"name":"r","type":"u7"},
@@ -397,16 +397,17 @@ Example snippet (the `arturia/minilab3` driver):
         {"name":"mode","type":"enum",
          "values":{"user":0,"arturia":1,"daw":2},"default":"user"}
       ],
-      "pre": [{"bind":"pad_id","expr":"pad + 4"}],
-      "frame": [2, "{mode}", 22, "{pad_id}", "{r}", "{g}", "{b}"]
+      "pre": [{"bind":"pad_id","expr":{"add":[{"arg":"pad"},4]}}],
+      "frame": [2, {"arg":"mode"}, 22, {"arg":"pad_id"}, {"arg":"r"}, {"arg":"g"}, {"arg":"b"}]
     }
   ],
   "params": {
-    "get_frame": [32, "{pr}", "{p}", "{c}", "{r}"],
-    "set_frame": [33, "{pr}", "{p}", "{c}", "{r}", "{val}"],
+    "get_frame": [32, {"arg":"pr"}, {"arg":"p"}, {"arg":"c"}, {"arg":"r"}],
+    "set_frame": [33, {"arg":"pr"}, {"arg":"p"}, {"arg":"c"}, {"arg":"r"}, {"arg":"val"}],
     "value_type": "u7",
     "entries": [
-      {"osc":"/global/backlight", "pr":7, "p":0, "c":0, "r":0, "range":[0,1]}
+      // the numbers of the way fill pr, p, c, r
+      {"osc":"/global/backlight", "ways":[{"ctrlType":"sysex", "ctrlIndex":[7,0,0,0], "range":[0,1]}]}
     ]
   }
 }
@@ -530,7 +531,7 @@ which GPL-3.0 section 13 allows to combine with AGPL-3.0 code.
 ### Third-party device data
 
 The driver catalogue is SyntHub's, each driver with the credit and licence of
-its sources in `_sources[]`. The few drivers kept here for the tests
+its sources in `sources[]`. The few drivers kept here for the tests
 (`crates/osc-bridge/tests/fixtures/devices/`) keep theirs: those of type `pencilresearch` are
 adapted from [MIDI Guide](https://midi.guide) by Pencil Research and
 contributors, licensed [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)

@@ -59,7 +59,7 @@ impl Checksum {
     }
 
     /// The checksum byte of `written`, the message so far (nothing after the
-    /// checksum, never the footer).
+    /// checksum, never the closing F7).
     pub fn compute(&self, written: &[u8]) -> Result<u8> {
         let end = match self.length {
             Some(l) => self.from.checked_add(l).filter(|e| *e <= written.len())
@@ -73,22 +73,31 @@ impl Checksum {
     }
 }
 
-/// Assemble a full SysEx frame from `header + body + footer` where body is
-/// produced by substituting bindings into `tokens`.
+/// Assemble a full SysEx frame: the device's header, then the body produced by
+/// substituting bindings into `tokens`, closed by `close_sysex`.
 pub fn build_frame(device: &Device, tokens: &[FrameToken], bindings: &Bindings) -> Result<Vec<u8>> {
     let (mut out, slots) = build_frame_deferred(device, tokens, bindings)?;
     finish_checksums(&mut out, &slots)?;
     Ok(out)
 }
 
-/// `body` between the device's SysEx header and footer.
+/// The device's SysEx header, empty when it declares none.
+pub(crate) fn sysex_header(device: &Device) -> &[u8] {
+    device.sysex.as_ref().and_then(|s| s.header.as_deref()).unwrap_or_default()
+}
+
+/// Close a message the device's header opens with F0: F7 is added unless it
+/// already ends with it.
+fn close_sysex(device: &Device, message: &mut Vec<u8>) {
+    if sysex_header(device).first() == Some(&0xF0) && message.last() != Some(&0xF7) {
+        message.push(0xF7);
+    }
+}
+
+/// `body` after the device's SysEx header, the message closed.
 pub fn wrap_sysex(device: &Device, body: &[u8]) -> Vec<u8> {
-    let header = device.sysex.as_ref().and_then(|s| s.header.as_deref()).unwrap_or_default();
-    let footer = device.sysex.as_ref().and_then(|s| s.footer.as_deref()).unwrap_or_default();
-    let mut buf = Vec::with_capacity(header.len() + body.len() + footer.len());
-    buf.extend_from_slice(header);
-    buf.extend_from_slice(body);
-    buf.extend_from_slice(footer);
+    let mut buf = [sysex_header(device), body].concat();
+    close_sysex(device, &mut buf);
     buf
 }
 
@@ -105,9 +114,7 @@ pub struct ChecksumSlot {
 pub fn build_frame_deferred(device: &Device, tokens: &[FrameToken], bindings: &Bindings) -> Result<(Vec<u8>, Vec<ChecksumSlot>)> {
     let mut out = Vec::with_capacity(32);
     let mut slots = Vec::new();
-    if let Some(h) = device.sysex.as_ref().and_then(|s| s.header.as_ref()) {
-        out.extend_from_slice(h);
-    }
+    out.extend_from_slice(sysex_header(device));
     for tok in tokens {
         match Checksum::of_token(tok) {
             Some(c) => {
@@ -118,9 +125,7 @@ pub fn build_frame_deferred(device: &Device, tokens: &[FrameToken], bindings: &B
             None => emit_token(tok, bindings, &mut out)?,
         }
     }
-    if let Some(f) = device.sysex.as_ref().and_then(|s| s.footer.as_ref()) {
-        out.extend_from_slice(f);
-    }
+    close_sysex(device, &mut out);
     Ok((out, slots))
 }
 
@@ -134,8 +139,8 @@ pub fn finish_checksums(frame: &mut [u8], slots: &[ChecksumSlot]) -> Result<()> 
     Ok(())
 }
 
-/// A whole message from `tokens` (F0 to F7 written in them, no header or
-/// footer added); its checksums are computed by `Checksum`.
+/// A whole message from `tokens` (F0 to F7 written in them, nothing added);
+/// its checksums are computed by `Checksum`.
 pub fn build_message(tokens: &[FrameToken], bindings: &Bindings) -> Result<Vec<u8>> {
     let mut out = Vec::with_capacity(tokens.len());
     for tok in tokens {
@@ -359,9 +364,11 @@ pub fn coerce_arg(spec: &osd::Arg, osc_arg: &rosc::OscType) -> Result<Value> {
     }
 }
 
-/// Produce bindings for a parameter SET from a ParamEntry + value.
-pub fn bindings_for_param_set(pt: &osd::Params, entry: &osd::ParamEntry, val: &rosc::OscType) -> Result<Bindings> {
-    let mut b = bindings_for_param_get(entry);
+/// Produce bindings for a parameter SET: the numbers of the SysEx `way` it is
+/// sent by, and the value, bounded to the reference scale of the entry then
+/// scaled to the way.
+pub fn bindings_for_param_set(pt: &osd::Params, entry: &osd::ParamEntry, way: &osd::Way, val: &rosc::OscType) -> Result<Bindings> {
+    let mut b = bindings_for_param_get(pt, way);
     let val_int = match val {
         rosc::OscType::Int(i) => *i as i64,
         rosc::OscType::Long(i) => *i,
@@ -370,23 +377,53 @@ pub fn bindings_for_param_set(pt: &osd::Params, entry: &osd::ParamEntry, val: &r
         rosc::OscType::Bool(x) => if *x { 1 } else { 0 },
         _ => bail!("param value must be numeric"),
     };
-    let [lo, hi] = entry.range.unwrap_or([0, 127]);
-    let clamped = val_int.clamp(lo, hi);
+    let [lo, hi] = entry.reference_scale();
+    let sent = entry.in_way(val_int.clamp(lo, hi), way);
     match pt.value_type {
-        Some(osd::ValueType::U7) => b.set_u7("val", clamped as u8),
-        Some(osd::ValueType::U14) => b.set_u14("val", clamped as u16),
-        Some(osd::ValueType::S32) => b.set_s32("val", clamped as i32),
+        Some(osd::ValueType::U7) => b.set_u7("val", sent as u8),
+        Some(osd::ValueType::U14) => b.set_u14("val", sent as u16),
+        Some(osd::ValueType::S32) => b.set_s32("val", sent as i32),
         None => bail!("the parameters declare no value_type: no SysEx value to set"),
     }
     Ok(b)
 }
 
-pub fn bindings_for_param_get(entry: &osd::ParamEntry) -> Bindings {
+/// The arguments of the parameter frames that the numbers of a SysEx way fill.
+const SYSEX_NUMBERS: [&str; 4] = ["pr", "p", "c", "r"];
+
+/// The values of `pr`, `p`, `c` and `r` for a SysEx way: when it has as many
+/// numbers as the frames name of those arguments, they fill the named ones in
+/// that order; else they fill the four in order. The absent ones are 0.
+pub(crate) fn sysex_numbers(pt: &osd::Params, way: &osd::Way) -> [u8; 4] {
+    let numbers = way.ctrl_index.as_deref().unwrap_or_default();
+    let named = |name: &&str| [&pt.get_frame, &pt.set_frame].into_iter().flatten().flatten()
+        .any(|t| matches!(t, FrameToken::Part(FramePart::Arg { name: n, .. }) if n == name));
+    let mut filled: Vec<usize> = (0..SYSEX_NUMBERS.len()).filter(|i| named(&SYSEX_NUMBERS[*i])).collect();
+    if filled.len() != numbers.len() {
+        filled = (0..SYSEX_NUMBERS.len()).collect();
+    }
+    let mut out = [0u8; 4];
+    for (i, number) in filled.into_iter().zip(numbers) {
+        out[i] = (*number & 0x7F) as u8;
+    }
+    out
+}
+
+/// The numbers of a SysEx way as the parameter frames take them; a number alone
+/// also fills `id`.
+pub fn bindings_for_param_get(pt: &osd::Params, way: &osd::Way) -> Bindings {
     let mut b = Bindings::new();
-    b.set_u7("pr", entry.pr.unwrap_or(0));
-    b.set_u7("p",  entry.p.unwrap_or(0));
-    b.set_u7("c",  entry.c.unwrap_or(0));
-    b.set_u7("r",  entry.r.unwrap_or(0));
+    for (name, number) in SYSEX_NUMBERS.iter().zip(sysex_numbers(pt, way)) {
+        b.set_u7(name, number);
+    }
+    if let Some([id]) = way.ctrl_index.as_deref() {
+        match *id {
+            0..=0x7F => b.set_u7("id", *id as u8),
+            0x80..=0x3FFF => b.set_u14("id", *id as u16),
+            // A number past 32 bits has no coding in a frame: `id` stays unbound.
+            _ => if let Ok(id) = i32::try_from(*id) { b.set_s32("id", id) },
+        }
+    }
     b
 }
 

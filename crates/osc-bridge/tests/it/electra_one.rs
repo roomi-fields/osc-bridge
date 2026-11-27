@@ -16,11 +16,11 @@ fn find_frame<'a>(dev: &'a osd::Device, osc: &str) -> &'a [osd::FrameToken] {
 }
 
 #[test]
-fn header_and_footer() {
+fn the_header_is_the_one_of_the_driver_and_0_7_holds_no_footer() {
     let d = load();
     let sysex = d.sysex.as_ref().unwrap();
     assert_eq!(sysex.header, Some(vec![0xF0, 0x00, 0x21, 0x45]));
-    assert_eq!(sysex.footer, Some(vec![0xF7]));
+    assert_eq!(sysex.footer, None);
 }
 
 #[test]

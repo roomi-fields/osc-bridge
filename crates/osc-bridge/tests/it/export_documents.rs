@@ -150,7 +150,7 @@ fn the_running_bridge_answers_the_namespace_the_export_writes() {
 fn a_device_that_speaks_only_osc_has_no_midnam_and_says_so() {
     let dev = load("bitwig/bitwig-studio.third-party-osc.fw-5");
     let err = export(&dev, MIDNAM).unwrap_err().to_string();
-    assert_eq!(err, "Bitwig Bitwig Studio (Bitwig Studio 5 + DrivenByMoss (latest)) speaks OSC, not MIDI: it has no MIDI names");
+    assert_eq!(err, "Bitwig Bitwig Studio speaks OSC, not MIDI: it has no MIDI names");
 }
 
 #[test]
@@ -170,6 +170,6 @@ fn what_the_formats_could_not_carry_comes_with_the_document() {
     for format in [MIDNAM, OSCQUERY] {
         let out = export(&dev, format).unwrap();
         assert!(!out.value.is_empty());
-        assert!(out.lost.iter().any(|l| l.place == "/_sources/0/firmware"), "{format:?}: {:?}", out.lost);
+        assert!(out.lost.iter().any(|l| l.place == "/sources/0/firmware"), "{format:?}: {:?}", out.lost);
     }
 }

@@ -3,8 +3,8 @@
 > **Use this only when the declarative JSON schema cannot express what you need.**
 > 95% of devices don't require any Lua. CC, NRPN, SysEx templating, u7/u14
 > splits, reply matching — all declarative. The usual checksums are declarative
-> too: `{checksum:twos7@5}`, `{checksum:sum7@5}` and `{checksum:xor7@0}` in a
-> frame (`<algorithm>@<from>[+<length>]`). Reach for scripting only for other
+> too: a frame element `{"checksum": "<algorithm>", "from": <offset>}` (and
+> `"length"`), the algorithm `twos7`, `sum7` or `xor7`. Reach for scripting only for other
 > checksums, non-standard encodings, or conditional transforms that the schema
 > can't describe.
 >
@@ -24,16 +24,15 @@ Applied on the way in (OSC → MIDI), before range-clamping. Receives a single
 ```json
 {
   "osc": "/volume_scaled",
-  "cc": 7,
-  "range": [0, 127],
+  "ways": [{ "ctrlType": "cc", "ctrlIndex": [7], "range": [0, 127] }],
   "transform": "return math.floor(value * 127 / 1000)"
 }
 ```
 
 Available on `ParamEntry` (SysEx param table) and `CcParamEntry`.
 
-A twin field `transform_reverse` is reserved for the MIDI → OSC direction
-(reply decoding). Not wired on CC yet; use `reply.script` if you need it now.
+No field transforms the MIDI → OSC direction (reply decoding): use
+`reply.script`.
 
 ### 2. `script` — block on a command or reply pattern
 
@@ -54,7 +53,7 @@ Context fields:
 
 | field       | type           | meaning                                                |
 |-------------|----------------|--------------------------------------------------------|
-| `payload`   | table of ints  | assembled frame bytes (header + body + footer); a command's `{checksum:…}` shows as 0x00, the engine writes it after the script |
+| `payload`   | table of ints  | assembled frame bytes (header + body, closed by F7); a command's checksum element shows as 0x00, the engine writes it after the script |
 | `args`      | table of ints  | OSC args decoded to integers                           |
 | `checksum`  | int or nil     | scratch space — set it, or insert into `payload`       |
 | `direction` | string         | `"osc_to_midi"` or `"midi_to_osc"`                     |
@@ -68,7 +67,7 @@ shows the mechanism for a checksum the frame cannot express), inserted before th
 {
   "osc": "/weird_cmd",
   "args": [{"name":"a","type":"u7"},{"name":"b","type":"u7"}],
-  "frame": [16, "{a}", "{b}"],
+  "frame": [16, {"arg":"a"}, {"arg":"b"}],
   "script": "local ctx = ...; local sum = 0; for i = 5, #ctx.payload - 1 do sum = sum ~ ctx.payload[i] end; table.insert(ctx.payload, #ctx.payload, sum & 0x7F); return ctx"
 }
 ```

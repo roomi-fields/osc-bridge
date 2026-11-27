@@ -280,7 +280,7 @@ fn keep(file: &Path, text: &str, etag: Option<&str>) -> Result<()> {
     Ok(())
 }
 
-/// The files of the catalogue as `osd::resolve` reclaims them, asked of the
+/// The files of the catalogue as `device::resolve` reclaims them, asked of the
 /// server one at a time and held in memory (`got`: the text, or none when the
 /// server does not have it). A failure other than "not there" is kept in
 /// `failed`, to be told instead of the fault it causes.
@@ -620,7 +620,7 @@ impl Online {
     pub fn fetch_driver(&self, id: &str, cache: &Path) -> Result<PathBuf> {
         if !is_driver_id(id) { bail!("{id:?} is not a driver id (<maker>/<name>)"); }
         let files = Fetching { online: self, cache, got: Default::default(), failed: Default::default() };
-        let resolved = match osd::resolve(id, &files) {
+        let resolved = match crate::device::resolve(id, &files) {
             Ok(r) => r,
             Err(fault) => {
                 if let Some(e) = files.failed.take() { return Err(e); }

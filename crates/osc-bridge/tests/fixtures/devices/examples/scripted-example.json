@@ -1,16 +1,10 @@
 {
-  "$schema": "https://w3id.org/osd/0.5/device.schema.json",
+  "$schema": "https://w3id.org/osd/0.7/device.schema.json",
   "device": {
     "name": "Scripted Example",
     "vendor": "osc-bridge",
-    "revision": "v0.1",
-    "osc_prefix": "/example",
-    "manufacturer_id": [
-      127,
-      0,
-      0
-    ],
     "device_id": [],
+    "osc_prefix": "/example",
     "rate_limit_hz": 0
   },
   "capabilities": [
@@ -22,9 +16,6 @@
       127,
       0,
       0
-    ],
-    "footer": [
-      247
     ]
   },
   "cc_params": {
@@ -32,12 +23,19 @@
     "entries": [
       {
         "osc": "/volume_scaled",
-        "cc": 7,
-        "range": [
-          0,
-          127
-        ],
-        "transform": "return math.floor(value * 127 / 1000)"
+        "transform": "return math.floor(value * 127 / 1000)",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              7
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       }
     ]
   },
@@ -77,5 +75,12 @@
     "cc"
   ],
   "replies": [],
-  "_note": "Demonstrates the Lua escape hatch. Uses `transform` on a CC param (exp curve 0..1000 → 0..127) and `script` on a command (appends an XOR checksum). Prefer declarative when possible; this device exists only to exercise the feature."
+  "_note": "Demonstrates the Lua escape hatch. Uses `transform` on a CC param (exp curve 0..1000 → 0..127) and `script` on a command (appends an XOR checksum). Prefer declarative when possible; this device exists only to exercise the feature.",
+  "identity": {
+    "manufacturerId": [
+      127,
+      0,
+      0
+    ]
+  }
 }

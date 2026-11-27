@@ -1,11 +1,63 @@
 //! A driver as the engine holds it: the `osd::Device` that `osd` resolves from
 //! a catalogue folder, plus what only the engine knows (the companion note, the
-//! rules its blocks must meet to be used). The format, its types and the
-//! resolution of shared MIDI and maker profiles belong to `osd`.
+//! rules its blocks must meet to be used, the way it sends a control). The
+//! format, its types, its conversion and the resolution of shared MIDI and maker
+//! profiles belong to `osd`: every document, whatever its version, is converted
+//! to `VERSION` before it is read and resolved.
 
 use anyhow::{anyhow, bail, Context, Result};
-use osd::{Device, FramePart, FrameToken, IdentityPart};
+use osd::{Device, FramePart, FrameToken, IdentityPart, Way};
+use std::cell::RefCell;
 use std::path::{Path, PathBuf};
+
+/// The version of OSD the engine reads and writes.
+pub(crate) const VERSION: osd::Version = osd::Version::V0_7;
+
+/// The text of file `id` (a driver, or a maker profile `maker/_profile….`) in
+/// `VERSION`; the fault of `osd`, in that file, when it refuses the text.
+fn converted(id: &str, text: &str) -> Result<String, osd::Fault> {
+    let profile = id.split_once('/').is_some_and(|(_, name)| name.starts_with("_profile"));
+    let kind = if profile { osd::Kind::Profile } else { osd::Kind::Device };
+    osd::convert_to(text, kind, VERSION).map_err(|mut fault| {
+        fault.file.get_or_insert_with(|| id.to_string());
+        fault
+    })
+}
+
+/// The files of a catalogue as `osd` resolves them in `VERSION`: each one
+/// converted as it is asked for, the file it comes from left as it is. A file
+/// the converter refuses is handed over as written and its fault kept.
+struct Converted<'a> {
+    files: &'a dyn osd::Files,
+    refused: RefCell<Vec<(String, osd::Fault)>>,
+}
+
+impl osd::Files for Converted<'_> {
+    fn get(&self, id: &str) -> Option<String> {
+        let text = self.files.get(id)?;
+        match converted(id, &text) {
+            Ok(text) => Some(text),
+            Err(fault) => {
+                self.refused.borrow_mut().push((id.to_string(), fault));
+                Some(text)
+            }
+        }
+    }
+}
+
+/// The driver `id` of `files` as its firmware runs it, every file it is built
+/// from converted to `VERSION` first: the one way the engine resolves a driver,
+/// wherever its files come from.
+pub(crate) fn resolve(id: &str, files: &dyn osd::Files) -> Result<osd::Resolved, osd::Fault> {
+    let files = Converted { files, refused: RefCell::default() };
+    let resolved = osd::resolve(id, &files);
+    // A file only looked up (the device a virtual instrument stands for) is not read.
+    let read = |file: &str| resolved.as_ref().map_or(true, |r| r.files.iter().any(|f| f == file));
+    match files.refused.into_inner().into_iter().find(|(file, _)| read(file)) {
+        Some((_, fault)) => Err(fault),
+        None => resolved,
+    }
+}
 
 /// The key under which the companion note travels in a device's remarks
 /// (`_` keys are notes for people that `osd` keeps as written).
@@ -48,18 +100,47 @@ pub fn load<P: AsRef<Path>>(path: P) -> Result<Device> {
     if !p.is_file() {
         bail!("reading {}: no such file", p.display());
     }
-    let resolved = osd::resolve(&id, &Folder(root)).map_err(anyhow::Error::from).with_context(|| p.display().to_string())?;
+    let resolved = resolve(&id, &Folder(root)).map_err(anyhow::Error::from).with_context(|| p.display().to_string())?;
     check_blocks(&resolved.device).map_err(|e| anyhow!("{}: {e}", p.display()))?;
     Ok(resolved.device)
 }
 
-/// The driver file at `path` as written, none of its links followed: what the
-/// file says of itself. None when `osd` does not read it as a driver.
-pub fn read_own<P: AsRef<Path>>(path: P) -> Option<Device> {
-    let text = std::fs::read_to_string(path).ok()?;
-    match osd::read(&text, osd::Kind::Device).ok()? {
-        osd::Descriptor::Device(d) => Some(*d),
-        _ => None,
+/// The driver file at `path` converted to `VERSION`, none of its links followed:
+/// what the file says of itself. It fails with `osd`'s fault when `osd` does not
+/// read it as a driver.
+pub fn read_own<P: AsRef<Path>>(path: P) -> Result<Device> {
+    let p = path.as_ref();
+    let (_, id) = place(p)?;
+    let text = std::fs::read_to_string(p).with_context(|| format!("reading {}", p.display()))?;
+    let read = converted(&id, &text).and_then(|text| osd::read(&text, osd::Kind::Device));
+    match read.map_err(|mut fault| {
+        fault.file.get_or_insert(id);
+        anyhow::Error::from(fault).context(p.display().to_string())
+    })? {
+        osd::Descriptor::Device(d) => Ok(*d),
+        _ => bail!("{}: not a driver", p.display()),
+    }
+}
+
+/// The way the engine sends a control reached by `ways`: the first one written
+/// whose kind is among `kinds`, that the device recognises and that holds in
+/// every context. Without one, why.
+pub(crate) fn sendable_way<'a>(ways: &'a [Way], kinds: &[&str]) -> Result<&'a Way, String> {
+    let candidates = || ways.iter()
+        .filter(|w| kinds.contains(&w.ctrl_type.as_str()) && w.recognize != Some(osd::Direction::None));
+    if let Some(way) = candidates().find(|w| w.held_in.is_none() && w.slice.is_none()) {
+        return Ok(way);
+    }
+    if ways.is_empty() {
+        return Err("the driver does not give the message of this control yet (no way)".into());
+    }
+    let mut held = Vec::new();
+    if candidates().any(|w| w.held_in.is_some()) { held.push("in some contexts (`in`)"); }
+    if candidates().any(|w| w.slice.is_some()) { held.push("for a slice of its values (`slice`)"); }
+    if held.is_empty() {
+        Err(format!("no way of this control that the device recognises can be sent ({})", kinds.join(", ")))
+    } else {
+        Err(format!("the ways of this control hold only {}: none is sent", held.join(" or ")))
     }
 }
 
@@ -285,8 +366,14 @@ pub fn check_blocks(dev: &Device) -> Result<()> {
                 bail!("identity.firmware without a reply");
             }
         }
-        if kept_list(&id.reply).is_empty() && kept(&id.script).is_none() && !ports && kept_list(&id.usb).is_empty() {
-            bail!("identity: a reply, a script, ports or USB ids");
+        let signs = !kept_list(&id.reply).is_empty() || kept(&id.script).is_some() || ports
+            || !kept_list(&id.usb).is_empty() || kept(&id.endpoint_name).is_some();
+        // A block may name the maker alone: it describes the device and recognises nothing.
+        let maker_alone = kept(&id.manufacturer_id).is_some() && kept(&id.request).is_none() && kept(&id.to).is_none()
+            && kept(&id.unpack).is_none() && kept(&id.reply_text).is_none() && kept(&id.family).is_none()
+            && kept(&id.member).is_none() && kept(&id.device_id).is_none() && kept(&id.firmware).is_none();
+        if !signs && !maker_alone {
+            bail!("identity: a reply, a script, ports, an endpoint name or USB ids");
         }
         let frames: Vec<FrameToken> = kept_list(&id.reply).iter().chain(kept_list(&id.request)).cloned().collect();
         let family_empty = kept_list(&id.family).is_empty();

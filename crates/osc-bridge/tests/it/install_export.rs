@@ -20,10 +20,7 @@ use std::time::Duration;
 const SCHEMA: &str = "https://w3id.org/osd/0.6/device.schema.json";
 
 fn read(doc: Value) -> osd::Device {
-    match osd::read(&doc.to_string(), osd::Kind::Device).unwrap_or_else(|e| panic!("{e}\n{doc}")) {
-        osd::Descriptor::Device(d) => *d,
-        _ => unreachable!(),
-    }
+    crate::common::device_of(&doc.to_string())
 }
 
 fn source_doc(vendor: &str, name: &str, with_sources: bool) -> Value {

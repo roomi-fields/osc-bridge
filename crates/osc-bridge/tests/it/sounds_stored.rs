@@ -10,10 +10,7 @@ fn dev06(programs: &str, extra: &str) -> osd::Device {
     let text = format!(r#"{{"$schema":"https://w3id.org/osd/0.6/device.schema.json",
         "device":{{"name":"Box","vendor":"Acme","osc_prefix":"/box"}},
         "midi_out":{{"default_channel":2}},"programs":{programs}{extra}}}"#);
-    match osd::read(&text, osd::Kind::Device).unwrap_or_else(|e| panic!("{e}\n{text}")) {
-        osd::Descriptor::Device(d) => *d,
-        _ => unreachable!(),
-    }
+    crate::common::device_of(&text)
 }
 
 /// A clock that only records what it is asked to wait.

@@ -11,6 +11,22 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed — osc-bridge reads and writes Open Synth Descriptors 0.7 (candidate)
+
+- Every driver and profile is converted to 0.7 as it is read, the kept file left as received. A
+  document the converter or the reader refuses (a message two controls claim, say) is no longer
+  listed: the error names the file and the fault.
+- `list_routes` gives each control its `ways`, in place of `cc`, `cc_lsb`, `nrpn_msb`, `nrpn_lsb`,
+  `nrpn_lsb_range`, `rpn_msb` and `rpn_lsb`; `range` is the reference scale of the control and
+  `usage` its `value_description`.
+- `list_devices` gives no `revision`, which 0.7 removes; the title of a device no longer carries it.
+- The engine sends a control by its first way that holds in every context; a control of an earlier
+  driver that mixed a CC and an NRPN or RPN now sends the CC. A block of NRPN written without its
+  LSB has no way once converted: it answers `/bridge/fault`.
+- `midi_out.note_offset`, which 0.7 removes, no longer moves a note.
+- Port rules apply as 0.7 defines them.
+- The fingerprint of the learn mode is an OSD 0.7 fingerprint.
+
 ## [0.25.0] — 2026-11-25
 
 ### Changed — the service is renamed SyntHub: install 0.25.0

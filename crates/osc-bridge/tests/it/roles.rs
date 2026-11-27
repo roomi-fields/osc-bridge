@@ -193,7 +193,7 @@ fn a_driver_loads_with_each_controls_role_default_range_steps_and_priority_as_os
     let dev = osc_bridge::device::load(root.path().join("zeta/synth.json")).unwrap();
     let res = &dev.cc_params.as_ref().unwrap().entries[1];
     assert_eq!(res.default, Some(50));
-    assert_eq!(res.range, Some([0, 100]));
+    assert_eq!(res.reference_scale(), [0, 100]);
     assert_eq!(res.step_count, Some(5));
     assert_eq!(res.priority, Some(2));
     assert_eq!(res.role.as_ref().unwrap().setting, "resonance");
@@ -246,6 +246,68 @@ fn list_roles_of_a_driver_without_roles_is_an_empty_list() {
     let r = call(&root, bridge.addr, "list_roles", json!({"device": "acme/old"}));
     assert!(!is_error(&r), "{r}");
     assert!(roles(&r).is_empty());
+}
+
+// ---- the scale of a control of several ways ------------------------------------------
+
+/// A 0.7 driver: a cutoff reached by a 7-bit CC then a 14-bit NRPN, a pan written from -64 to
+/// 63, and a SysEx resonance from 0 to 200 given by the numbers `p c r`, that the device reports.
+fn ways_driver() -> tempfile::TempDir {
+    let root = temp("roles-ways");
+    let role = |part: &str, setting: &str| json!({ "parts": [{ "part": part }], "setting": setting });
+    let driver = json!({
+        "$schema": "https://w3id.org/osd/0.7/device.schema.json", "role_vocabulary": "1",
+        "device": { "name": "Ways", "vendor": "Acme", "osc_prefix": "/ways" },
+        "cc_params": { "entries": [
+            { "osc": "/cutoff", "role": role("filter", "cutoff"), "priority": 1, "ways": [
+                { "ctrlType": "cc", "ctrlIndex": [74], "range": [0, 127] },
+                { "ctrlType": "nrpn", "ctrlIndex": [1, 2], "value_bits": 14, "range": [0, 16383] }] },
+            { "osc": "/pan", "role": role("output", "pan"), "priority": 2, "scale": [-64, 63],
+              "ways": [{ "ctrlType": "cc", "ctrlIndex": [10], "range": [0, 127] }] }
+        ] },
+        "params": { "value_type": "u14",
+            "get_frame": [240, 1, { "arg": "p" }, { "arg": "c" }, { "arg": "r" }, 247],
+            "set_frame": [240, 2, { "arg": "p" }, { "arg": "c" }, { "arg": "r" }, { "arg": "val", "encoding": "u14_msb" }, { "arg": "val", "encoding": "u14_lsb" }, 247],
+            "entries": [{ "osc": "/level", "role": role("filter", "resonance"), "priority": 3,
+                "ways": [{ "ctrlType": "sysex", "ctrlIndex": [5, 6, 7], "range": [0, 200] }] }] },
+        "replies": [{ "match_frame": [240, 9, { "capture": "v" }, 247], "emit_osc": "/ways/level", "emit_args": [{ "capture": "v" }] }]
+    });
+    files(root.path(), &[("acme/ways.json", &driver.to_string())]);
+    root
+}
+
+#[test]
+fn list_roles_gives_each_control_the_reference_scale_of_its_ways() {
+    let root = ways_driver();
+    let bridge = FakeBridge::start(&[]);
+    let r = call(&root, bridge.addr, "list_roles", json!({"device": "acme/ways"}));
+    assert!(!is_error(&r), "{r}");
+    let ranges: Vec<&Value> = r["structuredContent"]["roles"].as_array().unwrap().iter().map(|e| &e["range"]).collect();
+    assert_eq!(ranges, [&json!([0, 16383]), &json!([-64, 63]), &json!([0, 200])], "{r}");
+}
+
+#[test]
+fn set_by_role_gives_the_value_on_the_reference_scale_of_the_control() {
+    let root = ways_driver();
+    for (role, address, value, expected) in [("filter/cutoff", "/ways/cutoff", 1.0, 16383), ("output/pan", "/ways/pan", 0.0, -64)] {
+        let bridge = FakeBridge::start(&[]);
+        let r = call(&root, bridge.addr, "set_by_role", json!({"device": "acme/ways", "role": role, "value": value}));
+        assert!(!is_error(&r), "{r}");
+        assert_eq!(one_int(&bridge.received(), address), expected, "{role}");
+    }
+}
+
+#[test]
+fn get_by_role_asks_with_the_numbers_of_the_sysex_way_and_normalises_on_the_reference_scale() {
+    let root = ways_driver();
+    let bridge = FakeBridge::start(&[("/ways/param/get", "/ways/level", 50)]);
+    let r = call(&root, bridge.addr, "get_by_role", json!({"device": "acme/ways", "role": "filter/resonance"}));
+    assert!(!is_error(&r), "{r}");
+    assert_eq!(r["structuredContent"]["value"], 0.25, "{r}");
+    let sent = bridge.received();
+    assert_eq!(sent[0].0, "/ways/param/get");
+    // The four numbers of `/param/get`: pr p c r, filled as the frames name them.
+    assert_eq!(sent[0].1, [0, 5, 6, 7].map(OscType::Int).to_vec(), "{sent:?}");
 }
 
 // ---- set_by_role ---------------------------------------------------------------------

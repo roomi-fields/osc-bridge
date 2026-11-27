@@ -15,8 +15,9 @@ repository = "https://github.com/roomi-fields/osc-bridge"
 
 [workspace.dependencies]
 midir = "0.10"
-osd = "0.6.0"
-osd-formats = "0.6.0"
+# The 0.7 candidate of Open Synth Descriptors, pinned to one commit until it is published.
+osd = { version = "0.6.0", git = "https://github.com/roomi-fields/open-synth-descriptors", rev = "24e4ba1fdbc315df739228c29f3d660293dd6139" }
+osd-formats = { version = "0.6.0", git = "https://github.com/roomi-fields/open-synth-descriptors", rev = "24e4ba1fdbc315df739228c29f3d660293dd6139" }
 rosc = "0.11"
 clap = { version = "4", features = ["derive"] }
 anyhow = "1"

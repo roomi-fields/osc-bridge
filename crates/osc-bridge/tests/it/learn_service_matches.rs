@@ -23,7 +23,7 @@ fn unit(port: &str) -> Unit {
 fn learned(port: &str) -> Learned {
     let words = osc_bridge::synthub::learn::port_words(port);
     Learned {
-        fingerprint: json!({ "$schema": "https://w3id.org/osd/0.6/fingerprint.schema.json", "observed": "2026-11-21",
+        fingerprint: json!({ "$schema": "https://w3id.org/osd/0.7/fingerprint.schema.json", "observed": "2026-11-21",
             "via": "native", "ports": { "inputs": [words], "outputs": [words] },
             "controls": [{ "type": "cc", "channel": 1, "number": 74 }] }),
         measured: json!({}),

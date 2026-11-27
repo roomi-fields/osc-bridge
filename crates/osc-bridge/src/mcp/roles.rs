@@ -15,10 +15,28 @@ struct Control {
     default: Option<i64>,
     step_count: Option<i64>,
     priority: u8,
-    /// The `pr p c r` numbers of a SysEx parameter: its message writes the device's memory.
-    sysex: Option<[u8; 4]>,
+    /// A SysEx parameter: its message writes the device's memory.
+    sysex: bool,
+    /// The way a SysEx parameter is read by, and its `pr p c r` numbers; none without a way the
+    /// engine sends.
+    read_way: Option<ReadWay>,
     /// Whether the driver declares a read request and a reply pattern for this control.
     reads: bool,
+}
+
+/// How a SysEx parameter is asked for and its reported value read.
+struct ReadWay {
+    entry: osd::ParamEntry,
+    way: osd::Way,
+    numbers: [u8; 4],
+}
+
+impl ReadWay {
+    /// A value the device reports, in the reference scale of the control.
+    fn reference(&self, reported: f64) -> f64 {
+        if self.way.scale() == self.entry.reference_scale() { return reported; }
+        self.entry.from_way(reported.round() as i64, &self.way) as f64
+    }
 }
 
 /// The text of a role: its parts (the number of a part as a segment after it), then its setting.
@@ -40,9 +58,9 @@ fn controls(dev: &osd::Device) -> Vec<Control> {
     for e in dev.cc_params.iter().flat_map(|t| &t.entries) {
         let Some(role) = &e.role else { continue };
         out.push(Control {
-            role: role_text(role), address: format!("{prefix}{}", e.osc), range: e.range.unwrap_or([0, 127]),
+            role: role_text(role), address: format!("{prefix}{}", e.osc), range: e.reference_scale(),
             default: e.default, step_count: e.step_count, priority: e.priority.unwrap_or(u8::MAX),
-            sysex: None, reads: false,
+            sysex: false, read_way: None, reads: false,
         });
     }
     if let Some(t) = &dev.params {
@@ -52,9 +70,12 @@ fn controls(dev: &osd::Device) -> Vec<Control> {
             let reads = t.get_frame.as_ref().is_some_and(|f| !f.is_empty())
                 && dev.replies.iter().flatten().any(|r| crate::device::address_text(&r.emit_osc) == address);
             out.push(Control {
-                role: role_text(role), address, range: e.range.unwrap_or([0, 127]),
+                role: role_text(role), address, range: e.reference_scale(),
                 default: e.default, step_count: e.step_count, priority: e.priority.unwrap_or(u8::MAX),
-                sysex: Some([e.pr.unwrap_or(0), e.p.unwrap_or(0), e.c.unwrap_or(0), e.r.unwrap_or(0)]),
+                sysex: true,
+                read_way: crate::device::sendable_way(&e.ways, &["sysex"]).ok().map(|way| ReadWay {
+                    entry: e.clone(), way: way.clone(), numbers: crate::frame::sysex_numbers(t, way),
+                }),
                 reads,
             });
         }
@@ -66,7 +87,7 @@ fn controls(dev: &osd::Device) -> Vec<Control> {
 /// The id of the driver an agent named, its OSC prefix and its controls with a role.
 fn device_controls(index: &DeviceIndex, args: &Value) -> Result<(String, String, Vec<Control>), String> {
     let wanted = args.get("device").and_then(Value::as_str).ok_or("missing device")?;
-    let entry = index.find(wanted).ok_or_else(|| format!("no driver '{wanted}' (see list_devices)"))?;
+    let entry = index.driver(wanted, || format!("no driver '{wanted}' (see list_devices)"))?;
     let dev = crate::device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.path.display()))?;
     Ok((entry.id.clone(), dev.device.osc_prefix.clone(), controls(&dev)))
 }
@@ -134,7 +155,7 @@ pub(super) fn set_by_role(index: &DeviceIndex, args: &Value, target: SocketAddr)
     }
     let (id, _, all) = device_controls(index, args)?;
     let c = match find(&id, &all, role) { Ok(c) => c, Err(done) => return done };
-    if c.sysex.is_some() {
+    if c.sysex {
         return Err(format!("the role '{role}' of {id} resolves to {}, a message that writes the device's memory: \
             set_by_role never does. Use restore_presets, which asks the person's consent (confirm_overwrite).", c.address));
     }
@@ -145,14 +166,14 @@ pub(super) fn get_by_role(index: &DeviceIndex, args: &Value, target: SocketAddr)
     let role = args.get("role").and_then(Value::as_str).ok_or("missing role")?;
     let (id, prefix, all) = device_controls(index, args)?;
     let c = match find(&id, &all, role) { Ok(c) => c, Err(done) => return done };
-    let Some(numbers) = c.sysex.filter(|_| c.reads) else {
+    let Some(read) = c.read_way.as_ref().filter(|_| c.reads) else {
         return Err(format!("{id} does not report the value of '{role}': its driver declares no read request \
             and reply pattern for it."));
     };
     let request = format!("{prefix}/param/get");
     use rosc::{decoder, encoder, OscMessage, OscPacket, OscType};
     let msg = OscPacket::Message(OscMessage { addr: request.clone(),
-        args: numbers.iter().map(|n| OscType::Int(*n as i32)).collect() });
+        args: read.numbers.iter().map(|n| OscType::Int(*n as i32)).collect() });
     let bytes = encoder::encode(&msg).map_err(|e| format!("osc encode: {e:?}"))?;
     let sock = UdpSocket::bind("0.0.0.0:0").map_err(|e| e.to_string())?;
     sock.send_to(&bytes, target).map_err(|e| e.to_string())?;
@@ -175,7 +196,7 @@ pub(super) fn get_by_role(index: &DeviceIndex, args: &Value, target: SocketAddr)
                 OscType::Double(d) => Some(*d),
                 _ => None,
             });
-            let Some(raw) = raw else { continue };
+            let Some(raw) = raw.map(|v| read.reference(v)) else { continue };
             let [lo, hi] = c.range;
             let value = if hi == lo { 0.0 } else { ((raw - lo as f64) / (hi - lo) as f64).clamp(0.0, 1.0) };
             let structured = json!({ "device": id, "role": role, "address": c.address, "value": value, "raw": raw });

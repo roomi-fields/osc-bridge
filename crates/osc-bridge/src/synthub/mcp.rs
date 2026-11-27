@@ -135,6 +135,8 @@ pub fn serve_with_midi(opts: McpOptions, base: &str, cache: Option<PathBuf>, pri
     let index = RwLock::new(Arc::new(crate::mcp::build_index(&root, &opts)));
     let trust = trust_in_background(link.clone());
     let mut fetched = std::collections::HashSet::new();
+    // Why `osd` refuses a driver the server gave: nothing of it is kept in the cache.
+    let mut refused: Vec<(String, String)> = Vec::new();
 
     let session = crate::mcp::run_session(input, out, |req| {
         // Once a session, the driver a call needs comes from the server; a
@@ -142,9 +144,16 @@ pub fn serve_with_midi(opts: McpOptions, base: &str, cache: Option<PathBuf>, pri
         if let Some(cache) = &cache {
             for name in drivers_wanted(req) {
                 if Settings::covers(&link.private, name, name) || !fetched.insert(name.to_string()) { continue; }
-                match super::catalogue::fetch(&link.client, name, cache) {
-                    Ok(_) => if let Ok(mut g) = index.write() { *g = Arc::new(DeviceIndex::build(cache, opts.tier_order)) },
-                    Err(e) => eprintln!("{name}: {e:#}"),
+                if let Err(e) = super::catalogue::fetch(&link.client, name, cache) {
+                    let why = crate::mcp::one_line(&e);
+                    eprintln!("{name}: {why}");
+                    if !e.chain().any(|cause| cause.is::<osd::Fault>()) { continue; }
+                    refused.push((name.to_string(), why));
+                }
+                if let Ok(mut g) = index.write() {
+                    let mut built = DeviceIndex::build(cache, opts.tier_order);
+                    for (name, why) in &refused { built.refuse(name, why); }
+                    *g = Arc::new(built);
                 }
             }
         }

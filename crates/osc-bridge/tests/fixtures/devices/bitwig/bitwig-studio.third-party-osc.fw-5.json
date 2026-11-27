@@ -1,17 +1,16 @@
 {
-  "$schema": "https://w3id.org/osd/0.5/device.schema.json",
+  "$schema": "https://w3id.org/osd/0.7/device.schema.json",
   "device": {
     "name": "Bitwig Studio",
     "vendor": "Bitwig",
-    "revision": "Bitwig Studio 5 + DrivenByMoss (latest)",
-    "osc_prefix": "/bitwig",
-    "kind": "software",
     "transport": {
       "kind": "osc",
       "host": "127.0.0.1",
       "port": 8000,
       "reply_port": 9000
-    }
+    },
+    "osc_prefix": "/bitwig",
+    "kind": "software"
   },
   "commands": [
     {
@@ -384,12 +383,12 @@
       ]
     }
   ],
-  "_sources": [
+  "sources": [
     {
       "type": "third-party-osc",
       "url": "https://github.com/git-moss/DrivenByMoss-Documentation/blob/master/Generic-Tools-Protocols/Open-Sound-Control-(OSC).md",
       "firmware": "Bitwig Studio 5",
-      "name": "DrivenByMoss (Bitwig Studio extension)",
+      "title": "DrivenByMoss (Bitwig Studio extension)",
       "version": "latest"
     }
   ],

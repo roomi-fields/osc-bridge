@@ -9,9 +9,9 @@ use std::net::{SocketAddr, UdpSocket};
 use std::sync::{Arc, Mutex, OnceLock};
 use std::time::{Duration, Instant};
 
-use crate::device::{address_text, attached_docs, full_osc_path};
+use crate::device::{address_text, attached_docs, full_osc_path, sendable_way};
 use crate::frame::{self, Bindings, Value};
-use osd::{Address, CcEntry, Command, CustomCommand, Device, ParamEntry, Scalar};
+use osd::{Address, CcEntry, Command, CustomCommand, Device, ParamEntry, Scalar, Way};
 use crate::midi_codec;
 use crate::routing::{self, DynamicRoutes};
 use crate::scripting::{EmitBlock, EmitOsc, EmitOscArg, ScriptContext, ScriptEngine};
@@ -150,7 +150,7 @@ impl Runtime {
             Some(conn)
         } else { None };
 
-        eprintln!("Device:  {} ({})", dev.device.name, dev.device.revision.as_deref().unwrap_or_default());
+        eprintln!("Device:  {}", dev.device.name);
         for line in fault_lines(&dev) { eprintln!("{line}"); }
         eprintln!("MIDI OUT [{}] {out_name}", opts.midi_out_port_idx);
         eprintln!("OSC IN   {}", opts.osc_bind);
@@ -388,12 +388,8 @@ fn try_midi_out(msg: &OscMessage, mo: &osd::MidiOut, prefix: &str) -> Option<Vec
         }
     };
     let default_channel = mo.default_channel.unwrap_or(0);
-    let note_offset = mo.note_offset.unwrap_or(0);
     let channel = |idx: usize| -> u8 {
         int_at(idx).map(|v| (v & 0x0F) as u8).unwrap_or(default_channel & 0x0F)
-    };
-    let apply_note = |n: i64| -> u8 {
-        ((n + note_offset).clamp(0, 127)) as u8
     };
     let u7 = |v: i64| -> u8 { v.clamp(0, 127) as u8 };
 
@@ -402,13 +398,13 @@ fn try_midi_out(msg: &OscMessage, mo: &osd::MidiOut, prefix: &str) -> Option<Vec
             let note = int_at(0)?;
             let vel  = int_at(1)?;
             let ch   = channel(2);
-            Some(vec![0x90 | ch, apply_note(note), u7(vel)])
+            Some(vec![0x90 | ch, u7(note), u7(vel)])
         }
         "/note/off" => {
             let note = int_at(0)?;
             let vel  = int_at(1).unwrap_or(0);
             let ch   = channel(2);
-            Some(vec![0x80 | ch, apply_note(note), u7(vel)])
+            Some(vec![0x80 | ch, u7(note), u7(vel)])
         }
         "/pitchbend" => {
             // value_u14: 0..16383, centre 8192
@@ -425,7 +421,7 @@ fn try_midi_out(msg: &OscMessage, mo: &osd::MidiOut, prefix: &str) -> Option<Vec
             let note = int_at(0)?;
             let v    = int_at(1)?;
             let ch   = channel(2);
-            Some(vec![0xA0 | ch, apply_note(note), u7(v)])
+            Some(vec![0xA0 | ch, u7(note), u7(v)])
         }
         "/program_change" => {
             let p  = int_at(0)?;
@@ -448,14 +444,10 @@ fn device_uses_scripting(dev: &Device) -> bool {
     !dev.derived_capabilities().is_empty()
 }
 
-/// Electra One's own annotation of a command (a free `_` key of the command):
-/// the parameter a preset's Lua reads through `parameterMap.get`.
-const ELECTRA_KEY: &str = "_electra";
-
 /// Hand the engine the value a command just sent (its last numeric OSC
 /// argument), for `parameterMap.get`.
 fn record_sent_value(cell: &ScriptCell, cmd: &Command, args: &[OscType]) {
-    if !cmd.remarks.contains_key(ELECTRA_KEY) { return; }
+    if !crate::scripting::is_electra_parameter(cmd) { return; }
     let Some(m) = cell.get() else { return };
     let v = args.iter().rev().find_map(|a| match a {
         OscType::Int(i) => Some(*i as i64),
@@ -468,11 +460,11 @@ fn record_sent_value(cell: &ScriptCell, cmd: &Command, args: &[OscType]) {
 }
 
 /// Hand the engine the value a device reply carries (its last numeric OSC
-/// argument) when the reply's address is that of a command annotated
-/// `_electra`, for `parameterMap.get`.
+/// argument) when the reply's address is that of a command Electra One numbers,
+/// for `parameterMap.get`.
 fn record_received_value(cell: &ScriptCell, dev: &Device, m: &OscMessage) {
     let Some(rel) = m.addr.strip_prefix(&dev.device.osc_prefix) else { return };
-    let Some(cmd) = dev.commands.iter().flatten().find(|c| c.remarks.contains_key(ELECTRA_KEY) && address_text(&c.osc) == rel) else { return };
+    let Some(cmd) = dev.commands.iter().flatten().find(|c| crate::scripting::is_electra_parameter(c) && address_text(&c.osc) == rel) else { return };
     record_sent_value(cell, cmd, &m.args);
 }
 
@@ -521,7 +513,7 @@ fn maybe_run_cmd_script(
 /// Dispatch a `custom_commands` entry. Build a ScriptContext populated with
 /// numeric and string OSC args, run the script under the requested profile,
 /// and — if the script filled `ctx.payload` — enqueue those bytes as SysEx
-/// (wrapped with header/footer when `wrap_sysex` is true).
+/// (wrapped with the SysEx header, and closed, when `wrap_sysex` is true).
 fn run_custom_command(
     cc: &CustomCommand,
     msg: &OscMessage,
@@ -782,16 +774,14 @@ pub fn handle_midi_in(
     }
 }
 
-/// Try to match `msg` against `pattern = header + pattern_body + footer`.
-/// Returns captured bindings if matched.
+/// Try to match `msg` against the device's header then `pattern`, closed by F7
+/// when the header opens with F0 and the pattern does not write it. Returns the
+/// captured bindings if matched.
 fn match_reply(msg: &[u8], dev: &Device, pattern: &[osd::FrameToken]) -> Option<Bindings> {
-    let sysex = dev.sysex.as_ref();
-    let h = sysex.and_then(|s| s.header.as_deref()).unwrap_or_default();
-    let f = sysex.and_then(|s| s.footer.as_deref()).unwrap_or_default();
-    if msg.len() < h.len() + f.len() || !msg.starts_with(h) || !msg.ends_with(f) {
-        return None;
+    let mut body = msg.strip_prefix(frame::sysex_header(dev))?;
+    if frame::sysex_header(dev).first() == Some(&0xF0) && pattern.last() != Some(&osd::FrameToken::Byte(0xF7)) {
+        body = body.strip_suffix(&[0xF7])?;
     }
-    let body = &msg[h.len()..msg.len() - f.len()];
     if body.len() != pattern.len() { return None; }
     let mut b = Bindings::new();
     for (pat, byte) in pattern.iter().zip(body.iter()) {
@@ -1190,10 +1180,14 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, r
                 OscType::Bool(x) => if *x { 1 } else { 0 },
                 _ => { ans.fault(&msg.addr, "cc argument is not numeric"); return; }
             };
+            let way = match sendable_way(&entry.ways, &CONTROL_KINDS) {
+                Ok(way) => way,
+                Err(e) => { ans.fault(&msg.addr, e); return; }
+            };
             let val_i = apply_transform(scripts, entry.transform.as_ref(), val_i, &msg.addr, ans);
-            let [lo, hi] = entry.range.unwrap_or([0, 127]);
-            let clamped = val_i.clamp(lo, hi);
-            match cc_messages(entry, *default_ch, clamped, &msg.args) {
+            let [lo, hi] = entry.reference_scale();
+            let sent = entry.in_way(val_i.clamp(lo, hi), way);
+            match cc_messages(way, *default_ch, sent, &msg.args) {
                 Ok(frames) => for f in frames { enqueue(tx, f, &msg.addr, ans); },
                 Err(e) => ans.fault(&msg.addr, e),
             }
@@ -1205,6 +1199,10 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, r
     if let Some(entry) = params.get(&msg.addr) {
         if let Some(v) = msg.args.first() {
             if let Some(pt) = &dev.params {
+                let way = match sendable_way(&entry.ways, &["sysex"]) {
+                    Ok(way) => way,
+                    Err(e) => { ans.fault(&msg.addr, e); return; }
+                };
                 // Apply transform (if any) by extracting numeric → transform → re-wrap.
                 let v_transformed = if entry.transform.is_some() {
                     let as_i = match v {
@@ -1220,7 +1218,7 @@ fn handle_message(msg: OscMessage, state: &DeviceDispatch, send_osc: &SendOsc, r
                 } else {
                     v.clone()
                 };
-                match frame::bindings_for_param_set(pt, entry, &v_transformed) {
+                match frame::bindings_for_param_set(pt, entry, way, &v_transformed) {
                     Ok(b) => {
                         match frame::build_frame(dev, pt.set_frame.as_deref().unwrap_or_default(), &b) {
                             Ok(frm) => { enqueue(tx, frm, &msg.addr, ans); return; }
@@ -1448,44 +1446,49 @@ fn eval_expr(expr: &str, b: &Bindings) -> Result<u8> {
     }
 }
 
-/// The Control Change messages for one cc_params entry set to `value`
-/// (already transformed and clamped): a CC (+ its LSB CC for 14-bit), or a
-/// parameter number (NRPN 99/98 or RPN 101/100) then data entry 6 (+38 for
-/// 14-bit). `args` is the OSC call: value, then the NRPN LSB for an entry
-/// with `nrpn_lsb_range`, then an optional channel.
-fn cc_messages(entry: &CcEntry, default_ch: u8, value: i64, args: &[OscType]) -> Result<Vec<Vec<u8>>, String> {
+/// The kinds of way a control of `cc_params` is sent by.
+const CONTROL_KINDS: [&str; 3] = ["cc", "nrpn", "rpn"];
+
+/// The Control Change messages that send `value` (already in the scale of
+/// `way`) by a way of `CONTROL_KINDS`: a CC (+ its second CC), or a parameter
+/// number (NRPN 99/98 or RPN 101/100) then data entry 6 (+38). Two data bytes
+/// go only when the way's maximum exceeds 127. `args` is the OSC call: value,
+/// then the NRPN LSB for a way with `nrpn_lsb_range`, then an optional channel.
+fn cc_messages(way: &Way, default_ch: u8, value: i64, args: &[OscType]) -> Result<Vec<Vec<u8>>, String> {
     let int_arg = |i: usize| args.get(i).and_then(|a| match a {
         OscType::Int(i) => Some(*i as i64),
         OscType::Long(i) => Some(*i),
         _ => None,
     });
-    let lsb_from_call = entry.nrpn_lsb_range.filter(|_| entry.nrpn_msb.is_some() && entry.nrpn_lsb.is_none());
-    let ch = int_arg(if lsb_from_call.is_some() { 2 } else { 1 }).map(|i| (i & 0x0F) as u8).unwrap_or(default_ch);
+    let block = way.nrpn_lsb_range;
+    let ch = int_arg(if block.is_some() { 2 } else { 1 }).map(|i| (i & 0x0F) as u8).unwrap_or(default_ch);
     let status = 0xB0 | (ch & 0x0F);
-    let is_14bit = entry.range.unwrap_or([0, 127])[1] > 127;
-    let msb = if is_14bit { ((value >> 7) & 0x7F) as u8 } else { (value as u8) & 0x7F };
+    let wide = way.scale()[1] > 127;
+    let msb = if wide { ((value >> 7) & 0x7F) as u8 } else { (value as u8) & 0x7F };
     let lsb = (value as u8) & 0x7F;
-    let number = match (entry.nrpn_msb, entry.nrpn_lsb, lsb_from_call, entry.rpn_msb, entry.rpn_lsb) {
-        (Some(m), Some(l), _, _, _) => Some((99, m, 98, l)),
-        (Some(m), None, Some([lo, hi]), _, _) => {
-            let l = int_arg(1).ok_or(format!("needs its NRPN LSB ({lo}-{hi}) after the value"))?;
-            Some((99, m, 98, l.clamp(lo, hi) as u8))
+    let numbers: Vec<u8> = way.ctrl_index.iter().flatten().map(|n| (*n & 0x7F) as u8).collect();
+    let (select, number) = match (way.ctrl_type.as_str(), numbers.as_slice()) {
+        ("cc", [cc]) => return Ok(vec![vec![status, *cc, msb]]),
+        ("cc", [cc, second]) => {
+            let mut out = vec![vec![status, *cc, msb]];
+            if wide { out.push(vec![status, *second, lsb]); }
+            return Ok(out);
         }
-        (_, _, _, Some(m), Some(l)) => Some((101, m, 100, l)),
-        _ => None,
+        ("nrpn", [m, l]) => {
+            let l = match block {
+                Some([lo, hi]) => {
+                    let asked = int_arg(1).ok_or(format!("needs its NRPN LSB ({lo}-{hi}) after the value"))?;
+                    (asked.clamp(lo, hi) & 0x7F) as u8
+                }
+                None => *l,
+            };
+            ((99, 98), (*m, l))
+        }
+        ("rpn", [m, l]) => ((101, 100), (*m, *l)),
+        (kind, _) => return Err(format!("a {kind} way with these numbers cannot be sent")),
     };
-    let mut out = Vec::new();
-    if let Some((cm, m, cl, l)) = number {
-        out.push(vec![status, cm, m & 0x7F]);
-        out.push(vec![status, cl, l & 0x7F]);
-        out.push(vec![status, 6, msb]);
-        if is_14bit { out.push(vec![status, 38, lsb]); }
-    } else if let Some(cc) = entry.cc {
-        out.push(vec![status, cc & 0x7F, msb]);
-        if let (true, Some(lsb_cc)) = (is_14bit, entry.cc_lsb) { out.push(vec![status, lsb_cc & 0x7F, lsb]); }
-    } else {
-        return Err("no cc, nrpn or rpn address".into());
-    }
+    let mut out = vec![vec![status, select.0, number.0], vec![status, select.1, number.1], vec![status, 6, msb]];
+    if wide { out.push(vec![status, 38, lsb]); }
     Ok(out)
 }
 
@@ -1555,7 +1558,7 @@ fn bind_osc(opts: RuntimeOptions) -> Result<BoundRuntime> {
         }
     }
 
-    eprintln!("Device:  {} ({})", dev.device.name, dev.device.revision.as_deref().unwrap_or_default());
+    eprintln!("Device:  {}", dev.device.name);
     eprintln!("OSC TGT  {target_addr}");
     eprintln!("OSC IN   {}", opts.osc_bind);
     for c in &opts.osc_clients { eprintln!("OSC CLI  {c}"); }

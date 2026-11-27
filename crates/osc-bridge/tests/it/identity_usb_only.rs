@@ -8,7 +8,7 @@ fn load_identity(identity: &str) -> anyhow::Result<osd::Device> {
     let dir = common::temp("identity-usb-only");
     let path = dir.path().join("box.json");
     let json = format!(r#"{{"device":{{"name":"Acme Box","osc_prefix":"/b"}},"identity":{identity}}}"#);
-    std::fs::write(&path, common::to06(&json)).unwrap();
+    std::fs::write(&path, common::to07(&json)).unwrap();
     load(&path)
 }
 

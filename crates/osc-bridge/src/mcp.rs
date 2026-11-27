@@ -70,7 +70,6 @@ pub struct DeviceIndexEntry {
     pub name: String,
     pub vendor: String,
     pub kind: String,
-    pub revision: String,
     pub tier: String,
     pub firmware: Option<String>,
     pub manufacturer_id: Vec<u8>,
@@ -88,7 +87,9 @@ pub struct DeviceIndexEntry {
 /// serialize and slug lookup is O(1).
 pub struct DeviceIndex {
     pub entries: Vec<DeviceIndexEntry>,
-    by_slug: HashMap<String, usize>,
+    /// What a name that is no listed id leads to: an OSC prefix to its entry; the
+    /// id of a driver `osd` refuses to its file and `osd`'s fault, on one line.
+    by_slug: HashMap<String, Result<usize, String>>,
 }
 
 impl DeviceIndex {
@@ -99,18 +100,32 @@ impl DeviceIndex {
     pub fn build(dir: &Path, order: crate::recognition::TierOrder) -> Self {
         let mut entries: Vec<DeviceIndexEntry> = Vec::new();
         let mut by_slug: HashMap<String, usize> = HashMap::new();
+        let mut refused: Vec<(String, String)> = Vec::new();
         let _ = walk_json(dir, &mut |path| {
             // A maker's profile is not a driver.
             if path.file_name().and_then(|f| f.to_str()).is_some_and(|f| f.starts_with('_')) { return; }
-            // The file as written (what it says of itself), and the driver
+            let id = path.strip_prefix(dir).unwrap_or(path).with_extension("").to_string_lossy().replace('\\', "/");
+            // The file's own text (what it says of itself), and the driver
             // as its firmware runs it: the MIDI it shares, and so the sounds
             // it loads, come from `osd`'s resolution.
-            let Some(own) = crate::device::read_own(path) else { return };
-            let shared = crate::device::load(path).ok();
+            let read = crate::device::read_own(path).and_then(|own| match crate::device::load(path) {
+                // A driver `osd` refuses is not listed.
+                Err(e) if e.chain().any(|cause| cause.is::<osd::Fault>()) => Err(e),
+                shared => Ok((own, shared.ok())),
+            });
+            let (own, shared) = match read {
+                Ok(read) => read,
+                Err(e) => {
+                    let why = one_line(&e);
+                    eprintln!("refused: {why}");
+                    refused.push((id, why));
+                    return;
+                }
+            };
             let body = shared.as_ref().unwrap_or(&own);
             let slug = own.device.osc_prefix.trim_start_matches('/').to_string();
             let source = own.sources.iter().flatten().next();
-            let tier = source.map(|s| s.kind.clone()).unwrap_or_else(|| "unknown".into());
+            let tier = source.map(source_tier).unwrap_or_else(|| "unknown".into());
             let firmware = source.and_then(|s| s.firmware.clone()).filter(|f| f != "unknown");
             let idx = entries.len();
             if !slug.is_empty() {
@@ -125,33 +140,73 @@ impl DeviceIndex {
             }
             entries.push(DeviceIndexEntry {
                 path: path.to_path_buf(),
-                id: path.strip_prefix(dir).unwrap_or(path).with_extension("")
-                    .to_string_lossy().replace('\\', "/"),
+                id,
                 slug,
                 name: own.device.name.clone(),
                 vendor: own.device.vendor.clone().unwrap_or_else(|| "?".into()),
                 kind: crate::device::kind_name(own.device.kind).to_string(),
-                revision: own.device.revision.clone().unwrap_or_default(),
                 tier,
                 firmware,
-                manufacturer_id: body.device.manufacturer_id.clone().unwrap_or_default(),
+                manufacturer_id: body.identity.as_ref()
+                    .map(|i| crate::device::kept_list(&i.manufacturer_id).to_vec()).unwrap_or_default(),
                 identity: body.identity.clone(),
                 loads_sounds_of: body.loads_sounds_of.clone().unwrap_or_default(),
                 midi_of: own.midi_of.clone(),
             });
         });
+        let mut by_slug: HashMap<_, _> = by_slug.into_iter().map(|(slug, i)| (slug, Ok(i))).collect();
+        by_slug.extend(refused.into_iter().map(|(id, why)| (id, Err(why))));
         Self { entries, by_slug }
     }
 
+    /// Keeps why `osd` refuses the driver `name`, which is not among the files
+    /// indexed: the answer to the tools that name it.
+    pub(crate) fn refuse(&mut self, name: &str, why: &str) {
+        self.by_slug.entry(name.to_string()).or_insert_with(|| Err(why.to_string()));
+    }
+
+    /// The driver a device tool is told to use, by its id or slug. A driver
+    /// `osd` refuses is answered with its file and fault, one the catalogue
+    /// does not know with `unknown`.
+    pub(crate) fn driver(&self, id_or_slug: &str, unknown: impl FnOnce() -> String) -> Result<&DeviceIndexEntry, String> {
+        self.find(id_or_slug).ok_or_else(|| match self.by_slug.get(id_or_slug) {
+            Some(Err(why)) => format!("the driver '{id_or_slug}' is refused: {why}"),
+            _ => unknown(),
+        })
+    }
+
     pub fn find_path(&self, slug: &str) -> Option<&Path> {
-        self.by_slug.get(slug).map(|&i| self.entries[i].path.as_path())
+        self.slug_entry(slug).map(|e| e.path.as_path())
     }
 
     /// A driver by its id (`korg/minilogue`) or, failing that, its slug.
     pub fn find(&self, id_or_slug: &str) -> Option<&DeviceIndexEntry> {
         self.entries.iter().find(|e| e.id == id_or_slug)
-            .or_else(|| self.by_slug.get(id_or_slug).map(|&i| &self.entries[i]))
+            .or_else(|| self.slug_entry(id_or_slug))
     }
+
+    fn slug_entry(&self, slug: &str) -> Option<&DeviceIndexEntry> {
+        match self.by_slug.get(slug)? {
+            Ok(i) => self.entries.get(*i),
+            Err(_) => None,
+        }
+    }
+}
+
+/// An error and its causes on one line, as a refused driver is told.
+pub(crate) fn one_line(e: &anyhow::Error) -> String {
+    format!("{e:#}").replace(['\n', '\r'], " ")
+}
+
+/// The trust of a driver as its first source says it: the source's type, or, for
+/// a contribution a product provides, the tier of that product.
+fn source_tier(source: &osd::Source) -> String {
+    match (source.kind.as_str(), source.provider.as_deref()) {
+        ("contributed", Some("electra-one")) => "electra-preset",
+        ("contributed", Some("pencilresearch")) => "pencilresearch",
+        ("contributed", Some("knobkraft")) => "knobkraft",
+        (kind, _) => kind,
+    }.into()
 }
 
 /// Build the catalogue index once — every device tool reads from it
@@ -311,7 +366,6 @@ pub fn local_tool_schemas() -> Value {
                                     "vendor": { "type": "string" },
                                     "osc_prefix": { "type": "string", "description": "OSC prefix without the leading slash." },
                                     "kind": { "type": "string", "description": "'hardware' or 'software'." },
-                                    "revision": { "type": "string" },
                                     "source_tier": { "type": "string" },
                                     "firmware": { "type": ["string", "null"], "description": "Firmware the source documents; null when it does not say." },
                                     "file": { "type": "string" }
@@ -357,7 +411,7 @@ pub fn local_tool_schemas() -> Value {
             },
             {
                 "name": "list_routes",
-                "description": "Return the OSC routes a device exposes: declarative commands (OSC paths it accepts), cc/nrpn params, sysex params, named note triggers (drum sounds), and reply patterns. Use this to discover what a device can do.",
+                "description": "Return the OSC routes a device exposes: declarative commands (OSC paths it accepts), cc/nrpn params, sysex params, named note triggers (drum sounds), and reply patterns. Each param carries its 'ways' as OSD 0.7 writes them. Use this to discover what a device can do.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -379,12 +433,12 @@ pub fn local_tool_schemas() -> Value {
                         },
                         "cc_params": {
                             "type": "array",
-                            "description": "CC / NRPN parameters, each mapped to an OSC address. Every entry carries an 'expects' field (continuous/switch/momentary/trigger/clock/discrete) describing the device-side nature of the control — informative only, the signal realization is the caller's concern.",
+                            "description": "CC / NRPN parameters, each mapped to an OSC address. Every entry carries 'ways' (the messages that reach the control, as OSD 0.7 writes them, in order of preference: ctrlType, ctrlIndex, range, in, slice…; empty when the message is not known), 'range' (the scale a value sent to the address is in), 'usage' (what the values mean, or null) and an 'expects' field (continuous/switch/momentary/trigger/clock/discrete) describing the device-side nature of the control — informative only, the signal realization is the caller's concern. A value is sent by the first way that holds in every context.",
                             "items": { "type": "object" }
                         },
                         "params": {
                             "type": "array",
-                            "description": "SysEx parameters, each mapped to an OSC address. Each entry carries an 'expects' field — see cc_params.",
+                            "description": "SysEx parameters, each mapped to an OSC address. Each entry carries 'ways', 'range', 'usage' and 'expects' — see cc_params.",
                             "items": { "type": "object" }
                         },
                         "triggers": {
@@ -789,7 +843,7 @@ pub fn local_tool_schemas() -> Value {
                         "probe": { "type": "boolean", "description": "Send the Identity Request (default true). False only lists ports and matches by port name." },
                         "timeout_ms": { "type": "integer", "description": "How long to wait for identity replies, 100-5000 ms (default 800)." },
                         "consent_ports": { "type": "array", "items": { "type": "string" }, "description": "Ports (a part of the name, or the exact out_port index) that receive every maker request, the held back ones too. Ask the person first and pass a port only with their explicit agreement for that port: a request meant for another maker's device may overwrite its memory. A fragment naming several ports or none is refused, and nothing is sent." },
-                        "learn": { "type": "boolean", "description": "Learn mode: instead of matching drivers, listen to each device and return its fingerprint (an OSD 0.6 fingerprint: usb, ports, identity_reply, sends, controls) with the measured delay of the identity reply and the period of what it sends alone, beside it. Sends nothing but the universal Identity Request; tell the person to move the device's controls while it listens." },
+                        "learn": { "type": "boolean", "description": "Learn mode: instead of matching drivers, listen to each device and return its fingerprint (an OSD 0.7 fingerprint: usb, ports, identity_reply, sends, controls) with the measured delay of the identity reply and the period of what it sends alone, beside it. Sends nothing but the universal Identity Request; tell the person to move the device's controls while it listens." },
                         "listen_ms": { "type": "integer", "description": "Learn mode only: how long to listen, 1000-30000 ms (default 5000)." },
                         "share_fingerprint": { "type": "string", "description": "Learn mode only: the port (a part of its name) whose fingerprint is sent to SyntHub, so that everyone recognises this device. Giving it, with vendor, model and firmware, sends that device's fingerprint to SyntHub (POST /v1/fingerprints): the vendor, model and firmware, the USB vendor and product ids, the identity_reply, the ports (names without machine numbers), what the device sends and its controls; never a serial number, a host name, a measure or anything about the person. Nothing is sent for a private device or when offline. Ask the person first. Needs vendor, model and firmware, none empty." },
                         "vendor": { "type": "string", "description": "Learn mode only, with share_fingerprint: the maker of the device, as the person names it (60 characters at most). Required." },
@@ -819,7 +873,7 @@ pub fn local_tool_schemas() -> Value {
                                     "candidates": { "type": "array", "items": { "type": "object" }, "description": "The catalogue drivers matching the device; one being confirmed carries confirmations, state and state_label." },
                                     "unlisted": { "type": "array", "items": { "type": "object" }, "description": "Only when no candidate: the devices the service names for it without a card (vendor, model, firmware, confirmations, disputed, state, state_label); proposed to the person, never imposed." },
                                     "run_command": { "type": ["string", "null"] },
-                                    "fingerprint": { "type": "object", "description": "Learn mode: the OSD 0.6 fingerprint of the device; a field it did not give is absent." },
+                                    "fingerprint": { "type": "object", "description": "Learn mode: the OSD 0.7 fingerprint of the device; a field it did not give is absent." },
                                     "measured": { "type": "object", "description": "Learn mode: local measures beside the fingerprint: identity_reply_ms with identity_reply_port, periods_ms (clock, active_sensing) with periods_port (the port each was measured on); absent when not observed." }
                                 },
                                 "required": ["port"]
@@ -1340,7 +1394,7 @@ pub fn unlisted_text(u: &Value) -> String {
 /// The driver of the device a preset tool is told to talk to; a device the
 /// catalogue does not know is refused, with the invitation to describe it.
 fn preset_device(index: &DeviceIndex, wanted: &str) -> Result<Device, String> {
-    let entry = index.find(wanted).ok_or_else(|| format!(
+    let entry = index.driver(wanted, || format!(
         "no driver '{wanted}' in the catalogue (see list_devices): describe the device first, so osc-bridge knows its banks and sounds"))?;
     crate::device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.path.display()))
 }
@@ -1484,7 +1538,6 @@ fn list_devices(index: &DeviceIndex, filter: &DeviceFilter, status: &dyn Fn(&str
         "vendor": e.vendor,
         "osc_prefix": e.slug,
         "kind": e.kind,
-        "revision": e.revision,
         "source_tier": e.tier,
         "firmware": e.firmware,
         "loads_sounds_of": e.loads_sounds_of,
@@ -1526,8 +1579,7 @@ pub fn vendor_dir(index: &DeviceIndex, vendor: &str) -> String {
 }
 
 fn load_device_by_slug(index: &DeviceIndex, slug: &str) -> Result<Device, String> {
-    let path = index.find(slug).map(|e| e.path.as_path()).or_else(|| index.find_path(slug))
-        .ok_or_else(|| format!("no device '{slug}' (see list_devices)"))?;
+    let path = &index.driver(slug, || format!("no device '{slug}' (see list_devices)"))?.path;
     crate::device::load_with_docs(path).map_err(|e| format!("load {}: {e}", path.display()))
 }
 
@@ -1535,7 +1587,7 @@ fn export_device(index: &DeviceIndex, args: &Value) -> Result<Value, String> {
     let wanted = device_arg(args)?;
     let format: crate::export::Format = args.get("format").and_then(Value::as_str).ok_or("missing format")?
         .parse().map_err(|e: anyhow::Error| e.to_string())?;
-    let entry = index.find(wanted).ok_or_else(|| format!("no driver '{wanted}' (see list_devices)"))?;
+    let entry = index.driver(wanted, || format!("no driver '{wanted}' (see list_devices)"))?;
     let dev = crate::device::load(&entry.path).map_err(|e| format!("load {}: {e}", entry.path.display()))?;
     let out = crate::export::export(&dev, format).map_err(|e| e.to_string())?;
     let document = out.value;
@@ -1586,24 +1638,24 @@ fn list_routes(index: &DeviceIndex, slug: &str) -> Result<Value, String> {
         }));
     }
     let expects = |e: &Option<String>| e.clone().unwrap_or_else(|| "continuous".into());
-    let range = |r: Option<[i64; 2]>| r.unwrap_or([0, 127]);
-    let cc_params: Vec<Value> = dev.cc_params.as_ref().map(|t| t.entries.iter().map(|e| json!({
+    // The ways of each control as `osd` writes the driver.
+    let written: Value = serde_json::from_str(&osd::write(&osd::Descriptor::Device(Box::new(dev.clone()))))
+        .map_err(|e| format!("{slug}: {e}"))?;
+    let ways = |table: &str, n: usize| written[table]["entries"][n]["ways"].clone();
+    let cc_params: Vec<Value> = dev.cc_params.as_ref().map(|t| t.entries.iter().enumerate().map(|(n, e)| json!({
         "address": format!("{prefix}{}", e.osc),
-        "cc": e.cc,
-        "cc_lsb": e.cc_lsb,
-        "nrpn_msb": e.nrpn_msb,
-        "nrpn_lsb": e.nrpn_lsb,
-        "nrpn_lsb_range": e.nrpn_lsb_range,
-        "rpn_msb": e.rpn_msb,
-        "rpn_lsb": e.rpn_lsb,
-        "range": range(e.range),
+        "ways": ways("cc_params", n),
+        "range": e.reference_scale(),
         "expects": expects(&e.expects),
-        "usage": e.remarks.get("_usage").and_then(Value::as_str),
+        "usage": e.value_description,
     })).collect()).unwrap_or_default();
-    let params: Vec<Value> = dev.params.as_ref().map(|t| t.entries.iter().map(|e| json!({
+    let params: Vec<Value> = dev.params.as_ref().map(|t| t.entries.iter().enumerate().map(|(n, e)| json!({
         "address": format!("{prefix}{}", e.osc),
-        "range": range(e.range),
+        "ways": ways("params", n),
+        "range": e.reference_scale(),
         "expects": expects(&e.expects),
+        // OSD gives a parameter no description of its values.
+        "usage": null,
     })).collect()).unwrap_or_default();
     let triggers: Vec<Value> = dev.triggers.as_ref().map(|t| t.entries.iter().map(|e| json!({
         "address": format!("{prefix}{}", e.osc),

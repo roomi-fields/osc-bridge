@@ -14,8 +14,8 @@ fn the_lost_elements_go_to_the_error_output_and_not_into_the_midnam_document() {
     assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
     let (document, shown) = (String::from_utf8(out.stdout).unwrap(), String::from_utf8(out.stderr).unwrap());
     assert!(document.contains("<MIDINameDocument>"), "{document}");
-    assert!(shown.contains("/_sources/0/firmware"), "the lost firmware is shown with its place: {shown}");
-    assert!(!document.contains("/_sources/0/firmware"), "the document holds no list of losses");
+    assert!(shown.contains("/sources/0/firmware"), "the lost firmware is shown with its place: {shown}");
+    assert!(!document.contains("/sources/0/firmware"), "the document holds no list of losses");
 }
 
 #[test]
@@ -25,7 +25,7 @@ fn the_lost_elements_go_to_the_error_output_and_not_into_the_oscquery_document()
     let shown = String::from_utf8(out.stderr).unwrap();
     let ns: serde_json::Value = serde_json::from_slice(&out.stdout).expect("the standard output is the document alone");
     assert_eq!(ns["FULL_PATH"], "/");
-    assert!(shown.contains("/_sources/0/firmware"), "{shown}");
+    assert!(shown.contains("/sources/0/firmware"), "{shown}");
 }
 
 #[test]

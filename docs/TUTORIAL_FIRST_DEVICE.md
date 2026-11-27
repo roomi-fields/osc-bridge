@@ -63,29 +63,33 @@ all the boilerplate there is:
 
 ```jsonc
 {
-  "_sources": [
+  "$schema": "https://w3id.org/osd/0.7/device.schema.json",
+  "sources": [
     {
       "type": "vendor-doc",
-      "name": "Acme Bassline MIDI Implementation Chart v1.2",
-      "url": "https://acme.example/bassline/midi.pdf"
+      "title": "Acme Bassline MIDI Implementation Chart v1.2",
+      "url": "https://acme.example/bassline/midi.pdf",
+      "firmware": "1.2"
     }
   ],
   "device": {
     "name": "Acme Bassline",
     "vendor": "Acme",
-    "revision": "firmware 1.2",
     "osc_prefix": "/bassline"
   }
 }
 ```
 
-- `_sources[]` — your provenance. `type` is one of `vendor-doc`,
-  `hardware-verified`, `electra-preset`, `pencilresearch`, … (see the schema doc).
+- `$schema` — the version of the format: 0.7. osc-bridge converts a driver of an
+  earlier version as it reads it, and leaves the file as it is.
+- `sources[]` — your provenance. `type` is one of `vendor-doc`,
+  `hardware-verified`, `community-re`, `contributed`, … (see the schema doc).
 - `osc_prefix` — every OSC route this device exposes will be prefixed with it.
   Keep it short and unambiguous.
 
-A SysEx synth would also declare `manufacturer_id` / `device_id` and a `sysex`
-header/footer. A pure-CC synth needs none of that.
+A SysEx synth would also declare `identity.manufacturerId`, `device.device_id`
+and a `sysex` header (osc-bridge closes the message with F7). A pure-CC synth
+needs none of that.
 
 ---
 
@@ -99,12 +103,12 @@ MIDI Control Change message.
   "cc_params": {
     "channel": 0,
     "entries": [
-      { "osc": "/filter/cutoff",    "cc": 74, "range": [0, 127] },
-      { "osc": "/filter/resonance", "cc": 71, "range": [0, 127] },
-      { "osc": "/amp/attack",       "cc": 73, "range": [0, 127] },
-      { "osc": "/amp/release",      "cc": 72, "range": [0, 127] },
-      { "osc": "/lfo/rate",         "cc": 76, "range": [0, 127] },
-      { "osc": "/lfo/depth",        "cc": 77, "range": [0, 127] }
+      { "osc": "/filter/cutoff",    "ways": [{ "ctrlType": "cc", "ctrlIndex": [74] }] },
+      { "osc": "/filter/resonance", "ways": [{ "ctrlType": "cc", "ctrlIndex": [71] }] },
+      { "osc": "/amp/attack",       "ways": [{ "ctrlType": "cc", "ctrlIndex": [73] }] },
+      { "osc": "/amp/release",      "ways": [{ "ctrlType": "cc", "ctrlIndex": [72] }] },
+      { "osc": "/lfo/rate",         "ways": [{ "ctrlType": "cc", "ctrlIndex": [76] }] },
+      { "osc": "/lfo/depth",        "ways": [{ "ctrlType": "cc", "ctrlIndex": [77] }] }
     ]
   }
 }
@@ -115,10 +119,12 @@ MIDI Control Change message.
 
 A few things you'll reach for as your device needs them:
 
-- **14-bit CC** — declare an `cc_lsb` alongside `cc` and widen the range:
-  `{ "osc": "/osc/pitch", "cc": 3, "cc_lsb": 35, "range": [0, 16383] }`
-- **NRPN** — declare `nrpn_msb` / `nrpn_lsb` instead of `cc`; the bridge emits
-  the full NRPN sequence for you.
+- **Ways** — a control lists the messages that reach it, in order of
+  preference; the bridge sends the first one it can.
+- **14-bit CC** — give the two numbers and the width:
+  `{ "osc": "/osc/pitch", "ways": [{ "ctrlType": "cc", "ctrlIndex": [3, 35], "value_bits": 14 }] }`
+- **NRPN** — a way of `"ctrlType": "nrpn"` with `"ctrlIndex": [msb, lsb]` and
+  `"value_bits"` (7 or 14); the bridge emits the full NRPN sequence for you.
 - **Per-entry channel** — add `"channel": 9` to one entry to override the
   default for that parameter only.
 - **Grouping** — add a `"section": "Filter"` tag; it's free-form and only used
@@ -138,8 +144,7 @@ performance routes:
 ```jsonc
 {
   "midi_out": {
-    "default_channel": 0,
-    "note_offset": 0
+    "default_channel": 0
   }
 }
 ```
@@ -235,7 +240,7 @@ you'll need it:
   hardware: `device.transport.kind = "osc"`. See the schema doc's
   "Software drivers" section.
 - **Checksums** — `twos7`, `sum7` and `xor7` are declarative: a frame token
-  `{checksum:<algorithm>@<from>[+<length>]}`, no Lua.
+  `{ "checksum": "<algorithm>", "from": <offset> }` (and `"length"`), no Lua.
 - **The Lua escape hatch** — other checksums, exotic encodings, conditional
   transforms: `transform` / `script`. Use sparingly; `lint` warns on every use.
   See [`scripting.md`](scripting.md).

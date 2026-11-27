@@ -27,7 +27,7 @@ pub struct Served {
 /// The namespace of the devices one bridge serves: the export document of
 /// each, their nodes merged under one root. With one device it is that
 /// device's export document. A device whose document cannot be written (no
-/// `_sources`) is left out and named in `faults`; the others are served.
+/// `sources`) is left out and named in `faults`; the others are served.
 pub fn namespace(devices: &[Device]) -> Served {
     let mut docs = Vec::new();
     let (mut faults, mut unserved_prefixes) = (Vec::new(), Vec::new());

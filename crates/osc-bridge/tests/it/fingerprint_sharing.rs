@@ -42,7 +42,7 @@ fn client(fake: &Fake, dir: &Path) -> Online {
 /// A learned fingerprint, with a serial number, a host name and local things that must not leave.
 fn learned() -> Value {
     json!({
-        "$schema": "https://w3id.org/osd/0.6/fingerprint.schema.json",
+        "$schema": "https://w3id.org/osd/0.7/fingerprint.schema.json",
         "observed": "studio-pc.local /home/anna/rig",
         "via": "native",
         "hostname": "studio-pc",

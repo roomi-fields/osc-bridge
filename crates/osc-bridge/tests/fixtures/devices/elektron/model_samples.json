@@ -1,311 +1,512 @@
 {
-  "$schema": "https://w3id.org/osd/0.5/device.schema.json",
+  "$schema": "https://w3id.org/osd/0.7/device.schema.json",
   "device": {
     "name": "Model Samples",
     "vendor": "Elektron",
-    "revision": "per pencilresearch canonical CSV",
-    "osc_prefix": "/model_samples",
-    "manufacturer_id": [],
     "device_id": [],
+    "osc_prefix": "/model_samples",
     "rate_limit_hz": 1000
   },
   "sysex": {
-    "header": [],
-    "footer": []
+    "header": []
   },
   "cc_params": {
     "channel": 0,
     "entries": [
       {
         "osc": "/track/note",
-        "cc": 3,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Track"
+        "polarity": "unipolar",
+        "section": "Track",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              3
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/track/mute",
-        "cc": 94,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Track"
+        "polarity": "unipolar",
+        "section": "Track",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              94
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/track/level",
-        "cc": 95,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Track"
+        "polarity": "unipolar",
+        "section": "Track",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              95
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/track/pan",
-        "cc": 10,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "centered",
-        "section": "Track"
+        "polarity": "bipolar",
+        "section": "Track",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              10
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/sample/pitch",
-        "cc": 16,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "centered",
-        "section": "Sample"
+        "polarity": "bipolar",
+        "section": "Sample",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              16
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/sample/decay_time",
-        "cc": 80,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Sample"
+        "polarity": "unipolar",
+        "section": "Sample",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              80
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/sample/start",
-        "cc": 19,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Sample"
+        "polarity": "unipolar",
+        "section": "Sample",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              19
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/sample/length",
-        "cc": 20,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Sample"
+        "polarity": "unipolar",
+        "section": "Sample",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              20
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/filter/cutoff",
-        "cc": 74,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "centered",
-        "section": "Filter"
+        "polarity": "bipolar",
+        "section": "Filter",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              74
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/filter/resonance",
-        "cc": 71,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Filter"
+        "polarity": "unipolar",
+        "section": "Filter",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              71
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/amp/volume_distortion",
-        "cc": 7,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Amp"
+        "polarity": "unipolar",
+        "section": "Amp",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              7
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/amp/delay_send",
-        "cc": 12,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Amp"
+        "polarity": "unipolar",
+        "section": "Amp",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              12
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/amp/reverb_send",
-        "cc": 13,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Amp"
+        "polarity": "unipolar",
+        "section": "Amp",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              13
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/sequencer/swing",
-        "cc": 15,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Sequencer"
+        "polarity": "unipolar",
+        "section": "Sequencer",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              15
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/sequencer/chance",
-        "cc": 14,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Sequencer"
+        "polarity": "unipolar",
+        "section": "Sequencer",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              14
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/playback/loop",
-        "cc": 17,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Playback"
+        "polarity": "unipolar",
+        "section": "Playback",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              17
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/playback/reverse",
-        "cc": 18,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Playback"
+        "polarity": "unipolar",
+        "section": "Playback",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              18
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/lfo/speed",
-        "cc": 102,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "centered",
-        "section": "LFO"
+        "polarity": "bipolar",
+        "section": "LFO",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              102
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/lfo/multiplier",
-        "cc": 103,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "LFO"
+        "polarity": "unipolar",
+        "section": "LFO",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              103
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/lfo/fade_in_out",
-        "cc": 104,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "centered",
-        "section": "LFO"
+        "polarity": "bipolar",
+        "section": "LFO",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              104
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/lfo/destination",
-        "cc": 105,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "LFO"
+        "polarity": "unipolar",
+        "section": "LFO",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              105
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/lfo/waveform",
-        "cc": 106,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "LFO"
+        "polarity": "unipolar",
+        "section": "LFO",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              106
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/lfo/start_phase",
-        "cc": 107,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "LFO"
+        "polarity": "unipolar",
+        "section": "LFO",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              107
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/lfo/reset",
-        "cc": 108,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "LFO"
+        "polarity": "unipolar",
+        "section": "LFO",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              108
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/lfo/depth",
-        "cc": 109,
-        "cc_lsb": 110,
-        "range": [
-          0,
-          16383
-        ],
-        "orientation": "centered",
-        "section": "LFO"
+        "polarity": "bipolar",
+        "section": "LFO",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              109,
+              110
+            ],
+            "value_bits": 14,
+            "range": [
+              0,
+              16383
+            ]
+          }
+        ]
       },
       {
         "osc": "/effects/delay_time",
-        "cc": 85,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Effects"
+        "polarity": "unipolar",
+        "section": "Effects",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              85
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/effects/delay_feedback",
-        "cc": 86,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Effects"
+        "polarity": "unipolar",
+        "section": "Effects",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              86
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/effects/reverb_size",
-        "cc": 87,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Effects"
+        "polarity": "unipolar",
+        "section": "Effects",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              87
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/effects/reverb_tone",
-        "cc": 88,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "centered",
-        "section": "Effects"
+        "polarity": "bipolar",
+        "section": "Effects",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              88
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       }
     ]
   },
@@ -478,8 +679,7 @@
     ]
   },
   "midi_out": {
-    "default_channel": 0,
-    "note_offset": 0
+    "default_channel": 0
   },
   "midi_in": [
     "note_on",
@@ -489,15 +689,17 @@
     "aftertouch"
   ],
   "replies": [],
-  "_sources": [
+  "sources": [
     {
-      "type": "pencilresearch",
+      "type": "contributed",
       "url": "https://github.com/pencilresearch/midi/blob/91299d6/Elektron/Model Samples.csv",
       "firmware": "unknown",
       "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
       "license": "CC-BY-SA-4.0",
       "commit": "91299d6",
-      "imported_at": "2026-10-22"
+      "_imported_at": "2026-10-22",
+      "provider": "pencilresearch",
+      "notes": "type in 0.6: pencilresearch"
     }
   ],
   "_coverage": {
@@ -507,5 +709,8 @@
     "nrpn_entries": 0,
     "triggers": 13
   },
-  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template."
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "identity": {
+    "manufacturerId": []
+  }
 }

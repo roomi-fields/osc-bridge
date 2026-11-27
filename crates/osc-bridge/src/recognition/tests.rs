@@ -56,10 +56,11 @@ fn cand(slug: &str, name: &str, vendor: &str, mfr: &[u8]) -> Candidate {
                 manufacturer_id: mfr.to_vec(), identity: None, firmware: None, midi_of: None }
 }
 
-/// The `identity` block of a 0.5 driver, as `osd` reads it.
+/// The `identity` block of a 0.5 driver, as `osd` reads its 0.7 form.
 fn ident(block: &str) -> osd::Identity {
     let capabilities = if block.contains("\"script\"") { r#","capabilities":["lua"]"# } else { "" };
     let text = format!(r#"{{"$schema":"https://w3id.org/osd/0.5/device.schema.json","device":{{"name":"Box","osc_prefix":"/box"}}{capabilities},"identity":{block}}}"#);
+    let text = osd::convert_to(&text, osd::Kind::Device, osd::Version::V0_7).unwrap_or_else(|e| panic!("{e}\n{text}"));
     match osd::read(&text, osd::Kind::Device).unwrap_or_else(|e| panic!("{e}\n{text}")) {
         osd::Descriptor::Device(d) => d.identity.unwrap(),
         _ => unreachable!(),

@@ -1,248 +1,415 @@
 {
-  "$schema": "https://w3id.org/osd/0.6/device.schema.json",
+  "$schema": "https://w3id.org/osd/0.7/device.schema.json",
   "device": {
     "name": "MicroFreak",
     "vendor": "Arturia",
-    "revision": "per pencilresearch canonical CSV",
-    "osc_prefix": "/microfreak",
-    "manufacturer_id": [],
     "device_id": [],
+    "osc_prefix": "/microfreak",
     "rate_limit_hz": 1000
   },
   "sysex": {
-    "header": [],
-    "footer": []
+    "header": []
   },
   "cc_params": {
     "channel": 0,
     "entries": [
       {
         "osc": "/general/glide",
-        "cc": 5,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "General"
+        "polarity": "unipolar",
+        "section": "General",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              5
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/oscillator/type",
-        "cc": 9,
-        "range": [
-          0,
-          127
+        "values": [
+          {
+            "value": 0,
+            "title": "Basic Waves"
+          },
+          {
+            "value": 12,
+            "title": "SuperWave"
+          },
+          {
+            "value": 17,
+            "title": "Wavetable"
+          },
+          {
+            "value": 23,
+            "title": "Harmo"
+          },
+          {
+            "value": 28,
+            "title": "Karplus St"
+          },
+          {
+            "value": 34,
+            "title": "V. Analog"
+          },
+          {
+            "value": 39,
+            "title": "Waveshaper"
+          },
+          {
+            "value": 45,
+            "title": "Two Op FM"
+          }
         ],
-        "orientation": "0-based",
+        "polarity": "unipolar",
         "section": "Oscillator",
-        "values": {
-          "Basic Waves": 0,
-          "SuperWave": 12,
-          "Wavetable": 17,
-          "Harmo": 23,
-          "Karplus St": 28,
-          "V. Analog": 34,
-          "Waveshaper": 39,
-          "Two Op FM": 45
-        },
-        "_usage": "0-11: Basic Waves; 12-16: SuperWave; 17-22: Wavetable; 23-27: Harmo; 28-33: Karplus St; 34-38: V. Analog; 39-44: Waveshaper; 45-49: Two Op FM; 50-55: "
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              9
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ],
+        "value_description": "0-11: Basic Waves; 12-16: SuperWave; 17-22: Wavetable; 23-27: Harmo; 28-33: Karplus St; 34-38: V. Analog; 39-44: Waveshaper; 45-49: Two Op FM; 50-55: "
       },
       {
         "osc": "/oscillator/wave",
-        "cc": 10,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Oscillator"
+        "polarity": "unipolar",
+        "section": "Oscillator",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              10
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/oscillator/timbre",
-        "cc": 12,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Oscillator"
+        "polarity": "unipolar",
+        "section": "Oscillator",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              12
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/oscillator/shape",
-        "cc": 13,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Oscillator"
+        "polarity": "unipolar",
+        "section": "Oscillator",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              13
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/filter/cutoff",
-        "cc": 23,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Filter"
+        "polarity": "unipolar",
+        "section": "Filter",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              23
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/filter/resonance",
-        "cc": 83,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Filter"
+        "polarity": "unipolar",
+        "section": "Filter",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              83
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/cycling_envelope/cycling_env_rise",
-        "cc": 102,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Cycling envelope"
+        "polarity": "unipolar",
+        "section": "Cycling envelope",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              102
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/cycling_envelope/cycling_env_fall",
-        "cc": 103,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Cycling envelope"
+        "polarity": "unipolar",
+        "section": "Cycling envelope",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              103
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/cycling_envelope/cycling_env_hold",
-        "cc": 28,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Cycling envelope"
+        "polarity": "unipolar",
+        "section": "Cycling envelope",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              28
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/cycling_envelope/cycling_env_amount",
-        "cc": 24,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Cycling envelope"
+        "polarity": "unipolar",
+        "section": "Cycling envelope",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              24
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/arpeggiator_sequencer/arp_seq_rate_free",
-        "cc": 91,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Arpeggiator/sequencer"
+        "polarity": "unipolar",
+        "section": "Arpeggiator/sequencer",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              91
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/arpeggiator_sequencer/arp_seq_rate_sync",
-        "cc": 92,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Arpeggiator/sequencer"
+        "polarity": "unipolar",
+        "section": "Arpeggiator/sequencer",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              92
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/lfo/rate_free",
-        "cc": 93,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "LFO"
+        "polarity": "unipolar",
+        "section": "LFO",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              93
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/lfo/rate_sync",
-        "cc": 94,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "LFO"
+        "polarity": "unipolar",
+        "section": "LFO",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              94
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/envelope/attack",
-        "cc": 105,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Envelope"
+        "polarity": "unipolar",
+        "section": "Envelope",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              105
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/envelope/decay",
-        "cc": 106,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Envelope"
+        "polarity": "unipolar",
+        "section": "Envelope",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              106
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/envelope/sustain",
-        "cc": 29,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Envelope"
+        "polarity": "unipolar",
+        "section": "Envelope",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              29
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/envelope/filter_amount",
-        "cc": 26,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Envelope"
+        "polarity": "unipolar",
+        "section": "Envelope",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              26
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/keyboard/hold_button_toggle",
-        "cc": 64,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Keyboard"
+        "polarity": "unipolar",
+        "section": "Keyboard",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              64
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       },
       {
         "osc": "/keyboard/spice",
-        "cc": 2,
-        "range": [
-          0,
-          127
-        ],
-        "orientation": "0-based",
-        "section": "Keyboard"
+        "polarity": "unipolar",
+        "section": "Keyboard",
+        "ways": [
+          {
+            "ctrlType": "cc",
+            "ctrlIndex": [
+              2
+            ],
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
       }
     ]
   },
   "commands": [],
   "midi_out": {
-    "default_channel": 0,
-    "note_offset": 0
+    "default_channel": 0
   },
   "midi_in": [
     "note_on",
@@ -252,15 +419,17 @@
     "aftertouch"
   ],
   "replies": [],
-  "_sources": [
+  "sources": [
     {
-      "type": "pencilresearch",
+      "type": "contributed",
       "url": "https://github.com/pencilresearch/midi/blob/91299d6/Arturia/MicroFreak.csv",
       "firmware": "unknown",
       "attribution": "MIDI Guide (https://midi.guide) by Pencil Research and contributors",
       "license": "CC-BY-SA-4.0",
       "commit": "91299d6",
-      "imported_at": "2026-10-22"
+      "_imported_at": "2026-10-22",
+      "provider": "pencilresearch",
+      "notes": "type in 0.6: pencilresearch"
     }
   ],
   "_coverage": {
@@ -269,5 +438,8 @@
     "fourteen_bit_cc_pairs": 0,
     "nrpn_entries": 0
   },
-  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template."
+  "_limitations": "CC/NRPN only. SysEx (preset management, display control, bulk dump/load, vendor-proprietary opcodes) is NOT covered by pencilresearch. To extend this device with SysEx, sniff the vendor editor, add `sysex.header/footer` + `commands` blocks, and use `update_device.md` PR template.",
+  "identity": {
+    "manufacturerId": []
+  }
 }

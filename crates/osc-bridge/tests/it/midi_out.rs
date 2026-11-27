@@ -13,12 +13,12 @@ use rosc::{OscMessage, OscType};
 // Strategy: parse a minimal device JSON with midi_out, then call the exposed
 // helper via a public shim added in runtime.rs for testing.
 
-/// The `midi_out` block: default channel and note offset.
+/// The `midi_out` block: the default channel.
 #[derive(Default)]
-struct MidiOut { default_channel: u8, note_offset: i64 }
+struct MidiOut { default_channel: u8 }
 
 fn bare_device(mo: Option<MidiOut>) -> osd::Device {
-    let midi_out = mo.map(|m| format!(r#","midi_out":{{"default_channel":{},"note_offset":{}}}"#, m.default_channel, m.note_offset)).unwrap_or_default();
+    let midi_out = mo.map(|m| format!(r#","midi_out":{{"default_channel":{}}}"#, m.default_channel)).unwrap_or_default();
     device_of(&format!(r#"{{"device":{{"name":"t","vendor":"t","revision":"1","osc_prefix":"/t","manufacturer_id":[127]}}{midi_out}}}"#))
 }
 
@@ -32,25 +32,24 @@ fn build(dev: &osd::Device, addr: &str, args: Vec<OscType>) -> Option<Vec<u8>> {
 
 #[test]
 fn note_on_default_channel() {
-    let d = bare_device(Some(MidiOut { default_channel: 0, note_offset: 0 }));
+    let d = bare_device(Some(MidiOut { default_channel: 0 }));
     let r = build(&d, "/t/note/on", vec![OscType::Int(60), OscType::Int(100)]).unwrap();
     assert_eq!(r, vec![0x90, 60, 100]);
 }
 
 #[test]
 fn note_on_override_channel() {
-    let d = bare_device(Some(MidiOut { default_channel: 0, note_offset: 0 }));
+    let d = bare_device(Some(MidiOut { default_channel: 0 }));
     let r = build(&d, "/t/note/on",
         vec![OscType::Int(60), OscType::Int(100), OscType::Int(9)]).unwrap();
     assert_eq!(r, vec![0x90 | 9, 60, 100]);
 }
 
 #[test]
-fn note_on_with_note_offset_for_drums() {
-    let d = bare_device(Some(MidiOut { default_channel: 9, note_offset: 36 }));
-    // OSC sends note 0 ("kick" in Kanopi-speak), actual MIDI note = 36
-    let r = build(&d, "/t/note/on", vec![OscType::Int(0), OscType::Int(120)]).unwrap();
-    assert_eq!(r, vec![0x90 | 9, 36, 120]);
+fn a_note_offset_written_before_0_7_is_removed_by_the_conversion_and_moves_no_note() {
+    let d = device_of(r#"{"device":{"name":"t","osc_prefix":"/t"},"midi_out":{"default_channel":9,"note_offset":36}}"#);
+    let r = build(&d, "/t/note/on", vec![OscType::Int(60), OscType::Int(120)]).unwrap();
+    assert_eq!(r, vec![0x90 | 9, 60, 120]);
 }
 
 #[test]
@@ -80,7 +79,7 @@ fn aftertouch_channel_pressure() {
 
 #[test]
 fn poly_aftertouch() {
-    let d = bare_device(Some(MidiOut { default_channel: 3, note_offset: 0 }));
+    let d = bare_device(Some(MidiOut { default_channel: 3 }));
     let r = build(&d, "/t/poly_aftertouch",
         vec![OscType::Int(60), OscType::Int(80)]).unwrap();
     assert_eq!(r, vec![0xA0 | 3, 60, 80]);

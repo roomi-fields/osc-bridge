@@ -90,12 +90,17 @@ pub fn install(
     Ok(done)
 }
 
-/// The output port that is the target's: a port name that holds one of the
-/// names the descriptor gives it for its ports, or else its own name.
+/// The output port that is the target's: one a port rule of its descriptor names
+/// (a rule without direction or of the output direction), or, for a descriptor
+/// without rules, a port name that holds its own name.
 fn port_of(target: &Device, outputs: &[String]) -> Option<String> {
-    let named = target.identity.as_ref().and_then(|i| crate::device::kept(&i.ports).cloned()).filter(|p| !p.is_empty());
-    let patterns = named.unwrap_or_else(|| vec![target.device.name.clone()]);
-    outputs.iter().find(|p| crate::recognition::port_matches(&patterns, p)).cloned()
+    let rules = target.identity.as_ref().map(|i| crate::device::kept_list(&i.ports)).unwrap_or_default();
+    let own = [target.device.name.clone()];
+    outputs.iter().find(|p| if rules.is_empty() {
+        crate::recognition::port_matches(&own, p)
+    } else {
+        crate::recognition::rules_match(rules, None, p)
+    }).cloned()
 }
 
 /// The facts a message of a step is made of.

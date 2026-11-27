@@ -16,11 +16,11 @@ fn find_frame<'a>(dev: &'a osd::Device, osc: &str) -> &'a [osd::FrameToken] {
 }
 
 #[test]
-fn header_and_footer() {
+fn the_header_is_the_one_of_the_driver_and_0_7_holds_no_footer() {
     let d = load();
     let sysex = d.sysex.as_ref().unwrap();
     assert_eq!(sysex.header, Some(vec![0xF0, 0x00, 0x20, 0x29, 0x02, 0x15]));
-    assert_eq!(sysex.footer, Some(vec![0xF7]));
+    assert_eq!(sysex.footer, None);
 }
 
 #[test]
@@ -72,6 +72,14 @@ fn display_text() {
                        b'H', b'e', b'l', b'l', b'o', 0xF7]);
 }
 
+/// The CC number of a control reached by one CC way.
+fn only_cc(e: &osd::CcEntry) -> i64 {
+    match e.ways.as_slice() {
+        [w] if w.ctrl_type == "cc" => w.ctrl_index.as_ref().unwrap()[0],
+        other => panic!("{}: not one cc way: {other:?}", e.osc),
+    }
+}
+
 #[test]
 fn cc_params_count_and_layout() {
     let d = load();
@@ -82,10 +90,10 @@ fn cc_params_count_and_layout() {
     assert_eq!(ccs.channel, Some(6));
     // Feature: surface mode CC 30
     let sm = ccs.entries.iter().find(|e| e.osc == "/feature/surface_mode").unwrap();
-    assert_eq!(sm.cc, Some(30));
+    assert_eq!(only_cc(sm), 30);
     // LED palette for encoder row1/1 is CC 13 on channel 0 (MIDI ch 1)
     let e1 = ccs.entries.iter().find(|e| e.osc == "/led/palette/encoder/row1/1").unwrap();
-    assert_eq!(e1.cc, Some(13));
+    assert_eq!(only_cc(e1), 13);
     assert_eq!(e1.channel, Some(0));
 }
 

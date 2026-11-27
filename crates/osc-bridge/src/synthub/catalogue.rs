@@ -68,7 +68,8 @@ pub fn fetch(online: &Online, name: &str, cache: &Path) -> Result<PathBuf> {
 /// Lower is more trustworthy: tested on the device, then observed on it or
 /// described by the vendor, then curated OSC surfaces, then community sources,
 /// then what was contributed (checked automatically, not reviewed). Every type
-/// of the OSD 0.6 format has its rank; an `x-` extension or unknown term ranks last.
+/// of the OSD format has its rank, as does the tier of a contribution a product
+/// provides (`mcp::source_tier`); an `x-` extension or unknown term ranks last.
 pub fn tier_rank(tier: &str) -> u8 {
     match tier {
         "hardware-verified" | "software-verified" => 0,

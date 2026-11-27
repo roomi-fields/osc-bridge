@@ -1,7 +1,8 @@
 //! The engine reads its drivers through `osd`: `device::load` gives the
 //! `osd::Device` of a driver as the catalogue resolves it, a driver `osd`
-//! refuses is refused with `osd`'s fault, the companion note is read by the
-//! engine, and `identity.sends` / `identity.usb` are kept as written.
+//! refuses is refused with `osd`'s fault, a driver of an earlier version is
+//! converted to 0.7, the companion note is read by the engine, and
+//! `identity.usb` is kept as written.
 
 use crate::common::{device05, files, temp, D05, P05};
 use osc_bridge::device::{docs_of, full_osc_path, load};
@@ -47,38 +48,38 @@ fn osd_fault(err: &anyhow::Error) -> &osd::Fault {
 
 // ---- reading through osd ----------------------------------------------------
 
-/// A test driver is 0.5, or 0.6 when it carries a field only 0.6 defines (named `values` of a CC entry).
-fn assert_schema(schema: Option<osd::Version>, text: &str, path: &Path) {
-    match schema {
-        Some(osd::Version::V0_5) => {}
-        Some(osd::Version::V0_6) => assert!(text.contains("\"values\""), "{}: 0.6 without a 0.6-only field", path.display()),
-        other => panic!("{}: {other:?}", path.display()),
-    }
-}
-
 #[test]
-fn every_test_driver_reads_without_fault_and_converts_to_a_stable_0_6_text() {
+fn every_test_driver_is_written_in_0_7_and_reads_without_fault() {
     let all = fixture_files();
     assert!(all.len() >= 14, "{all:?}");
     for path in all {
         let text = std::fs::read_to_string(&path).unwrap();
         let kind = kind_of(&path);
-        let read = osd::read(&text, kind).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
-        match read {
-            osd::Descriptor::Device(d) => assert_schema(d.schema, &text, &path),
-            osd::Descriptor::Profile(p) => assert_schema(p.schema, &text, &path),
+        let schema = match osd::read(&text, kind).unwrap_or_else(|e| panic!("{}: {e}", path.display())) {
+            osd::Descriptor::Device(d) => d.schema,
+            osd::Descriptor::Profile(p) => p.schema,
             other => panic!("{}: {:?}", path.display(), other.kind()),
-        }
-        // The converter writes the published version, 0.6: a 0.5 driver is converted to the 0.6 text the
-        // reader writes, which reads and which the converter leaves as it is.
-        let converted = osd::convert(&text, kind).unwrap_or_else(|e| panic!("{}: convert: {e}", path.display()));
-        assert!(converted.contains("/osd/0.6/"), "{}: the converter writes 0.6", path.display());
-        match osd::read(&converted, kind).unwrap_or_else(|e| panic!("{}: converted: {e}", path.display())) {
-            osd::Descriptor::Device(d) => assert_eq!(d.schema, Some(osd::Version::V0_6), "{}", path.display()),
-            osd::Descriptor::Profile(p) => assert_eq!(p.schema, Some(osd::Version::V0_6), "{}", path.display()),
-            other => panic!("{}: {:?}", path.display(), other.kind()),
-        }
-        assert_eq!(osd::convert(&converted, kind).unwrap(), converted, "{}: the converter leaves its own output as it is", path.display());
+        };
+        assert_eq!(schema, Some(osd::Version::V0_7), "{}", path.display());
+    }
+}
+
+#[test]
+fn a_driver_and_the_files_it_names_of_earlier_versions_are_loaded_in_0_7_and_kept_as_received() {
+    let profile = format!(r#"{{"$schema":"{P05}","identity":{{"reply":[240,126]}}}}"#);
+    let base = r#"{"device":{"name":"Box","vendor":"Acme","osc_prefix":"/box"},"cc_params":{"entries":[{"osc":"/cutoff","cc":74}]}}"#;
+    let fork = format!(r#"{{"$schema":"{D05}","device":{{"name":"Box","vendor":"Acme","osc_prefix":"/fork","manufacturer_id":[125]}},
+        "midi_of":"acme/box","identity":{{"profile":"acme","ports":["Box"]}}}}"#);
+    let files_ = [("acme/_profile.json", profile.as_str()), ("acme/box.json", base), ("acme/fork.json", fork.as_str())];
+    let root = catalogue(&files_);
+    for rel in ["acme/box.json", "acme/fork.json"] {
+        let dev = load(root.path().join(rel)).unwrap_or_else(|e| panic!("{rel}: {e:#}"));
+        assert_eq!(dev.schema, Some(osd::Version::V0_7), "{rel}");
+        let ways = &dev.cc_params.as_ref().unwrap().entries[0].ways;
+        assert_eq!((ways.len(), ways[0].ctrl_type.as_str(), ways[0].ctrl_index.clone()), (1, "cc", Some(vec![74])), "{rel}");
+    }
+    for (rel, received) in files_ {
+        assert_eq!(std::fs::read_to_string(root.path().join(rel)).unwrap(), received, "{rel} is left as it was received");
     }
 }
 
@@ -163,7 +164,7 @@ fn the_documents_of_the_driver_format_point_to_osd_and_the_old_schema_document_i
     assert!(!Path::new("../../docs/DEVICE_JSON_SCHEMA.md").exists(), "docs/DEVICE_JSON_SCHEMA.md is removed");
 }
 
-// ---- identity.sends and identity.usb ----------------------------------------
+// ---- identity.usb, and identity.sends which 0.7 removes ----------------------
 
 fn recognised_by_signs() -> String {
     device05("Pad", "/pad", r#","identity":{"ports":["Pad"],
@@ -178,19 +179,19 @@ fn the_signs_a_device_gives_of_itself_are_kept_as_written() {
     let id: &osd::Identity = dev.identity.as_ref().unwrap();
     let usb = osc_bridge::device::kept(&id.usb).unwrap();
     assert_eq!(usb.iter().map(|u| (u.vendor_id, u.product_id)).collect::<Vec<_>>(), [(4661, 22136), (1, 2)]);
-    let sends = osc_bridge::device::kept(&id.sends).unwrap();
-    assert_eq!((sends.active_sensing, sends.clock, sends.note_off), (Some(true), Some(false), Some(osd::NoteOff::NoteOnVelocity0)));
+    assert_eq!(id.sends, None, "0.7 removes identity.sends");
 }
 
 #[test]
-fn a_profile_brings_the_signs_and_the_driver_keeps_its_own() {
-    let profile = format!(r#"{{"$schema":"{P05}","identity":{{"usb":[{{"vendor_id":9,"product_id":9}}],"sends":{{"clock":true}}}}}}"#);
-    let own = device05("Pad", "/pad", r#","identity":{"profile":"acme","ports":["Pad"],"sends":{"active_sensing":true}}"#);
+fn a_profile_brings_the_usb_ids_and_the_driver_keeps_its_own_port_names() {
+    let profile = format!(r#"{{"$schema":"{P05}","identity":{{"usb":[{{"vendor_id":9,"product_id":9}}],"ports":["Profile"]}}}}"#);
+    let own = device05("Pad", "/pad", r#","identity":{"profile":"acme","ports":["Pad"]}"#);
     let root = catalogue(&[("acme/_profile.json", &profile), ("acme/pad.json", &own)]);
     let dev = load(root.path().join("acme/pad.json")).unwrap();
     let id = dev.identity.as_ref().unwrap();
     assert_eq!(osc_bridge::device::kept(&id.usb).map(|u| (u[0].vendor_id, u[0].product_id)), Some((9, 9)), "from the profile");
-    assert_eq!(osc_bridge::device::kept(&id.sends).and_then(|s| s.active_sensing), Some(true), "its own, in place of the profile's");
+    let names: Vec<&str> = osc_bridge::device::kept_list(&id.ports).iter().map(|r| r.value.as_str()).collect();
+    assert_eq!(names, ["Pad"], "its own, in place of the profile's");
 }
 
 #[test]
@@ -347,7 +348,7 @@ fn msg(addr: &str, args: Vec<OscType>) -> OscMessage {
 }
 
 #[test]
-fn the_virtual_synth_emits_the_same_bytes_in_0_5_as_in_0_4() {
+fn the_virtual_synth_emits_its_notes_pitch_bend_and_triggers() {
     let dev = load(Path::new(FIXTURES).join("examples/test_synth.json")).unwrap();
     assert_eq!(osc_bridge::runtime::midi_out_for_msg(&dev, &msg("/test_synth/note/on", vec![OscType::Int(60), OscType::Int(100)])), Some(vec![0x90, 60, 100]));
     assert_eq!(osc_bridge::runtime::midi_out_for_msg(&dev, &msg("/test_synth/pitchbend", vec![OscType::Int(8192)])), Some(vec![0xE0, 0x00, 0x40]));
@@ -358,7 +359,7 @@ fn the_virtual_synth_emits_the_same_bytes_in_0_5_as_in_0_4() {
 }
 
 #[test]
-fn a_scripted_command_builds_the_same_frame_in_0_5_as_in_0_4() {
+fn a_scripted_command_builds_its_frame() {
     use osc_bridge::frame::{build_frame, Bindings};
     let dev = load(Path::new(FIXTURES).join("examples/scripted-example.json")).unwrap();
     let cmd = &dev.commands.as_ref().unwrap()[0];
@@ -371,8 +372,8 @@ fn a_scripted_command_builds_the_same_frame_in_0_5_as_in_0_4() {
 }
 
 #[test]
-fn what_agents_are_served_for_a_driver_is_the_same_in_0_5_as_in_0_4() {
-    // The catalogue index agents are served lists each driver with what the 0.4 file said.
+fn what_agents_are_served_for_a_driver_is_what_its_file_says() {
+    // The catalogue index agents are served lists each driver with what its file says.
     let index = osc_bridge::mcp::DeviceIndex::build(Path::new(FIXTURES), osc_bridge::synthub::catalogue::tier_rank);
     let entry = |id: &str| index.entries.iter().find(|e| e.id == id).unwrap_or_else(|| panic!("{id} is listed"));
     let synth = entry("examples/test_synth");

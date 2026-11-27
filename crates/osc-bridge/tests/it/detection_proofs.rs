@@ -68,10 +68,7 @@ fn driver(id: &str, name: &str, vendor: &str, maker: Vec<u8>, identity: Option<o
 }
 
 fn usb_identity(v: u16, p: u16) -> osd::Identity {
-    match osd::read(&device05("X", "/x", &usb_body(v, p)), osd::Kind::Device).unwrap() {
-        osd::Descriptor::Device(d) => d.identity.unwrap(),
-        _ => unreachable!(),
-    }
+    crate::common::device_of(&device05("X", "/x", &usb_body(v, p))).identity.unwrap()
 }
 
 // ---- a candidate carries its proofs ----------------------------------------------
@@ -256,7 +253,7 @@ fn unit(port: &str, usb: Option<(u16, u16)>) -> Unit {
 fn learned(port: &str) -> Learned {
     let words = osc_bridge::synthub::learn::port_words(port);
     Learned {
-        fingerprint: json!({ "$schema": "https://w3id.org/osd/0.6/fingerprint.schema.json", "observed": "2026-11-21",
+        fingerprint: json!({ "$schema": "https://w3id.org/osd/0.7/fingerprint.schema.json", "observed": "2026-11-21",
             "via": "native", "ports": { "inputs": [words], "outputs": [words] },
             "controls": [{ "type": "cc", "channel": 1, "number": 74 }] }),
         measured: json!({}),

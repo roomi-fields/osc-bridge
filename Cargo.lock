@@ -734,9 +734,9 @@ dependencies = [
 [[package]]
 name = "osd"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "137bf46c89db668b81516ffb5db134f476327ebe4e5c1d4651881d09a32ab469"
+source = "git+https://github.com/roomi-fields/open-synth-descriptors?rev=24e4ba1fdbc315df739228c29f3d660293dd6139#24e4ba1fdbc315df739228c29f3d660293dd6139"
 dependencies = [
+ "regex-syntax",
  "serde_json",
  "sha2",
 ]
@@ -744,8 +744,7 @@ dependencies = [
 [[package]]
 name = "osd-formats"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8fc817ff7bf96546822ffceb29548a96142bcfa2e5eb72add1f757bb6e462547"
+source = "git+https://github.com/roomi-fields/open-synth-descriptors?rev=24e4ba1fdbc315df739228c29f3d660293dd6139#24e4ba1fdbc315df739228c29f3d660293dd6139"
 dependencies = [
  "osd",
  "serde_json",
@@ -867,6 +866,12 @@ checksum = "ed2bf2547551a7053d6fdfafda3f938979645c44812fbfcda098faae3f1a362d"
 dependencies = [
  "bitflags 2.11.0",
 ]
+
+[[package]]
+name = "regex-syntax"
+version = "0.8.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d902046e6a28a1e4c3cab97258a0ce11e994903f01c2d97a9447a0b3df85f4f6"
 
 [[package]]
 name = "ring"

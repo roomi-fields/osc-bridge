@@ -5,7 +5,8 @@ fn test_device() -> osd::Device {
     let text = r#"{"$schema":"https://w3id.org/osd/0.5/device.schema.json",
         "device":{"name":"test","vendor":"t","revision":"1","osc_prefix":"/t","manufacturer_id":[0,32,107],"device_id":[127,66]},
         "sysex":{"header":[240,0,32,107,127,66],"footer":[247]}}"#;
-    match osd::read(text, osd::Kind::Device).unwrap() {
+    let text = osd::convert_to(text, osd::Kind::Device, osd::Version::V0_7).unwrap();
+    match osd::read(&text, osd::Kind::Device).unwrap() {
         osd::Descriptor::Device(d) => *d,
         _ => unreachable!(),
     }

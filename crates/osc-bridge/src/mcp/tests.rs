@@ -386,9 +386,9 @@ fn export_device_returns_what_the_format_lost_beside_the_document() {
             .unwrap().unwrap();
         let text = out["content"][0]["text"].as_str().unwrap();
         assert!(text.contains(tag), "{format}: the content stays the document");
-        assert!(!text.contains("/_sources/0/firmware"), "{format}: the document holds no list of losses");
+        assert!(!text.contains("/sources/0/firmware"), "{format}: the document holds no list of losses");
         let lost = out["structuredContent"]["lost"].as_array().unwrap_or_else(|| panic!("{format}: no lost list: {out}"));
-        assert!(lost.iter().any(|l| l["place"] == "/_sources/0/firmware" && l["reason"].as_str().is_some_and(|r| !r.is_empty())), "{format}: {lost:?}");
+        assert!(lost.iter().any(|l| l["place"] == "/sources/0/firmware" && l["reason"].as_str().is_some_and(|r| !r.is_empty())), "{format}: {lost:?}");
         assert_eq!(out["structuredContent"]["media_type"], if format == "midnam" { "application/xml" } else { "application/json" });
         assert_eq!(out["structuredContent"]["bytes"], text.len());
     }
@@ -587,7 +587,8 @@ fn list_devices_names_each_device_by_its_catalogue_id_and_its_prefix_by_osc_pref
 fn a_port_with_the_usb_ids_of_a_driver_is_recognised_by_usb() {
     let text = r#"{"$schema":"https://w3id.org/osd/0.5/device.schema.json","device":{"name":"Box","osc_prefix":"/box"},
         "identity":{"usb":[{"vendor_id":4660,"product_id":22136}]}}"#;
-    let identity = match osd::read(text, osd::Kind::Device).unwrap() {
+    let text = osd::convert_to(text, osd::Kind::Device, osd::Version::V0_7).unwrap();
+    let identity = match osd::read(&text, osd::Kind::Device).unwrap() {
         osd::Descriptor::Device(d) => d.identity.unwrap(),
         _ => unreachable!(),
     };

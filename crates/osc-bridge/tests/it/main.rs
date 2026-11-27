@@ -2,6 +2,11 @@
 mod common;
 
 mod account_isolation_guard;
+mod control_ways;
+mod descriptor_versions;
+mod emitted_bytes;
+mod port_rules;
+mod route_ways;
 mod bridge_status_and_broadcast;
 mod checksum;
 mod cli_help_names_device;

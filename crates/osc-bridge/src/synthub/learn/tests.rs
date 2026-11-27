@@ -42,7 +42,7 @@ fn learn_on(heard: Vec<Heard>, usb: Option<(u16, u16)>) -> (Learned, Script) {
     (learned, wire)
 }
 
-/// The fingerprint read back by `osd` as a 0.6 fingerprint: its schema's own check.
+/// The fingerprint read back by `osd` as a 0.7 fingerprint: its schema's own check.
 /// A learned fingerprint names no device or program yet (vendor, model and firmware come at
 /// sharing), so the reader's only refusal allowed is that missing subject, at `/device`.
 fn valid_fingerprint(fp: &serde_json::Value) {
@@ -84,13 +84,24 @@ fn learn_returns_a_valid_fingerprint_of_a_test_synth_with_its_usb_ports_and_iden
     let (l, _) = learn_on(synth_heard(), Some((0x1234, 0x5678)));
     valid_fingerprint(&l.fingerprint);
     let fp = &l.fingerprint;
-    assert_eq!(fp["$schema"], "https://w3id.org/osd/0.6/fingerprint.schema.json");
+    assert_eq!(fp["$schema"], "https://w3id.org/osd/0.7/fingerprint.schema.json");
     assert_eq!(fp["observed"], "2026-11-21");
     assert_eq!(fp["via"], "native");
     assert_eq!(fp["usb"], serde_json::json!({ "vendor_id": 0x1234, "product_id": 0x5678 }));
     assert_eq!(fp["ports"]["inputs"], serde_json::json!(["test synth midi 1"]));
     assert_eq!(fp["ports"]["outputs"], serde_json::json!(["test synth midi 1"]));
     assert_eq!(fp["identity_reply"], "F0 7E 7F 06 02 00 20 6B 02 00 04 00 01 00 04 00 F7");
+}
+
+#[test]
+fn a_learned_fingerprint_once_its_device_is_named_reads_as_a_0_7_fingerprint_of_osd() {
+    let (l, _) = learn_on(synth_heard(), Some((0x1234, 0x5678)));
+    let mut named = l.fingerprint.clone();
+    named["device"] = serde_json::json!({ "vendor": "Acme", "model": "Box", "firmware": "1.0" });
+    match osd::read(&named.to_string(), osd::Kind::Fingerprint).unwrap_or_else(|e| panic!("{e}\n{named}")) {
+        osd::Descriptor::Fingerprint(f) => assert_eq!(f.schema, Some(osd::Version::V0_7), "{named}"),
+        other => panic!("not a fingerprint: {:?}", other.kind()),
+    }
 }
 
 #[test]

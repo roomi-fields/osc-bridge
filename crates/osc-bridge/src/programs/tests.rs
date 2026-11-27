@@ -1,12 +1,13 @@
 use super::*;
 
-/// A 0.5 driver whose `programs` block is `programs`.
+/// A 0.5 driver whose `programs` block is `programs`, in its 0.7 form.
 fn dev(programs: &str) -> osd::Device {
     let capabilities = if programs.contains("recall_script") { r#","capabilities":["lua"]"# } else { "" };
     let text = format!(r#"{{"$schema":"https://w3id.org/osd/0.5/device.schema.json",
         "device":{{"name":"Box","vendor":"Acme","osc_prefix":"/box"}}{capabilities},
         "midi_out":{{"default_channel":2}},"identity":{{"device_id":{{"default":16}},"family":[81,1],"reply":[240,126]}},
         "programs":{programs}}}"#);
+    let text = osd::convert_to(&text, osd::Kind::Device, osd::Version::V0_7).unwrap_or_else(|e| panic!("{e}\n{text}"));
     match osd::read(&text, osd::Kind::Device).unwrap_or_else(|e| panic!("{e}\n{text}")) {
         osd::Descriptor::Device(d) => *d,
         _ => unreachable!(),
