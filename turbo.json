@@ -5,7 +5,10 @@
     "GRILLHOUSE_RESULTATS",
     "GRILLHOUSE_CHANGEMENTS",
     "GRILLHOUSE_AVANCEMENT",
-    "TMPDIR"
+    "TMPDIR",
+    "GRILLHOUSE_TRAVAILLEURS",
+    "CARGO_HOME",
+    "RUSTUP_HOME"
   ],
   "tasks": {
     "build": {
@@ -25,7 +28,22 @@
       "outputs": []
     },
     "typecheck": {
-      "dependsOn": ["build"],
+      "dependsOn": [
+        "build",
+        "^build"
+      ],
+      "outputs": []
+    },
+    "//#grillhouse:gardes": {
+      "dependsOn": [
+        "osc-bridge#build"
+      ],
+      "outputs": []
+    },
+    "//#gardes": {
+      "dependsOn": [
+        "osc-bridge#build"
+      ],
       "outputs": []
     }
   }

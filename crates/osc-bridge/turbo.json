@@ -1,0 +1,40 @@
+// Généré par `npx grillhouse turbo-des-paquets --ecrire` depuis les package.json, le turbo.json racine et docs/agents/hors-cadre.txt ; ne pas éditer.
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "extends": [
+    "//"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": [],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/Cargo.lock",
+        "$TURBO_ROOT$/Cargo.toml"
+      ]
+    },
+    "test:unit": {
+      "dependsOn": [
+        "build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/.claude-plugin/plugin.json",
+        "$TURBO_ROOT$/.github/**",
+        "$TURBO_ROOT$/CONTRIBUTING.md",
+        "$TURBO_ROOT$/PRIVACY.md",
+        "$TURBO_ROOT$/README.md",
+        "$TURBO_ROOT$/docs/CONFIGURATION_COVERAGE.md",
+        "$TURBO_ROOT$/docs/MCP.md",
+        "$TURBO_ROOT$/docs/README.md",
+        "$TURBO_ROOT$/docs/TUTORIAL_FIRST_DEVICE.md",
+        "$TURBO_ROOT$/docs/getting-started.md",
+        "$TURBO_ROOT$/examples/bridge.toml",
+        "$TURBO_ROOT$/mcpb/manifest.json",
+        "$TURBO_ROOT$/npm/README.md",
+        "$TURBO_ROOT$/npm/package.json",
+        "$TURBO_ROOT$/server.json"
+      ]
+    }
+  }
+}
