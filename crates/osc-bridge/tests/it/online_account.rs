@@ -161,7 +161,7 @@ impl Fake {
                 } else if url == "/v1/detect" && method == "GET" {
                     (200, br#"{"probes":[]}"#.to_vec(), None)
                 } else if url == "/v1/detect" {
-                    (200, json!({ "ports": [{ "port": "p", "candidates": [] }] }).to_string().into_bytes(), None)
+                    (200, json!({ "ports": [{ "port": "p", "devices": [] }] }).to_string().into_bytes(), None)
                 } else if url == "/v1/librarian" || url.starts_with("/v1/librarian/") || url.starts_with("/v1/presets/") {
                     (200, b"{}".to_vec(), None)
                 } else if let Some(slug) = url.strip_prefix("/v1/devices/") {

@@ -42,8 +42,28 @@ fn device(r: &Value, at: usize) -> &Value { &r["structuredContent"]["devices"][a
 
 fn count(r: &Value) -> usize { r["structuredContent"]["devices"].as_array().unwrap().len() }
 
+/// A device the service recognises by a strong proof.
 fn candidate(id: &str, name: &str) -> Value {
-    json!({ "id": id, "slug": id.rsplit('/').next().unwrap_or(id), "name": name, "vendor": "Vendor", "source_tier": "official", "score": 90 })
+    json!({ "id": id, "name": name, "probability": 0.9, "proofs": [{ "nature": "strong", "kind": "identity reply", "port": UNKNOWN }] })
+}
+
+/// A device the service finds probable: a probability and no strong proof.
+fn probable(id: &str, name: &str) -> Value {
+    json!({ "id": id, "name": name, "probability": 0.5, "proofs": [{ "nature": "medium", "kind": "maker", "port": UNKNOWN }] })
+}
+
+/// A device the service names by the name alone.
+fn possible(id: &str, name: &str) -> Value {
+    json!({ "id": id, "name": name, "proofs": [{ "nature": "weak", "kind": "name", "port": UNKNOWN }] })
+}
+
+/// The driver is the device `named` as the service gives it, with its state.
+fn assert_driver(r: &Value, named: &Value, state_label: &str) {
+    let driver = &device(r, 0)["driver"];
+    for field in ["id", "name", "proofs", "probability"] {
+        assert_eq!(driver[field], named[field], "{field}: {r}");
+    }
+    assert_eq!(driver["state_label"], state_label, "{r}");
 }
 
 const UNKNOWN: &str = "Zork Thing 1";
@@ -92,7 +112,10 @@ fn the_learn_mode_listens_to_no_port_of_the_system() {
 fn a_device_the_service_names_a_driver_for_carries_that_driver_and_no_next_step() {
     let service = ServiceMatches::Answered(vec![vec![candidate("arturia/minilab3", "Arturia MiniLab 3")]]);
     let r = report(&[UNKNOWN], &service);
-    assert_eq!(device(&r, 0)["driver"], json!({ "id": "arturia/minilab3", "name": "Arturia MiniLab 3" }), "{r}");
+    assert_driver(&r, &candidate("arturia/minilab3", "Arturia MiniLab 3"), "recognised");
+    for field in ["confirmations", "disputed", "state"] {
+        assert!(device(&r, 0)["driver"].get(field).is_none(), "{field}: {r}");
+    }
     assert!(device(&r, 0).get("next_step").is_none(), "{r}");
     assert!(!r["content"][0]["text"].as_str().unwrap().contains("next_step"), "{r}");
 }
@@ -107,17 +130,17 @@ fn the_service_matches_follow_the_devices_in_order() {
 }
 
 #[test]
-fn the_first_candidate_of_the_service_is_the_driver() {
+fn the_first_device_of_the_service_is_the_driver() {
     let service = ServiceMatches::Answered(vec![vec![candidate("a/best", "Best"), candidate("a/other", "Other")]]);
     let r = report(&[UNKNOWN], &service);
-    assert_eq!(device(&r, 0)["driver"], json!({ "id": "a/best", "name": "Best" }), "{r}");
+    assert_driver(&r, &candidate("a/best", "Best"), "recognised");
 }
 
 #[test]
 fn the_service_driver_wins_over_the_local_one_when_both_recognise_the_device() {
     let service = ServiceMatches::Answered(vec![vec![candidate("service/box", "Box from the service")]]);
     let r = report(&[KNOWN_LOCALLY], &service);
-    assert_eq!(device(&r, 0)["driver"], json!({ "id": "service/box", "name": "Box from the service" }), "{r}");
+    assert_driver(&r, &candidate("service/box", "Box from the service"), "recognised");
     assert!(device(&r, 0).get("next_step").is_none(), "{r}");
 }
 
@@ -188,7 +211,7 @@ fn a_service_that_cannot_be_reached_is_told_unreachable_and_does_not_fail() {
 }
 
 #[test]
-fn a_service_that_answers_is_asked_each_device_and_its_candidates_come_back_in_order_without_the_system_port() {
+fn a_service_that_answers_is_asked_each_device_and_its_devices_come_back_in_order_without_the_system_port() {
     let server = tiny_http::Server::http("127.0.0.1:0").unwrap();
     let base = format!("http://{}", server.server_addr());
     let bodies = std::sync::Arc::new(std::sync::Mutex::new(Vec::<(String, String)>::new()));
@@ -199,8 +222,8 @@ fn a_service_that_answers_is_asked_each_device_and_its_candidates_come_back_in_o
             std::io::Read::read_to_string(req.as_reader(), &mut body).unwrap();
             seen.lock().unwrap().push((req.url().to_string(), body));
             let answer = json!({ "ports": [
-                { "candidates": [candidate("arturia/minilab3", "Arturia MiniLab 3"), candidate("a/other", "Other")] },
-                { "candidates": [] } ] });
+                { "devices": [candidate("arturia/minilab3", "Arturia MiniLab 3"), candidate("a/other", "Other")] },
+                { "devices": [] } ] });
             let _ = req.respond(tiny_http::Response::from_string(answer.to_string()));
         }
     });
@@ -279,7 +302,7 @@ fn learn_with(answer_port: Value) -> Value {
 
 #[test]
 fn the_learn_mode_sends_the_usb_ids_of_a_port_that_has_them_as_numbers_and_none_otherwise() {
-    let (client, bodies, _dir) = service_answering(json!({ "ports": [{ "candidates": [] }, { "candidates": [] }] }));
+    let (client, bodies, _dir) = service_answering(json!({ "ports": [{ "devices": [] }, { "devices": [] }] }));
     let learned = vec![
         (unit_with_usb("Behringer BCR32:BCR32 MIDI 20:0", Some((0x1397, 0x12cf))), learned("Behringer BCR32:BCR32 MIDI 20:0")),
         (unit_with_usb(UNKNOWN, None), learned(UNKNOWN)),
@@ -294,7 +317,7 @@ fn the_learn_mode_sends_the_usb_ids_of_a_port_that_has_them_as_numbers_and_none_
 
 #[test]
 fn a_device_without_a_card_is_reported_being_confirmed_with_its_maker_model_firmware_and_confirmations() {
-    let r = learn_with(json!({ "candidates": [], "unlisted": [unlisted(1, Some("confirming"), Some(BEING_CONFIRMED), false)] }));
+    let r = learn_with(json!({ "devices": [], "unlisted": [unlisted(1, Some("confirming"), Some(BEING_CONFIRMED), false)] }));
     let u = &device(&r, 0)["unlisted"][0];
     assert_eq!(u["vendor"], "Behringer", "{r}");
     assert_eq!(u["model"], "BCR32", "{r}");
@@ -307,7 +330,7 @@ fn a_device_without_a_card_is_reported_being_confirmed_with_its_maker_model_firm
 
 #[test]
 fn a_device_being_confirmed_is_asked_to_be_confirmed_not_named_again() {
-    let r = learn_with(json!({ "candidates": [], "unlisted": [unlisted(1, Some("confirming"), Some(BEING_CONFIRMED), false)] }));
+    let r = learn_with(json!({ "devices": [], "unlisted": [unlisted(1, Some("confirming"), Some(BEING_CONFIRMED), false)] }));
     let step = device(&r, 0)["next_step"].as_str().unwrap_or_else(|| panic!("{r}")).to_lowercase();
     assert!(step.contains("confirm"), "{step}");
     assert!(step.contains("behringer") && step.contains("bcr32") && step.contains("1.0.3"), "{step}");
@@ -319,7 +342,7 @@ fn a_disputed_device_is_shown_as_disputed_with_every_device_named_and_none_given
     let other = json!({ "vendor": "Behringer", "model": "BCR2000", "firmware": "1.0.3", "confirmations": 1,
         "disputed": true, "state": "confirming", "state_label": IN_DISAGREEMENT });
     let first = unlisted(1, Some("confirming"), Some(IN_DISAGREEMENT), true);
-    let r = learn_with(json!({ "candidates": [], "unlisted": [first, other] }));
+    let r = learn_with(json!({ "devices": [], "unlisted": [first, other] }));
     let all = device(&r, 0)["unlisted"].as_array().unwrap_or_else(|| panic!("{r}"));
     assert_eq!(all.len(), 2, "{r}");
     assert!(all.iter().all(|u| u["disputed"] == true && u["state_label"] == IN_DISAGREEMENT), "{r}");
@@ -331,7 +354,7 @@ fn a_disputed_device_is_shown_as_disputed_with_every_device_named_and_none_given
 fn several_devices_without_a_card_are_all_reported_with_their_confirmations() {
     let a = unlisted(3, Some("confirming"), Some(BEING_CONFIRMED), false);
     let b = json!({ "vendor": "Zork", "model": "Thing", "firmware": "2", "confirmations": 7, "disputed": false });
-    let r = learn_with(json!({ "candidates": [], "unlisted": [a, b] }));
+    let r = learn_with(json!({ "devices": [], "unlisted": [a, b] }));
     let all = device(&r, 0)["unlisted"].as_array().unwrap_or_else(|| panic!("{r}"));
     assert_eq!(all.len(), 2, "{r}");
     assert_eq!((all[0]["confirmations"].clone(), all[1]["confirmations"].clone()), (json!(3), json!(7)), "{r}");
@@ -339,28 +362,74 @@ fn several_devices_without_a_card_are_all_reported_with_their_confirmations() {
 }
 
 #[test]
-fn a_device_with_catalogue_candidates_is_never_also_reported_without_a_card() {
-    let r = learn_with(json!({ "candidates": [candidate("arturia/minilab3", "Arturia MiniLab 3")],
+fn a_device_the_service_names_with_a_card_is_never_also_reported_without_one() {
+    let r = learn_with(json!({ "devices": [candidate("arturia/minilab3", "Arturia MiniLab 3")],
         "unlisted": [unlisted(1, Some("confirming"), Some(BEING_CONFIRMED), false)] }));
     assert_eq!(device(&r, 0)["driver"]["id"], "arturia/minilab3", "{r}");
     assert!(device(&r, 0).get("unlisted").is_none(), "{r}");
 }
 
 #[test]
-fn a_catalogue_device_the_service_gives_as_being_confirmed_is_reported_so() {
-    let r = learn_with(json!({ "candidates": [candidate("arturia/minilab3", "Arturia MiniLab 3")],
-        "learned": [{ "id": "arturia/minilab3", "confirmations": 1, "disputed": false,
-            "state": "confirming", "state_label": BEING_CONFIRMED }] }));
-    let driver = &device(&r, 0)["driver"];
-    assert_eq!(driver["id"], "arturia/minilab3", "{r}");
-    assert_eq!(driver["state"], "confirming", "{r}");
-    assert_eq!(driver["state_label"], BEING_CONFIRMED, "{r}");
-    assert_eq!(driver["confirmations"], 1, "{r}");
+fn a_device_the_service_gives_as_being_confirmed_is_the_driver_with_its_confirmation_fields() {
+    for mut named in [candidate("arturia/minilab3", "Arturia MiniLab 3"), probable("arturia/minilab3", "Arturia MiniLab 3")] {
+        named["confirmations"] = json!(1);
+        named["disputed"] = json!(false);
+        named["state"] = json!("confirming");
+        named["state_label"] = json!(BEING_CONFIRMED);
+        let r = learn_with(json!({ "devices": [named.clone()] }));
+        assert_driver(&r, &named, BEING_CONFIRMED);
+        let driver = &device(&r, 0)["driver"];
+        assert_eq!(driver["state"], "confirming", "{r}");
+        assert_eq!(driver["confirmations"], 1, "{r}");
+        assert_eq!(driver["disputed"], false, "{r}");
+    }
 }
 
 #[test]
-fn a_catalogue_candidate_with_a_vendor_is_the_driver_and_never_a_device_without_a_card() {
-    let r = learn_with(json!({ "candidates": [candidate("polyend/synth", "Synth")], "devices": [] }));
+fn the_driver_is_the_first_device_of_the_service_that_is_not_only_possible() {
+    let r = learn_with(json!({ "devices": [possible("a/name-only", "Name Only"), probable("a/likely", "Likely"),
+        probable("a/other", "Other")] }));
+    assert_driver(&r, &probable("a/likely", "Likely"), "probable");
+    assert!(device(&r, 0).get("next_step").is_none(), "{r}");
+}
+
+#[test]
+fn devices_named_by_the_name_alone_make_no_driver_and_the_next_step_asks_to_confirm_or_name_the_device() {
+    let r = learn_with(json!({ "devices": [possible("a/first", "First Guess"), possible("a/second", "Second Guess")] }));
+    assert!(device(&r, 0).get("driver").is_none(), "{r}");
+    let step = device(&r, 0)["next_step"].as_str().unwrap_or_else(|| panic!("{r}"));
+    assert!(step.contains("First Guess") && step.contains("Second Guess"), "{step}");
+    let low = step.to_lowercase();
+    for word in ["confirm", "name", "vendor", "model", "firmware"] {
+        assert!(low.contains(word), "{word}: {step}");
+    }
+    assert!(!step.contains("null"), "{step}");
+}
+
+#[test]
+fn a_local_card_with_a_strong_proof_beats_a_device_the_service_names_by_the_name_alone() {
+    let root = crate::common::temp("learn-local-strong");
+    crate::common::files(root.path(), &[("acme/usb-box.json", &crate::common::device05("USB Box", "/usbbox",
+        r#","identity":{"usb":[{"vendor_id":4660,"product_id":22136}]}"#))]);
+    let index = DeviceIndex::build(root.path(), osc_bridge::synthub::catalogue::tier_rank);
+    let (client, _bodies, _dir) = service_answering(json!({ "ports": [{ "devices": [possible("a/guess", "Guess")] }] }));
+    let learned_one = vec![(unit_with_usb(UNKNOWN, Some((0x1234, 0x5678))), learned(UNKNOWN))];
+    let service = learn_service_matches(Some(&client), &learned_one);
+    let r = learn_report(&learned_one, &index, Duration::from_millis(5000), &service, osc_bridge::synthub::catalogue::tier_rank);
+    assert_eq!(device(&r, 0)["driver"]["id"], "acme/usb-box", "{r}");
+    assert!(device(&r, 0).get("next_step").is_none(), "{r}");
+}
+
+#[test]
+fn the_learn_mode_names_no_driver_from_the_former_candidates_list() {
+    let r = learn_with(json!({ "candidates": [candidate("polyend/synth", "Synth")] }));
+    assert!(device(&r, 0).get("driver").is_none(), "{r}");
+    assert!(!r.to_string().contains("polyend/synth"), "{r}");
+}
+
+#[test]
+fn a_device_of_the_service_with_a_vendor_in_its_id_is_the_driver_and_never_a_device_without_a_card() {
+    let r = learn_with(json!({ "devices": [candidate("polyend/synth", "Synth")] }));
     assert_eq!(device(&r, 0)["driver"]["id"], "polyend/synth", "{r}");
     assert_eq!(device(&r, 0)["driver"]["name"], "Synth", "{r}");
     assert!(device(&r, 0).get("unlisted").is_none() && device(&r, 0).get("next_step").is_none(), "{r}");
@@ -368,19 +437,19 @@ fn a_catalogue_candidate_with_a_vendor_is_the_driver_and_never_a_device_without_
 }
 
 #[test]
-fn the_next_step_names_a_device_without_a_card_only_when_the_service_lists_one_and_no_candidate_exists() {
-    let r = learn_with(json!({ "candidates": [], "unlisted": [unlisted(1, Some("confirming"), Some(BEING_CONFIRMED), false)] }));
+fn the_next_step_names_a_device_without_a_card_only_when_the_service_lists_one_and_no_device_with_a_card() {
+    let r = learn_with(json!({ "devices": [], "unlisted": [unlisted(1, Some("confirming"), Some(BEING_CONFIRMED), false)] }));
     assert!(device(&r, 0)["next_step"].as_str().unwrap_or_else(|| panic!("{r}")).contains("names this device without a card"), "{r}");
-    let r = learn_with(json!({ "candidates": [], "unlisted": [] }));
+    let r = learn_with(json!({ "devices": [], "unlisted": [] }));
     assert!(!r.to_string().contains("without a card"), "{r}");
-    let r = learn_with(json!({ "candidates": [candidate("polyend/synth", "Synth")],
+    let r = learn_with(json!({ "devices": [candidate("polyend/synth", "Synth")],
         "unlisted": [unlisted(1, Some("confirming"), Some(BEING_CONFIRMED), false)] }));
     assert!(!r.to_string().contains("without a card"), "{r}");
 }
 
 #[test]
 fn a_device_without_a_card_missing_a_field_is_named_without_it_and_never_with_a_question_mark_or_null() {
-    let r = learn_with(json!({ "candidates": [], "unlisted": [{ "model": "Thing", "firmware": "2" }, { "vendor": "Zork" }] }));
+    let r = learn_with(json!({ "devices": [], "unlisted": [{ "model": "Thing", "firmware": "2" }, { "vendor": "Zork" }] }));
     let step = device(&r, 0)["next_step"].as_str().unwrap_or_else(|| panic!("{r}"));
     assert!(step.contains("Thing") && step.contains("Zork"), "{step}");
     assert!(!step.contains('?') && !step.contains("null"), "{step}");
@@ -388,15 +457,20 @@ fn a_device_without_a_card_missing_a_field_is_named_without_it_and_never_with_a_
 
 #[test]
 fn an_entry_of_the_unlisted_list_with_neither_vendor_nor_model_is_not_a_device() {
-    let r = learn_with(json!({ "candidates": [], "unlisted": [{ "firmware": "2", "confirmations": 1 }] }));
+    let r = learn_with(json!({ "devices": [], "unlisted": [{ "firmware": "2", "confirmations": 1 }] }));
     assert!(device(&r, 0).get("unlisted").is_none(), "{r}");
     assert!(!device(&r, 0)["next_step"].as_str().unwrap_or_else(|| panic!("{r}")).contains("without a card"), "{r}");
 }
 
 #[test]
-fn a_catalogue_device_the_service_does_not_list_as_learned_carries_no_state() {
-    let r = learn_with(json!({ "candidates": [candidate("arturia/minilab3", "Arturia MiniLab 3")] }));
-    assert!(device(&r, 0)["driver"].get("state").is_none(), "{r}");
+fn the_learn_mode_takes_no_state_from_the_learned_list() {
+    let r = learn_with(json!({ "devices": [candidate("arturia/minilab3", "Arturia MiniLab 3")],
+        "learned": [{ "id": "arturia/minilab3", "confirmations": 1, "disputed": false,
+            "state": "confirming", "state_label": BEING_CONFIRMED }] }));
+    assert_driver(&r, &candidate("arturia/minilab3", "Arturia MiniLab 3"), "recognised");
+    for field in ["state", "confirmations", "disputed"] {
+        assert!(device(&r, 0)["driver"].get(field).is_none(), "{field}: {r}");
+    }
 }
 
 #[test]
@@ -419,9 +493,9 @@ fn of_kind(port: &str, client_kind: ClientKind) -> (Unit, Learned) {
     (Unit { client_kind, ..unit(port) }, learned(port))
 }
 
-/// The learn mode on one device of `kind`, the service answering `candidates` for it.
+/// The learn mode on one device of `kind`, the service naming the devices `candidates` for it.
 fn learn_of_kind(kind: ClientKind, candidates: &[&str]) -> Value {
-    let answer = json!({ "candidates": candidates.iter().map(|id| candidate(id, "Named by the service")).collect::<Vec<_>>() });
+    let answer = json!({ "devices": candidates.iter().map(|id| candidate(id, "Named by the service")).collect::<Vec<_>>() });
     let (client, _bodies, _dir) = service_answering(json!({ "ports": [answer] }));
     let learned = vec![of_kind(FLUID_PORT, kind)];
     let service = learn_service_matches(Some(&client), &learned);

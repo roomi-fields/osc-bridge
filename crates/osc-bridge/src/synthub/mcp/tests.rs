@@ -134,7 +134,7 @@ fn fake_server(root: &Path) -> (String, Shared<String>, Shared<Value>) {
                     let ports: Vec<Value> = asked["ports"].as_array().unwrap().iter().map(|p| {
                         let replies: Vec<Vec<u8>> = p["replies_hex"].as_array().into_iter().flatten()
                             .map(|h| crate::librarian::parse_hex(h.as_str().unwrap()).unwrap()).collect();
-                        json!({ "port": p["port"], "candidates": match_port(&cat, p["port"].as_str().unwrap(), None, &replies, neutral) })
+                        json!({ "port": p["port"], "devices": match_port(&cat, p["port"].as_str().unwrap(), None, &replies, neutral) })
                     }).collect();
                     (200, json!({ "ports": ports }).to_string())
                 }
@@ -201,10 +201,10 @@ fn a_local_copy_fetches_the_drivers_it_needs_and_forwards_reports() {
     let listed = call_tool("list_devices", &json!({"query": "minilogue"}), &opts, &index, &link).unwrap();
     assert_eq!(listed["structuredContent"]["devices"][0]["device"], "korg/minilogue", "{listed}");
     let matched = link.client.detect(&[json!({"port": "minilogue MIDI 1"})]).unwrap();
-    assert_eq!(matched[0]["candidates"][0]["id"], "korg/minilogue", "{matched:?}");
+    assert_eq!(matched[0]["devices"][0]["id"], "korg/minilogue", "{matched:?}");
     let acme = crate::recognition::Identity { manufacturer: vec![0, 33, 9], family: 1, model: 1, version: [2, 0, 0, 0] };
     let matched = link.client.detect(&[json!({"port": "USB MIDI", "replies_hex": [hex_bytes(&acme.reply())]})]).unwrap();
-    assert_eq!(matched[0]["candidates"][0]["firmware"], "2.0.0.0", "{matched:?}");
+    assert_eq!(matched[0]["devices"][0]["firmware"], "2.0.0.0", "{matched:?}");
     assert_eq!(link.client.probes().unwrap(), crate::mcp::detect_probes(&DeviceIndex::build(Path::new(FIXTURES), neutral)));
 
     // Reports go out under the account kept on this machine.

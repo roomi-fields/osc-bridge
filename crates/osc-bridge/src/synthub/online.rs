@@ -683,7 +683,7 @@ impl Online {
     /// The drivers matching MIDI ports found on this machine
     /// (`POST /v1/detect`): `ports` is `[{ "port", "replies_hex": [...] }]`
     /// (the SysEx each device sent back while detected), the answer
-    /// `{ "ports": [{ "port", "candidates": [...] }] }` in the same order.
+    /// `{ "ports": [{ "port", "devices": [...] }] }` in the same order.
     pub fn detect(&self, ports: &[Value]) -> Result<Vec<Value>> {
         let mut out = Vec::new();
         for batch in ports.chunks(PORTS_PER_REQUEST) {
@@ -692,6 +692,32 @@ impl Online {
             out.extend(v["ports"].as_array().cloned().unwrap_or_default());
         }
         Ok(out)
+    }
+
+    /// `detect` for the ports of the entries of a report, each entry listing its ports as
+    /// indexes into `ports`. When the answer for a port is grouped (`shared_with`) with a port of
+    /// another entry, each of the two entries is asked again alone, with its own ports, so that it
+    /// shows its own answer.
+    pub(crate) fn detect_entries(&self, ports: &[Value], entries: &[Vec<usize>]) -> Result<Vec<Value>> {
+        let mut answers = self.detect(ports)?;
+        let holds = |entry: &[usize], name: &str| entry.iter().any(|&i| ports[i]["port"] == name);
+        let mut again = vec![false; entries.len()];
+        for (at, entry) in entries.iter().enumerate() {
+            for shared in entry.iter().filter_map(|&i| answers.get(i)?["shared_with"].as_str()) {
+                if holds(entry, shared) { continue; }
+                if let Some(other) = entries.iter().position(|e| holds(e, shared)) {
+                    again[at] = true;
+                    again[other] = true;
+                }
+            }
+        }
+        for (entry, _) in entries.iter().zip(again).filter(|(_, again)| *again) {
+            let own: Vec<Value> = entry.iter().map(|&i| ports[i].clone()).collect();
+            let mut said = self.detect(&own)?.into_iter();
+            answers.resize(ports.len(), Value::Null);
+            for &i in entry { answers[i] = said.next().unwrap_or_default(); }
+        }
+        Ok(answers)
     }
 
     /// Shares a device fingerprint with its vendor, model and firmware (`POST /v1/fingerprints`).

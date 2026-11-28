@@ -81,7 +81,7 @@ fn a_usb_id_the_card_declares_is_a_strong_proof() {
     assert_eq!(natures(&got[0]), ["strong"], "{got:?}");
     assert_eq!(kinds(&got[0]), ["usb id"], "{got:?}");
     assert!(got[0].get("recognised_by").is_none(), "proofs replace recognised_by: {got:?}");
-    assert!(got[0].get("state_label").is_none(), "a strong proof is no 'to confirm': {got:?}");
+    assert_ne!(got[0]["state_label"], POSSIBLE, "a strong proof is no 'to confirm': {got:?}");
 }
 
 #[test]
@@ -130,7 +130,7 @@ fn a_usb_id_with_a_name_keeps_both_proofs_and_is_not_possible_to_confirm() {
     let cat = vec![driver("acme/box", "Box", "Acme", vec![], Some(usb_identity(0x1234, 0x5678)))];
     let got = match_port(&cat, "Box MIDI 1", Some((0x1234, 0x5678)), &[]);
     assert_eq!(natures(&got[0]), ["strong", "weak"], "{got:?}");
-    assert!(got[0].get("state_label").is_none(), "{got:?}");
+    assert_ne!(got[0]["state_label"], POSSIBLE, "{got:?}");
 }
 
 #[test]

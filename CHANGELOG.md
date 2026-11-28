@@ -11,6 +11,24 @@ is tracked explicitly under each release.
 
 ## [Unreleased]
 
+### Changed — breaking: the recognition reads the devices the SyntHub service names, each once
+
+- A linked `detect`, `detect_hardware` and the learn mode read the `devices` of each port in the
+  service's answer, and no longer its `candidates`: it takes a service that sends `devices`.
+- The detection shows each device once, with its `state_label` ("recognised" with a strong proof,
+  "probable" with a probability and no strong proof, "possible, to confirm" with the name alone, or
+  the service's own label while it is being confirmed), its proofs and the card to load when the
+  local catalogue has it, with the card's `source_tier`. A device of the service carries its
+  `probability` (absent for a possible one) and its firmware when the service gives it, and no
+  longer `score`, `slug`, `vendor` or `equally_matching`. A report matched offline keeps them, and
+  carries `state_label` too.
+- With the service, a run command is proposed only when one device alone has a strong proof.
+- Ports the service groups across two devices of the report are asked again, each device alone, so
+  that each shows its own answer.
+- In learn mode, the service's `driver` is its first device that is not only possible, with
+  `proofs`, `probability` and `state_label`; a device named by its name alone makes no `driver`:
+  the `next_step` asks the person to confirm it or to name theirs.
+
 ## [0.26.0] — 2026-11-27
 
 ### Changed — breaking: osc-bridge reads and writes Open Synth Descriptors 0.7 (candidate)

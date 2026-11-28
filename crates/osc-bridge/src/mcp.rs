@@ -836,7 +836,7 @@ pub fn local_tool_schemas() -> Value {
             },
             {
                 "name": "detect_hardware",
-                "description": "Find the MIDI devices plugged into this computer and match them to catalogue drivers. Lists MIDI ports and sends each port the standard MIDI Identity Request (universal, read-only by the norm), and nothing else without consent: whatever designates the port (its USB id, its name), no maker request goes out. A maker request may be a load for another maker's device, so every one is held back, port by port, and each device lists held_back, the requests not sent. Consent adds them: pass consent_ports, the ports that may receive every maker request; the person must have been asked and agreed for that port (never pass it on your own). Reads each device's manufacturer, model and firmware. Reads the USB ids (vendor_id, product_id) of each USB device's card (Linux; absent for a virtual or DIN port). A driver whose identity block recognises the reply, the USB ids (usb) or the port name comes first, the variant for the firmware read from it above the others; of drivers matching equally, the one the others share their MIDI with comes first, and each lists the others in equally_matching. Returns, per device, the best matching drivers, each with its proofs (each proof has a nature, strong, medium or weak, and a kind: identity reply, usb id, maker, name) and its firmware when recognised. A candidate whose only proof is the name is 'possible, to confirm' and gets no command; a port with no other proof is 'unknown' and the learn mode takes over. A ready-to-run 'osc-bridge run' command with the right port numbers is given only for a candidate with a strong proof and no rival of equal weight.",
+                "description": "Find the MIDI devices plugged into this computer and match them to catalogue drivers. Lists MIDI ports and sends each port the standard MIDI Identity Request (universal, read-only by the norm), and nothing else without consent: whatever designates the port (its USB id, its name), no maker request goes out. A maker request may be a load for another maker's device, so every one is held back, port by port, and each device lists held_back, the requests not sent. Consent adds them: pass consent_ports, the ports that may receive every maker request; the person must have been asked and agreed for that port (never pass it on your own). Reads each device's manufacturer, model and firmware. Reads the USB ids (vendor_id, product_id) of each USB device's card (Linux; absent for a virtual or DIN port). Returns, per device, the devices it may be (candidates), each once, with its state_label ('recognised' with a strong proof, 'probable' with a probability and no strong proof, 'possible, to confirm' with the name alone, or the service's own label while it is being confirmed), its proofs (each proof has a nature, strong, medium or weak, and a kind such as identity reply, usb id, maker, name), its card (file) when the local catalogue has it, and its firmware when recognised. When a service matches the ports, it names the devices, each with its probability, the most probable first; offline, the cached drivers are matched, each with a score: a driver whose identity block recognises the reply, the USB ids (usb) or the port name comes first, the variant for the firmware read from it above the others; of drivers matching equally, the one the others share their MIDI with comes first, and each lists the others in equally_matching. A port with no candidate is 'unknown' and the learn mode takes over. A ready-to-run 'osc-bridge run' command with the right port numbers is given only for a candidate with a strong proof and no rival: for the devices a service names, no other holding a strong proof; offline, none of equal score.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -870,7 +870,7 @@ pub fn local_tool_schemas() -> Value {
                                     "usb": { "type": "object", "description": "The USB ids of the device's card (Linux), absent when it has none.",
                                         "properties": { "vendor_id": { "type": "integer" }, "product_id": { "type": "integer" } } },
                                     "identity": { "type": ["object", "null"], "description": "Identity Reply, when the device answered." },
-                                    "candidates": { "type": "array", "items": { "type": "object" }, "description": "The catalogue drivers matching the device; one being confirmed carries confirmations, state and state_label." },
+                                    "candidates": { "type": "array", "items": { "type": "object" }, "description": "The devices it may be, each once: device (the catalogue id), name, proofs, state_label, file and source_tier when the local catalogue has its card, firmware when known; from a service, probability (absent for a possible device) and, while it is being confirmed, confirmations, disputed and state; offline, score." },
                                     "unlisted": { "type": "array", "items": { "type": "object" }, "description": "Only when no candidate: the devices the service names for it without a card (vendor, model, firmware, confirmations, disputed, state, state_label); proposed to the person, never imposed." },
                                     "run_command": { "type": ["string", "null"] },
                                     "fingerprint": { "type": "object", "description": "Learn mode: the OSD 0.7 fingerprint of the device; a field it did not give is absent." },
@@ -1105,7 +1105,10 @@ pub fn hex_bytes(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02X}")).collect::<Vec<_>>().join(" ")
 }
 
-/// What a candidate resting on a name alone is called.
+/// The three states of a device, from what it rests on: a strong proof, a probability without
+/// one, or a name alone.
+const RECOGNISED_LABEL: &str = "recognised";
+const PROBABLE_LABEL: &str = "probable";
 const POSSIBLE_LABEL: &str = "possible, to confirm";
 
 /// The proofs of a candidate as published: `{nature, kind}` each.
@@ -1116,6 +1119,30 @@ pub fn proofs_json(proofs: &[crate::recognition::Proof]) -> Value {
 /// Whether a published candidate holds a strong proof.
 fn has_strong(c: &Value) -> bool {
     c["proofs"].as_array().is_some_and(|ps| ps.iter().any(|p| p["nature"] == "strong"))
+}
+
+/// The state the proofs and the probability of a published candidate give it.
+fn own_label(c: &Value) -> &'static str {
+    if has_strong(c) { RECOGNISED_LABEL }
+    else if c["probability"].is_number() { PROBABLE_LABEL }
+    else { POSSIBLE_LABEL }
+}
+
+/// Whether a candidate is only possible: no strong proof and no probability.
+pub(crate) fn is_possible(c: &Value) -> bool {
+    own_label(c) == POSSIBLE_LABEL
+}
+
+/// The label the service gave a device of its own accord (being confirmed, in disagreement):
+/// any but the three states.
+fn service_label(c: &Value) -> Option<&str> {
+    c["state_label"].as_str().filter(|l| ![RECOGNISED_LABEL, PROBABLE_LABEL, POSSIBLE_LABEL].contains(l))
+}
+
+/// The state a candidate is shown in: the service's own label, as given, else the one its
+/// proofs and probability give it.
+pub(crate) fn state_label(c: &Value) -> String {
+    service_label(c).unwrap_or_else(|| own_label(c)).to_string()
 }
 
 /// The drivers of `catalogue` (`hardware_candidates`) that best match a MIDI
@@ -1206,31 +1233,40 @@ pub fn detect_capture_held(devices_dir: &Path, capture: &crate::capture::Capture
     Ok(report["structuredContent"]["devices"].as_array().cloned().unwrap_or_default())
 }
 
-/// The candidates of the ports of one device as one list: a driver named on several ports is one
-/// candidate, scored at its best port, with the proofs of every port (each nature and kind once,
-/// naming the port that gave it); the entry of a port with a strong proof leads, so it beats the
-/// name alone of the others. Best score first.
+/// The candidates of the ports of one device as one list: a device named on several ports is one
+/// candidate, at the greatest probability and score of its ports, with the proofs of every port
+/// (each nature and kind once, naming the port that gave it); the entry of a port with a strong
+/// proof leads, so it beats the name alone of the others. The greatest probability first, the
+/// devices without one after, then the best score.
 fn merge_candidates(found: &[crate::detect::Probed], per_port: Vec<(usize, Vec<Value>)>) -> Vec<Value> {
     let mut merged: Vec<Value> = Vec::new();
     for (i, candidates) in per_port {
         let port = found[i].label();
         for mut c in candidates {
             let proofs: Vec<Value> = c["proofs"].as_array().cloned().unwrap_or_default().into_iter()
-                .map(|mut p| { p["port"] = json!(port); p }).collect();
+                // The service names the port of a proof; one found here was given by this port.
+                .map(|mut p| { if !p["port"].is_string() { p["port"] = json!(port); } p }).collect();
             c["proofs"] = json!(proofs);
             let Some(at) = merged.iter().position(|m| m["id"] == c["id"]) else { merged.push(c); continue };
             let mut base = std::mem::replace(&mut merged[at], Value::Null);
             let mut all = base["proofs"].as_array().cloned().unwrap_or_default();
             let score = base["score"].as_u64().max(c["score"].as_u64());
+            let probability = [&base, &c].into_iter().filter_map(|d| Some((d["probability"].as_f64()?, d["probability"].clone())))
+                .max_by(|a, b| a.0.total_cmp(&b.0)).map(|(_, p)| p);
             for p in c["proofs"].as_array().cloned().unwrap_or_default() {
                 if !all.iter().any(|q| q["nature"] == p["nature"] && q["kind"] == p["kind"]) { all.push(p); }
             }
             if has_strong(&c) && !has_strong(&base) { std::mem::swap(&mut base, &mut c); }
-            base["proofs"] = json!(all);
-            base["score"] = json!(score);
-            if has_strong(&base) && base["state"] == "possible" {
-                if let Some(o) = base.as_object_mut() { o.remove("state"); o.remove("state_label"); }
+            // What another port says of the device and the leading one does not is kept.
+            for k in ["firmware", "confirmations", "disputed", "state"] {
+                if let (None, Some(v)) = (base.get(k), c.get(k)) { base[k] = v.clone(); }
             }
+            if service_label(&base).is_none() {
+                if let Some(label) = service_label(&c) { base["state_label"] = json!(label); }
+            }
+            base["proofs"] = json!(all);
+            if let Some(score) = score { base["score"] = json!(score); }
+            if let Some(probability) = probability { base["probability"] = probability; }
             merged[at] = base;
         }
     }
@@ -1238,7 +1274,18 @@ fn merge_candidates(found: &[crate::detect::Probed], per_port: Vec<(usize, Vec<V
     if merged.iter().any(has_strong) {
         merged.retain(has_strong);
     }
-    merged.sort_by(|a, b| b["score"].as_u64().cmp(&a["score"].as_u64()));
+    let weight = |c: &Value| (c["probability"].as_f64().unwrap_or(f64::NEG_INFINITY), c["score"].as_u64());
+    merged.sort_by(|a, b| {
+        let ((pa, sa), (pb, sb)) = (weight(a), weight(b));
+        pb.total_cmp(&pa).then(sb.cmp(&sa))
+    });
+    for c in merged.iter_mut() {
+        let label = state_label(c);
+        if !is_possible(c) && c["state"] == "possible" {
+            if let Some(o) = c.as_object_mut() { o.remove("state"); }
+        }
+        c["state_label"] = json!(label);
+    }
     merged
 }
 
@@ -1255,7 +1302,8 @@ pub fn software_cards_only(index: &DeviceIndex, candidates: Vec<Value>) -> Vec<V
 fn detection_report(index: &DeviceIndex, answers: &[Value], by_file: bool, probe: bool,
                     found: Vec<crate::detect::Probed>, faults: Vec<crate::device::DeviceFault>,
                     plan: &[crate::recognition::PortSends], order: crate::recognition::TierOrder) -> Result<Value, String> {
-    let mut matched: Vec<Vec<Value>> = if answers.is_empty() {
+    let offline = answers.is_empty();
+    let mut matched: Vec<Vec<Value>> = if offline {
         let catalogue = hardware_candidates(index);
         found.iter().map(|d| match_port(&catalogue, d.label(), d.usb, &d.replies, order).into_iter().map(|mut c| { c["kind"] = json!("candidate"); c }).collect()).collect()
     } else {
@@ -1281,6 +1329,8 @@ fn detection_report(index: &DeviceIndex, answers: &[Value], by_file: bool, probe
             c["device"] = c["id"].clone();
             if let Some(e) = c["device"].as_str().and_then(|id| index.find(id)) {
                 c["file"] = json!(e.path.display().to_string());
+                // The source of the card, for its credit.
+                c["source_tier"] = json!(e.tier);
             }
         }
         // The port that carries the answer: the one of the first strong proof of the first
@@ -1289,9 +1339,10 @@ fn detection_report(index: &DeviceIndex, answers: &[Value], by_file: bool, probe
             .and_then(|ps| ps.iter().find(|p| p["nature"] == "strong").and_then(|p| p["port"].as_str())));
         let main = proof_port.and_then(|n| group.iter().copied().find(|&i| found[i].label() == n)).unwrap_or(group[0]);
         let d = &found[main];
-        // A run command needs a strong proof, and no other candidate of equal weight holding one.
+        // A run command needs a strong proof and no rival holding one too: of the service's
+        // devices any other, of the cards matched here one of equal score.
         let driver = candidates.first().filter(|first| has_strong(first)
-            && !candidates[1..].iter().any(|o| has_strong(o) && o["score"] == first["score"]))
+            && !candidates[1..].iter().any(|o| has_strong(o) && (!offline || o["score"] == first["score"])))
             .and_then(|c| if by_file { c["file"].as_str() } else { c["device"].as_str() });
         let run_command = match (driver, d.out_index) {
             (Some(driver), Some(out)) => Some(format!("osc-bridge run --device {driver} --out-port {out}{}",
@@ -1359,26 +1410,18 @@ pub fn detect_port(port: &str, replies_hex: Vec<String>, usb: Option<(u16, u16)>
     p
 }
 
-/// What the service says of one port, as one list read by the service's own lists: each entry of
-/// `candidates` (marked `kind: candidate`), carrying the confirmations and state the service gives
-/// for it in `learned`; else, when there is no candidate, each entry of `unlisted` that names a
-/// vendor or a model (marked `kind: unlisted`). A device has one state: a candidate hides them.
+/// What the service says of one port, as one list: each entry of its `devices`, in its order and
+/// as it gives it (marked `kind: candidate`); else, when it names no device, each entry of
+/// `unlisted` that names a vendor or a model (marked `kind: unlisted`).
 pub fn port_answer(answer: &Value) -> Vec<Value> {
     let list = |k: &str| answer[k].as_array().cloned().unwrap_or_default();
-    let mut candidates = list("candidates");
-    if candidates.is_empty() {
+    let mut devices = list("devices");
+    if devices.is_empty() {
         return list("unlisted").into_iter().filter(|u| u["vendor"].is_string() || u["model"].is_string())
             .map(|mut u| { u["kind"] = json!("unlisted"); u }).collect();
     }
-    let learned = list("learned");
-    for c in candidates.iter_mut() {
-        c["kind"] = json!("candidate");
-        let Some(l) = learned.iter().find(|l| l["id"] == c["id"]) else { continue };
-        for k in ["confirmations", "disputed", "state", "state_label"] {
-            if let Some(v) = l.get(k) { c[k] = v.clone(); }
-        }
-    }
-    candidates
+    for d in devices.iter_mut() { d["kind"] = json!("candidate"); }
+    devices
 }
 
 /// A device without a card in words, with the fields the service gave and no other: the maker and
@@ -1471,12 +1514,20 @@ pub fn format_detection(devices: &[Value], probe: bool) -> String {
             None => {}
         }
         for c in d["candidates"].as_array().into_iter().flatten() {
-            let fw = c["firmware"].as_str().map(|f| format!(", firmware {f}")).unwrap_or_default();
             let state = c["state_label"].as_str().map(|l| format!(" — {l}")).unwrap_or_default();
             let id = c["device"].as_str().or(c["id"].as_str()).unwrap_or("");
             let name = c["name"].as_str().map(|n| format!("{n} — ")).unwrap_or_default();
-            let _ = writeln!(out, "  match: {name}{id} — {} ({}, score {}{fw}){state}",
-                c["file"].as_str().unwrap_or(id), c["source_tier"].as_str().unwrap_or(""), c["score"]);
+            let file = c["file"].as_str().map(|f| format!(" — {f}")).unwrap_or_default();
+            // Only what the candidate carries: a card matched here has a score, a device of the
+            // service a probability.
+            let said: Vec<String> = [
+                c["source_tier"].as_str().map(str::to_string),
+                c["probability"].as_number().map(|p| format!("probability {p}")),
+                c["score"].as_number().map(|s| format!("score {s}")),
+                c["firmware"].as_str().map(|f| format!("firmware {f}")),
+            ].into_iter().flatten().collect();
+            let said = if said.is_empty() { String::new() } else { format!(" ({})", said.join(", ")) };
+            let _ = writeln!(out, "  match: {name}{id}{file}{said}{state}");
             let because: Vec<String> = c["proofs"].as_array().into_iter().flatten()
                 .map(|p| format!("{} ({})", p["kind"].as_str().unwrap_or("?"), p["nature"].as_str().unwrap_or("?"))).collect();
             if !because.is_empty() {

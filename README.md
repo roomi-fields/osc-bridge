@@ -81,8 +81,8 @@ asks the SyntHub server for one driver at a time, when it needs it:
   then downloads it again only when the server's copy changed;
 - `osc-bridge detect` and the MCP tool `detect_hardware` ask the server which
   makers' identity requests to send, then send it the names of the MIDI
-  ports found here and what the devices answered, and it names the matching
-  drivers and firmware; `list_devices` searches the catalogue there;
+  ports found here and what the devices answered, and it names the devices each
+  port may be, with their firmware; `list_devices` searches the catalogue there;
 - offline (`osc-bridge privacy --offline on`, `OSC_BRIDGE_OFFLINE=1`), only
   the drivers already cached are used and nothing is sent.
 

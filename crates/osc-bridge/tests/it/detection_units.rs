@@ -127,7 +127,7 @@ fn a_strong_proof_on_one_port_beats_the_name_alone_of_the_others_whichever_port_
         let first = &devices[0]["candidates"][0];
         assert_eq!(first["device"], BOX_ID, "{devices:?}");
         assert!(strong(first), "{devices:?}");
-        assert!(first.get("state_label").is_none(), "recognised, not 'possible': {devices:?}");
+        assert_eq!(first["state_label"], "recognised", "{devices:?}");
     }
     assert_eq!(on_a[0]["candidates"][0]["score"], on_b[0]["candidates"][0]["score"], "one formula, per device");
 }

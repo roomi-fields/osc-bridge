@@ -53,17 +53,50 @@ fn tool_names_lists_the_sixteen_local_tools() {
 }
 
 #[test]
-fn port_answer_marks_candidates_and_unlisted_entries() {
-    let with = port_answer(&json!({
-        "candidates": [{ "id": "a/b" }],
-        "learned": [{ "id": "a/b", "confirmations": 2 }],
+fn port_answer_gives_the_devices_in_the_order_of_the_service_each_with_its_own_confirmation_fields() {
+    let first = json!({ "id": "z/last-by-name", "name": "Z", "probability": 0.2, "confirmations": 2, "disputed": true,
+        "state": "confirming", "state_label": "in disagreement" });
+    let second = json!({ "id": "a/b", "name": "B", "probability": 0.9 });
+    let got = port_answer(&json!({ "devices": [first, second] }));
+    assert_eq!(got.len(), 2, "{got:?}");
+    assert_eq!((&got[0]["id"], &got[1]["id"]), (&json!("z/last-by-name"), &json!("a/b")), "{got:?}");
+    for field in ["name", "probability", "confirmations", "disputed", "state", "state_label"] {
+        assert_eq!(got[0][field], first[field], "{field}: {got:?}");
+    }
+    for field in ["confirmations", "disputed", "state", "state_label"] {
+        assert!(got[1].get(field).is_none(), "{field} belongs to the other device: {got:?}");
+    }
+    assert!(got.iter().all(|d| d["kind"] == "candidate"), "{got:?}");
+}
+
+#[test]
+fn port_answer_does_not_read_the_learned_list() {
+    let got = port_answer(&json!({
+        "devices": [{ "id": "a/b" }],
+        "learned": [{ "id": "a/b", "confirmations": 2, "disputed": false, "state": "confirming", "state_label": "being confirmed" }],
     }));
-    assert_eq!(with.len(), 1);
-    assert_eq!(with[0]["kind"], "candidate");
-    assert_eq!(with[0]["confirmations"], 2);
-    let without = port_answer(&json!({ "unlisted": [{ "vendor": "Acme" }, { "firmware": "1" }] }));
-    assert_eq!(without.len(), 1);
-    assert_eq!(without[0]["kind"], "unlisted");
+    assert_eq!(got.len(), 1, "{got:?}");
+    for field in ["confirmations", "disputed", "state", "state_label"] {
+        assert!(got[0].get(field).is_none(), "{field}: {got:?}");
+    }
+}
+
+#[test]
+fn port_answer_gives_the_named_unlisted_devices_only_when_there_is_no_device() {
+    let unlisted = json!([{ "vendor": "Acme" }, { "firmware": "1" }, { "model": "Thing" }]);
+    for answer in [json!({ "unlisted": unlisted }), json!({ "devices": [], "unlisted": unlisted })] {
+        let got = port_answer(&answer);
+        assert_eq!(got.len(), 2, "{got:?}");
+        assert!(got.iter().all(|u| u["kind"] == "unlisted"), "{got:?}");
+    }
+    let got = port_answer(&json!({ "devices": [{ "id": "a/b" }], "unlisted": unlisted }));
+    assert_eq!(got.len(), 1, "{got:?}");
+    assert_eq!(got[0]["id"], "a/b", "{got:?}");
+}
+
+#[test]
+fn port_answer_names_no_device_from_the_former_candidates_list() {
+    assert!(port_answer(&json!({ "candidates": [{ "id": "a/b" }] })).is_empty());
 }
 
 #[test]

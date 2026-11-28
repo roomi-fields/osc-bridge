@@ -9,8 +9,8 @@ use std::time::Duration;
 use super::online::{Online, Settings};
 use crate::capture::Capture;
 use crate::detect::{client_key, client_kind, observe, usb_cards, usb_of_port, ClientKey, ClientKind};
-use crate::mcp::{content_structured, hardware_candidates, proofs_json, slugify, software_cards_only, unlisted_text,
-                 DeviceIndex, McpOptions};
+use crate::mcp::{content_structured, hardware_candidates, is_possible, proofs_json, slugify, software_cards_only,
+                 state_label, unlisted_text, DeviceIndex, McpOptions};
 pub use crate::midi_port::{Heard, Unit, Wire};
 use crate::recognition::{parse_identity_reply, IDENTITY_REQUEST};
 
@@ -354,7 +354,7 @@ pub enum ServiceMatches {
     /// Linked, but the service did not answer.
     Unreachable,
     /// What it names for each device, in the order of the devices the learn mode reports: its
-    /// catalogue candidates, else its devices without a card (see `port_answer`).
+    /// devices, else its devices without a card (see `port_answer`).
     Answered(Vec<Vec<Value>>),
 }
 
@@ -376,10 +376,26 @@ fn firmware_ask(proposed: Option<&str>) -> String {
     }
 }
 
+/// What the person is asked of a device to be named, and what follows.
+fn naming_ask(proposed_firmware: Option<&str>) -> String {
+    format!("{NEXT_STEP_ASK}{} Then map its controls one by one with report_mapping, device being its vendor and model as shared (e.g. Behringer BCR-32); a first driver built from the mappings goes to submit_driver.",
+        firmware_ask(proposed_firmware))
+}
+
+/// The next step of a device whose devices named by the service are all only possible: the person
+/// confirms one of them, or names theirs.
+fn possible_step(possible: &[&Value], proposed_firmware: Option<&str>) -> String {
+    let named: Vec<String> = possible.iter().filter_map(|c| {
+        let id = c["id"].as_str()?;
+        Some(c["name"].as_str().map_or_else(|| id.to_string(), |name| format!("{name} ({id})")))
+    }).collect();
+    format!("SyntHub names this device from its name alone, possible, to confirm: {}. Ask the person to confirm which it is, or else: {} \
+        Nothing is sent to the device on this account without the person's consent.", named.join(" or "), naming_ask(proposed_firmware))
+}
+
 /// The next step of an unknown device, worded by what was looked at.
 fn next_step(service: &ServiceMatches, proposed_firmware: Option<&str>) -> String {
-    let ask = format!("{NEXT_STEP_ASK}{} Then map its controls one by one with report_mapping, device being its vendor and model as shared (e.g. Behringer BCR-32); a first driver built from the mappings goes to submit_driver.",
-        firmware_ask(proposed_firmware));
+    let ask = naming_ask(proposed_firmware);
     match service {
         ServiceMatches::Answered(_) => format!("Neither the local catalogue nor SyntHub knows this device. {ask}"),
         _ => format!("Only the local catalogue was looked at, and no driver in it matches this device. {ask}"),
@@ -451,10 +467,10 @@ pub fn refusal_in_words(said: &str, command: bool) -> String {
     }).collect::<Vec<_>>().join(" ")
 }
 
-/// The learn mode's result for `learned`: the structured devices and their text. A device the
-/// service or `catalogue` recognises carries its `driver` (the service's first) and no
-/// `next_step`; an unknown one carries a `next_step` worded by what was looked at. A port of the
-/// system is left out. Pure: no MIDI.
+/// The learn mode's result for `learned`: the structured devices and their text. A device
+/// carries its `driver`, the service's first device that is not only possible, else the card of
+/// `catalogue` that recognises it, and no `next_step`; any other carries a `next_step`, worded
+/// by what was named or looked at. A port of the system is left out. Pure: no MIDI.
 pub fn learn_report(learned: &[(Unit, Learned)], catalogue: &DeviceIndex, listen: Duration,
                     service: &ServiceMatches, order: crate::recognition::TierOrder) -> Value {
     let candidates = hardware_candidates(catalogue);
@@ -472,19 +488,26 @@ pub fn learn_report(learned: &[(Unit, Learned)], catalogue: &DeviceIndex, listen
             _ => Vec::new(),
         };
         let named = if program { software_cards_only(catalogue, named) } else { named };
-        let first = named.first();
-        let remote = first.and_then(|c| {
-            let mut driver = json!({ "id": c["id"].as_str()?, "name": c["name"].as_str().unwrap_or_default() });
-            for k in ["confirmations", "disputed", "state", "state_label"] {
+        let with_card: Vec<&Value> = named.iter().filter(|c| c["id"].is_string()).collect();
+        // A device named by its name alone makes no driver.
+        let remote = with_card.iter().find(|c| !is_possible(c)).map(|c| {
+            let mut driver = json!({ "id": c["id"], "name": c["name"].as_str().unwrap_or_default() });
+            for k in ["proofs", "probability", "confirmations", "disputed", "state"] {
                 if let Some(v) = c.get(k) { driver[k] = v.clone(); }
             }
-            Some(driver)
+            driver["state_label"] = json!(state_label(c));
+            driver
         });
         let unlisted: Vec<Value> = if remote.is_none() { named.iter().filter(|u| u["kind"] == "unlisted").cloned().collect() } else { Vec::new() };
         // The local driver is the one its slug resolves to (the most trustworthy file of the
         // device), not a firmware variant that only ranked higher by recognising the port.
-        let local = local.map(|(c, proofs)| catalogue.find(&c.slug).map(|e| json!({ "id": e.id, "name": e.name, "proofs": proofs }))
-            .unwrap_or_else(|| json!({ "id": c.id, "name": c.name, "proofs": proofs })));
+        let local = local.map(|(c, proofs)| {
+            let mut driver = catalogue.find(&c.slug).map(|e| json!({ "id": e.id, "name": e.name }))
+                .unwrap_or_else(|| json!({ "id": c.id, "name": c.name }));
+            driver["proofs"] = proofs;
+            driver["state_label"] = json!(state_label(&driver));
+            driver
+        });
         let driver = remote.or(local);
         let mut out = json!({
             "port": d.label(),
@@ -502,7 +525,11 @@ pub fn learn_report(learned: &[(Unit, Learned)], catalogue: &DeviceIndex, listen
             None => {
                 let proposed = l.fingerprint["identity_reply"].as_str().and_then(identity_firmware);
                 if let Some(v) = &proposed { out["proposed_firmware"] = json!(v); }
-                out["next_step"] = json!(next_step(service, proposed.as_deref()));
+                out["next_step"] = json!(if with_card.is_empty() {
+                    next_step(service, proposed.as_deref())
+                } else {
+                    possible_step(&with_card, proposed.as_deref())
+                });
             }
         }
         out
@@ -527,7 +554,8 @@ pub fn learn_service_matches(server: Option<&Online>, learned: &[(Unit, Learned)
     if devices.is_empty() { return ServiceMatches::Answered(Vec::new()); }
     let ports: Vec<Value> = devices.iter().map(|(d, l)| crate::mcp::detect_port(d.label(),
         l.fingerprint["identity_reply"].as_str().into_iter().map(str::to_string).collect(), d.usb)).collect();
-    match server.detect(&ports) {
+    let alone: Vec<Vec<usize>> = (0..devices.len()).map(|i| vec![i]).collect();
+    match server.detect_entries(&ports, &alone) {
         Ok(answers) => ServiceMatches::Answered((0..devices.len()).map(|i| answers.get(i).map(crate::mcp::port_answer).unwrap_or_default()).collect()),
         Err(_) => ServiceMatches::Unreachable,
     }

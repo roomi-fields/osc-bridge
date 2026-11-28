@@ -267,11 +267,12 @@ fn service_probes(server: &Online) -> Result<Vec<crate::recognition::Probe>, Str
         requests recognise devices, and it could not be reached: {e}. Offline, the ports are matched against the drivers cached here."))
 }
 
-/// What the service says of each port of `found`, one answer per port in order.
+/// What the service says of each port of `found`, one answer per port in order; the devices
+/// of the report it groups together are each asked again alone (`Online::detect_entries`).
 fn service_answers(server: &Online, found: &[crate::detect::Probed]) -> Result<Vec<Value>, String> {
     let ports: Vec<Value> = found.iter().map(|d| crate::mcp::detect_port(d.label(),
         d.replies.iter().map(|r| crate::mcp::hex_bytes(r)).collect(), d.usb)).collect();
-    server.detect(&ports).map_err(|e| format!("detect_hardware asks the SyntHub server to match \
+    server.detect_entries(&ports, &crate::detect::group_probed(found)).map_err(|e| format!("detect_hardware asks the SyntHub server to match \
         the ports, and it could not be reached: {e}. Offline, the ports are matched against the drivers cached here."))
 }
 

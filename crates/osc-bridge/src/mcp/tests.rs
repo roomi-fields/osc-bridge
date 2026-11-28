@@ -695,7 +695,7 @@ fn report_devices(answer: fn(&Value) -> Value, found: Vec<crate::detect::Probed>
 }
 
 fn bcr_unlisted(_: &Value) -> Value {
-    json!({ "candidates": [], "unlisted": [{ "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3",
+    json!({ "devices": [], "unlisted": [{ "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3",
         "confirmations": 1, "disputed": false, "state": "confirming", "state_label": BEING_CONFIRMED }] })
 }
 
@@ -714,7 +714,7 @@ fn the_detection_returns_a_device_without_a_card_being_confirmed_with_all_its_fi
 
 #[test]
 fn the_detection_returns_every_device_without_a_card_and_their_dispute() {
-    let client: fn(&Value) -> Value = |_| json!({ "candidates": [], "unlisted": [
+    let client: fn(&Value) -> Value = |_| json!({ "devices": [], "unlisted": [
         { "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3", "confirmations": 2, "disputed": true,
           "state": "confirming", "state_label": IN_DISAGREEMENT },
         { "vendor": "Behringer", "model": "BCR2000", "firmware": "1.0.3", "confirmations": 1, "disputed": true,
@@ -729,16 +729,15 @@ fn the_detection_returns_every_device_without_a_card_and_their_dispute() {
 #[test]
 fn the_detection_reports_catalogue_candidates_and_never_also_a_device_without_a_card() {
     let client: fn(&Value) -> Value = |_| json!({
-        "candidates": [{ "id": "acme/box", "slug": "box", "name": "Box", "vendor": "Acme", "source_tier": "official", "score": 90 }],
+        "devices": [{ "id": "acme/box", "name": "Box", "probability": 0.9, "proofs": [{ "nature": "strong", "kind": "usb id", "port": "Box" }] }],
         "unlisted": [{ "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3", "confirmations": 1, "disputed": false }] });
     let devices = report_devices(client, vec![probed("Box", None)]);
     assert_eq!(devices[0]["candidates"][0]["device"], "acme/box", "{devices:?}");
     assert!(devices[0].get("unlisted").is_none(), "{devices:?}");
 }
 
-const POLYSYNTH: fn(&Value) -> Value = |_| json!({ "candidates": [
-    { "id": "polyend/synth", "slug": "polysynth", "name": "Synth", "vendor": "Polyend", "source_tier": "vendor-doc", "score": 35 }],
-    "devices": [] });
+const POLYSYNTH: fn(&Value) -> Value = |_| json!({ "devices": [
+    { "id": "polyend/synth", "name": "Synth", "proofs": [{ "nature": "weak", "kind": "name", "port": "FLUID Synth" }] }] });
 
 #[test]
 fn a_catalogue_candidate_of_the_service_is_reported_as_a_candidate_under_its_catalogue_id_and_never_as_a_device_without_a_card() {
@@ -788,8 +787,8 @@ fn the_command_prints_the_bcr_32_with_its_maker_model_firmware_confirmations_and
 #[test]
 fn the_detection_reports_a_catalogue_candidate_the_service_gives_as_being_confirmed_so() {
     let client: fn(&Value) -> Value = |_| json!({
-        "candidates": [{ "id": "acme/box", "slug": "box", "name": "Box", "vendor": "Acme", "source_tier": "official", "score": 90 }],
-        "learned": [{ "id": "acme/box", "confirmations": 2, "disputed": false, "state": "confirming", "state_label": BEING_CONFIRMED }] });
+        "devices": [{ "id": "acme/box", "name": "Box", "probability": 0.9, "proofs": [{ "nature": "strong", "kind": "confirmations", "port": "Box" }],
+            "confirmations": 2, "disputed": false, "state": "confirming", "state_label": BEING_CONFIRMED }] });
     let devices = report_devices(client, vec![probed("Box", None)]);
     let c = &devices[0]["candidates"][0];
     assert_eq!(c["state"], "confirming", "{devices:?}");
@@ -937,14 +936,14 @@ fn the_command_prints_one_device_with_its_other_ports_as_ports_of_it() {
 // ---- a port of a program gets the card of a software only ----
 
 const SOFTWARE_CARD: &str = "bitwig/bitwig-studio.third-party-osc.fw-5";
-const THREE_CARDS: fn(&Value) -> Value = |_| json!({ "candidates": [
-    { "id": "polyend/synth", "slug": "synth", "name": "Synth", "vendor": "Polyend", "source_tier": "vendor-doc", "score": 35 },
-    { "id": "acme/box", "slug": "box", "name": "Box", "vendor": "Acme", "source_tier": "official", "score": 35 },
-    { "id": "bitwig/bitwig-studio.third-party-osc.fw-5", "slug": "bitwig-studio", "name": "Bitwig Studio",
-      "vendor": "Bitwig", "source_tier": "third-party-osc", "score": 10 }] });
-const TWO_HARDWARE_CARDS: fn(&Value) -> Value = |_| json!({ "candidates": [
-    { "id": "polyend/synth", "slug": "synth", "name": "Synth", "vendor": "Polyend", "source_tier": "vendor-doc", "score": 35 },
-    { "id": "acme/box", "slug": "box", "name": "Box", "vendor": "Acme", "source_tier": "official", "score": 35 }],
+const THREE_CARDS: fn(&Value) -> Value = |_| json!({ "devices": [
+    { "id": "polyend/synth", "name": "Synth", "probability": 0.5, "proofs": [{ "nature": "medium", "kind": "maker", "port": "FLUID Synth" }] },
+    { "id": "acme/box", "name": "Box", "probability": 0.4, "proofs": [{ "nature": "medium", "kind": "maker", "port": "FLUID Synth" }] },
+    { "id": "bitwig/bitwig-studio.third-party-osc.fw-5", "name": "Bitwig Studio", "probability": 0.2,
+      "proofs": [{ "nature": "medium", "kind": "maker", "port": "FLUID Synth" }] }] });
+const TWO_HARDWARE_CARDS: fn(&Value) -> Value = |_| json!({ "devices": [
+    { "id": "polyend/synth", "name": "Synth", "probability": 0.5, "proofs": [{ "nature": "medium", "kind": "maker", "port": "FLUID Synth" }] },
+    { "id": "acme/box", "name": "Box", "probability": 0.4, "proofs": [{ "nature": "medium", "kind": "maker", "port": "FLUID Synth" }] }],
     "unlisted": [{ "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3", "confirmations": 1, "disputed": false }] });
 
 fn probed_as(name: &str, kind: crate::detect::ClientKind) -> crate::detect::Probed {
@@ -992,13 +991,11 @@ fn the_service_candidates_of_the_fluid_synth_capture_are_dropped_and_the_port_is
     let text = std::fs::read_to_string("tests/fixtures/captures/2026-11-22-ports-logiciels.json").unwrap();
     let capture = Capture::parse(&text).unwrap();
     let client: fn(&Value) -> Value = |p| if p["port"].as_str().unwrap_or("").starts_with("FLUID Synth") {
-        json!({ "candidates": [
-            { "id": "polyend/synth", "slug": "synth", "name": "Synth", "vendor": "Polyend", "source_tier": "vendor-doc", "score": 35 },
-            { "id": "polyend/synth.pencilresearch.fw-unknown", "slug": "synth.pencilresearch.fw-unknown", "name": "Synth",
-              "vendor": "Polyend", "source_tier": "pencilresearch", "score": 35 },
-            { "id": "electra-community/ay3_synth", "slug": "ay3_synth", "name": "AY3 Synth", "vendor": "Electra",
-              "source_tier": "electra-preset", "score": 10 }] })
-    } else { json!({ "candidates": [] }) };
+        json!({ "devices": [
+            { "id": "polyend/synth", "name": "Synth", "proofs": [{ "nature": "weak", "kind": "name" }] },
+            { "id": "polyend/synth.pencilresearch.fw-unknown", "name": "Synth", "proofs": [{ "nature": "weak", "kind": "name" }] },
+            { "id": "electra-community/ay3_synth", "name": "AY3 Synth", "proofs": [{ "nature": "weak", "kind": "name" }] }] })
+    } else { json!({ "devices": [] }) };
     let said = service_says(client, &crate::detect::replay(&capture));
     let r = detection_report(&fixtures(), &said, true, false, crate::detect::replay(&capture), Vec::new(), &[], neutral).unwrap();
     let devices = r["structuredContent"]["devices"].as_array().unwrap();
@@ -1017,12 +1014,12 @@ fn the_service_answers_for_the_minilab_3_and_the_bcr_32_of_the_bench_capture_are
     let client: fn(&Value) -> Value = |p| {
         let port = p["port"].as_str().unwrap_or("");
         if port.starts_with("Minilab3") {
-            json!({ "candidates": [{ "id": "arturia/minilab3", "slug": "minilab3", "name": "MiniLab 3", "vendor": "Arturia",
-                "source_tier": "official", "score": 90 }] })
+            json!({ "devices": [{ "id": "arturia/minilab3", "name": "MiniLab 3", "probability": 0.9,
+                "proofs": [{ "nature": "strong", "kind": "usb id" }] }] })
         } else if port.starts_with("Behringer BCR-32") {
-            json!({ "candidates": [], "unlisted": [{ "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3",
+            json!({ "devices": [], "unlisted": [{ "vendor": "Behringer", "model": "BCR32", "firmware": "1.0.3",
                 "confirmations": 1, "disputed": false }] })
-        } else { json!({ "candidates": [] }) }
+        } else { json!({ "devices": [] }) }
     };
     let said = service_says(client, &crate::detect::replay(&capture));
     let r = detection_report(&fixtures(), &said, true, false, crate::detect::replay(&capture), Vec::new(), &[], neutral).unwrap();
@@ -1039,7 +1036,7 @@ fn the_local_answer_takes_what_the_service_knows_as_values_and_serves_the_16_too
     let status = |id: &str| (id == "korg/minilogue").then(|| "confirmed".to_string());
     let private = |id: &str| id == "korg/minilogue";
     let known = Known { trust: json!({ "devices": { "korg/minilogue": { "status": "confirmed" } } }),
-        candidates: vec![json!({ "candidates": [] })], status: &status, private: &private };
+        candidates: vec![json!({ "devices": [] })], status: &status, private: &private };
     let opts = test_opts();
     let ask = |name: &str, args: Value| call_local(name, &args, &opts, &idx, &crate::midi_port::open_hardware, &known);
 
